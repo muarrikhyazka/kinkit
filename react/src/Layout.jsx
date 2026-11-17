@@ -1,136 +1,187 @@
-import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
-import { useAuth } from './AuthContext.jsx'
-import { useYearMonth } from './YearContext.jsx'
+import { useEffect, useState } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useAuth, canLogSpending } from './AuthContext.jsx'
 import { useOffline } from './OfflineContext.jsx'
 import { useTheme, THEMES } from './ThemeContext.jsx'
-import { MONTH_NAMES } from './api'
+import { formatRupiah, onSpendingChanged } from './api'
+import { navRoutes, routeTo, routeEnd } from './routes.jsx'
 import QuickAddSpending from './QuickAddSpending.jsx'
 import GamificationBadge from './GamificationBadge.jsx'
-import { IconDashboard, IconBudget, IconSpending, IconAssets, IconSetup, IconLogout, IconCollapse, IconExpand, IconSun, IconMoon, IconPlus, IconGuide, IconLink, IconShield } from './icons.jsx'
+import Modal from './Modal.jsx'
+import OnboardingChecklist from './OnboardingChecklist.jsx'
+import { IconLogout, IconCollapse, IconExpand, IconSun, IconMoon, IconPlus, IconMore, IconTv, IconClose } from './icons.jsx'
 
-const tenantLinks = [
-  { to: '/', label: 'Dashboard', end: true, Icon: IconDashboard },
-  { to: '/spending', label: 'Spending', Icon: IconSpending },
-  { to: '/budgeting', label: 'Budgeting', Icon: IconBudget },
-  { to: '/assets', label: 'Assets', Icon: IconAssets },
-  { to: '/setup', label: 'Setup', Icon: IconSetup },
-  { to: '/integrations', label: 'Integrations', Icon: IconLink },
-  { to: '/guide', label: 'Guide', Icon: IconGuide },
-]
+const COLLAPSE_KEY = 'kinkit_sidebar_collapsed'
 
-// Super admin manages the platform, not personal finances - own tenant
-// pages (budgeting/assets/spending/setup/integrations) are irrelevant noise.
-const adminLinks = [
-  { to: '/admin', label: 'Accounts', end: true, Icon: IconShield },
-  { to: '/admin/stats', label: 'Platform Stats', Icon: IconDashboard },
-]
+function ConnStatus({ serverOnline, queueSize, compact }) {
+  const text = serverOnline ? 'Online' : `Offline${queueSize ? ` (${queueSize})` : ''}`
+  return (
+    <div
+      className={`conn-status ${serverOnline ? 'online' : 'offline'}`}
+      title={serverOnline ? 'Connected to server' : `Offline${queueSize ? ` - ${queueSize} transaction(s) pending sync` : ''}`}
+      role="status"
+    >
+      <span className="conn-dot" aria-hidden="true" />
+      {compact ? <span className="sr-only">{text}</span> : <span>{text}</span>}
+    </div>
+  )
+}
 
-const YEAR_RANGE = (() => {
-  const y = new Date().getFullYear()
-  const arr = []
-  for (let i = y - 3; i <= y + 2; i++) arr.push(i)
-  return arr
-})()
+// Offline entries the server rejected (4xx) during sync - shown until dismissed.
+function FailedSyncBanner({ items, onDismiss }) {
+  if (!items.length) return null
+  return (
+    <div className="error-box failed-sync" role="alert">
+      <strong>{items.length} offline transaction{items.length > 1 ? 's were' : ' was'} rejected by the server and not saved:</strong>
+      <ul>
+        {items.map(f => (
+          <li key={f.client_id}>
+            <span>{f.tx_date} · {f.description} · {f.category} · {formatRupiah(f.amount)} - <em>{f.error}</em></span>
+            <button className="icon-btn" onClick={() => onDismiss(f.client_id)} aria-label={`Dismiss failed entry ${f.description}`}>
+              <IconClose width={12} height={12} />
+            </button>
+          </li>
+        ))}
+      </ul>
+      {items.length > 1 && <button className="secondary" onClick={() => onDismiss()}>Dismiss all</button>}
+    </div>
+  )
+}
 
 export default function Layout() {
   const { logout, user } = useAuth()
-  const { year, setYear, month, setMonth, valueMax, setValueMax } = useYearMonth()
-  const { serverOnline, queueSize } = useOffline()
+  const { serverOnline, queueSize, failedItems, dismissFailed } = useOffline()
   const { theme, setTheme } = useTheme()
-  const [collapsed, setCollapsed] = useState(false)
+  const location = useLocation()
+  const [collapsed, setCollapsed] = useState(() => { try { return localStorage.getItem(COLLAPSE_KEY) === '1' } catch { return false } })
   const [quickAddOpen, setQuickAddOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
   const [gamiRefresh, setGamiRefresh] = useState(0)
+
+  const isAdmin = !!user?.is_admin
+  const canAdd = !isAdmin && canLogSpending(user)
+  const links = navRoutes(isAdmin ? 'admin' : 'tenant')
+  const mobileTabs = links.filter(r => r.mobile === 'tab')
+  const moreLinks = links.filter(r => r.mobile === 'more')
+  const moreActive = moreLinks.some(r => location.pathname === routeTo(r))
+
+  useEffect(() => onSpendingChanged(() => setGamiRefresh(k => k + 1)), [])
+  useEffect(() => { setMoreOpen(false) }, [location.pathname])
+  useEffect(() => { try { localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0') } catch { /* ignore */ } }, [collapsed])
+
+  const nextTheme = THEMES[(THEMES.findIndex(t => t.id === theme) + 1) % THEMES.length]
 
   return (
     <div className="app-shell">
+      <a href="#main" className="skip-link">Skip to content</a>
+
       <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-top">
           {!collapsed && <div className="brand">Kinkit</div>}
-          <button className="icon-btn collapse-toggle" onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expand' : 'Collapse'}>
+          <button className="icon-btn collapse-toggle" onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expand' : 'Collapse'} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-expanded={!collapsed}>
             {collapsed ? <IconExpand /> : <IconCollapse />}
           </button>
         </div>
 
-        <div className={`conn-status ${serverOnline ? 'online' : 'offline'}`} title={serverOnline ? 'Connected to server' : `Offline${queueSize ? ` - ${queueSize} transaction(s) pending sync` : ''}`}>
-          <span className="conn-dot" />
-          {!collapsed && <span>{serverOnline ? 'Online' : `Offline${queueSize ? ` (${queueSize})` : ''}`}</span>}
-        </div>
-
-        {!collapsed && !user?.is_admin && (
-          <div className="sidebar-filters">
-            <label>
-              <span>Year</span>
-              <select value={year} onChange={e => setYear(Number(e.target.value))}>
-                {YEAR_RANGE.map(y => <option key={y} value={y}>{y}</option>)}
-              </select>
-            </label>
-            <label>
-              <span>Month</span>
-              <select value={month} onChange={e => setMonth(Number(e.target.value))}>
-                {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-              </select>
-            </label>
-            <label>
-              <span>Value</span>
-              <select value={valueMax} onChange={e => setValueMax(e.target.value)}>
-                <option value="all">All</option>
-                <option value="10jt">≤ 10 juta</option>
-                <option value="100jt">≤ 100 juta</option>
-              </select>
-            </label>
-          </div>
-        )}
+        <ConnStatus serverOnline={serverOnline} queueSize={queueSize} compact={collapsed} />
 
         <ul>
-          {!user?.is_admin && (
+          {canAdd && (
             <li>
-              <button className="nav-cta" onClick={() => setQuickAddOpen(true)} title="Add Spending">
+              <button className="nav-cta" onClick={() => setQuickAddOpen(true)} title="Add Spending" aria-label={collapsed ? 'Add Spending' : undefined}>
                 <IconPlus />
                 {!collapsed && <span>Add Spending</span>}
               </button>
             </li>
           )}
-          {!user?.is_admin && (
+          {!isAdmin && (
             <li><GamificationBadge collapsed={collapsed} refreshKey={gamiRefresh} /></li>
           )}
-          {(user?.is_admin ? adminLinks : tenantLinks).map(({ to, label, end, Icon }) => (
-            <li key={to}>
-              <NavLink to={to} end={end} title={label}>
-                <Icon />
-                {!collapsed && <span>{label}</span>}
+          {links.map(r => (
+            <li key={r.path}>
+              <NavLink to={routeTo(r)} end={routeEnd(r)} title={r.label} aria-label={collapsed ? r.label : undefined}>
+                <r.Icon aria-hidden="true" />
+                {!collapsed && <span>{r.label}</span>}
               </NavLink>
             </li>
           ))}
         </ul>
         <div className="sidebar-footer">
           {!collapsed ? (
-            <select
-              className="theme-select"
-              value={theme}
-              onChange={e => setTheme(e.target.value)}
-              title="Theme"
-            >
+            <select className="theme-select" value={theme} onChange={e => setTheme(e.target.value)} title="Theme" aria-label="Theme">
               {THEMES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
             </select>
           ) : (
-            <button
-              className="icon-btn theme-toggle"
-              onClick={() => setTheme(THEMES[(THEMES.findIndex(t => t.id === theme) + 1) % THEMES.length].id)}
-              title="Cycle theme"
-            >
+            <button className="icon-btn theme-toggle" onClick={() => setTheme(nextTheme.id)} title="Cycle theme" aria-label={`Switch theme to ${nextTheme.label}`}>
               {theme === 'dark' ? <IconSun /> : <IconMoon />}
             </button>
           )}
           {!collapsed && <span>{user?.display_name}</span>}
           {!collapsed && <a href="/tv" target="_blank" rel="noopener" className="link-btn" title="Open TV / car display view">TV view</a>}
-          <button className="icon-btn logout-btn" onClick={logout} title="Logout"><IconLogout /></button>
+          <button className="icon-btn logout-btn" onClick={logout} title="Logout" aria-label="Logout"><IconLogout /></button>
         </div>
       </aside>
-      <main className="content">
+
+      {/* ---- mobile (<640px): slim top bar + bottom tabs + FAB ---- */}
+      <header className="mobile-topbar">
+        <div className="brand">Kinkit</div>
+        <ConnStatus serverOnline={serverOnline} queueSize={queueSize} />
+      </header>
+
+      <main className="content" id="main" tabIndex={-1}>
+        <FailedSyncBanner items={failedItems} onDismiss={dismissFailed} />
+        {!isAdmin && location.pathname === '/' && <OnboardingChecklist />}
         <Outlet />
       </main>
-      {quickAddOpen && <QuickAddSpending onClose={() => setQuickAddOpen(false)} onSaved={() => { setQuickAddOpen(false); setGamiRefresh(k => k + 1) }} />}
+
+      <nav className="mobile-tabbar" aria-label="Main">
+        {mobileTabs.map(r => (
+          <NavLink key={r.path} to={routeTo(r)} end={routeEnd(r)} className="mobile-tab">
+            <r.Icon width={22} height={22} aria-hidden="true" />
+            <span>{r.label}</span>
+          </NavLink>
+        ))}
+        <button className={`mobile-tab ${moreActive || moreOpen ? 'active' : ''}`} onClick={() => setMoreOpen(true)} aria-haspopup="dialog" aria-expanded={moreOpen}>
+          <IconMore width={22} height={22} aria-hidden="true" />
+          <span>More</span>
+        </button>
+      </nav>
+
+      {canAdd && (
+        <button className="fab" onClick={() => setQuickAddOpen(true)} aria-label="Add spending">
+          <IconPlus width={26} height={26} />
+        </button>
+      )}
+
+      {moreOpen && (
+        <Modal title="More" onClose={() => setMoreOpen(false)} className="sheet">
+          {!isAdmin && <GamificationBadge refreshKey={gamiRefresh} />}
+          <ul className="sheet-links">
+            {moreLinks.map(r => (
+              <li key={r.path}>
+                <NavLink to={routeTo(r)} end={routeEnd(r)}>
+                  <r.Icon aria-hidden="true" /><span>{r.label}</span>
+                </NavLink>
+              </li>
+            ))}
+            <li>
+              <a href="/tv" target="_blank" rel="noopener"><IconTv aria-hidden="true" /><span>TV view</span></a>
+            </li>
+          </ul>
+          <label className="sheet-row">
+            <span>Theme</span>
+            <select value={theme} onChange={e => setTheme(e.target.value)}>
+              {THEMES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+            </select>
+          </label>
+          <div className="sheet-row">
+            <span className="muted">Signed in as {user?.display_name || user?.username}</span>
+            <button className="secondary" onClick={logout}><IconLogout width={16} height={16} aria-hidden="true" /> Logout</button>
+          </div>
+        </Modal>
+      )}
+
+      {quickAddOpen && <QuickAddSpending onClose={() => setQuickAddOpen(false)} />}
     </div>
   )
 }

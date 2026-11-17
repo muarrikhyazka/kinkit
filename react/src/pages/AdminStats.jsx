@@ -1,23 +1,21 @@
-import { useEffect, useState } from 'react'
 import { api } from '../api'
+import { useApi } from '../useApi'
+import PageHeader from '../PageHeader.jsx'
+import { SkeletonStats, SkeletonCard } from '../Skeleton.jsx'
 import { IconDashboard, IconTelegram, IconDiscord } from '../icons.jsx'
 
 export default function AdminStats() {
-  const [stats, setStats] = useState(null)
-  const [error, setError] = useState('')
+  const { data: stats, error } = useApi(() => api.adminStats(), [])
+  const header = <PageHeader title="Platform Stats" />
 
-  useEffect(() => {
-    api.adminStats().then(setStats).catch(e => setError(e.message))
-  }, [])
-
-  if (error) return <div className="error-box">{error}</div>
-  if (!stats) return <div className="loading">Loading...</div>
+  if (error) return <div>{header}<div className="error-box">{error}</div></div>
+  if (!stats) return <div>{header}<SkeletonStats count={4} /><SkeletonCard lines={3} /></div>
 
   const platformIcon = { telegram: IconTelegram, discord: IconDiscord }
 
   return (
     <div>
-      <h1>Platform Stats</h1>
+      {header}
 
       <div className="cards-row">
         <div className="card stat">
@@ -50,7 +48,7 @@ export default function AdminStats() {
                 const Icon = platformIcon[row.platform] || IconDashboard
                 return (
                   <tr key={row.platform}>
-                    <td><Icon width={16} height={16} /> {row.platform}</td>
+                    <td><Icon width={16} height={16} aria-hidden="true" /> {row.platform}</td>
                     <td>{row.n}</td>
                   </tr>
                 )

@@ -15,8 +15,10 @@ import (
 // verifyPasswordHash checks a password against either a new bcrypt hash
 // (format: "$2a$...", "$2b$...") or a legacy werkzeug hash migrated as-is
 // from the old Flask/SQLite database. werkzeug produces two formats:
-//   scrypt:N:r:p$salt$hexdigest
-//   pbkdf2:sha256:iterations$salt$hexdigest
+//
+//	scrypt:N:r:p$salt$hexdigest
+//	pbkdf2:sha256:iterations$salt$hexdigest
+//
 // Returns (matched, wasLegacyFormat).
 func verifyPasswordHash(stored, password string) (bool, bool) {
 	if strings.HasPrefix(stored, "$2") {

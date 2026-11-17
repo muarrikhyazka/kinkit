@@ -6,3 +6,12 @@ data/
 __pycache__/
 .env
 venv/
+
+# Go build outputs
+backend-go/accountamily
+backend-go/accountamily-go
+backend-go/kinkit
+backend-go/kinkit-go
+backend-go/*.exe
+backend-go/*.test
+backend-go/*.out

@@ -73,3 +73,21 @@ export const IconSortDown = (p) => (
 export const IconShield = (p) => (
   <svg {...base} {...p}><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z" /><path d="M9 12l2 2 4-4" /></svg>
 )
+export const IconMore = (p) => (
+  <svg {...base} {...p}><circle cx="5" cy="12" r="1.3" /><circle cx="12" cy="12" r="1.3" /><circle cx="19" cy="12" r="1.3" /></svg>
+)
+export const IconChevronLeft = (p) => (
+  <svg {...base} strokeWidth={2.2} {...p}><path d="M15 18l-6-6 6-6" /></svg>
+)
+export const IconChevronRight = (p) => (
+  <svg {...base} strokeWidth={2.2} {...p}><path d="M9 18l6-6-6-6" /></svg>
+)
+export const IconChevronDown = (p) => (
+  <svg {...base} strokeWidth={2.2} {...p}><path d="M6 9l6 6 6-6" /></svg>
+)
+export const IconAlert = (p) => (
+  <svg {...base} strokeWidth={2.2} {...p}><circle cx="12" cy="12" r="9" /><path d="M12 7v6M12 16.5v.01" /></svg>
+)
+export const IconTv = (p) => (
+  <svg {...base} {...p}><rect x="3" y="5" width="18" height="12" rx="2" /><path d="M8 21h8M12 17v4" /></svg>
+)

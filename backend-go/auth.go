@@ -8,7 +8,9 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"net"
 	"net/http"
+	"net/netip"
 	"strconv"
 	"strings"
 	"sync"
@@ -94,7 +96,7 @@ var (
 func rateLimited(key string) bool {
 	rateLimitMu.Lock()
 	defer rateLimitMu.Unlock()
-	now := time.Now()
+	now := time.Now().UTC()
 	hits := rateLimitHits[key][:0:0]
 	for _, t := range rateLimitHits[key] {
 		if now.Sub(t) < rateLimitWindow {
@@ -106,11 +108,97 @@ func rateLimited(key string) bool {
 	return len(hits) > rateLimitMax
 }
 
+// trustedProxies is set from Config.TrustedProxies at startup.
+var trustedProxies []netip.Prefix
+
 func clientIP(r *http.Request) string {
-	if ip := r.Header.Get("X-Forwarded-For"); ip != "" {
-		return strings.TrimSpace(strings.Split(ip, ",")[0])
+	return resolveClientIP(r.RemoteAddr, r.Header.Values("X-Forwarded-For"), r.Header.Get("X-Real-IP"), trustedProxies)
+}
+
+// resolveClientIP returns the real client address. Forwarding headers are
+// only honored when the direct peer (remoteAddr) is a trusted proxy, and
+// then we walk X-Forwarded-For right-to-left, skipping trusted hops, and
+// take the first untrusted address (left-most entries are client-controlled
+// and can be spoofed). X-Real-IP is the fallback when XFF is absent.
+func resolveClientIP(remoteAddr string, xff []string, xRealIP string, trusted []netip.Prefix) string {
+	peer := stripPort(remoteAddr)
+	peerAddr, err := netip.ParseAddr(peer)
+	if err != nil || !isTrusted(peerAddr, trusted) {
+		return peer
 	}
-	return r.RemoteAddr
+	var hops []string
+	for _, h := range xff {
+		for _, p := range strings.Split(h, ",") {
+			if p = strings.TrimSpace(p); p != "" {
+				hops = append(hops, p)
+			}
+		}
+	}
+	for i := len(hops) - 1; i >= 0; i-- {
+		a, err := netip.ParseAddr(stripPort(hops[i]))
+		if err != nil {
+			// garbage in the chain: stop trusting anything further left
+			return peer
+		}
+		if !isTrusted(a, trusted) {
+			return a.String()
+		}
+		if i == 0 {
+			return a.String() // every hop trusted - left-most is the origin
+		}
+	}
+	if xr := strings.TrimSpace(xRealIP); xr != "" {
+		if a, err := netip.ParseAddr(stripPort(xr)); err == nil {
+			return a.String()
+		}
+	}
+	return peer
+}
+
+func isTrusted(a netip.Addr, trusted []netip.Prefix) bool {
+	a = a.Unmap()
+	for _, p := range trusted {
+		if p.Contains(a) {
+			return true
+		}
+	}
+	return false
+}
+
+// stripPort removes a :port suffix from "ip:port" / "[v6]:port"; bare IPs
+// (including bare IPv6) are returned unchanged.
+func stripPort(s string) string {
+	s = strings.TrimSpace(s)
+	if host, _, err := net.SplitHostPort(s); err == nil {
+		return host
+	}
+	return strings.Trim(s, "[]")
+}
+
+// parseTrustedProxies parses a comma-separated list of CIDRs or bare IPs.
+func parseTrustedProxies(s string) ([]netip.Prefix, error) {
+	var out []netip.Prefix
+	for _, part := range strings.Split(s, ",") {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			continue
+		}
+		if strings.Contains(part, "/") {
+			p, err := netip.ParsePrefix(part)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, p.Masked())
+			continue
+		}
+		a, err := netip.ParseAddr(part)
+		if err != nil {
+			return nil, err
+		}
+		a = a.Unmap()
+		out = append(out, netip.PrefixFrom(a, a.BitLen()))
+	}
+	return out, nil
 }
 
 // rateLimitMiddleware mirrors Python's rate_limit(prefix) decorator: 5
@@ -183,10 +271,27 @@ func (app *App) handleSignup(w http.ResponseWriter, r *http.Request) {
 	}
 	verificationToken := randomToken()
 	ctx := context.Background()
-	var accountID int64
-	err = app.DB.QueryRow(ctx,
+	// The account (household) and its owner member are created together;
+	// members.email is UNIQUE across households, so an email already used
+	// by any member (e.g. someone's kid) is rejected too.
+	tx, err := app.DB.Begin(ctx)
+	if err != nil {
+		jsonError(w, http.StatusInternalServerError, "db error")
+		return
+	}
+	defer tx.Rollback(ctx)
+	var accountID, memberID int64
+	err = tx.QueryRow(ctx,
 		"INSERT INTO users (email, password_hash, display_name, is_verified, verification_token) VALUES ($1,$2,$3,FALSE,$4) RETURNING id",
 		email, string(hash), displayName, verificationToken).Scan(&accountID)
+	if err == nil {
+		err = tx.QueryRow(ctx,
+			"INSERT INTO members (account_id, email, password_hash, display_name, role) VALUES ($1,$2,$3,$4,'owner') RETURNING id",
+			accountID, email, string(hash), displayName).Scan(&memberID)
+	}
+	if err == nil {
+		err = tx.Commit(ctx)
+	}
 	if err != nil {
 		jsonError(w, http.StatusConflict, "email already registered")
 		return
@@ -198,11 +303,11 @@ func (app *App) handleSignup(w http.ResponseWriter, r *http.Request) {
 	// ponytail: no SMTP wired yet, add real email send when SMTP creds exist
 	// in env - for now the verify link just goes to the log, same as Python.
 	log.Printf("verify-email link for %s: %s/verify-email?token=%s", email, app.Cfg.AppBaseURL, verificationToken)
-	if err := setSessionAccount(w, r, accountID, displayName); err != nil {
+	if err := setSessionMember(w, r, accountID, memberID, roleOwner, displayName); err != nil {
 		jsonError(w, http.StatusInternalServerError, "session error")
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "display_name": displayName})
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "display_name": displayName, "role": roleOwner})
 }
 
 func (app *App) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -218,14 +323,18 @@ func (app *App) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	email = strings.ToLower(strings.TrimSpace(email))
 
-	var id int64
+	// Login authenticates a household member (owners included: every
+	// account has an owner member carrying its original credentials).
+	var memberID, accountID int64
 	var passwordHash *string
 	var displayName *string
+	var role string
 	var isDisabled bool
 	ctx := context.Background()
 	err := app.DB.QueryRow(ctx,
-		"SELECT id, password_hash, display_name, is_disabled FROM users WHERE email=$1", email).
-		Scan(&id, &passwordHash, &displayName, &isDisabled)
+		"SELECT m.id, m.account_id, m.password_hash, m.display_name, m.role, u.is_disabled "+
+			"FROM members m JOIN users u ON u.id = m.account_id WHERE m.email=$1", email).
+		Scan(&memberID, &accountID, &passwordHash, &displayName, &role, &isDisabled)
 	if err != nil || passwordHash == nil {
 		jsonError(w, http.StatusUnauthorized, "invalid credentials")
 		return
@@ -240,7 +349,7 @@ func (app *App) handleLogin(w http.ResponseWriter, r *http.Request) {
 	// legacy verify path is only ever needed once per user.
 	if isLegacy {
 		if newHash, herr := bcrypt.GenerateFromPassword([]byte(d.Password), bcrypt.DefaultCost); herr == nil {
-			_, _ = app.DB.Exec(ctx, "UPDATE users SET password_hash=$1 WHERE id=$2", string(newHash), id)
+			_ = app.storeMemberHash(ctx, memberID, string(newHash))
 		}
 	}
 	if isDisabled {
@@ -252,11 +361,11 @@ func (app *App) handleLogin(w http.ResponseWriter, r *http.Request) {
 		name = *displayName
 	}
 	// ponytail: not blocking unverified accounts yet, matches Python.
-	if err := setSessionAccount(w, r, id, name); err != nil {
+	if err := setSessionMember(w, r, accountID, memberID, role, name); err != nil {
 		jsonError(w, http.StatusInternalServerError, "session error")
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "display_name": name})
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "display_name": name, "role": role})
 }
 
 func (app *App) handleLogout(w http.ResponseWriter, r *http.Request) {
@@ -268,35 +377,52 @@ func (app *App) handleLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) handleMe(w http.ResponseWriter, r *http.Request) {
-	accountID, ok := currentAccountID(r)
+	m, ok := currentMember(r)
 	if !ok {
 		writeJSON(w, http.StatusOK, map[string]any{"authenticated": false})
 		return
 	}
-	var email, currency, locale string
+	resp := map[string]any{
+		"authenticated": true,
+		"account_id":    m.AccountID,
+		"member_id":     m.ID,
+		"role":          m.Role,
+		"display_name":  getSession(r).Values["display"],
+		"username":      nil,
+		"currency":      "IDR",
+		"locale":        "id-ID",
+		"is_admin":      false,
+	}
+	var currency, locale string
 	var isAdmin bool
-	err := app.DB.QueryRow(context.Background(),
-		"SELECT email, currency, locale, is_admin FROM users WHERE id=$1", accountID).
-		Scan(&email, &currency, &locale, &isAdmin)
-	resp := map[string]any{"authenticated": true}
-	s := getSession(r)
-	resp["display_name"] = s.Values["display"]
-	if err != nil {
-		resp["username"] = nil
-		resp["currency"] = "IDR"
-		resp["locale"] = "id-ID"
-		resp["is_admin"] = false
-	} else {
-		resp["username"] = email
+	var household, ownerName *string
+	err := app.DB.QueryRow(r.Context(),
+		"SELECT currency, locale, is_admin, household_name, display_name FROM users WHERE id=$1", m.AccountID).
+		Scan(&currency, &locale, &isAdmin, &household, &ownerName)
+	if err == nil {
 		resp["currency"] = currency
 		resp["locale"] = locale
 		resp["is_admin"] = isAdmin
+		resp["household_name"] = householdName(household, ownerName)
+	}
+	var email string
+	var display *string
+	if err := app.DB.QueryRow(r.Context(), "SELECT email, display_name FROM members WHERE id=$1", m.ID).Scan(&email, &display); err == nil {
+		resp["username"] = email
+		resp["email"] = email
+		if display != nil && *display != "" {
+			resp["display_name"] = *display
+		} else {
+			resp["display_name"] = email
+		}
 	}
 	writeJSON(w, http.StatusOK, resp)
 }
 
+// handleUpdateSettings: display_name is the acting member's own name (any
+// role); currency is household-wide, so only owners/parents may change it.
 func (app *App) handleUpdateSettings(w http.ResponseWriter, r *http.Request) {
-	accountID, ok := currentAccountID(r)
+	m, ok := currentMember(r)
 	if !ok {
 		jsonError(w, http.StatusUnauthorized, "unauthorized")
 		return
@@ -306,33 +432,40 @@ func (app *App) handleUpdateSettings(w http.ResponseWriter, r *http.Request) {
 		Currency    string `json:"currency"`
 	}
 	_ = decodeJSON(r, &d)
+	ctx := r.Context()
+
+	info, currencyOK := currencies[d.Currency]
+	if currencyOK && !canManageFamily(m.Role) {
+		jsonError(w, http.StatusForbidden, "only owners and parents can change the household currency")
+		return
+	}
+	name := strings.TrimSpace(d.DisplayName)
+	if name != "" && m.ID != 0 {
+		if _, err := app.DB.Exec(ctx, "UPDATE members SET display_name=$1 WHERE id=$2", name, m.ID); err != nil {
+			jsonError(w, http.StatusInternalServerError, "db error")
+			return
+		}
+	}
 
 	sets := []string{}
 	args := []any{}
-	n := 1
-	name := strings.TrimSpace(d.DisplayName)
-	if name != "" {
-		sets = append(sets, "display_name=$"+strconv.Itoa(n))
+	if name != "" && m.Role == roleOwner {
 		args = append(args, name)
-		n++
+		sets = append(sets, "display_name=$"+strconv.Itoa(len(args)))
 	}
-	if info, ok := currencies[d.Currency]; ok {
-		sets = append(sets, "currency=$"+strconv.Itoa(n))
+	if currencyOK {
 		args = append(args, d.Currency)
-		n++
-		sets = append(sets, "locale=$"+strconv.Itoa(n))
+		sets = append(sets, "currency=$"+strconv.Itoa(len(args)))
 		args = append(args, info.Locale)
-		n++
+		sets = append(sets, "locale=$"+strconv.Itoa(len(args)))
 	}
-	if len(sets) == 0 {
-		writeJSON(w, http.StatusOK, map[string]any{"ok": true})
-		return
-	}
-	args = append(args, accountID)
-	query := "UPDATE users SET " + strings.Join(sets, ",") + " WHERE id=$" + strconv.Itoa(n)
-	if _, err := app.DB.Exec(context.Background(), query, args...); err != nil {
-		jsonError(w, http.StatusInternalServerError, "db error")
-		return
+	if len(sets) > 0 {
+		args = append(args, m.AccountID)
+		query := "UPDATE users SET " + strings.Join(sets, ",") + " WHERE id=$" + strconv.Itoa(len(args))
+		if _, err := app.DB.Exec(ctx, query, args...); err != nil {
+			jsonError(w, http.StatusInternalServerError, "db error")
+			return
+		}
 	}
 	if name != "" {
 		s := getSession(r)
@@ -374,14 +507,14 @@ func (app *App) handlePasswordResetRequest(w http.ResponseWriter, r *http.Reques
 	email := strings.ToLower(strings.TrimSpace(d.Email))
 
 	ctx := context.Background()
-	var userID int64
-	err := app.DB.QueryRow(ctx, "SELECT id FROM users WHERE email=$1", email).Scan(&userID)
+	var userID, memberID int64
+	err := app.DB.QueryRow(ctx, "SELECT account_id, id FROM members WHERE email=$1", email).Scan(&userID, &memberID)
 	if err == nil {
 		token := randomToken()
-		expiresAt := time.Now().Add(time.Hour)
+		expiresAt := time.Now().UTC().Add(time.Hour)
 		if _, err := app.DB.Exec(ctx,
-			"INSERT INTO password_resets (user_id, token, expires_at) VALUES ($1,$2,$3)",
-			userID, token, expiresAt); err == nil {
+			"INSERT INTO password_resets (user_id, member_id, token, expires_at) VALUES ($1,$2,$3,$4)",
+			userID, memberID, token, expiresAt); err == nil {
 			// ponytail: no SMTP wired yet - reset link just goes to the log.
 			log.Printf("password-reset link for %s: %s/reset-password?token=%s", email, app.Cfg.AppBaseURL, token)
 		}
@@ -403,11 +536,12 @@ func (app *App) handlePasswordResetConfirm(w http.ResponseWriter, r *http.Reques
 	}
 	ctx := context.Background()
 	var id, userID int64
+	var memberID *int64
 	var expiresAt time.Time
 	err := app.DB.QueryRow(ctx,
-		"SELECT id, user_id, expires_at FROM password_resets WHERE token=$1 AND used=FALSE", d.Token).
-		Scan(&id, &userID, &expiresAt)
-	if err != nil || time.Now().After(expiresAt) {
+		"SELECT id, user_id, member_id, expires_at FROM password_resets WHERE token=$1 AND used=FALSE", d.Token).
+		Scan(&id, &userID, &memberID, &expiresAt)
+	if err != nil || time.Now().UTC().After(expiresAt) {
 		jsonError(w, http.StatusBadRequest, "invalid or expired token")
 		return
 	}
@@ -416,7 +550,16 @@ func (app *App) handlePasswordResetConfirm(w http.ResponseWriter, r *http.Reques
 		jsonError(w, http.StatusInternalServerError, "could not hash password")
 		return
 	}
-	if _, err := app.DB.Exec(ctx, "UPDATE users SET password_hash=$1 WHERE id=$2", string(hash), userID); err != nil {
+	// Pre-family tokens have no member_id: they reset the account owner.
+	if memberID == nil {
+		var ownerID int64
+		if err := app.DB.QueryRow(ctx, "SELECT id FROM members WHERE account_id=$1 AND role='owner'", userID).Scan(&ownerID); err != nil {
+			jsonError(w, http.StatusInternalServerError, "db error")
+			return
+		}
+		memberID = &ownerID
+	}
+	if err := app.storeMemberHash(ctx, *memberID, string(hash)); err != nil {
 		jsonError(w, http.StatusInternalServerError, "db error")
 		return
 	}

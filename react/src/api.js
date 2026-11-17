@@ -8,8 +8,32 @@ async function req(path, opts = {}) {
   })
   let data = null
   try { data = await res.json() } catch { /* no body */ }
-  if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`)
+  if (!res.ok) {
+    // `status` lets callers tell client errors (4xx: bad input, don't retry)
+    // from server errors (5xx) and network failures (no status at all).
+    const err = new Error(data?.error || `HTTP ${res.status}`)
+    err.status = res.status
+    err.data = data
+    throw err
+  }
   return data
+}
+
+// True for failures worth retrying later: network errors (fetch threw, so no
+// status) and 5xx. 4xx means the request itself is wrong - retrying won't help.
+export function isRetryableError(err) {
+  return !err?.status || err.status >= 500
+}
+
+// Lightweight app-wide signal so any view showing spending (list, gamification
+// badge, ...) can refresh after a save from anywhere (quick add, offline sync).
+const SPENDING_CHANGED = 'kinkit:spending-changed'
+export function notifySpendingChanged() {
+  window.dispatchEvent(new Event(SPENDING_CHANGED))
+}
+export function onSpendingChanged(cb) {
+  window.addEventListener(SPENDING_CHANGED, cb)
+  return () => window.removeEventListener(SPENDING_CHANGED, cb)
 }
 
 export const api = {
@@ -73,6 +97,33 @@ export const api = {
   yearsDatemonthAvg: (valueMax = 'all') => req(`/years/datemonth-avg${valueMax !== 'all' ? `?value_max=${valueMax}` : ''}`),
   summary: (year, month) => req(`/summary?year=${year}&month=${month}`),
   gamification: () => req('/gamification'),
+  // --- family --- (household members / roles / allowance)
+  family: () => req('/family'),
+  updateHousehold: (payload) => req('/family', { method: 'PATCH', body: JSON.stringify(payload) }),
+  addMember: (payload) => req('/family/members', { method: 'POST', body: JSON.stringify(payload) }),
+  updateMember: (id, payload) => req(`/family/members/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  deleteMember: (id) => req(`/family/members/${id}`, { method: 'DELETE' }),
+  memberAllowance: (id) => req(`/family/members/${id}/allowance`),
+  changePassword: (payload) => req('/me/password', { method: 'POST', body: JSON.stringify(payload) }),
+  // --- end family ---
+  // --- money --- (recurring / income / goals / budget actuals / alerts)
+  recurring: () => req('/recurring'),
+  addRecurring: (payload) => req('/recurring', { method: 'POST', body: JSON.stringify(payload) }),
+  updateRecurring: (id, payload) => req(`/recurring/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  deleteRecurring: (id) => req(`/recurring/${id}`, { method: 'DELETE' }),
+  income: (year, month) => req(`/income?year=${year}${month ? `&month=${month}` : ''}`),
+  addIncome: (payload) => req('/income', { method: 'POST', body: JSON.stringify(payload) }),
+  updateIncome: (id, payload) => req(`/income/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  deleteIncome: (id) => req(`/income/${id}`, { method: 'DELETE' }),
+  goals: () => req('/goals'),
+  addGoal: (payload) => req('/goals', { method: 'POST', body: JSON.stringify(payload) }),
+  updateGoal: (id, payload) => req(`/goals/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  deleteGoal: (id) => req(`/goals/${id}`, { method: 'DELETE' }),
+  contributeGoal: (id, amount) => req(`/goals/${id}/contribute`, { method: 'POST', body: JSON.stringify({ amount }) }),
+  budgetActuals: (year) => req(`/budgeting/${year}/actuals`),
+  alertSettings: () => req('/alerts/settings'),
+  updateAlertSettings: (payload) => req('/alerts/settings', { method: 'PATCH', body: JSON.stringify(payload) }),
+  // --- end money ---
 }
 
 // Currency formatting WITH real FX conversion. Amounts are always stored in
@@ -110,4 +161,58 @@ export function formatRupiah(n) {
 }
 
 export const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+// "Today" in UTC as YYYY-MM-DD - computed at call time, never at module load.
+export const todayISO = () => new Date().toISOString().slice(0, 10)
+
 export const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December']
+
+// --- data --- (import/export, receipts, dashboard layout, TV share links)
+// Multipart upload: let the browser set the multipart Content-Type/boundary.
+async function upload(path, formData, method = 'POST') {
+  const res = await fetch(BASE + path, { method, credentials: 'include', body: formData })
+  let data = null
+  try { data = await res.json() } catch { /* no body */ }
+  if (!res.ok) {
+    const err = new Error(data?.error || `HTTP ${res.status}`)
+    err.status = res.status
+    err.data = data
+    throw err
+  }
+  return data
+}
+export const dataApi = {
+  exportSpendingUrl: (from, to) => {
+    const p = new URLSearchParams()
+    if (from) p.set('from', from)
+    if (to) p.set('to', to)
+    const qs = p.toString()
+    return `${BASE}/export/spending.csv${qs ? `?${qs}` : ''}`
+  },
+  exportIncomeUrl: () => `${BASE}/export/income.csv`,
+  exportAllUrl: () => `${BASE}/export/all.json`,
+  importPresets: () => req('/import/presets'),
+  // fields: { options, category_map, overrides } (objects, JSON-encoded here)
+  importSpending: (file, fields = {}, dryRun = false) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    for (const [k, v] of Object.entries(fields)) if (v != null) fd.append(k, JSON.stringify(v))
+    return upload(`/import/spending${dryRun ? '?dry_run=1' : ''}`, fd)
+  },
+  importBatches: () => req('/import/batches'),
+  undoImport: (batch) => req(`/import/batches/${encodeURIComponent(batch)}`, { method: 'DELETE' }),
+  receiptUrl: (id, bust = '') => `${BASE}/spending/${id}/receipt${bust ? `?v=${bust}` : ''}`,
+  uploadReceipt: (id, file) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return upload(`/spending/${id}/receipt`, fd)
+  },
+  deleteReceipt: (id) => req(`/spending/${id}/receipt`, { method: 'DELETE' }),
+  dashboardLayout: () => req('/dashboard-layout'),
+  saveDashboardLayout: (layout) => req('/dashboard-layout', { method: 'PUT', body: JSON.stringify({ layout }) }),
+  tvTokens: () => req('/tv-tokens'),
+  createTvToken: (name) => req('/tv-tokens', { method: 'POST', body: JSON.stringify({ name }) }),
+  revokeTvToken: (id) => req(`/tv-tokens/${id}`, { method: 'DELETE' }),
+  tvData: (k) => req(`/tv/data?k=${encodeURIComponent(k)}`),
+  spendingCount: () => req('/spending?per_page=1'),
+}
+// --- end data ---

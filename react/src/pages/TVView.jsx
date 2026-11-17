@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
-import { api, formatRupiah, MONTHS } from '../api'
+import { api, dataApi, formatRupiah, MONTHS, setCurrency } from '../api'
+import { currentUTCPeriod } from '../YearContext.jsx'
 import BarChart from '../BarChart.jsx'
+import { Skeleton } from '../Skeleton.jsx'
 
 const REFRESH_MS = 60_000 // auto-refresh for an always-on screen (TV/car head unit)
 
@@ -9,28 +11,53 @@ const REFRESH_MS = 60_000 // auto-refresh for an always-on screen (TV/car head u
  * unit: glanceable at a distance, no interaction needed, auto-refreshes.
  * Standalone route (/tv) outside the normal <Layout> - deliberately skips
  * auth chrome/nav since this is meant to just sit on a screen.
+ * With a share token (/tv?k=..., see TVTokens.jsx) it loads everything from
+ * the read-only GET /api/tv/data instead of the logged-in session.
  */
-export default function TVView() {
+export default function TVView({ token }) {
   const [report, setReport] = useState(null)
   const [trend, setTrend] = useState([])
   const [error, setError] = useState('')
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = now.getMonth() + 1
+  // UTC "current month", re-evaluated on every refresh so an always-on screen
+  // rolls over to the new month by itself.
+  const [period, setPeriod] = useState(currentUTCPeriod)
+  const { year, month } = period
 
   useEffect(() => {
     function load() {
-      Promise.all([api.report(year, month), api.trend(year, month, 6)])
-        .then(([r, t]) => { setReport(r); setTrend(t) })
+      if (token) {
+        dataApi.tvData(token)
+          .then(d => {
+            if (d.currency) setCurrency(d.currency)
+            setReport(d.report); setTrend(d.trend); setPeriod({ year: d.year, month: d.month }); setError('')
+          })
+          .catch(e => {
+            setError(e.status === 401 ? 'This TV link is invalid or was revoked. Create a new one under Data & devices.' : e.message)
+            if (e.status === 401) setReport(null)
+          })
+        return
+      }
+      const p = currentUTCPeriod()
+      Promise.all([api.report(p.year, p.month), api.trend(p.year, p.month, 6)])
+        .then(([r, t]) => { setReport(r); setTrend(t); setPeriod(p); setError('') })
         .catch(e => setError(e.message))
     }
     load()
     const id = setInterval(load, REFRESH_MS)
     return () => clearInterval(id)
-  }, [year, month])
+  }, [token])
 
-  if (error) return <div className="tv-view tv-error">{error}</div>
-  if (!report) return <div className="tv-view tv-loading">Loading...</div>
+  if (error && !report) return <div className="tv-view tv-error" role="alert">{error}</div>
+  if (!report) {
+    return (
+      <div className="tv-view" aria-busy="true" aria-label="Loading">
+        <Skeleton width={220} height={40} className="tv-skeleton" style={{ marginBottom: '2rem' }} />
+        <div className="tv-cards">
+          {[0, 1, 2].map(i => <div className="tv-card" key={i}><Skeleton height={60} className="tv-skeleton" /></div>)}
+        </div>
+      </div>
+    )
+  }
 
   const netFlow = report.total_income - report.budgeted_expenses
   const topExpenses = [...report.expenses_list]

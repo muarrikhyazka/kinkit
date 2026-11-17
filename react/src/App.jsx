@@ -1,24 +1,18 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
 import { AuthProvider, useAuth } from './AuthContext.jsx'
 import { YearProvider } from './YearContext.jsx'
 import { OfflineProvider } from './OfflineContext.jsx'
 import { ThemeProvider } from './ThemeContext.jsx'
+import { ToastProvider } from './Toast.jsx'
+import { SkeletonPage } from './Skeleton.jsx'
 import Layout from './Layout.jsx'
 import Login from './pages/Login.jsx'
-import Dashboard from './pages/Dashboard.jsx'
-import Budgeting from './pages/Budgeting.jsx'
-import Spending from './pages/Spending.jsx'
-import Assets from './pages/Assets.jsx'
-import Setup from './pages/Setup.jsx'
-import Guide from './pages/Guide.jsx'
-import Integrations from './pages/Integrations.jsx'
-import Admin from './pages/Admin.jsx'
-import AdminStats from './pages/AdminStats.jsx'
 import TVView from './pages/TVView.jsx'
+import { APP_ROUTES } from './routes.jsx'
 
 function Private({ children }) {
   const { user } = useAuth()
-  if (user === undefined) return <div className="loading">Loading...</div>
+  if (user === undefined) return <div className="content"><SkeletonPage /></div>
   if (user === null) return <Navigate to="/login" replace />
   return children
 }
@@ -31,21 +25,27 @@ function AdminGuard({ children }) {
   return children
 }
 
+// --- data --- /tv?k=<share token> works without logging in (TV / car screen)
+function TVRoute() {
+  const [params] = useSearchParams()
+  const k = params.get('k')
+  return k ? <TVView token={k} /> : <Private><TVView /></Private>
+}
+// --- end data ---
+
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/tv" element={<Private><TVView /></Private>} />
+      <Route path="/tv" element={<TVRoute />} />
       <Route path="/" element={<Private><Layout /></Private>}>
-        <Route index element={<AdminGuard><Dashboard /></AdminGuard>} />
-        <Route path="budgeting" element={<AdminGuard><Budgeting /></AdminGuard>} />
-        <Route path="spending" element={<AdminGuard><Spending /></AdminGuard>} />
-        <Route path="assets" element={<AdminGuard><Assets /></AdminGuard>} />
-        <Route path="setup" element={<AdminGuard><Setup /></AdminGuard>} />
-        <Route path="guide" element={<AdminGuard><Guide /></AdminGuard>} />
-        <Route path="integrations" element={<AdminGuard><Integrations /></AdminGuard>} />
-        <Route path="admin" element={<Admin />} />
-        <Route path="admin/stats" element={<AdminStats />} />
+        {/* pages come from routes.jsx - add new pages there */}
+        {APP_ROUTES.map(({ path, Component, area }) => {
+          const el = area === 'tenant' ? <AdminGuard><Component /></AdminGuard> : <Component />
+          return path === ''
+            ? <Route key="index" index element={el} />
+            : <Route key={path} path={path} element={el} />
+        })}
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
@@ -55,13 +55,15 @@ function AppRoutes() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <YearProvider>
-          <OfflineProvider>
-            <AppRoutes />
-          </OfflineProvider>
-        </YearProvider>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <YearProvider>
+            <OfflineProvider>
+              <AppRoutes />
+            </OfflineProvider>
+          </YearProvider>
+        </AuthProvider>
+      </ToastProvider>
     </ThemeProvider>
   )
 }

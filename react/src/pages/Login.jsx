@@ -57,6 +57,11 @@ export default function Login() {
         <button type="button" className="link-btn" onClick={() => { setMode(m => (m === 'login' ? 'signup' : 'login')); setError('') }}>
           {mode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
         </button>
+        <p className="muted login-hint">
+          {mode === 'login'
+            ? 'Family members log in here too, with the email and temporary password the household owner or a parent set up for them.'
+            : 'Signing up creates a new household with you as its owner. Joining an existing family? Ask the owner to add you on the Family page instead.'}
+        </p>
       </form>
     </div>
   )
