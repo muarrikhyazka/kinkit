@@ -99,6 +99,13 @@ func decideRole(role, method, path string) (roleDecision, int64) {
 	if method == http.MethodPost && (path == "/api/spending" || path == "/api/receipts" || strings.HasPrefix(path, "/api/receipts/")) {
 		return roleAllow, 0
 	}
+	// Feature files can allow extra kid actions (chores, lists, reminders)
+	// without editing this function - see registerKidRule in home_contract.go.
+	for _, rule := range kidRules {
+		if d, id, ok := rule(method, path); ok {
+			return d, id
+		}
+	}
 	if id, tail, ok := spendingIDFromPath(path); ok {
 		switch {
 		case tail == "" && (method == http.MethodPatch || method == http.MethodDelete):
@@ -216,6 +223,10 @@ type familyMember struct {
 	SpentThisMonth   int64     `json:"spent_this_month"`
 	PointsThisMonth  int64     `json:"points_this_month"`
 	IsMe             bool      `json:"is_me"`
+	// --- chores ---
+	ChoresDoneWeek   int64    `json:"chores_done_week"`    // done (submitted/approved) this household-local week
+	ChoreEarnedMonth float64  `json:"chore_earned_month"`  // chore rewards this UTC month
+	EffectiveAllow   *float64 `json:"effective_allowance"` // allowance_monthly + chore_earned_month (nil when both are 0)
 }
 
 // utcMonthBounds returns [first day of t's UTC month, first day of next month).
@@ -242,15 +253,21 @@ func (app *App) loadHouseholdName(ctx context.Context, aid int64) string {
 }
 
 func (app *App) listFamilyMembers(ctx context.Context, aid, meID int64) ([]familyMember, error) {
-	start, end := utcMonthBounds(time.Now().UTC())
+	now := time.Now().UTC()
+	start, end := utcMonthBounds(now)
+	weekStart := localWeekStart(householdToday(ctx, app, aid, now)) // --- chores ---
 	rows, err := app.DB.Query(ctx, `
 		SELECT m.id, m.email, COALESCE(m.display_name, ''), m.role, m.allowance_monthly::float8, m.created_at,
 		       COALESCE((SELECT SUM(amount) FROM spending s WHERE s.account_id=m.account_id AND s.member_id=m.id
 		                 AND s.tx_date >= $2 AND s.tx_date < $3), 0)::bigint,
-		       COALESCE((SELECT SUM(points) FROM point_events pe WHERE pe.member_id=m.id AND pe.created_at >= $2), 0)::bigint
+		       COALESCE((SELECT SUM(points) FROM point_events pe WHERE pe.member_id=m.id AND pe.created_at >= $2), 0)::bigint,
+		       (SELECT COUNT(*) FROM chore_instances ci WHERE ci.account_id=m.account_id AND ci.member_id=m.id
+		                 AND ci.status IN ('submitted','approved') AND ci.due_date >= $4 AND ci.due_date < $5),
+		       COALESCE((SELECT SUM(amount) FROM chore_earnings ce WHERE ce.account_id=m.account_id AND ce.member_id=m.id
+		                 AND ce.earned_at >= $2 AND ce.earned_at < $3), 0)::float8
 		FROM members m WHERE m.account_id=$1
 		ORDER BY CASE m.role WHEN 'owner' THEN 0 WHEN 'parent' THEN 1 WHEN 'kid' THEN 2 ELSE 3 END, m.id`,
-		aid, start, end)
+		aid, start, end, weekStart, weekStart.AddDate(0, 0, 7))
 	if err != nil {
 		return nil, err
 	}
@@ -259,9 +276,10 @@ func (app *App) listFamilyMembers(ctx context.Context, aid, meID int64) ([]famil
 	for rows.Next() {
 		var fm familyMember
 		if err := rows.Scan(&fm.ID, &fm.Email, &fm.DisplayName, &fm.Role, &fm.AllowanceMonthly, &fm.CreatedAt,
-			&fm.SpentThisMonth, &fm.PointsThisMonth); err != nil {
+			&fm.SpentThisMonth, &fm.PointsThisMonth, &fm.ChoresDoneWeek, &fm.ChoreEarnedMonth); err != nil {
 			return nil, err
 		}
+		fm.EffectiveAllow = effectiveAllowance(fm.AllowanceMonthly, fm.ChoreEarnedMonth)
 		if fm.DisplayName == "" {
 			fm.DisplayName = strings.SplitN(fm.Email, "@", 2)[0]
 		}
@@ -557,6 +575,23 @@ type allowanceStatus struct {
 	Spent            int64    `json:"spent"`
 	Remaining        *float64 `json:"remaining"`
 	Percent          *float64 `json:"percent"`
+	// --- chores --- effective allowance = allowance_monthly + chore_earned
+	// (this UTC month); remaining/percent are against the effective amount.
+	ChoreEarned        float64  `json:"chore_earned"`
+	EffectiveAllowance *float64 `json:"effective_allowance"`
+}
+
+// effectiveAllowance: monthly allowance plus chore earnings; nil when there
+// is neither.
+func effectiveAllowance(allowance *float64, earned float64) *float64 {
+	total := earned
+	if allowance != nil {
+		total += *allowance
+	}
+	if total <= 0 {
+		return nil
+	}
+	return &total
 }
 
 func (app *App) memberAllowance(ctx context.Context, aid, mid int64, now time.Time) (allowanceStatus, error) {
@@ -570,9 +605,11 @@ func (app *App) memberAllowance(ctx context.Context, aid, mid int64, now time.Ti
 	if err != nil {
 		return st, err
 	}
-	if st.AllowanceMonthly != nil && *st.AllowanceMonthly > 0 {
-		rem := *st.AllowanceMonthly - float64(st.Spent)
-		pct := float64(st.Spent) / *st.AllowanceMonthly * 100
+	st.ChoreEarned = app.choreEarnedMonth(ctx, aid, mid, now)
+	st.EffectiveAllowance = effectiveAllowance(st.AllowanceMonthly, st.ChoreEarned)
+	if eff := st.EffectiveAllowance; eff != nil {
+		rem := *eff - float64(st.Spent)
+		pct := float64(st.Spent) / *eff * 100
 		st.Remaining, st.Percent = &rem, &pct
 	}
 	return st, nil

@@ -216,3 +216,78 @@ export const dataApi = {
   spendingCount: () => req('/spending?per_page=1'),
 }
 // --- end data ---
+
+// --- lists --- (shared shopping lists, staples, finish shopping)
+const jsonBody = (method, body) => ({ method, body: JSON.stringify(body ?? {}) })
+export const listsApi = {
+  lists: (archived = false) => req(`/lists${archived ? '?archived=1' : ''}`),
+  createList: (payload) => req('/lists', jsonBody('POST', payload)),
+  list: (id) => req(`/lists/${id}`),
+  updateList: (id, payload) => req(`/lists/${id}`, jsonBody('PATCH', payload)),
+  deleteList: (id) => req(`/lists/${id}`, { method: 'DELETE' }),
+  // payload: { text } (bulk "eggs, 2 milk") | { name, qty, note, category_id, est_price }
+  addItems: (id, payload) => req(`/lists/${id}/items`, jsonBody('POST', payload)),
+  updateItem: (id, itemId, payload) => req(`/lists/${id}/items/${itemId}`, jsonBody('PATCH', payload)),
+  deleteItem: (id, itemId) => req(`/lists/${id}/items/${itemId}`, { method: 'DELETE' }),
+  reorder: (id, ids) => req(`/lists/${id}/reorder`, jsonBody('POST', { ids })),
+  clearChecked: (id) => req(`/lists/${id}/clear-checked`, { method: 'POST' }),
+  // payload: { client_id, total_amount, category?, description?, items?: [ids] }
+  finish: (id, payload) => req(`/lists/${id}/finish`, jsonBody('POST', payload)),
+  suggestions: (q, listId) => req(`/lists/suggestions?q=${encodeURIComponent(q || '')}${listId ? `&list=${listId}` : ''}`),
+  staples: () => req('/staples'),
+  createStaple: (payload) => req('/staples', jsonBody('POST', payload)),
+  updateStaple: (id, payload) => req(`/staples/${id}`, jsonBody('PATCH', payload)),
+  deleteStaple: (id) => req(`/staples/${id}`, { method: 'DELETE' }),
+}
+// --- end lists ---
+
+// --- chores --- (chores, approvals, rewards). {id} in complete/approve/
+// reject/undo/photo is the INSTANCE id; update/remove take the chore id.
+export const choresApi = {
+  list: () => req('/chores'),
+  create: (payload) => req('/chores', { method: 'POST', body: JSON.stringify(payload) }),
+  update: (id, payload) => req(`/chores/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  remove: (id) => req(`/chores/${id}`, { method: 'DELETE' }),
+  today: () => req('/chores/today'),
+  instances: (from, to, member) => {
+    const p = new URLSearchParams()
+    if (from) p.set('from', from)
+    if (to) p.set('to', to)
+    if (member) p.set('member', member)
+    return req(`/chores/instances?${p.toString()}`)
+  },
+  complete: (id, { note = '', photo = null } = {}) => {
+    if (!photo) return req(`/chores/${id}/complete`, { method: 'POST', body: JSON.stringify({ note }) })
+    const fd = new FormData()
+    fd.append('photo', photo)
+    if (note) fd.append('note', note)
+    return upload(`/chores/${id}/complete`, fd)
+  },
+  approve: (id) => req(`/chores/${id}/approve`, { method: 'POST', body: '{}' }),
+  reject: (id, note) => req(`/chores/${id}/reject`, { method: 'POST', body: JSON.stringify({ note: note || '' }) }),
+  undo: (id) => req(`/chores/${id}/undo`, { method: 'POST', body: '{}' }),
+  photoUrl: (id) => `${BASE}/chores/${id}/photo`,
+}
+// --- end chores ---
+
+// --- reminders --- (reminders, Today page, household time zone, digest, chat linking)
+// Occurrence ids (done/snooze) come from upcoming() items and Today items of kind "reminder".
+export const remindersApi = {
+  list: () => req('/reminders'),
+  create: (payload) => req('/reminders', { method: 'POST', body: JSON.stringify(payload) }),
+  update: (id, payload) => req(`/reminders/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  remove: (id) => req(`/reminders/${id}`, { method: 'DELETE' }),
+  upcoming: (days = 7) => req(`/reminders/upcoming?days=${days}`),
+  done: (occurrenceId) => req(`/reminders/occurrences/${occurrenceId}/done`, { method: 'POST', body: '{}' }),
+  snooze: (occurrenceId, { minutes, until } = {}) =>
+    req(`/reminders/occurrences/${occurrenceId}/snooze`, { method: 'POST', body: JSON.stringify(until ? { until } : { minutes: minutes || 60 }) }),
+  chatLink: () => req('/reminders/chat-link'),
+  createLinkCode: () => req('/reminders/link-code', { method: 'POST', body: '{}' }),
+  unlinkChat: (platform) => req(`/reminders/chat-link/${platform}`, { method: 'DELETE' }),
+  today: () => req('/today'),
+  timezone: () => req('/household/timezone'),
+  setTimezone: (timezone) => req('/household/timezone', { method: 'PATCH', body: JSON.stringify({ timezone }) }),
+  digest: () => req('/household/digest'),
+  setDigest: (payload) => req('/household/digest', { method: 'PATCH', body: JSON.stringify(payload) }),
+}
+// --- end reminders ---

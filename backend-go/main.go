@@ -129,7 +129,9 @@ func main() {
 		log.Fatalf("schema init: %v", err)
 	}
 	initSessionStore(cfg.SessionSecret, cfg.CookieSecure)
-	app.startMoneyWorker(context.Background()) // --- money ---: recurring generation + budget alerts
+	app.startMoneyWorker(context.Background())     // --- money ---: recurring generation + budget alerts
+	app.startRemindersWorker(context.Background()) // --- reminders ---: occurrences, chat sends, escalation, digest
+	app.startChoreWorker(context.Background())     // --- chores ---: hourly chore instance generation
 
 	r := newRouter(app)
 
@@ -164,6 +166,9 @@ func newRouter(app *App) http.Handler {
 		RegisterFamilyRoutes(api, app)       // --- family --- household members/roles/allowance
 		RegisterMoneyRoutes(api, app)        // --- money ---: recurring/income/goals/budget actuals/alerts
 		RegisterDataRoutes(api, app)         // --- data ---: export/import, receipts, dashboard layout, TV links
+		RegisterReminderRoutes(api, app)     // --- reminders ---: reminders, today, household tz/digest, chat link, bot
+		RegisterChoreRoutes(api, app)        // --- chores ---: chores, instances, approvals, /bot/chores/*
+		RegisterListRoutes(api, app)         // --- lists ---: shopping lists, staples, finish shopping, /bot/lists/*
 	})
 
 	if app.Cfg.StaticDir != "" {

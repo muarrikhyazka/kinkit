@@ -157,9 +157,9 @@ export function TopGoalsCard({ limit = 3 }) {
   const goals = [...(data || [])].sort((a, b) => (a.remaining <= 0) - (b.remaining <= 0) || b.pct - a.pct).slice(0, limit)
   return (
     <div className="card">
-      <h2 className="card-title-row">Savings goals <Link to="/goals" className="link-btn">All goals</Link></h2>
+      <h2 className="card-title-row">Savings goals <Link to="/savings/goals" className="link-btn">All goals</Link></h2>
       {!data && <div className="muted">Loading...</div>}
-      {data && goals.length === 0 && <div className="muted">No goals yet. <Link to="/goals">Create one</Link> to track what you're saving for.</div>}
+      {data && goals.length === 0 && <div className="muted">No goals yet. <Link to="/savings/goals">Create one</Link> to track what you're saving for.</div>}
       <div className="top-goals">
         {goals.map(g => (
           <div className="top-goal" key={g.id}>

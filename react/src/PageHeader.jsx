@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { MONTHS, MONTH_NAMES } from './api'
 import { useYearMonth, currentUTCPeriod } from './YearContext.jsx'
 import { IconChevronLeft, IconChevronRight } from './icons.jsx'
@@ -9,11 +9,16 @@ import { IconChevronLeft, IconChevronRight } from './icons.jsx'
  * period: 'month' (‹ Nov 2026 ›) | 'year' (‹ 2026 ›) | null/undefined (none)
  * valueFilter: show the "Hide large transactions" filter
  */
+// Set by TabbedSection: the tab strip already names the page, so the title is
+// kept for screen readers only instead of being shown twice.
+export const InTabsContext = createContext(false)
+
 export default function PageHeader({ title, subtitle, period, valueFilter = false, actions }) {
+  const inTabs = useContext(InTabsContext)
   return (
-    <div className="page-header">
+    <div className={`page-header ${inTabs ? 'in-tabs' : ''}`}>
       <div>
-        <h1>{title}</h1>
+        <h1 className={inTabs ? 'sr-only' : undefined}>{title}</h1>
         {subtitle && <p className="muted">{subtitle}</p>}
       </div>
       {(period || valueFilter || actions) && (

@@ -26,6 +26,8 @@ type spendingRow struct {
 	CreatedAt      string  `json:"created_at"`
 	CategoryMaster *string `json:"category_master"`
 	HasReceipt     bool    `json:"has_receipt"` // --- data ---
+	MemberID       *int64  `json:"member_id"`
+	MemberName     *string `json:"member_name"` // who logged it (household members)
 }
 
 func (app *App) handleListSpending(w http.ResponseWriter, r *http.Request) {
@@ -51,8 +53,14 @@ func (app *App) handleListSpending(w http.ResponseWriter, r *http.Request) {
 	}
 	order := strings.ToLower(r.URL.Query().Get("order"))
 
-	base := "FROM spending sp LEFT JOIN categories c ON c.id = sp.category_id WHERE sp.account_id=$1"
+	base := "FROM spending sp LEFT JOIN categories c ON c.id = sp.category_id " +
+		"LEFT JOIN members m ON m.id = sp.member_id WHERE sp.account_id=$1"
 	args := []any{aid}
+	// Kids only see the spending they logged themselves.
+	if m, ok := currentMember(r); ok && m.Role == "kid" {
+		args = append(args, m.ID)
+		base += fmt.Sprintf(" AND sp.member_id = $%d", len(args))
+	}
 	if year != nil {
 		args = append(args, *year)
 		base += fmt.Sprintf(" AND EXTRACT(YEAR FROM sp.tx_date)::int = $%d", len(args))
@@ -89,7 +97,7 @@ func (app *App) handleListSpending(w http.ResponseWriter, r *http.Request) {
 	}
 
 	q := "SELECT sp.id, sp.account_id, sp.tx_date::text, sp.description, sp.category_id, sp.category_name, " +
-		"sp.amount, sp.checked, sp.source, sp.client_id, sp.created_at::text, c.name, sp.receipt_path IS NOT NULL " + base +
+		"sp.amount, sp.checked, sp.source, sp.client_id, sp.created_at::text, c.name, sp.receipt_path IS NOT NULL, sp.member_id, m.display_name " + base +
 		fmt.Sprintf(" ORDER BY %s %s, sp.id DESC LIMIT $%d OFFSET $%d", sortCol, orderDir, len(args)+1, len(args)+2)
 	listArgs := append(append([]any{}, args...), perPage, (page-1)*perPage)
 	rows, err := app.DB.Query(ctx, q, listArgs...)
@@ -101,7 +109,7 @@ func (app *App) handleListSpending(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var s spendingRow
 		if err := rows.Scan(&s.ID, &s.AccountID, &s.TxDate, &s.Description, &s.CategoryID, &s.CategoryName,
-			&s.Amount, &s.Checked, &s.Source, &s.ClientID, &s.CreatedAt, &s.CategoryMaster, &s.HasReceipt); err != nil {
+			&s.Amount, &s.Checked, &s.Source, &s.ClientID, &s.CreatedAt, &s.CategoryMaster, &s.HasReceipt, &s.MemberID, &s.MemberName); err != nil {
 			rows.Close()
 			dbError(w, err)
 			return

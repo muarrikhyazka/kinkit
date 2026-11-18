@@ -99,7 +99,7 @@ function AlertsCard() {
         </label>
       </div>
       {ready.length === 0 ? (
-        <p className="muted">No chat connected yet - <Link to="/integrations">connect Telegram or Discord</Link> (bot token + chat id) to receive alerts.</p>
+        <p className="muted">No chat connected yet - <Link to="/settings/bots">connect Telegram or Discord</Link> (bot token + chat id) to receive alerts.</p>
       ) : (
         <p className="muted">Sending to: {ready.map(c => c.platform[0].toUpperCase() + c.platform.slice(1)).join(', ')}</p>
       )}
@@ -219,7 +219,7 @@ export default function Budgeting() {
       <p className="muted form-hint bva-legend">
         Under each cell: what actually happened.
         <span className="bva-swatch ok" /> under 80% <span className="bva-swatch warn" /> 80-100% <span className="bva-swatch over" /> over budget
-        {' '}· log received money on the <Link to="/income">Income</Link> page.
+        {' '}· log received money on the <Link to="/transactions/income">Transactions › Income</Link>.
       </p>
 
       <div className="card table-scroll">

@@ -109,7 +109,15 @@ var badgeCatalog = []badgeDef{
 	{"streak_30", "Streak 30", "Logged spending 30 days in a row", "🏆"},
 	{"under_budget", "Under Budget", "Closed a month with Needs + Wants spending at or below budget", "🎯"},
 	{"saver", "Saver", "Closed a month with Savings at or above the savings budget", "🐷"},
+	// --- chores ---
+	{"chores_10", "Helping hand", "Finished 10 chores", "🧹"},
+	{"chores_50", "Chore champion", "Finished 50 chores", "🏅"},
 }
+
+const (
+	choresBadgeHelping  = 10
+	choresBadgeChampion = 50
+)
 
 type badgeView struct {
 	badgeDef
@@ -128,6 +136,7 @@ type badgeFacts struct {
 	PrevTxCount        int64
 	PrevSavingsBudget  int64
 	PrevSavingsRealize int64
+	ChoresDone         int64 // --- chores --- approved chore instances credited to the member
 }
 
 // earnedBadges returns the badge keys whose conditions hold.
@@ -152,6 +161,12 @@ func earnedBadges(f badgeFacts) []string {
 	if f.PrevSavingsBudget > 0 && f.PrevSavingsRealize >= f.PrevSavingsBudget {
 		out = append(out, "saver")
 	}
+	if f.ChoresDone >= choresBadgeHelping {
+		out = append(out, "chores_10")
+	}
+	if f.ChoresDone >= choresBadgeChampion {
+		out = append(out, "chores_50")
+	}
 	return out
 }
 
@@ -166,6 +181,7 @@ func (app *App) loadBadgeFacts(ctx context.Context, aid, mid int64, now time.Tim
 		f.BestStreak = max(best, effectiveStreak(last, stored, now))
 	}
 	_ = app.DB.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM budget_expense WHERE account_id=$1 AND amount > 0)", aid).Scan(&f.HasBudget)
+	_ = app.DB.QueryRow(ctx, "SELECT COUNT(*) FROM chore_instances WHERE account_id=$1 AND member_id=$2 AND status='approved'", aid, mid).Scan(&f.ChoresDone)
 
 	thisMonth, _ := utcMonthBounds(now)
 	prevStart := thisMonth.AddDate(0, -1, 0)
@@ -246,6 +262,7 @@ const (
 	bonusLogEveryDay   = 50
 	bonusNoSpendWkend  = 30
 	bonusWantsUnderCap = 40
+	bonusAllChores     = 40
 )
 
 // weekStats are the raw numbers for one household week (pure inputs).
@@ -258,7 +275,9 @@ type weekStats struct {
 	WantsCap       int64 // weekly Wants allowance derived from the monthly budget; 0 = none
 	Ended          bool  // the week is over
 	TotalTx        int64
-	WeekIsEligible bool // household existed before the week began
+	WeekIsEligible bool  // household existed before the week began
+	ChoresTotal    int64 // --- chores --- chore occurrences due this week
+	ChoresDone     int64 // ... of which approved
 }
 
 // challengeOutcome is the pure challenge rule set (unit tested):
@@ -280,6 +299,12 @@ func challengeOutcome(key string, s weekStats) (progress, target int64, availabl
 			return s.WantsSpent, 0, false, false
 		}
 		return s.WantsSpent, s.WantsCap, true, s.Ended && s.TotalTx > 0 && s.WantsSpent <= s.WantsCap
+	case "all_chores":
+		// every chore occurrence due this week approved, final once Sunday is over
+		if s.ChoresTotal == 0 {
+			return 0, 0, false, false
+		}
+		return s.ChoresDone, s.ChoresTotal, true, s.Ended && s.ChoresDone == s.ChoresTotal
 	}
 	return 0, 0, false, false
 }
@@ -292,6 +317,7 @@ var challengeDefs = []struct {
 	{"log_every_day", "Log every day this week", "Log at least one spending entry on each of the 7 days (Mon-Sun, UTC).", "📅", "days", bonusLogEveryDay, false},
 	{"no_spend_weekend", "No-spend weekend", "Spend nothing on Saturday and Sunday (log something during the week so we know you're tracking).", "🛋️", "days", bonusNoSpendWkend, false},
 	{"wants_under", "Keep Wants under budget", "Keep this week's Wants spending under a week's share of your monthly Wants budget.", "🧺", "amount", bonusWantsUnderCap, true},
+	{"all_chores", "Finish all your chores this week", "Get every chore due this week done (and approved) by Sunday.", "🧽", "chores", bonusAllChores, false},
 }
 
 func (app *App) loadWeekStats(ctx context.Context, aid int64, weekStart, now time.Time, householdCreated time.Time) weekStats {
@@ -307,6 +333,8 @@ func (app *App) loadWeekStats(ctx context.Context, aid int64, weekStart, now tim
 		FROM spending sp LEFT JOIN categories c ON c.id = sp.category_id
 		WHERE sp.account_id=$1 AND sp.tx_date >= $2 AND sp.tx_date < $3`,
 		aid, weekStart, end).Scan(&s.DaysLogged, &s.WeekdayTx, &s.WeekendTx, &s.WantsSpent, &s.TotalTx)
+	_ = app.DB.QueryRow(ctx, `SELECT COUNT(*), COUNT(*) FILTER (WHERE status='approved') FROM chore_instances
+		WHERE account_id=$1 AND due_date >= $2 AND due_date < $3`, aid, weekStart, end).Scan(&s.ChoresTotal, &s.ChoresDone)
 	sat, sun := weekStart.AddDate(0, 0, 5), weekStart.AddDate(0, 0, 6)
 	if today.After(sat) {
 		s.WeekendPassed++

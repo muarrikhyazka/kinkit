@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder launcher icon (vector). `flutter create .` or a tool like
+     flutter_launcher_icons can replace it with mipmap PNGs. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:fillColor="#4F46E5"
+        android:pathData="M10,0h28a10,10 0,0 1,10 10v28a10,10 0,0 1,-10 10h-28a10,10 0,0 1,-10 -10v-28a10,10 0,0 1,10 -10z" />
+    <path android:fillColor="#4ADE80" android:pathData="M11,28h6v10h-6z" />
+    <path android:fillColor="#FBBF24" android:pathData="M21,20h6v18h-6z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M31,12h6v26h-6z" />
+</vector>

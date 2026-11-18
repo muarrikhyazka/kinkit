@@ -125,6 +125,10 @@ func botConfig(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 		"mandatory_ingredients": ingredients,
 		"category_keywords":     keywords,
 		"categories":            categories,
+		// --- reminders ---: bots log spending on the household's local date
+		"timezone": householdLocation(ctx, app, aid).String(),
+		"today":    householdToday(ctx, app, aid, time.Now()).Format("2006-01-02"),
+		// --- end reminders ---
 	})
 }
 

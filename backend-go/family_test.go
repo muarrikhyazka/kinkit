@@ -386,6 +386,22 @@ func TestRoleMiddleware(t *testing.T) {
 		t.Fatalf("kid POST spending: %d", code)
 	}
 	kidSID := int64(kidRow["id"].(float64))
+	// kid's spending list only contains their own rows; others see everything
+	var kidList, ownerList struct {
+		Rows  []spendingRow `json:"rows"`
+		Total int64         `json:"total"`
+	}
+	kid.do("GET", "/api/spending", nil, &kidList)
+	if kidList.Total != 1 || len(kidList.Rows) != 1 || kidList.Rows[0].ID != kidSID {
+		t.Fatalf("kid list: want only own row %d, got %+v", kidSID, kidList)
+	}
+	if kidList.Rows[0].MemberName == nil {
+		t.Fatalf("kid list: member_name missing")
+	}
+	owner.do("GET", "/api/spending", nil, &ownerList)
+	if ownerList.Total != 2 {
+		t.Fatalf("owner list: want 2 rows, got %d", ownerList.Total)
+	}
 	if code := kid.do("POST", "/api/budgeting/expense", map[string]any{"year": 2026, "month": 1, "category_id": 1, "amount": 5}, nil); code != 403 {
 		t.Fatalf("kid budgeting: want 403, got %d", code)
 	}

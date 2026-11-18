@@ -356,7 +356,7 @@ function BudgetProgress({ report, spent }) {
         {pct !== null && <span className={`budget-progress-pct ${state}`}>{Math.round(pct)}%</span>}
       </div>
       {pct === null ? (
-        <p className="muted">No budget set for this month yet - plan it on the <Link to="/budgeting">Budgeting</Link> page.</p>
+        <p className="muted">No budget set for this month yet - plan it on the <Link to="/budget">Budget</Link> page.</p>
       ) : (
         <>
           <div className="progress-bar progress-lg" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label="Budget used">

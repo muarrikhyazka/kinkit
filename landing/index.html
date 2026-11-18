@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kinkit: family money, budgets and goals in one place</title>
+  <meta name="description" content="Kinkit is one home for your family's money. Track spending, plan budgets, save for goals, give kids allowances and earn points and badges together, on the web, phone, TV, Telegram and Discord. Self-hostable, and your data is always exportable.">
+  <meta name="theme-color" content="#4f46e5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0e1a" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://kinkit.app/">
+
+  <!-- Open Graph / social cards. Replace the domain once the site has its final URL.
+       Some networks ignore SVG og:image; export assets/og-image.svg to a 1200x630 PNG if previews look blank. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Kinkit">
+  <meta property="og:title" content="Kinkit: one home for your family's money">
+  <meta property="og:description" content="Spending, budgets, goals, kid allowances, points and badges, on every screen your family uses. Self-hostable, with open data export.">
+  <meta property="og:url" content="https://kinkit.app/">
+  <meta property="og:image" content="https://kinkit.app/assets/og-image.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Kinkit logo with the headline: One home for your family's money, and everyone in it.">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="id_ID">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Kinkit: one home for your family's money">
+  <meta name="twitter:description" content="Spending, budgets, goals, kid allowances, points and badges, on every screen your family uses.">
+  <meta name="twitter:image" content="https://kinkit.app/assets/og-image.svg">
+
+  <!-- Favicon: inline SVG (same artwork as assets/favicon.svg) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234f46e5'/%3E%3Cstop offset='1' stop-color='%237c3aed'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M14 31 32 16l18 15' fill='none' stroke='%23fff' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28' fill='none' stroke='%23fff' stroke-width='5' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='39' r='5.5' fill='%23facc15'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="assets/favicon.svg">
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="assets/mockups.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Kinkit",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "description": "Family money app: spending, budgets, savings goals, kid allowances, points and badges. Self-hostable with open data export."
+  }
+  </script>
+  <script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+  <!-- Icon sprite (inline so it works from file:// too). Stroke icons, 24x24. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="brand-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#7c3aed"/></linearGradient>
+    </defs>
+    <symbol id="logo" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="url(#brand-grad)"/><path d="M14 31 32 16l18 15" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/><circle cx="32" cy="39" r="5.5" fill="#facc15"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M21 11h-5a2 2 0 0 0 0 4h5z"/></symbol>
+    <symbol id="i-pie" viewBox="0 0 24 24"><path d="M21.2 15.9A10 10 0 1 1 8 2.8"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16v-5M12 16V8M17 16v-8"/></symbol>
+    <symbol id="i-repeat" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></symbol>
+    <symbol id="i-file-up" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15l3-3 3 3"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+    <symbol id="i-coins" viewBox="0 0 24 24"><circle cx="8" cy="8" r="6"/><path d="M18.1 10.4A6 6 0 1 1 10.3 18"/><path d="M7 6h1v4"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-check-square" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3.3.3 1.6 1.2 2.8 2.5 2.8z"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.7V17c0 .6-.5 1-1 1.2-1.2.5-2 2-2 3.8M14 14.7V17c0 .6.5 1 1 1.2 1.2.5 2 2 2 3.8M18 2H6v7a6 6 0 0 0 12 0z"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.5 3.3A1.6 1.6 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="10.5" r="1"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></symbol>
+    <symbol id="i-tv" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="m17 2-5 5-5-5"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.6a10 10 0 0 1 14 0M8.5 16.4a5 5 0 0 1 7 0M2 8.8a15 15 0 0 1 20 0"/><path d="M12 20h.01"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 17h-.5A1.5 1.5 0 0 1 3 15.5V13l2-5a2 2 0 0 1 1.9-1.3h10.2A2 2 0 0 1 19 8l2 5v2.5a1.5 1.5 0 0 1-1.5 1.5H19M9 17h6M3 13h18"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></symbol>
+    <symbol id="i-server" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="8" rx="2"/><rect x="2" y="13" width="20" height="8" rx="2"/><path d="M6 7h.01M6 17h.01"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4z"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
+  <header class="site-header" id="top">
+    <nav class="container nav" aria-label="Main">
+      <a class="brand" href="#top" aria-label="Kinkit home">
+        <svg aria-hidden="true"><use href="#logo"/></svg>
+        Kinkit
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#features" data-i18n="nav.features">Features</a></li>
+        <li><a href="#how" data-i18n="nav.how">How it works</a></li>
+        <li><a href="#screens" data-i18n="nav.screens">Every screen</a></li>
+        <li><a href="#privacy" data-i18n="nav.privacy">Your data</a></li>
+        <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
+        <li><a href="#faq" data-i18n="nav.faq">FAQ</a></li>
+        <li class="mobile-only"><a href="/login" data-app-link="login" data-i18n="nav.signin">Sign in</a></li>
+      </ul>
+      <div class="nav-actions">
+        <div class="lang-toggle" role="group" aria-label="Language / Bahasa">
+          <button type="button" data-lang="en" aria-pressed="true" lang="en" title="English">EN</button>
+          <button type="button" data-lang="id" aria-pressed="false" lang="id" title="Bahasa Indonesia">ID</button>
+        </div>
+        <a class="btn btn-ghost btn-sm btn-signin" href="/login" data-app-link="login" data-i18n="nav.signin">Sign in</a>
+        <a class="btn btn-primary btn-sm btn-start" href="/signup" data-app-link="signup" data-i18n="cta.start">Start free</a>
+        <button class="menu-btn" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Open menu" data-i18n-aria="nav.menu">
+          <svg class="icon i-open" aria-hidden="true"><use href="#i-menu"/></svg>
+          <svg class="icon i-close" aria-hidden="true"><use href="#i-x"/></svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- ================= HERO ================= -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="pill"><b data-i18n="hero.pillTag">New</b> <span data-i18n="hero.pill">Phone and smart TV apps are on the way</span></p>
+          <h1 id="hero-title" data-i18n="hero.title">One home for your family's money <span class="grad">and everyone in it.</span></h1>
+          <p class="hero-lead" data-i18n="hero.lead">Kinkit helps your household track spending, plan budgets, save for goals and keep the kids motivated, together. Use it in the browser, on your phone, on the living-room TV or straight from Telegram and Discord.</p>
+          <div class="hero-ctas">
+            <a class="btn btn-primary" href="/signup" data-app-link="signup">
+              <span data-i18n="cta.start">Start free</span>
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="#how">
+              <svg class="icon" aria-hidden="true"><use href="#i-play"/></svg>
+              <span data-i18n="cta.how">See how it works</span>
+            </a>
+          </div>
+          <ul class="hero-notes">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="hero.note1">Free to start</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="hero.note2">Export everything, anytime</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="hero.note3">Self-host if you prefer</span></li>
+          </ul>
+        </div>
+
+        <div class="hero-visual" role="img" aria-label="The Kinkit dashboard on a laptop and a phone, showing this month's spending against budget, income, savings and a spending-by-category chart." data-i18n-aria="hero.visualAlt">
+          <!-- Laptop: Dashboard > Month -->
+          <div class="device device-laptop mock" aria-hidden="true">
+            <div class="bezel">
+              <div class="screen">
+                <div class="m-app">
+                  <div class="m-side">
+                    <div class="m-brand"><i></i>Kinkit</div>
+                    <div class="m-nav">
+                      <span>Today</span><span>Home</span>
+                      <span class="m-group">Money</span>
+                      <span class="on">Dashboard</span><span>Transactions</span><span>Budget</span><span>Savings</span>
+                      <span class="m-group">Family</span><span>Family</span>
+                    </div>
+                    <div class="m-add">+ Add</div>
+                  </div>
+                  <div class="m-main">
+                    <div class="m-head"><b>Dashboard</b><span class="m-period">‹ Nov 2026 ›</span></div>
+                    <div class="m-card">
+                      <div class="m-card-title">Spent Rp 6,1jt of Rp 9jt budgeted <em>68%</em></div>
+                      <div class="m-progress"><i></i></div>
+                    </div>
+                    <div class="m-stats">
+                      <div class="m-stat"><small>Income</small><strong class="up">Rp 14,5jt</strong></div>
+                      <div class="m-stat"><small>Spending</small><strong>Rp 6,1jt</strong></div>
+                      <div class="m-stat"><small>Saved</small><strong class="up">Rp 3,2jt</strong></div>
+                    </div>
+                    <div class="m-row">
+                      <div class="m-card">
+                        <div class="m-card-title">Income vs expense <em>2026</em></div>
+                        <div class="m-bars"><span></span><span class="alt"></span><span></span><span class="alt"></span><span></span><span class="alt"></span><span></span><span class="alt"></span></div>
+                      </div>
+                      <div class="m-card">
+                        <div class="m-card-title">By category</div>
+                        <div class="m-cats">
+                          <div class="m-cat"><i style="background:#4f46e5"></i>Groceries<b>2,3jt</b><span class="meter"><u style="width:72%;background:#4f46e5"></u></span></div>
+                          <div class="m-cat"><i style="background:#16a34a"></i>Transport<b>1,3jt</b><span class="meter"><u style="width:48%;background:#16a34a"></u></span></div>
+                          <div class="m-cat"><i style="background:#d97706"></i>Eating out<b>1,1jt</b><span class="meter"><u style="width:94%;background:#d97706"></u></span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="base"></div>
+          </div>
+
+          <!-- Phone: mobile dashboard -->
+          <div class="device device-phone mock" aria-hidden="true">
+            <div class="notch"></div>
+            <div class="screen">
+              <div class="m-phone">
+                <div class="m-head"><b>Dashboard</b><span class="m-period">Nov</span></div>
+                <div class="m-badge"><span class="fl"></span>7-day streak · +10 pts</div>
+                <div class="m-stats">
+                  <div class="m-stat"><small>Left to spend</small><strong class="up">2,9jt</strong></div>
+                  <div class="m-stat"><small>Allowance</small><strong class="warn">80%</strong></div>
+                </div>
+                <div class="m-card">
+                  <div class="m-card-title">This week</div>
+                  <div class="m-bars"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                </div>
+                <div class="m-chips"><span>Bensin</span><span>Makan siang</span><span>Sayur</span></div>
+                <div class="m-tabbar"><span>Today</span><span>Home</span><span class="fab"></span><span>Spending</span><span>More</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="float-card" aria-hidden="true">
+            <span class="dot"><svg class="icon" style="stroke:#fff"><use href="#i-trophy"/></svg></span>
+            <span><span data-i18n="hero.float1">Badge earned: Under Budget</span><small data-i18n="hero.float1s">Needs + Wants within plan</small></span>
+          </div>
+          <div class="float-card chat" aria-hidden="true">
+            <span class="dot"><svg class="icon" style="stroke:#fff"><use href="#i-chat"/></svg></span>
+            <span>"25k makan siang"<small data-i18n="hero.float2s">Logged from Telegram</small></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TRUST STRIP (no fake logos, testimonials or user counts) ================= -->
+    <section class="trust" aria-label="Why families can trust Kinkit" data-i18n-aria="trust.label">
+      <div class="container">
+        <ul>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-server"/></svg><span data-i18n="trust.1">Self-hostable with docker-compose</span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="trust.2">Open data export: CSV &amp; JSON</span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-wifi"/></svg><span data-i18n="trust.3">Installable, works offline</span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><span data-i18n="trust.4">Receipts private to your household</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= FEATURES ================= -->
+    <section class="section" id="features" aria-labelledby="features-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-i18n="features.eyebrow">Features</span>
+          <h2 id="features-title" data-i18n="features.title">Everything a household needs, nothing it doesn't</h2>
+          <p data-i18n="features.lead">From the first "25k makan siang" to a year-end review, Kinkit covers money, family roles, motivation and every screen in the house.</p>
+        </div>
+
+        <div class="feature-groups">
+          <!-- Money -->
+          <div class="feature-group">
+            <div class="group-head reveal">
+              <span class="group-icon g-money"><svg class="icon" aria-hidden="true"><use href="#i-wallet"/></svg></span>
+              <div><h3 data-i18n="g.money">Money</h3><p data-i18n="g.moneySub">Know where it goes, and plan where it should.</p></div>
+            </div>
+            <div class="cards">
+              <article class="card reveal">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-zap"/></svg></span>
+                <h4 data-i18n="f.quick.t">Log spending in seconds</h4>
+                <p data-i18n="f.quick.d">Add from any page. Type <kbd>25k</kbd>, <kbd>2rb</kbd> or <kbd>1.5jt</kbd>. Kinkit remembers each description's category and offers your recent entries as one-tap chips.</p>
+              </article>
+              <article class="card reveal" data-delay="1">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-pie"/></svg></span>
+                <h4 data-i18n="f.budget.t">Budgets that show reality</h4>
+                <p data-i18n="f.budget.d">Plan income and spending per category, grouped as Needs, Wants and Savings. Every cell shows what you actually spent: green, then amber at 80%, red when over.</p>
+              </article>
+              <article class="card reveal" data-delay="2">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg></span>
+                <h4 data-i18n="f.alerts.t">Budget alerts in your chat</h4>
+                <p data-i18n="f.alerts.d">Get a Telegram or Discord message when a category reaches 80% of its monthly budget, and again if it goes over.</p>
+              </article>
+              <article class="card reveal">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-trend"/></svg></span>
+                <h4 data-i18n="f.income.t">Income: planned vs received</h4>
+                <p data-i18n="f.income.d">Record money that actually came in and compare it with the plan for the month, the year and across years.</p>
+              </article>
+              <article class="card reveal" data-delay="1">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-repeat"/></svg></span>
+                <h4 data-i18n="f.recurring.t">Recurring payments on autopilot</h4>
+                <p data-i18n="f.recurring.d">Enter rent, subscriptions or loan payments once (monthly, weekly or yearly) and Kinkit adds each one for you. Pause and resume any time.</p>
+              </article>
+              <article class="card reveal" data-delay="2">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg></span>
+                <h4 data-i18n="f.goals.t">Savings goals and net worth</h4>
+                <p data-i18n="f.goals.d">Each goal gets a progress ring and shows how much to save per month to hit its date. Track account balances and progress toward a net-worth target.</p>
+              </article>
+              <article class="card reveal">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg></span>
+                <h4 data-i18n="f.receipts.t">Receipts that read themselves</h4>
+                <p data-i18n="f.receipts.d">Snap a receipt and keep it with its transaction. "Read amount from receipt" finds the total on your device, so the photo isn't sent anywhere to be read.</p>
+              </article>
+              <article class="card reveal" data-delay="1">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-file-up"/></svg></span>
+                <h4 data-i18n="f.csv.t">Bank CSV import</h4>
+                <p data-i18n="f.csv.d">Import BCA, Mandiri or any generic CSV. Preview and re-categorise rows first. Importing a file twice never creates duplicates, and any import can be undone.</p>
+              </article>
+              <article class="card reveal" data-delay="2">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg></span>
+                <h4 data-i18n="f.dash.t">Dashboards your way</h4>
+                <p data-i18n="f.dash.d">Week, Month, Year and Across Years views, plus a Custom tab where you pick the charts and drag to reorder them. Hide big one-offs, then export to PDF.</p>
+              </article>
+              <article class="card reveal">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg></span>
+                <h4 data-i18n="f.fx.t">Multi-currency display</h4>
+                <p data-i18n="f.fx.d">See amounts in IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD or INR, converted with daily exchange rates. Your stored data stays in rupiah.</p>
+              </article>
+            </div>
+          </div>
+
+          <!-- Home & family -->
+          <div class="feature-group">
+            <div class="group-head reveal">
+              <span class="group-icon g-home"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg></span>
+              <div><h3 data-i18n="g.home">Home &amp; family</h3><p data-i18n="g.homeSub">One household, everyone with the right access.</p></div>
+            </div>
+            <div class="cards">
+              <article class="card reveal">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></span>
+                <h4 data-i18n="f.household.t">One household, everyone signs in</h4>
+                <p data-i18n="f.household.d">Add family members with their own email and password. Everyone works on the same household's money.</p>
+              </article>
+              <article class="card reveal" data-delay="1">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span>
+                <h4 data-i18n="f.roles.t">Roles that fit real families</h4>
+                <p data-i18n="f.roles.d">Owner and Parent manage everything. Kids log spending and can only edit their own entries. Viewers have read-only access, which suits a grandparent or an accountant.</p>
+              </article>
+              <article class="card reveal" data-delay="2">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-coins"/></svg></span>
+                <h4 data-i18n="f.allowance.t">Kid allowances</h4>
+                <p data-i18n="f.allowance.d">Give each kid a monthly allowance and let them see how much they've spent so far this month.</p>
+              </article>
+              <article class="card reveal">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-undo"/></svg></span>
+                <h4 data-i18n="f.undo.t">Undo instead of "Are you sure?"</h4>
+                <p data-i18n="f.undo.d">Deleted something by mistake? Every delete shows an Undo button for a few seconds, so nobody gets stuck answering confirmation dialogs.</p>
+              </article>
+              <article class="card reveal" data-delay="1">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg></span>
+                <h4 data-i18n="f.today.t">Today</h4>
+                <p data-i18n="f.today.d">One daily view of what's due for the household: reminders, chores, lists and how the budget is doing.</p>
+              </article>
+              <article class="card reveal" data-delay="2">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-check-square"/></svg></span>
+                <h4 data-i18n="f.chores.t">Chores, reminders &amp; shopping lists</h4>
+                <p data-i18n="f.chores.d">Chores with points, parent approval and photo proof that count toward kids' allowances. Repeating reminders for bills, medicine, school and birthdays that nudge the right person on Telegram or Discord. Shared shopping lists where you type "eggs, 2 milk, bread x3", then turn the trip into one spending entry.</p>
+              </article>
+            </div>
+          </div>
+
+          <!-- Fun & motivation -->
+          <div class="feature-group">
+            <div class="group-head reveal">
+              <span class="group-icon g-fun"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></span>
+              <div><h3 data-i18n="g.fun">Fun &amp; motivation</h3><p data-i18n="g.funSub">Good money habits, turned into a family game.</p></div>
+            </div>
+            <div class="cards">
+              <article class="card reveal">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></span>
+                <h4 data-i18n="f.points.t">Points and levels</h4>
+                <p data-i18n="f.points.d">Earn 10 points a day for logging, plus a streak bonus. Climb from Getting Started to Tracker, Budget Buddy, Money Master and Finance Wizard.</p>
+              </article>
+              <article class="card reveal" data-delay="1">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-flame"/></svg></span>
+                <h4 data-i18n="f.badges.t">Streaks and badges</h4>
+                <p data-i18n="f.badges.d">Unlock First Log, Streak 7, Streak 30, First Budget Set, Under Budget and Saver, each with a confetti celebration.</p>
+              </article>
+              <article class="card reveal" data-delay="2">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-flag"/></svg></span>
+                <h4 data-i18n="f.challenges.t">Weekly family challenges</h4>
+                <p data-i18n="f.challenges.d">Log every day, have a no-spend weekend, keep Wants under a week's share of the budget. Each one adds bonus points to the household total.</p>
+              </article>
+              <article class="card reveal">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg></span>
+                <h4 data-i18n="f.leader.t">Monthly leaderboard</h4>
+                <p data-i18n="f.leader.d">See who earned the most points this month. A friendly race that makes everyone want to log.</p>
+              </article>
+              <article class="card reveal" data-delay="1">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-palette"/></svg></span>
+                <h4 data-i18n="f.themes.t">A theme for every age</h4>
+                <p data-i18n="f.themes.d">Light, Dark, a Playful theme for kids and a high-contrast Senior theme with bigger text. <a href="#themes">See them</a>.</p>
+              </article>
+            </div>
+          </div>
+
+          <!-- Everywhere -->
+          <div class="feature-group">
+            <div class="group-head reveal">
+              <span class="group-icon g-every"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg></span>
+              <div><h3 data-i18n="g.every">Everywhere</h3><p data-i18n="g.everySub">Web, phone, TV and the chat apps you already use.</p></div>
+            </div>
+            <div class="cards">
+              <article class="card reveal">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-monitor"/></svg></span>
+                <h4 data-i18n="f.web.t">Web app you can install</h4>
+                <p data-i18n="f.web.d">Works in any modern browser. Install it on Android, iPhone or desktop to get its own icon and a full-screen window.</p>
+              </article>
+              <article class="card reveal" data-delay="1">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-wifi"/></svg></span>
+                <h4 data-i18n="f.offline.t">Works offline</h4>
+                <p data-i18n="f.offline.d">No signal at the market? Spending you add offline stays on the device and syncs as soon as you're back online, and nothing disappears silently.</p>
+              </article>
+              <article class="card reveal" data-delay="2">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-car"/></svg></span>
+                <h4 data-i18n="f.tv.t">TV &amp; car display links</h4>
+                <p data-i18n="f.tv.d">Open a share link on a TV browser, wall tablet or car head unit to show this month's numbers in big type. It needs no login, refreshes every minute and can be revoked instantly.</p>
+              </article>
+              <article class="card reveal">
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span>
+                <h4 data-i18n="f.bots.t">Telegram &amp; Discord bots</h4>
+                <p data-i18n="f.bots.d">Send "50k makan siang" and it's logged, with the category picked from your keywords. Ask for <kbd>/recent</kbd> or <kbd>/today</kbd>, set reminders with <kbd>/remind</kbd>, add to the shopping list with <kbd>/buy</kbd>, and check chores with <kbd>/chores</kbd>. Connect your own bot in Settings.</p>
+              </article>
+              <article class="card reveal" data-delay="1">
+                <span class="tag" data-i18n="tag.soon">Coming soon</span>
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
+                <h4 data-i18n="f.native.t">iOS &amp; Android app</h4>
+                <p data-i18n="f.native.d">A native phone app for the whole family is in the works.</p>
+              </article>
+              <article class="card reveal" data-delay="2">
+                <span class="tag" data-i18n="tag.soon">Coming soon</span>
+                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
+                <h4 data-i18n="f.smarttv.t">Smart TV viewer</h4>
+                <p data-i18n="f.smarttv.d">A view-only family dashboard for Android TV / Google TV, Samsung Tizen and LG webOS.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HOW IT WORKS ================= -->
+    <section class="section section-alt" id="how" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-i18n="how.eyebrow">How it works</span>
+          <h2 id="how-title" data-i18n="how.title">Up and running in three steps</h2>
+          <p data-i18n="how.lead">No spreadsheets and no bank passwords. Just your household, logging as you go.</p>
+        </div>
+        <ol class="steps">
+          <li class="step reveal">
+            <div class="step-num" aria-hidden="true">1</div>
+            <h3 data-i18n="how.s1.t">Create your household</h3>
+            <p data-i18n="how.s1.d">Sign up and you're the Owner. Kinkit starts you with sensible categories and income sources.</p>
+            <ul>
+              <li data-i18n="how.s1.l1">Invite a partner, kids or grandparents</li>
+              <li data-i18n="how.s1.l2">Give each one a role and an allowance</li>
+            </ul>
+          </li>
+          <li class="step reveal" data-delay="1">
+            <div class="step-num" aria-hidden="true">2</div>
+            <h3 data-i18n="how.s2.t">Log as you go</h3>
+            <p data-i18n="how.s2.d">Use whatever is closest to hand. Every entry lands in the same place.</p>
+            <ul>
+              <li data-i18n="how.s2.l1">Quick add in the app, even offline</li>
+              <li data-i18n="how.s2.l2">A chat message to your Telegram or Discord bot</li>
+              <li data-i18n="how.s2.l3">A receipt photo, a bank CSV or a recurring rule</li>
+            </ul>
+          </li>
+          <li class="step reveal" data-delay="2">
+            <div class="step-num" aria-hidden="true">3</div>
+            <h3 data-i18n="how.s3.t">See it, and stay on track</h3>
+            <p data-i18n="how.s3.d">Budgets, goals and dashboards tell the story, and the game keeps everyone going.</p>
+            <ul>
+              <li data-i18n="how.s3.l1">Budget vs actual, with alerts at 80%</li>
+              <li data-i18n="how.s3.l2">Goals with the monthly amount you need to save</li>
+              <li data-i18n="how.s3.l3">Points, badges and weekly challenges</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= EVERY SCREEN ================= -->
+    <section class="section" id="screens" aria-labelledby="screens-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-i18n="screens.eyebrow">Every screen</span>
+          <h2 id="screens-title" data-i18n="screens.title">On the phone, the laptop and the living-room TV</h2>
+          <p data-i18n="screens.lead">The same household and the same numbers, sized for wherever your family is.</p>
+        </div>
+        <div class="screens">
+          <!-- phone -->
+          <div class="screen-item reveal">
+            <div class="device device-phone mock" role="img" aria-label="Kinkit on a phone: this month's spending against budget, recent expenses and the points level." data-i18n-aria="screens.phoneAlt">
+              <div class="notch"></div>
+              <div class="screen" aria-hidden="true">
+                <div class="m-phone">
+                  <div class="m-head"><b>Spending</b><span class="m-period">‹ Nov ›</span></div>
+                  <div class="m-card">
+                    <div class="m-card-title">Spent of budget <em>68%</em></div>
+                    <div class="m-progress"><i></i></div>
+                  </div>
+                  <div class="m-cats m-card">
+                    <div class="m-cat"><i style="background:#4f46e5"></i>Sayur &amp; buah<b>48rb</b></div>
+                    <div class="m-cat"><i style="background:#16a34a"></i>Bensin<b>100rb</b></div>
+                    <div class="m-cat"><i style="background:#d97706"></i>Makan siang<b>25rb</b></div>
+                    <div class="m-cat"><i style="background:#ec4899"></i>Netflix<b>54rb</b></div>
+                    <div class="m-cat"><i style="background:#0ea5e9"></i>Listrik<b>350rb</b></div>
+                  </div>
+                  <div class="m-badge"><span class="fl"></span>Budget Buddy · 240 pts</div>
+                  <div class="m-tabbar"><span>Today</span><span>Home</span><span class="fab"></span><span class="on">Spending</span><span>More</span></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg><span data-i18n="screens.phone.t">Phone</span></h3>
+              <p data-i18n="screens.phone.d">Install the web app today, with a bottom tab bar, a round + button and offline sync.</p>
+              <span class="status now" data-i18n="status.now">Available now</span>
+              <span class="status soon" data-i18n="status.native">Native iOS &amp; Android: coming soon</span>
+            </div>
+          </div>
+          <!-- laptop -->
+          <div class="screen-item reveal" data-delay="1">
+            <div class="device device-laptop mock" role="img" aria-label="Kinkit on a laptop: the Budget page with planned and actual amounts." data-i18n-aria="screens.webAlt">
+              <div class="bezel">
+                <div class="screen" aria-hidden="true">
+                  <div class="m-app">
+                    <div class="m-side">
+                      <div class="m-brand"><i></i>Kinkit</div>
+                      <div class="m-nav"><span>Today</span><span>Dashboard</span><span>Transactions</span><span class="on">Budget</span><span>Savings</span><span>Family</span></div>
+                      <div class="m-add">+ Add</div>
+                    </div>
+                    <div class="m-main">
+                      <div class="m-head"><b>Budget</b><span class="m-period">‹ 2026 ›</span></div>
+                      <div class="m-card">
+                        <div class="m-card-title">Needs <em>Spent / plan</em></div>
+                        <div class="m-cats">
+                          <div class="m-cat"><i style="background:#16a34a"></i>Groceries<b>2,3 / 3jt</b><span class="meter"><u style="width:76%;background:#16a34a"></u></span></div>
+                          <div class="m-cat"><i style="background:#d97706"></i>Utilities<b>0,9 / 1jt</b><span class="meter"><u style="width:90%;background:#d97706"></u></span></div>
+                        </div>
+                      </div>
+                      <div class="m-card">
+                        <div class="m-card-title">Wants</div>
+                        <div class="m-cats">
+                          <div class="m-cat"><i style="background:#dc2626"></i>Eating out<b>1,2 / 1jt</b><span class="meter"><u style="width:100%;background:#dc2626"></u></span></div>
+                          <div class="m-cat"><i style="background:#16a34a"></i>Hobbies<b>0,2 / 0,5jt</b><span class="meter"><u style="width:40%;background:#16a34a"></u></span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="base"></div>
+            </div>
+            <div>
+              <h3><svg class="icon" aria-hidden="true"><use href="#i-monitor"/></svg><span data-i18n="screens.web.t">Web</span></h3>
+              <p data-i18n="screens.web.d">The full experience: budgets, imports, dashboards, family settings and PDF export.</p>
+              <span class="status now" data-i18n="status.now">Available now</span>
+            </div>
+          </div>
+          <!-- TV -->
+          <div class="screen-item reveal" data-delay="2">
+            <div class="device device-tv" role="img" aria-label="Kinkit TV view: this month's spending, budget left and savings in large type, refreshing every minute." data-i18n-aria="screens.tvAlt">
+              <div class="bezel">
+                <div class="screen mock" aria-hidden="true">
+                  <div class="m-tv">
+                    <div class="m-tv-head"><b>November 2026</b><span>The Wijaya family</span></div>
+                    <div class="m-tv-nums">
+                      <div><small>Spent</small><strong>6,1jt</strong></div>
+                      <div><small>Budget left</small><strong class="g">2,9jt</strong></div>
+                      <div><small>Income</small><strong class="y">14,5jt</strong></div>
+                    </div>
+                    <div class="m-tv-bar"><span>68% of monthly budget used</span><div class="track"><i></i></div></div>
+                    <div class="m-tv-foot"><span class="m-live">Live · refreshes every minute</span><span>kinkit</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="stand"></div>
+            </div>
+            <div>
+              <h3><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg><span data-i18n="screens.tv.t">TV &amp; car</span></h3>
+              <p data-i18n="screens.tv.d">Open a TV link in any TV browser or car head unit today. Dedicated apps for Android TV / Google TV, Samsung Tizen and LG webOS are on the way.</p>
+              <span class="status now" data-i18n="status.tvnow">TV link: available now</span>
+              <span class="status soon" data-i18n="status.tvsoon">Smart TV apps: coming soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= THEMES ================= -->
+    <section class="section section-alt" id="themes" aria-labelledby="themes-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-i18n="themes.eyebrow">Themes for everyone</span>
+          <h2 id="themes-title" data-i18n="themes.title">From your youngest to your oldest</h2>
+          <p data-i18n="themes.lead">Each person picks the look that works for them, on their own device, under Settings › Display.</p>
+        </div>
+        <div class="themes">
+          <article class="theme-card reveal">
+            <div class="theme-preview tp-light" aria-hidden="true">
+              <span class="tp-title">Light</span>
+              <span class="tp-row">Groceries <span class="tp-good">76%</span></span>
+              <span class="tp-btn">+ Add</span>
+            </div>
+            <div class="theme-body"><h3 data-i18n="themes.light.t">Light</h3><p data-i18n="themes.light.d">Clean and calm for everyday use.</p></div>
+          </article>
+          <article class="theme-card reveal" data-delay="1">
+            <div class="theme-preview tp-dark" aria-hidden="true">
+              <span class="tp-title">Dark</span>
+              <span class="tp-row">Groceries <span class="tp-good">76%</span></span>
+              <span class="tp-btn">+ Add</span>
+            </div>
+            <div class="theme-body"><h3 data-i18n="themes.dark.t">Dark</h3><p data-i18n="themes.dark.d">Easy on the eyes at night.</p></div>
+          </article>
+          <article class="theme-card reveal" data-delay="2">
+            <div class="theme-preview tp-playful" aria-hidden="true">
+              <span class="tp-title">Playful ⭐</span>
+              <span class="tp-row">My allowance <span class="tp-good">60%</span></span>
+              <span class="tp-btn">+ Add</span>
+            </div>
+            <div class="theme-body"><h3 data-i18n="themes.playful.t">Playful (kids)</h3><p data-i18n="themes.playful.d">Warm colours, round corners and a friendly font, with contrast that stays readable.</p></div>
+          </article>
+          <article class="theme-card reveal" data-delay="3">
+            <div class="theme-preview tp-senior" aria-hidden="true">
+              <span class="tp-title">Senior</span>
+              <span class="tp-row">Groceries <span class="tp-good">76%</span></span>
+              <span class="tp-btn">+ Add</span>
+            </div>
+            <div class="theme-body"><h3 data-i18n="themes.senior.t">Senior (high-contrast)</h3><p data-i18n="themes.senior.d">Larger text, bigger buttons and strong black-on-white contrast.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PRIVACY & DATA OWNERSHIP ================= -->
+    <section class="section" id="privacy" aria-labelledby="privacy-title">
+      <div class="container privacy-grid">
+        <div class="reveal">
+          <span class="eyebrow" data-i18n="privacy.eyebrow">Privacy &amp; data ownership</span>
+          <h2 id="privacy-title" data-i18n="privacy.title">Your family's data stays yours</h2>
+          <p data-i18n="privacy.lead">Kinkit never asks for your bank login. You decide what goes in, and you can take all of it out whenever you like.</p>
+          <ul class="check-list">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><div><strong data-i18n="privacy.1.t">Export anytime</strong><span data-i18n="privacy.1.d">Download spending (by date range) and income as CSV, or a full backup of everything as JSON.</span></div></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-server"/></svg><div><strong data-i18n="privacy.2.t">Self-host it</strong><span data-i18n="privacy.2.d">Run the whole stack (app, Postgres and the chat bots) on your own server with one docker-compose file.</span></div></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><div><strong data-i18n="privacy.3.t">Private receipts</strong><span data-i18n="privacy.3.d">Receipt photos are visible only to your household, and the amount is read on your own device.</span></div></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg><div><strong data-i18n="privacy.4.t">You control sharing</strong><span data-i18n="privacy.4.d">TV display links show only this month's summary, and you can revoke them with one click.</span></div></li>
+          </ul>
+        </div>
+        <div class="reveal" data-delay="1">
+          <div class="terminal" role="img" aria-label="Terminal: starting Kinkit with docker compose up -d, which starts Postgres, the app on port 5010 and the Telegram and Discord bots." data-i18n-aria="privacy.termAlt">
+            <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i><span>~/kinkit</span></div>
+<pre aria-hidden="true"><span class="c"># your server, your data</span>
+<span class="p">$</span> cp .env.example .env   <span class="c"># set passwords</span>
+<span class="p">$</span> docker compose up -d
+ <span class="ok">✔</span> kinkit-postgres       Started
+ <span class="ok">✔</span> kinkit                Started
+ <span class="ok">✔</span> kinkit-telegram-bot   Started
+ <span class="ok">✔</span> kinkit-discord-bot    Started
+<span class="c"># open http://localhost:5010</span></pre>
+          </div>
+          <div class="export-chips" aria-label="Export formats">
+            <span><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>spending.csv</span>
+            <span><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>income.csv</span>
+            <span><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>all.json</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PRICING ================= -->
+    <!--
+      ╔══════════════════════════════════════════════════════════════════╗
+      ║  PLACEHOLDER PRICING: EDIT BEFORE LAUNCH.                        ║
+      ║  Tier names, prices and the feature split below are placeholders.║
+      ║  The app does not currently gate any feature by plan; every      ║
+      ║  feature listed on this page is available to every household.    ║
+      ║  Update the Indonesian strings in main.js (keys "price.*") too.  ║
+      ╚══════════════════════════════════════════════════════════════════╝
+    -->
+    <section class="section section-alt" id="pricing" aria-labelledby="pricing-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-i18n="price.eyebrow">Pricing</span>
+          <h2 id="pricing-title" data-i18n="price.title">Simple plans for every household</h2>
+          <p data-i18n="price.lead">Start free. Upgrade when your family wants more, or run it yourself.</p>
+        </div>
+        <div class="pricing">
+          <!-- PLACEHOLDER tier 1 -->
+          <article class="plan reveal">
+            <h3 data-i18n="price.free.t">Free</h3>
+            <p class="plan-desc" data-i18n="price.free.d">For getting started with your household's money.</p>
+            <p class="price">Rp0 <small data-i18n="price.perMonth">/ month</small></p>
+            <ul>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.free.1">Spending, income, budgets &amp; goals</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.free.2">Dashboards &amp; PDF export</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.free.3">CSV &amp; JSON export</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.free.4">Installable web app, offline mode</span></li>
+            </ul>
+            <a class="btn btn-ghost btn-block" href="/signup" data-app-link="signup" data-i18n="cta.start">Start free</a>
+          </article>
+          <!-- PLACEHOLDER tier 2 -->
+          <article class="plan featured reveal" data-delay="1">
+            <span class="ribbon" data-i18n="price.popular">Best for families</span>
+            <h3 data-i18n="price.family.t">Family</h3>
+            <p class="plan-desc" data-i18n="price.family.d">For the whole household: kids, grandparents and every screen.</p>
+            <p class="price">Rp49.000 <small data-i18n="price.perMonth">/ month</small></p>
+            <ul>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.1">Everything in Free</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.2">Family members, roles &amp; allowances</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.3">Points, badges &amp; weekly challenges</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.4">Telegram/Discord bots &amp; budget alerts</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.5">Receipts, bank CSV import, TV links</span></li>
+            </ul>
+            <a class="btn btn-primary btn-block" href="/signup" data-app-link="signup" data-i18n="price.family.cta">Start with Family</a>
+          </article>
+          <!-- PLACEHOLDER tier 3 -->
+          <article class="plan reveal" data-delay="2">
+            <h3 data-i18n="price.self.t">Self-hosted</h3>
+            <p class="plan-desc" data-i18n="price.self.d">For tinkerers who want everything on their own server.</p>
+            <p class="price"><span data-i18n="price.self.price">Free</span> <small data-i18n="price.self.unit">/ your server</small></p>
+            <ul>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.self.1">The full app on your hardware</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.self.2">One docker-compose file</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.self.3">Your Postgres database, your backups</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.self.4">Community support</span></li>
+            </ul>
+            <a class="btn btn-ghost btn-block" href="#privacy" data-i18n="price.self.cta">How to self-host</a>
+          </article>
+        </div>
+        <p class="pricing-note" data-i18n="price.note">Plans and prices are a preview and may change before launch.</p>
+      </div>
+    </section>
+
+    <!-- ================= FAQ ================= -->
+    <section class="section" id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-i18n="faq.eyebrow">FAQ</span>
+          <h2 id="faq-title" data-i18n="faq.title">Questions families ask</h2>
+        </div>
+        <div class="faq reveal">
+          <details>
+            <summary><span data-i18n="faq.q1">Do I have to connect my bank account?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer"><p data-i18n="faq.a1">No. Kinkit never asks for bank credentials. Log spending in the app or from chat, or import the CSV statement your bank already lets you download (BCA, Mandiri or a generic format). You see a preview before anything is saved.</p></div>
+          </details>
+          <details>
+            <summary><span data-i18n="faq.q2">Can my kids use it?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer"><p data-i18n="faq.a2">Yes. Give them the Kid role. They can log their own spending, edit only their own entries and see their monthly allowance. They earn points and badges too, and the Playful theme is made for them.</p></div>
+          </details>
+          <details>
+            <summary><span data-i18n="faq.q3">Can I get my data out?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer"><p data-i18n="faq.a3">Always. Under Settings › Data &amp; devices you can export spending (optionally for a date range) and income as CSV, or download a full JSON backup of everything.</p></div>
+          </details>
+          <details>
+            <summary><span data-i18n="faq.q4">Can I host Kinkit myself?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer"><p data-i18n="faq.a4">Yes. The repository includes a docker-compose file that runs the Go app, a Postgres database and the Telegram and Discord bots. Set a couple of secrets in <code>.env</code> and run <code>docker compose up -d</code>.</p></div>
+          </details>
+          <details>
+            <summary><span data-i18n="faq.q5">Does it work without internet?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer"><p data-i18n="faq.a5">The installed app opens offline and shows the data from your last visit. Spending you add offline is saved on the device and synced automatically when you reconnect. If the server rejects an entry, it is listed so nothing gets lost quietly.</p></div>
+          </details>
+          <details>
+            <summary><span data-i18n="faq.q6">How do the Telegram and Discord bots work?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer"><p data-i18n="faq.a6">Create your own bot (for example with BotFather on Telegram) and paste its token and chat id under Settings › Bots. Then send messages like "50k makan siang" to log spending, or <code>/recent</code> (<code>!recent</code> on Discord) to see the last entries. The same bot sends your budget alerts.</p></div>
+          </details>
+          <details>
+            <summary><span data-i18n="faq.q7">Which currencies are supported?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer"><p data-i18n="faq.a7">Amounts are stored in rupiah (IDR). You can display them in IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD or INR, converted with daily exchange rates.</p></div>
+          </details>
+          <details>
+            <summary><span data-i18n="faq.q8">Is there a phone or TV app?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer"><p data-i18n="faq.a8">Today you can install the web app on Android, iPhone or desktop, and open a TV display link in any TV or car browser. A native iOS/Android app and a view-only smart TV app for Android TV / Google TV, Samsung Tizen and LG webOS are coming soon.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FINAL CTA ================= -->
+    <section class="container" aria-labelledby="cta-title">
+      <div class="cta-final reveal">
+        <h2 id="cta-title" data-i18n="final.title">Bring your family's money home</h2>
+        <p data-i18n="final.lead">Set up your household in a couple of minutes. Invite everyone, log your first expense and earn your first badge today.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-light" href="/signup" data-app-link="signup">
+            <span data-i18n="cta.start">Start free</span>
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
+          <a class="btn btn-outline-light" href="#how" data-i18n="cta.how">See how it works</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="#top" aria-label="Kinkit, back to top" data-i18n-aria="footer.top">
+            <svg aria-hidden="true"><use href="#logo"/></svg>
+            Kinkit
+          </a>
+          <p data-i18n="footer.about">One home for your family's money. Made for households in Indonesia and beyond.</p>
+        </div>
+        <nav aria-labelledby="f-product">
+          <h2 id="f-product" data-i18n="footer.product">Product</h2>
+          <ul>
+            <li><a href="#features" data-i18n="nav.features">Features</a></li>
+            <li><a href="#screens" data-i18n="nav.screens">Every screen</a></li>
+            <li><a href="#themes" data-i18n="footer.themes">Themes</a></li>
+            <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="f-data">
+          <h2 id="f-data" data-i18n="footer.data">Your data</h2>
+          <ul>
+            <li><a href="#privacy" data-i18n="footer.export">Export &amp; backup</a></li>
+            <li><a href="#privacy" data-i18n="footer.selfhost">Self-hosting</a></li>
+            <li><a href="#faq" data-i18n="nav.faq">FAQ</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="f-account">
+          <h2 id="f-account" data-i18n="footer.account">Account</h2>
+          <ul>
+            <li><a href="/signup" data-app-link="signup" data-i18n="cta.start">Start free</a></li>
+            <li><a href="/login" data-app-link="login" data-i18n="nav.signin">Sign in</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year">2026</span> Kinkit</span>
+        <a href="#top" data-i18n="footer.back">Back to top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js" defer></script>
+</body>
+</html>

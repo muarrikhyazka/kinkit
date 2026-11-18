@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { useAuth, canLogSpending } from './AuthContext.jsx'
+import { useAuth, canLogSpending, canManage } from './AuthContext.jsx'
 import { useOffline } from './OfflineContext.jsx'
 import { useTheme, THEMES } from './ThemeContext.jsx'
 import { formatRupiah, onSpendingChanged } from './api'
@@ -9,7 +9,7 @@ import QuickAddSpending from './QuickAddSpending.jsx'
 import GamificationBadge from './GamificationBadge.jsx'
 import Modal from './Modal.jsx'
 import OnboardingChecklist from './OnboardingChecklist.jsx'
-import { IconLogout, IconCollapse, IconExpand, IconSun, IconMoon, IconPlus, IconMore, IconTv, IconClose } from './icons.jsx'
+import { IconLogout, IconCollapse, IconExpand, IconSun, IconMoon, IconPlus, IconMore, IconClose, IconGuide } from './icons.jsx'
 
 const COLLAPSE_KEY = 'kinkit_sidebar_collapsed'
 
@@ -60,10 +60,22 @@ export default function Layout() {
 
   const isAdmin = !!user?.is_admin
   const canAdd = !isAdmin && canLogSpending(user)
-  const links = navRoutes(isAdmin ? 'admin' : 'tenant')
+  const canAddIncome = !isAdmin && canManage(user)
+  const links = navRoutes(isAdmin ? 'admin' : 'tenant', user)
+  const mainLinks = links.filter(r => r.placement !== 'bottom')
+  const bottomLinks = links.filter(r => r.placement === 'bottom')
   const mobileTabs = links.filter(r => r.mobile === 'tab')
   const moreLinks = links.filter(r => r.mobile === 'more')
-  const moreActive = moreLinks.some(r => location.pathname === routeTo(r))
+  const inSection = r => location.pathname === routeTo(r) || location.pathname.startsWith(routeTo(r) + '/')
+  const moreActive = location.pathname === '/help' || moreLinks.some(inSection)
+  const navItem = r => (
+    <li key={r.path}>
+      <NavLink to={routeTo(r)} end={routeEnd(r)} title={r.label} aria-label={collapsed ? r.label : undefined}>
+        <r.Icon aria-hidden="true" />
+        {!collapsed && <span>{r.label}</span>}
+      </NavLink>
+    </li>
+  )
 
   useEffect(() => onSpendingChanged(() => setGamiRefresh(k => k + 1)), [])
   useEffect(() => { setMoreOpen(false) }, [location.pathname])
@@ -88,36 +100,32 @@ export default function Layout() {
         <ul>
           {canAdd && (
             <li>
-              <button className="nav-cta" onClick={() => setQuickAddOpen(true)} title="Add Spending" aria-label={collapsed ? 'Add Spending' : undefined}>
+              <button className="nav-cta" onClick={() => setQuickAddOpen(true)} title={canAddIncome ? 'Add spending or income' : 'Add Spending'} aria-label={collapsed ? 'Add' : undefined}>
                 <IconPlus />
-                {!collapsed && <span>Add Spending</span>}
+                {!collapsed && <span>{canAddIncome ? 'Add' : 'Add Spending'}</span>}
               </button>
             </li>
           )}
           {!isAdmin && (
             <li><GamificationBadge collapsed={collapsed} refreshKey={gamiRefresh} /></li>
           )}
-          {links.map(r => (
-            <li key={r.path}>
-              <NavLink to={routeTo(r)} end={routeEnd(r)} title={r.label} aria-label={collapsed ? r.label : undefined}>
-                <r.Icon aria-hidden="true" />
-                {!collapsed && <span>{r.label}</span>}
-              </NavLink>
-            </li>
+          {mainLinks.map((r, i) => (
+            r.group && r.group !== mainLinks[i - 1]?.group && !collapsed
+              ? [<li key={`g-${r.group}`} className="nav-group" aria-hidden="true">{r.group}</li>, navItem(r)]
+              : navItem(r)
           ))}
         </ul>
+        {bottomLinks.length > 0 && <ul className="sidebar-bottom-links">{bottomLinks.map(navItem)}</ul>}
         <div className="sidebar-footer">
-          {!collapsed ? (
-            <select className="theme-select" value={theme} onChange={e => setTheme(e.target.value)} title="Theme" aria-label="Theme">
-              {THEMES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
-            </select>
-          ) : (
-            <button className="icon-btn theme-toggle" onClick={() => setTheme(nextTheme.id)} title="Cycle theme" aria-label={`Switch theme to ${nextTheme.label}`}>
-              {theme === 'dark' ? <IconSun /> : <IconMoon />}
-            </button>
+          <button className="icon-btn theme-toggle" onClick={() => setTheme(nextTheme.id)} title={`Theme: ${THEMES.find(t => t.id === theme)?.label} (click to switch)`} aria-label={`Switch theme to ${nextTheme.label}`}>
+            {theme === 'dark' ? <IconSun /> : <IconMoon />}
+          </button>
+          {!isAdmin && (
+            <NavLink to="/help" className="icon-btn help-btn" title="Help & guide" aria-label="Help and guide">
+              <IconGuide />
+            </NavLink>
           )}
-          {!collapsed && <span>{user?.display_name}</span>}
-          {!collapsed && <a href="/tv" target="_blank" rel="noopener" className="link-btn" title="Open TV / car display view">TV view</a>}
+          {!collapsed && <span className="sidebar-user">{user?.display_name}</span>}
           <button className="icon-btn logout-btn" onClick={logout} title="Logout" aria-label="Logout"><IconLogout /></button>
         </div>
       </aside>
@@ -126,11 +134,14 @@ export default function Layout() {
       <header className="mobile-topbar">
         <div className="brand">Kinkit</div>
         <ConnStatus serverOnline={serverOnline} queueSize={queueSize} />
+        {!isAdmin && (
+          <NavLink to="/help" className="icon-btn help-btn" aria-label="Help and guide"><IconGuide width={20} height={20} /></NavLink>
+        )}
       </header>
 
       <main className="content" id="main" tabIndex={-1}>
         <FailedSyncBanner items={failedItems} onDismiss={dismissFailed} />
-        {!isAdmin && location.pathname === '/' && <OnboardingChecklist />}
+        {canAddIncome && location.pathname === '/' && <OnboardingChecklist />}
         <Outlet />
       </main>
 
@@ -148,7 +159,7 @@ export default function Layout() {
       </nav>
 
       {canAdd && (
-        <button className="fab" onClick={() => setQuickAddOpen(true)} aria-label="Add spending">
+        <button className="fab" onClick={() => setQuickAddOpen(true)} aria-label={canAddIncome ? 'Add spending or income' : 'Add spending'}>
           <IconPlus width={26} height={26} />
         </button>
       )}
@@ -164,9 +175,11 @@ export default function Layout() {
                 </NavLink>
               </li>
             ))}
-            <li>
-              <a href="/tv" target="_blank" rel="noopener"><IconTv aria-hidden="true" /><span>TV view</span></a>
-            </li>
+            {!isAdmin && (
+              <li>
+                <NavLink to="/help"><IconGuide aria-hidden="true" /><span>Help</span></NavLink>
+              </li>
+            )}
           </ul>
           <label className="sheet-row">
             <span>Theme</span>
@@ -181,7 +194,7 @@ export default function Layout() {
         </Modal>
       )}
 
-      {quickAddOpen && <QuickAddSpending onClose={() => setQuickAddOpen(false)} />}
+      {quickAddOpen && <QuickAddSpending allowIncome={canAddIncome} onClose={() => setQuickAddOpen(false)} />}
     </div>
   )
 }

@@ -1,0 +1,83 @@
+# Kinkit — project guide for Claude
+
+Kinkit is a family money + home app (budgets, spending, income, goals, assets, chores, lists,
+reminders, family roles/allowances, gamification). One Go backend serves several clients.
+
+## Repository layout
+
+| Path | What | Stack |
+|---|---|---|
+| `backend-go/` | REST API under `/api`, also serves the built React SPA | Go 1.26, chi, pgx (Postgres), gorilla/sessions |
+| `react/` | Main web app (source of truth for features and UX) | React 18 + Vite, Chart.js |
+| `mobile/` | Phone app for iOS + Android (full read/write client) | Flutter / Dart |
+| `tv/flutter/` | Smart-TV viewer for Android TV / Google TV / Fire TV, **view only** | Flutter / Dart |
+| `tv/web/` | Same TV viewer for Samsung Tizen / LG webOS / TV browsers, **view only** | Plain ES5 HTML/CSS/JS |
+| `landing/` | Marketing landing page (sells + explains the product) | Static HTML/CSS/JS, EN/ID |
+| `bots/` | Telegram + Discord bots | Python |
+| `docker-compose.yml` | postgres + app + bots | |
+
+## ⚠️ Cross-surface rule (most important)
+
+**Any change to a feature, API, or data shape must be applied to every surface it touches in the
+same change.** Before finishing a task, walk this checklist:
+
+1. **Backend** (`backend-go/`) — route, handler, schema (`schema.sql`), tests (`*_test.go`).
+2. **Web** (`react/src/api.js` + the page in `react/src/pages/`).
+3. **Phone app** (`mobile/lib/api/` client + models, `mobile/lib/screens/`). If the web gains or
+   changes a user-facing feature, the phone app gets it too. Update `mobile/README.md`'s
+   feature ↔ endpoint table.
+4. **TV viewer** (`tv/flutter/lib/src/` **and** `tv/web/app.js` — keep the two in sync). Only
+   relevant when the change affects what's shown on the TV, i.e. `GET /api/tv/data`
+   (`backend-go/tvshare.go`), `/api/fx-rates`, or the web's `TVView.jsx`. The TV apps must stay
+   read-only: token auth via `?k=`, never login, never write calls. Update the field list in
+   `tv/README.md`.
+5. **Landing page** (`landing/index.html` + the Indonesian strings in `landing/main.js`). Update it
+   when a feature is added, removed, renamed, or leaves "Coming soon". Only claim features that
+   exist in the code; keep the "Feature claims → source of truth" table in `landing/README.md`
+   accurate.
+6. **Bots** (`bots/`), if the change affects chat commands or the `/api/bot/*` / internal routes.
+7. **In-app guide** (`react/src/pages/Guide.jsx`) for user-visible behaviour changes.
+
+If a surface intentionally doesn't get a change (e.g. an admin-only feature isn't put on the phone
+app), say so explicitly in your summary instead of skipping it silently.
+
+## Commands
+
+```sh
+# Backend
+cd backend-go && go build ./... && go test ./...
+# Web
+cd react && npm install && npm run dev      # build: npm run build (output react/dist, copied into the Go image)
+# Full stack
+docker compose up -d --build                # app on :5010
+# Phone app (Flutter not installed on this host; use a Flutter SDK or the ghcr.io/cirruslabs/flutter image)
+cd mobile && flutter pub get && flutter analyze && flutter test
+# TV app
+cd tv/flutter && flutter pub get && flutter analyze && flutter test
+cd tv/web && python3 -m http.server 8081
+# Landing
+cd landing && python3 -m http.server 8080
+```
+
+If `android/`/`ios/` boilerplate is missing (gradle wrapper, Xcode project), run
+`flutter create . --platforms=android,ios` (mobile) or `flutter create . --platforms=android` (tv).
+This fills in the missing files and leaves `lib/` alone.
+
+## Conventions
+
+- Money amounts are integers. Format them with the user's currency (`/api/me`); FX rates come from `/api/fx-rates`.
+- Auth: session cookie for web and phone; `X-Bot-Token` / `X-Service-Token` for bots and internal calls;
+  TV share tokens (`/api/tv-tokens`) for the TV viewers.
+- Keep visual identity consistent: the palette lives in `react/src/index.css`. Mirror changes in
+  `mobile/lib/theme.dart`, `tv/flutter/lib/src/theme.dart`, `tv/web/styles.css`, and `landing/styles.css`.
+- The web UI copy is English. The landing page is EN with an ID toggle, so when you add landing copy,
+  add its Indonesian string in `main.js`.
+- Don't commit secrets (`.env`). Use `.env.example` for new config keys.
+
+## Known gaps / TODO
+
+- The backend sends no CORS headers. A `tv/web` viewer served from a different origin needs
+  `Access-Control-Allow-Origin` on `GET /api/tv/data` and `/api/fx-rates`.
+- `/api/tv/data` has no FX rate and no "spent" total; the TV apps compute or fetch these.
+- The landing pricing tiers are placeholders (marked in an HTML comment), and the canonical domain
+  `https://kinkit.app/` is assumed.

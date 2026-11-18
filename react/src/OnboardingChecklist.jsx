@@ -44,10 +44,10 @@ export default function OnboardingChecklist() {
   if (dismissed || !state || !setup) return null
 
   const steps = [
-    { id: 'setup', done: categories.length > 0 && incomeSources.length > 0, to: '/setup', title: 'Set up income sources & categories', hint: 'Where your money comes from and what you spend it on.' },
-    { id: 'budget', done: state.budget, to: '/budgeting', title: 'Set a budget', hint: 'Plan this month\'s income and how much each category may use.' },
-    { id: 'spending', done: state.spending, to: '/spending', title: 'Log your first expense', hint: 'Use Add Spending, or import a bank CSV under Data & devices.' },
-    { id: 'bot', done: state.bot, to: '/integrations', title: 'Connect a chat bot', hint: 'Log spending from Telegram or Discord.', optional: true },
+    { id: 'setup', done: categories.length > 0 && incomeSources.length > 0, to: '/settings/general', title: 'Set up income sources & categories', hint: 'Where your money comes from and what you spend it on.' },
+    { id: 'budget', done: state.budget, to: '/budget', title: 'Set a budget', hint: 'Plan this month\'s income and how much each category may use.' },
+    { id: 'spending', done: state.spending, to: '/transactions/spending', title: 'Log your first expense', hint: 'Use Add Spending, or import a bank CSV under Settings > Data & devices.' },
+    { id: 'bot', done: state.bot, to: '/settings/bots', title: 'Connect a chat bot', hint: 'Log spending from Telegram or Discord.', optional: true },
   ]
   const required = steps.filter(s => !s.optional)
   if (required.every(s => s.done)) return null

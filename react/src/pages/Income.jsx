@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { api, formatRupiah, todayISO, MONTH_NAMES } from '../api'
 import { useYearMonth } from '../YearContext.jsx'
 import { useApi, useSetup } from '../useApi'
@@ -10,6 +10,7 @@ import StatCard from '../StatCard.jsx'
 import { SkeletonStats, SkeletonCard } from '../Skeleton.jsx'
 import { IconClose, IconEdit } from '../icons.jsx'
 import { prettyDate } from './Recurring.jsx'
+import { useAuth, canManage } from '../AuthContext.jsx'
 
 /** Default date for a new entry: today if viewing the current UTC month, else the 1st of the viewed month. */
 function defaultDate(year, month) {
@@ -55,39 +56,71 @@ function EditIncomeModal({ entry, sources, onClose, onSaved }) {
   )
 }
 
+// Income saved anywhere (page form or the quick-add modal) refreshes the Income page.
+const INCOME_EVENT = 'kinkit:income-changed'
+export const onIncomeChanged = fn => {
+  window.addEventListener(INCOME_EVENT, fn)
+  return () => window.removeEventListener(INCOME_EVENT, fn)
+}
+
+/** Add-income form, used on the Income page and in the quick-add modal. */
+export function IncomeForm({ initialDate, onSaved, autoFocus, stacked }) {
+  const { incomeSources } = useSetup()
+  const toast = useToast()
+  const [form, setForm] = useState({ tx_date: '', source_id: '', description: '', amount: '' })
+  const [saving, setSaving] = useState(false)
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+  const date = form.tx_date || initialDate || todayISO()
+
+  async function add(e) {
+    e.preventDefault()
+    if (!(Number(form.amount) > 0)) return
+    const payload = {
+      tx_date: date,
+      source_id: form.source_id ? Number(form.source_id) : null,
+      description: form.description.trim(),
+      amount: Number(form.amount),
+      client_id: `web:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`,
+    }
+    setSaving(true)
+    try {
+      await api.addIncome(payload)
+      setForm(f => ({ ...f, description: '', amount: '' }))
+      toast.success(`Added ${formatRupiah(payload.amount)} income`)
+      window.dispatchEvent(new Event(INCOME_EVENT))
+      onSaved && onSaved(payload)
+    } catch (err) { toast.error(err.message) } finally { setSaving(false) }
+  }
+
+  return (
+    <form className={stacked ? 'stacked-form' : 'card inline-form'} onSubmit={add} aria-label="Add income">
+      <input type="date" aria-label="Date" value={date} onChange={e => set('tx_date', e.target.value)} />
+      <select aria-label="Income source" value={form.source_id} onChange={e => set('source_id', e.target.value)} data-autofocus={autoFocus ? '' : undefined}>
+        <option value="">Source...</option>
+        {incomeSources.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+      </select>
+      <input placeholder="Description (optional)" aria-label="Description" value={form.description} onChange={e => set('description', e.target.value)} />
+      <MoneyInput placeholder="Amount (e.g. 10jt)" aria-label="Amount" value={form.amount} onChange={v => set('amount', v)} required />
+      <button type="submit" disabled={saving}>{saving ? 'Saving...' : 'Add income'}</button>
+    </form>
+  )
+}
+
 export default function Income() {
   const { year, month } = useYearMonth()
   const { incomeSources } = useSetup()
   const toast = useToast()
+  const { user } = useAuth()
   const res = useApi(() => api.income(year, month), [year, month])
   const [hidden, hide, unhide] = useHiddenIds()
   const [editing, setEditing] = useState(null)
-  const [form, setForm] = useState({ tx_date: '', source_id: '', description: '', amount: '' })
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+  useEffect(() => onIncomeChanged(res.reload), [res.reload])
 
   const data = res.data
   const rows = (data?.rows || []).filter(r => !hidden.has(r.id))
   const total = rows.reduce((s, r) => s + r.amount, 0)
   const planned = data?.planned || 0
   const pct = planned > 0 ? Math.round((total / planned) * 100) : null
-
-  async function add(e) {
-    e.preventDefault()
-    if (!(Number(form.amount) > 0)) return
-    const payload = {
-      tx_date: form.tx_date || defaultDate(year, month),
-      source_id: form.source_id ? Number(form.source_id) : null,
-      description: form.description.trim(),
-      amount: Number(form.amount),
-      client_id: `web:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`,
-    }
-    try {
-      await api.addIncome(payload)
-      setForm(f => ({ ...f, description: '', amount: '' }))
-      toast.success(`Added ${formatRupiah(payload.amount)} income`)
-      res.reload()
-    } catch (err) { toast.error(err.message) }
-  }
 
   function remove(r) {
     hide(r.id)
@@ -115,16 +148,7 @@ export default function Income() {
         <StatCard label="Difference" value={formatRupiah(total - planned)} tone={total - planned >= 0 ? 'positive' : 'negative'} sub={total >= planned ? 'At or above plan' : 'Still expected'} />
       </div>
 
-      <form className="card inline-form" onSubmit={add} aria-label="Add income">
-        <input type="date" aria-label="Date" value={form.tx_date || defaultDate(year, month)} onChange={e => set('tx_date', e.target.value)} />
-        <select aria-label="Income source" value={form.source_id} onChange={e => set('source_id', e.target.value)}>
-          <option value="">Source...</option>
-          {incomeSources.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-        </select>
-        <input placeholder="Description (optional)" aria-label="Description" value={form.description} onChange={e => set('description', e.target.value)} />
-        <MoneyInput placeholder="Amount (e.g. 10jt)" aria-label="Amount" value={form.amount} onChange={v => set('amount', v)} required />
-        <button type="submit">Add income</button>
-      </form>
+      {canManage(user) && <IncomeForm initialDate={defaultDate(year, month)} />}
 
       <div className="grid-2">
         <div className="card table-scroll">

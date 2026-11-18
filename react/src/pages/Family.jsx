@@ -28,13 +28,25 @@ function RoleBadge({ role }) {
   return <span className={`badge role-badge role-${role}`}>{ROLE_LABELS[role] || role}</span>
 }
 
+// Effective allowance = monthly allowance + money earned from chores this
+// month (shown as two parts).
 function AllowanceBar({ member }) {
-  const allowance = Number(member.allowance_monthly) || 0
+  const base = Number(member.allowance_monthly) || 0
+  const earned = Number(member.chore_earned_month) || 0
+  const allowance = base + earned
   if (!allowance) return null
   const pct = Math.min(100, (member.spent_this_month / allowance) * 100)
   const over = member.spent_this_month > allowance
   return (
     <div className="allowance">
+      {earned > 0 && (
+        <div className="allowance-parts muted">
+          {base > 0 && <span>Allowance {formatRupiah(base)}</span>}
+          {base > 0 && <span aria-hidden="true"> + </span>}
+          <span className="allowance-earned">🧹 {formatRupiah(earned)} earned from chores</span>
+          <span> = {formatRupiah(allowance)}</span>
+        </div>
+      )}
       <div className="progress-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)}
         aria-label={`${member.display_name} allowance used`}>
         <div className={`progress-fill ${over ? 'over' : ''}`} style={{ width: `${pct}%` }} />
@@ -181,12 +193,14 @@ function Achievements({ g }) {
                       <div className="muted">
                         {c.unit === 'amount'
                           ? `${formatRupiah(c.progress)} of ${formatRupiah(c.target)} ${over ? '- over the limit' : 'so far'}`
-                          : `${c.progress} / ${c.target} days`}
+                          : `${c.progress} / ${c.target} ${c.unit || 'days'}`}
                         {c.last_week_done && ' · completed last week too'}
                       </div>
                     </>
                   ) : (
-                    <div className="muted">Set a Wants budget for this month on the Budgeting page to unlock.</div>
+                    <div className="muted">{c.key === 'all_chores'
+                      ? 'Add some chores on the Home › Chores page to unlock.'
+                      : 'Set a Wants budget for this month on the Budgeting page to unlock.'}</div>
                   )}
                 </div>
               </li>
@@ -275,6 +289,7 @@ export default function Family() {
                     {m.is_me && <span className="muted"> (you)</span>}
                   </div>
                   <div className="muted">{m.email}</div>
+                  {m.chores_done_week > 0 && <div className="muted">🧹 {m.chores_done_week} chore{m.chores_done_week === 1 ? '' : 's'} done this week</div>}
                   {m.role === 'kid' && <AllowanceBar member={m} />}
                 </div>
                 <div className="row-actions">
@@ -294,10 +309,10 @@ export default function Family() {
         </div>
       )}
 
-      {kids.length > 0 && kids.some(k => Number(k.allowance_monthly) > 0) && (
+      {kids.length > 0 && kids.some(k => Number(k.allowance_monthly) > 0 || Number(k.chore_earned_month) > 0) && (
         <div className="card">
           <h2>Allowances ({data.month})</h2>
-          {kids.filter(k => Number(k.allowance_monthly) > 0).map(k => (
+          {kids.filter(k => Number(k.allowance_monthly) > 0 || Number(k.chore_earned_month) > 0).map(k => (
             <div key={k.id} className="allowance-row">
               <strong>{k.display_name}</strong>
               <AllowanceBar member={k} />
@@ -319,7 +334,7 @@ export default function Family() {
             ))}
           </ol>
         )}
-        <p className="muted">Log spending every day to earn points: 10 per day plus a streak bonus.</p>
+        <p className="muted">Log spending every day to earn points (10 per day plus a streak bonus), and finish chores for extra points.</p>
       </div>
 
       <Achievements g={g} />

@@ -376,3 +376,242 @@ CREATE TABLE IF NOT EXISTS budget_alerts_sent (
     UNIQUE(account_id, category_id, year, month, threshold)
 );
 -- === end money ===
+
+-- === home (shared) ===
+-- Household time zone (IANA name). All timestamps stay UTC; this is only used
+-- to turn "every day at 08:00" into the right UTC instant for the household.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS timezone TEXT NOT NULL DEFAULT 'UTC';
+-- Chat accounts linked to members (bot actor, see home_contract.go).
+ALTER TABLE members ADD COLUMN IF NOT EXISTS telegram_user_id TEXT;
+ALTER TABLE members ADD COLUMN IF NOT EXISTS discord_user_id TEXT;
+-- === end home (shared) ===
+
+-- === reminders ===
+-- Household reminders (replaces the half-built reminder_schedules table,
+-- which is kept but unused). Schedules are human ("every Monday 07:00") and
+-- interpreted in the household time zone (users.timezone); every instant
+-- stored here is UTC.
+CREATE TABLE IF NOT EXISTS reminders (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    notes TEXT NOT NULL DEFAULT '',
+    assignee_id BIGINT REFERENCES members(id) ON DELETE SET NULL,   -- NULL = whole family
+    created_by BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    kind TEXT NOT NULL CHECK (kind IN ('once','daily','weekly','monthly','yearly')),
+    time_of_day TEXT NOT NULL DEFAULT '09:00',   -- local HH:MM (recurring kinds)
+    weekdays INTEGER[] NOT NULL DEFAULT '{}',     -- weekly: 0=Sunday .. 6=Saturday
+    day_of_month INTEGER,                         -- monthly/yearly (clamped to month end)
+    start_date DATE NOT NULL DEFAULT CURRENT_DATE, -- local date; yearly uses its month
+    end_date DATE,
+    once_at TIMESTAMPTZ,                          -- kind='once'
+    escalate_to BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    escalate_after_minutes INTEGER,
+    channels TEXT[] NOT NULL DEFAULT '{chat,in-app}',
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    category TEXT NOT NULL DEFAULT 'other'
+        CHECK (category IN ('bill','medicine','school','birthday','chores','other')),
+    -- occurrences are generated from max(schedule_from, ...) onwards; reset
+    -- when the schedule changes so old instants are not re-created.
+    schedule_from TIMESTAMPTZ NOT NULL DEFAULT now(),
+    materialized_until TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS reminders_account_idx ON reminders(account_id);
+
+-- One row per due instant. UNIQUE (reminder_id, due_at) makes the worker's
+-- materialization idempotent.
+CREATE TABLE IF NOT EXISTS reminder_occurrences (
+    id BIGSERIAL PRIMARY KEY,
+    reminder_id BIGINT NOT NULL REFERENCES reminders(id) ON DELETE CASCADE,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    due_at TIMESTAMPTZ NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending','sent','done','snoozed','missed')),
+    sent_at TIMESTAMPTZ,
+    done_at TIMESTAMPTZ,
+    done_by BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    snoozed_until TIMESTAMPTZ,
+    escalated_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (reminder_id, due_at)
+);
+CREATE INDEX IF NOT EXISTS reminder_occ_account_due_idx ON reminder_occurrences(account_id, due_at);
+CREATE INDEX IF NOT EXISTS reminder_occ_open_idx ON reminder_occurrences(status) WHERE status IN ('pending','sent','snoozed');
+
+-- One-time codes for linking a member's Telegram/Discord account
+-- (sha256 of the code, 15 minute expiry).
+CREATE TABLE IF NOT EXISTS chat_link_codes (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+    code_hash TEXT NOT NULL UNIQUE,
+    expires_at TIMESTAMPTZ NOT NULL,
+    used_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Morning digest settings (no row = defaults: on, 07:00, all chat channels).
+CREATE TABLE IF NOT EXISTS digest_settings (
+    account_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    time_of_day TEXT NOT NULL DEFAULT '07:00',
+    channel TEXT NOT NULL DEFAULT 'all' CHECK (channel IN ('all','telegram','discord'))
+);
+-- one digest per household per local day (claimed before sending)
+CREATE TABLE IF NOT EXISTS digest_sends (
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    local_date DATE NOT NULL,
+    sent_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (account_id, local_date)
+);
+-- === end reminders ===
+
+-- === chores ===
+-- Chore definitions. Assignment: member_id (fixed) or rotation_member_ids
+-- (round-robin per occurrence; rotation_cursor = index of the next pick).
+-- Neither set = anyone may do it (the completer gets the credit).
+-- schedule: once (on start_date) | daily | weekly (weekdays 0=Sun..6) |
+-- monthly (day_of_month, clamped to short months). Dates are household-local
+-- calendar dates; due_time is local "HH:MM". Instances are generated up to
+-- the household's today (last_generated_date) lazily and by an hourly tick.
+CREATE TABLE IF NOT EXISTS chores (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    emoji TEXT NOT NULL DEFAULT '',
+    points INTEGER NOT NULL DEFAULT 10 CHECK (points >= 0),
+    reward_amount NUMERIC CHECK (reward_amount IS NULL OR reward_amount >= 0), -- money credited to the assignee (stored currency)
+    member_id BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    rotation_member_ids BIGINT[] NOT NULL DEFAULT '{}',
+    rotation_cursor INTEGER NOT NULL DEFAULT 0,
+    schedule TEXT NOT NULL DEFAULT 'once' CHECK (schedule IN ('once','daily','weekly','monthly')),
+    weekdays INTEGER[] NOT NULL DEFAULT '{}',
+    day_of_month INTEGER CHECK (day_of_month IS NULL OR day_of_month BETWEEN 1 AND 31),
+    start_date DATE NOT NULL,
+    end_date DATE,
+    due_time TEXT,
+    requires_approval BOOLEAN NOT NULL DEFAULT FALSE,
+    requires_photo BOOLEAN NOT NULL DEFAULT FALSE,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    last_generated_date DATE,
+    deleted_at TIMESTAMPTZ,            -- archived (kept for history) instead of hard delete
+    created_by BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS chores_account_idx ON chores(account_id) WHERE deleted_at IS NULL;
+
+-- One row per chore occurrence. points_awarded is what is currently
+-- credited to member_id for this instance (reward idempotency: approve adds
+-- the difference, undo/reject takes it back).
+CREATE TABLE IF NOT EXISTS chore_instances (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    chore_id BIGINT NOT NULL REFERENCES chores(id) ON DELETE CASCADE,
+    due_date DATE NOT NULL,
+    member_id BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    status TEXT NOT NULL DEFAULT 'todo' CHECK (status IN ('todo','submitted','approved','rejected','missed')),
+    completed_at TIMESTAMPTZ,
+    completed_by BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    approved_by BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    approved_at TIMESTAMPTZ,
+    photo_path TEXT,                   -- relative to DATA_DIR/chores
+    note TEXT NOT NULL DEFAULT '',
+    points_awarded INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (chore_id, due_date)
+);
+CREATE INDEX IF NOT EXISTS chore_instances_account_date_idx ON chore_instances(account_id, due_date);
+CREATE INDEX IF NOT EXISTS chore_instances_member_date_idx ON chore_instances(member_id, due_date);
+
+-- Money earned from chores (one row per approved instance with a reward);
+-- shown on top of the kid's monthly allowance.
+CREATE TABLE IF NOT EXISTS chore_earnings (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+    instance_id BIGINT UNIQUE REFERENCES chore_instances(id) ON DELETE SET NULL,
+    amount NUMERIC NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    earned_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS chore_earnings_member_idx ON chore_earnings(member_id, earned_at);
+-- === end chores ===
+
+-- === lists === (shared shopping lists, see lists.go)
+CREATE TABLE IF NOT EXISTS shopping_lists (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    emoji TEXT NOT NULL DEFAULT '',
+    store TEXT NOT NULL DEFAULT '',           -- store / place, free text
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    archived BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS shopping_lists_account_idx ON shopping_lists(account_id);
+
+-- recurring items ("Rice every 14 days"); put on the list lazily when due
+-- (household-local day of last_added_at + every_days, see stapleDue)
+CREATE TABLE IF NOT EXISTS staples (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    list_id BIGINT NOT NULL REFERENCES shopping_lists(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    qty TEXT NOT NULL DEFAULT '',
+    every_days INTEGER NOT NULL CHECK (every_days BETWEEN 1 AND 366),
+    last_added_at TIMESTAMPTZ,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS staples_account_idx ON staples(account_id);
+
+-- est_price is IDR base like every money column
+CREATE TABLE IF NOT EXISTS shopping_items (
+    id BIGSERIAL PRIMARY KEY,
+    list_id BIGINT NOT NULL REFERENCES shopping_lists(id) ON DELETE CASCADE,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    qty TEXT NOT NULL DEFAULT '',
+    note TEXT NOT NULL DEFAULT '',
+    category_id BIGINT REFERENCES categories(id) ON DELETE SET NULL,
+    est_price BIGINT,
+    checked BOOLEAN NOT NULL DEFAULT FALSE,
+    checked_by BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    checked_at TIMESTAMPTZ,
+    added_by BIGINT REFERENCES members(id) ON DELETE SET NULL,   -- NULL: bot/staple
+    staple_id BIGINT REFERENCES staples(id) ON DELETE SET NULL,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS shopping_items_list_idx ON shopping_items(list_id, checked, sort_order);
+
+-- one row per "finish shopping"; the trip's spending row has source='list'
+-- and the same client_id ('trip:<client uuid>')
+CREATE TABLE IF NOT EXISTS shopping_trips (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    list_id BIGINT REFERENCES shopping_lists(id) ON DELETE SET NULL,
+    total_amount BIGINT NOT NULL,
+    spending_id BIGINT REFERENCES spending(id) ON DELETE SET NULL,
+    member_id BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    client_id TEXT,
+    items JSONB NOT NULL DEFAULT '[]',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE(account_id, client_id)
+);
+
+-- per-household item history for autocomplete + remembered category
+-- (items themselves are deleted when a trip is finished)
+CREATE TABLE IF NOT EXISTS shopping_item_stats (
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name_key TEXT NOT NULL,                  -- lower-cased, single-spaced name
+    name TEXT NOT NULL,
+    times INTEGER NOT NULL DEFAULT 0,
+    category_id BIGINT REFERENCES categories(id) ON DELETE SET NULL,
+    last_added_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (account_id, name_key)
+);
+-- === end lists ===

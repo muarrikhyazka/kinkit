@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kinkit TV</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Fixed 1920x1080 stage, scaled to the screen by app.js (fitStage). -->
+  <div id="stage">
+
+    <!-- Pairing -->
+    <section id="screen-pair" class="screen" hidden>
+      <div class="pair-col">
+        <div class="brand">Kinkit TV</div>
+        <p class="muted pair-help">
+          In the Kinkit web app open <b>Settings &rsaquo; Data &amp; devices &rsaquo; TV / car display links</b>,
+          create a link, then enter the server and token here &mdash; or paste the whole link into either field.
+        </p>
+        <div class="field focusable" id="field-server" data-field="server" tabindex="-1">
+          <div class="field-label">Server address</div>
+          <div class="field-value" id="val-server"></div>
+        </div>
+        <div class="field focusable" id="field-token" data-field="token" tabindex="-1">
+          <div class="field-label">TV token (or full TV link)</div>
+          <div class="field-value" id="val-token"></div>
+        </div>
+        <div class="btn-row">
+          <div class="btn primary focusable" id="btn-connect" tabindex="-1">Connect</div>
+          <div class="btn focusable" id="btn-syskbd" tabindex="-1">System keyboard</div>
+        </div>
+        <div id="pair-error" class="error"></div>
+        <div id="pair-info" class="info"></div>
+        <div class="pair-foot muted">View-only: this TV can never change your data.</div>
+      </div>
+      <div class="kbd-col">
+        <div class="kbd-target" id="kbd-target">Typing into: Server address</div>
+        <div id="kbd"></div>
+      </div>
+      <div id="syskbd" class="overlay" hidden>
+        <div class="overlay-box">
+          <div class="field-label" id="syskbd-label">Server address</div>
+          <input id="syskbd-input" type="url" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <div class="muted">Enter / Done to accept, Back to cancel.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Viewer -->
+    <section id="screen-viewer" class="screen" hidden>
+      <header class="v-header">
+        <div class="brand">Kinkit</div>
+        <div class="v-name" id="v-name"></div>
+        <div class="v-month" id="v-month"></div>
+        <div class="v-spacer"></div>
+        <div class="badge badge-warn" id="badge-offline" hidden>OFFLINE</div>
+        <div class="badge badge-accent" id="badge-paused" hidden>PAUSED</div>
+        <div class="v-clock">
+          <div id="clock-time">--:--</div>
+          <div id="clock-date" class="muted"></div>
+        </div>
+      </header>
+      <main class="v-body" id="v-body"></main>
+      <footer class="v-footer">
+        <div id="v-dots" class="dots"></div>
+        <div id="v-updated" class="muted"></div>
+        <div class="v-spacer"></div>
+        <div class="muted">&#9664; &#9654; page &nbsp;&nbsp; OK pause &nbsp;&nbsp; hold BACK / OK or RED: settings</div>
+      </footer>
+    </section>
+
+    <!-- Settings -->
+    <section id="screen-settings" class="screen" hidden>
+      <div class="brand-plain">Settings</div>
+      <table class="kv">
+        <tr><td>Server</td><td id="s-server"></td></tr>
+        <tr><td>TV token</td><td id="s-token"></td></tr>
+        <tr><td>Last update</td><td id="s-updated"></td></tr>
+        <tr><td>Status</td><td id="s-status"></td></tr>
+      </table>
+      <div class="btn-row">
+        <div class="btn primary focusable" id="s-back" tabindex="-1">Back to dashboard</div>
+        <div class="btn focusable" id="s-refresh" tabindex="-1">Refresh now</div>
+        <div class="btn focusable" id="s-repair" tabindex="-1">Change server / token</div>
+        <div class="btn focusable" id="s-unpair" tabindex="-1">Unpair this TV</div>
+        <div class="btn focusable" id="s-exit" tabindex="-1">Exit app</div>
+      </div>
+      <p class="muted s-foot">This app is view-only. To stop this TV from showing your data, revoke its link in the web app
+        (Settings &rsaquo; Data &amp; devices &rsaquo; TV / car display links).</p>
+    </section>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

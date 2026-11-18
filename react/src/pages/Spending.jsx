@@ -43,6 +43,8 @@ export default function Spending() {
   useEffect(() => onSpendingChanged(reload), [reload])
 
   const rows = (list.data?.rows || []).filter(r => !hidden.has(r.id))
+  // Show who logged each row once more than one household member appears.
+  const showMember = new Set(rows.map(r => r.member_name).filter(Boolean)).size > 1
   const total = Math.max(0, (list.data?.total || 0) - ((list.data?.rows || []).length - rows.length))
   const totalPages = Math.max(1, Math.ceil(total / perPage))
 
@@ -96,7 +98,7 @@ export default function Spending() {
         subtitle={`${total} transactions - ${MONTHS[month - 1]} ${year}`}
         period="month"
         valueFilter
-        actions={<Link to="/import-export" className="link-btn" title="Import a bank CSV or export your data">Import / export</Link>}
+        actions={<Link to="/settings/data" className="link-btn" title="Import a bank CSV or export your data">Import / export</Link>}
       />
 
       {list.error && <div className="error-box">{list.error}</div>}
@@ -141,7 +143,10 @@ export default function Spending() {
               ) : (
                 <tr key={r.id}>
                   <td data-label="Date">{r.tx_date}</td>
-                  <td data-label="Description">{r.description}</td>
+                  <td data-label="Description">
+                    {r.description}
+                    {showMember && r.member_name && <div className="muted logged-by">by {r.member_name}</div>}
+                  </td>
                   <td data-label="Category"><span className="tag" style={{ background: categoryColor(r.category_name) + '22', color: categoryColor(r.category_name) }}>{r.category_name || 'Other'}</span></td>
                   <td data-label="Amount">{formatRupiah(r.amount)}</td>
                   <td data-label="Checked"><input type="checkbox" aria-label={`Mark "${r.description}" as checked`} checked={!!r.checked} onChange={() => handleCheck(r)} /></td>
