@@ -1,10 +1,10 @@
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import { formatRupiah } from './api'
-import { chartTheme } from './categoryColor'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend)
 
+const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark'
 const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 const resolveColor = (c) => (c.startsWith('var(') ? cssVar(c.slice(4, -1)) : c)
 
@@ -12,10 +12,10 @@ const resolveColor = (c) => (c.startsWith('var(') ? cssVar(c.slice(4, -1)) : c)
  * Line chart, built on Chart.js.
  * datasets: [{ label, data: number[], color }]
  * labels: string[] (x-axis categories)
- * onDark: force light-on-navy axis colours (TV view), regardless of the page theme
  */
-export default function LineChart({ labels, datasets, height = 260, onDark = false }) {
-  const { text: textColor, grid: gridColor } = chartTheme(onDark)
+export default function LineChart({ labels, datasets, height = 260 }) {
+  const textColor = isDark() ? '#e5e7eb' : '#1e2330'
+  const gridColor = isDark() ? '#2c3350' : '#e5e7eb'
 
   const data = {
     labels,

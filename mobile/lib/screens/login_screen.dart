@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config.dart';
 import '../state/providers.dart';
 import '../theme.dart';
+import '../widgets/kinkit_logo.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   /// Error from the initial session check (e.g. server unreachable).
@@ -114,11 +115,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Icon(Icons.family_restroom, size: 56, color: p.primary),
+                    const Center(child: KinkitLogo(size: 64)),
                     const SizedBox(height: 8),
                     Text('kinkit',
                         textAlign: TextAlign.center,
-                        style: serifStyle(fontSize: 36, color: p.text)),
+                        style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: p.text)),
                     Text('Family money & home, together',
                         textAlign: TextAlign.center, style: TextStyle(color: p.muted)),
                     const SizedBox(height: 28),

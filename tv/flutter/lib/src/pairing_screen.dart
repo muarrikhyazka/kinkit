@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'api.dart';
 import 'config.dart';
+import 'kinkit_logo.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -182,16 +183,14 @@ class _PairingScreenState extends State<PairingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ShaderMask(
-          shaderCallback: (r) => const LinearGradient(colors: [TvColors.primary, TvColors.brandEnd]).createShader(r),
-          child: const Text('Kinkit TV',
-              style: TextStyle(
-                  fontFamily: tvSerif,
-                  fontFamilyFallback: tvSerifFallback,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white)),
-        ),
+        Row(mainAxisSize: MainAxisSize.min, children: [
+          const KinkitLogo(size: 40),
+          const SizedBox(width: 12),
+          ShaderMask(
+            shaderCallback: (r) => const LinearGradient(colors: [TvColors.primary, TvColors.brandEnd]).createShader(r),
+            child: const Text('Kinkit TV', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white)),
+          ),
+        ]),
         const SizedBox(height: 6),
         const Text(
           'In the Kinkit web app open Settings > Data & devices > TV / car display links, '

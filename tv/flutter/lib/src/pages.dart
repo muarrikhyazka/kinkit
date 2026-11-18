@@ -184,7 +184,7 @@ class _Bar extends StatelessWidget {
         width: double.infinity,
         height: height,
         child: Stack(children: [
-          const Positioned.fill(child: ColoredBox(color: TvColors.track)),
+          const Positioned.fill(child: ColoredBox(color: Color(0xFF232842))),
           FractionallySizedBox(widthFactor: r, heightFactor: 1, child: ColoredBox(color: color)),
         ]),
       ),
@@ -268,9 +268,9 @@ class TrendPage extends StatelessWidget {
     return _Panel(
       title: '6-month trend',
       trailing: const Row(mainAxisSize: MainAxisSize.min, children: [
-        _Legend(color: TvColors.chartIncome, label: 'Income'),
+        _Legend(color: TvColors.positive, label: 'Income'),
         SizedBox(width: 16),
-        _Legend(color: TvColors.chartSpent, label: 'Spent'),
+        _Legend(color: TvColors.warning, label: 'Spent'),
       ]),
       child: Padding(
         padding: const EdgeInsets.only(top: 8),
@@ -329,13 +329,13 @@ class TrendPage extends StatelessWidget {
                 BarChartGroupData(x: i, barsSpace: 6, barRods: [
                   BarChartRodData(
                     toY: t[i].income.toDouble(),
-                    color: TvColors.chartIncome,
+                    color: TvColors.positive,
                     width: 26,
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
                   ),
                   BarChartRodData(
                     toY: t[i].expense.toDouble(),
-                    color: TvColors.chartSpent,
+                    color: TvColors.warning,
                     width: 26,
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
                   ),

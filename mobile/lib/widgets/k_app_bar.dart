@@ -6,7 +6,7 @@ import '../state/providers.dart';
 import '../theme.dart';
 import 'gamification_badge.dart';
 
-/// App bar used by every top-level screen: serif title with the family name
+/// App bar used by every top-level screen: title with the family name
 /// (`household_name` from /api/me) underneath, plus the points/streak chip
 /// (tap opens Family & achievements, like the web sidebar badge).
 AppBar kAppBar(BuildContext context, String title, {PreferredSizeWidget? bottom, List<Widget> actions = const []}) {

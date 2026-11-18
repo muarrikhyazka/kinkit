@@ -345,4 +345,17 @@ class KinkitApi {
     });
     return asInt(asJson(d)['spending_id']);
   }
+
+  // ------------------------------------------------------------ meal plan (backend-go/meal_plan.go)
+
+  /// GET /api/meal-plan: next week's menu, or this week's with [thisWeek].
+  Future<MealPlan> mealPlan({bool thisWeek = false}) async =>
+      MealPlan.fromJson(asJson(asJson(await _get('/meal-plan', thisWeek ? {'week': 'this'} : null))['plan']));
+
+  Future<List<MealIngredient>> mealIngredients() async =>
+      asList(asJson(await _get('/meal-plan/ingredients'))['items'], MealIngredient.fromJson);
+
+  Future<void> addMealIngredient(String name) => _post('/meal-plan/ingredients', {'name': name.trim()});
+
+  Future<void> deleteMealIngredient(int id) => _delete('/meal-plan/ingredients/$id');
 }

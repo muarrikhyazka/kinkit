@@ -192,7 +192,19 @@ export default function Guide() {
           <li><kbd>/reminders</kbd> - what's coming up</li>
           <li><kbd>/chores</kbd> - today's chores, with Done buttons</li>
           <li><kbd>/buy milk, 2 eggs</kbd>, <kbd>/list</kbd>, <kbd>/done_shopping 250k</kbd> - shopping list</li>
-          <li><kbd>/recent</kbd> - last expenses. Plain messages like <kbd>coffee 25k</kbd> still log spending.</li>
+          <li><kbd>/recent</kbd> (or <kbd>/recent 10</kbd>) - last expenses</li>
+          <li><kbd>/menu</kbd> (next week) or <kbd>/menu this</kbd> - weekly meal plan; <kbd>/ingredients</kbd>, <kbd>/addingredient chicken</kbd>, <kbd>/removeingredient chicken</kbd> - must-use ingredients</li>
+          <li><kbd>/schedule</kbd> - when the meal plan is posted, plus upcoming reminders; <kbd>/schedule meal fri 06:00</kbd> or <kbd>/schedule meal off</kbd> to change it (parents)</li>
+          <li><kbd>/feedback weekly report please</kbd> - send a feature request; <kbd>/about</kbd>, <kbd>/help</kbd></li>
+          <li>Indonesian command names work too: <kbd>/bantuan</kbd>, <kbd>/hariini</kbd>, <kbd>/ingatkan</kbd>, <kbd>/pengingat</kbd>, <kbd>/last</kbd>, <kbd>/koreksi</kbd>, <kbd>/koreksitgl</kbd>, <kbd>/tanggal</kbd>, <kbd>/bahan</kbd>, <kbd>/tambahbahan</kbd>, <kbd>/hapusbahan</kbd>, <kbd>/jadwal</kbd>, <kbd>/fitur</kbd>, <kbd>/pengeluaran</kbd>.</li>
+        </ul>
+        <p><strong>Logging spending from chat</strong></p>
+        <ul className="guide-list">
+          <li>Type the expense with the amount first or last, one per line: <kbd>makan siang 50rb</kbd>, <kbd>bensin rp20.000</kbd>, <kbd>50k lunch</kbd>. <kbd>k</kbd>/<kbd>rb</kbd> mean thousand, <kbd>jt</kbd>/<kbd>juta</kbd> million.</li>
+          <li>If a word in the description is a known keyword the expense is saved right away. Otherwise the bot shows category buttons (and a <strong>Not an expense</strong> button); after you pick one it remembers the words, so next time it is automatic. Keywords can be edited in <strong>Settings › Chat keywords</strong>.</li>
+          <li>Wrong category? <kbd>/fix bakso Food</kbd> (or <kbd>/fix 2 Food</kbd> for the second most recent) shows the matching expenses as buttons. Wrong day? <kbd>/fixdate bakso 2026-10-20</kbd>.</li>
+          <li>Catching up on old receipts? <kbd>/date 2026-10-20</kbd> logs the next expenses on that day until <kbd>/date reset</kbd>.</li>
+          <li>In a group chat the bot only answers in the household chat set under Settings › Bots. To log plain messages (not just commands) in a Telegram group, turn the bot's privacy mode off in BotFather (<kbd>/setprivacy</kbd> › Disable) or make it a group admin.</li>
         </ul>
       </Section>
 
@@ -222,6 +234,15 @@ export default function Guide() {
         </ul>
       </Section>
       {/* --- end lists --- */}
+
+      <Section Icon={IconHome} title="Home › Meals">
+        <ul className="guide-list">
+          <li>A weekly menu with one main dish and one side per day (Indonesian home cooking), at most two fried dishes a week. It stays the same all week; switch between <strong>This week</strong> and <strong>Next week</strong> at the top.</li>
+          <li><strong>Must-use ingredients</strong>: add something left over or that you want to cook (parents) and the menu gets a dish with it. The chat bot can do the same with <kbd>/addingredient</kbd> and <kbd>/removeingredient</kbd>.</li>
+          <li><strong>Post to the family chat</strong>: parents can have next week's menu posted to the connected Telegram/Discord chat on chosen days and time (for example Friday 06:00).</li>
+          <li>When the server is set up to read grocery promos, dishes whose main ingredient is on promo are preferred and the promo is shown next to the day.</li>
+        </ul>
+      </Section>
 
       <Section Icon={IconMore} title="Deleting and undo">
         <p>

@@ -13,6 +13,8 @@ import (
 // RegisterBotRoutes wires bot-token-authenticated endpoints (no session
 // cookie): /bot/config, /bot/spending, /bot/spending/recent,
 // /bot/spending/search, /bot/spending/<id>/category, /bot/spending/<id>/date.
+// More bot endpoints (meal plan, ingredients, keyword learning, feedback)
+// live in meal_plan.go and bot_extras.go.
 func RegisterBotRoutes(r chi.Router, app *App) {
 	r.Get("/bot/config", botAuth(app, botConfig))
 	r.Post("/bot/spending", botAuth(app, botAddSpending))
@@ -104,19 +106,22 @@ func botConfig(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 	rows3.Close()
 
 	categories := []string{}
-	rows4, err := app.DB.Query(ctx, "SELECT name FROM categories WHERE account_id=$1", aid)
+	categoryList := []map[string]any{} // [{id, name}] for chat category pickers (callback data carries the id)
+	rows4, err := app.DB.Query(ctx, "SELECT id, name FROM categories WHERE account_id=$1 ORDER BY id", aid)
 	if err != nil {
 		jsonError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	for rows4.Next() {
+		var id int64
 		var name string
-		if err := rows4.Scan(&name); err != nil {
+		if err := rows4.Scan(&id, &name); err != nil {
 			rows4.Close()
 			jsonError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 		categories = append(categories, name)
+		categoryList = append(categoryList, map[string]any{"id": id, "name": name})
 	}
 	rows4.Close()
 
@@ -125,6 +130,7 @@ func botConfig(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 		"mandatory_ingredients": ingredients,
 		"category_keywords":     keywords,
 		"categories":            categories,
+		"category_list":         categoryList,
 		// --- reminders ---: bots log spending on the household's local date
 		"timezone": householdLocation(ctx, app, aid).String(),
 		"today":    householdToday(ctx, app, aid, time.Now()).Format("2006-01-02"),
@@ -137,6 +143,7 @@ func botAddSpending(w http.ResponseWriter, r *http.Request, app *App, aid int64)
 		TxDate      string  `json:"tx_date"`
 		Description string  `json:"description"`
 		Category    *string `json:"category"`
+		CategoryID  *int64  `json:"category_id"` // alternative to category (chat pickers send the id)
 		Amount      int64   `json:"amount"`
 		Source      *string `json:"source"`
 	}
@@ -144,9 +151,20 @@ func botAddSpending(w http.ResponseWriter, r *http.Request, app *App, aid int64)
 		jsonError(w, http.StatusBadRequest, "invalid json")
 		return
 	}
+	if _, err := time.Parse("2006-01-02", d.TxDate); err != nil {
+		jsonError(w, http.StatusBadRequest, "tx_date must be YYYY-MM-DD")
+		return
+	}
 	ctx := context.Background()
 	var catID *int64
-	if d.Category != nil && *d.Category != "" {
+	if d.CategoryID != nil {
+		var name string
+		if err := app.DB.QueryRow(ctx, "SELECT name FROM categories WHERE id=$1 AND account_id=$2", *d.CategoryID, aid).Scan(&name); err != nil {
+			jsonError(w, http.StatusBadRequest, "unknown category")
+			return
+		}
+		catID, d.Category = d.CategoryID, &name
+	} else if d.Category != nil && *d.Category != "" {
 		var id int64
 		err := app.DB.QueryRow(ctx, "SELECT id FROM categories WHERE name=$1 AND account_id=$2", *d.Category, aid).Scan(&id)
 		if err == nil {
@@ -157,23 +175,28 @@ func botAddSpending(w http.ResponseWriter, r *http.Request, app *App, aid int64)
 	if d.Source != nil && *d.Source != "" {
 		source = *d.Source
 	}
+	// attribute the row to the linked household member (if any)
+	var memberID *int64
+	if m, ok := botActor(ctx, app, r, aid); ok {
+		memberID = &m.ID
+	}
 	var newID int64
 	err := app.DB.QueryRow(ctx,
-		"INSERT INTO spending (account_id, tx_date, description, category_id, category_name, amount, source) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id",
-		aid, d.TxDate, d.Description, catID, d.Category, d.Amount, source).Scan(&newID)
+		"INSERT INTO spending (account_id, tx_date, description, category_id, category_name, amount, source, member_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id",
+		aid, d.TxDate, d.Description, catID, d.Category, d.Amount, source, memberID).Scan(&newID)
 	if err != nil {
 		jsonError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	app.awardPointsForLog(ctx, aid)
-	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "id": newID})
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "id": newID, "category": d.Category})
 }
 
 func botRecentSpending(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 	n := 5
 	if v := r.URL.Query().Get("n"); v != "" {
 		if parsed, err := strconv.Atoi(v); err == nil {
-			n = parsed
+			n = min(max(parsed, 1), 50)
 		}
 	}
 	rows, err := app.DB.Query(context.Background(),
@@ -236,7 +259,8 @@ func botUpdateCategory(w http.ResponseWriter, r *http.Request, app *App, aid int
 		return
 	}
 	var d struct {
-		Category *string `json:"category"`
+		Category   *string `json:"category"`
+		CategoryID *int64  `json:"category_id"` // alternative to category
 	}
 	if err := decodeJSON(r, &d); err != nil {
 		jsonError(w, http.StatusBadRequest, "invalid json")
@@ -244,18 +268,30 @@ func botUpdateCategory(w http.ResponseWriter, r *http.Request, app *App, aid int
 	}
 	ctx := context.Background()
 	var catID *int64
-	if d.Category != nil {
+	if d.CategoryID != nil {
+		var name string
+		if err := app.DB.QueryRow(ctx, "SELECT name FROM categories WHERE id=$1 AND account_id=$2", *d.CategoryID, aid).Scan(&name); err != nil {
+			jsonError(w, http.StatusBadRequest, "unknown category")
+			return
+		}
+		catID, d.Category = d.CategoryID, &name
+	} else if d.Category != nil {
 		var id int64
 		if err := app.DB.QueryRow(ctx, "SELECT id FROM categories WHERE name=$1 AND account_id=$2", *d.Category, aid).Scan(&id); err == nil {
 			catID = &id
 		}
 	}
-	if _, err := app.DB.Exec(ctx, "UPDATE spending SET category_id=$1, category_name=$2 WHERE id=$3 AND account_id=$4",
-		catID, d.Category, sid, aid); err != nil {
+	tag, err := app.DB.Exec(ctx, "UPDATE spending SET category_id=$1, category_name=$2 WHERE id=$3 AND account_id=$4",
+		catID, d.Category, sid, aid)
+	if err != nil {
 		jsonError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
+	if tag.RowsAffected() == 0 {
+		jsonError(w, http.StatusNotFound, "not found")
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "category": d.Category})
 }
 
 func botUpdateDate(w http.ResponseWriter, r *http.Request, app *App, aid int64) {

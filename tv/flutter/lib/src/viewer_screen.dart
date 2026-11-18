@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'api.dart';
 import 'config.dart';
+import 'kinkit_logo.dart';
 import 'models.dart';
 import 'money.dart';
 import 'pages.dart';
@@ -353,26 +354,17 @@ class _ViewerScreenState extends State<ViewerScreen> {
     return SizedBox(
       height: 44,
       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        const KinkitLogo(size: 38),
+        const SizedBox(width: 10),
         ShaderMask(
           shaderCallback: (r) => const LinearGradient(colors: [TvColors.primary, TvColors.brandEnd]).createShader(r),
-          child: const Text('Kinkit',
-              style: TextStyle(
-                  fontFamily: tvSerif,
-                  fontFamilyFallback: tvSerifFallback,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white)),
+          child: const Text('Kinkit', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white)),
         ),
         if (name != null) ...[
           const SizedBox(width: 14),
           Flexible(
             child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontFamily: tvSerif,
-                    fontFamilyFallback: tvSerifFallback,
-                    fontSize: 22,
-                    color: TvColors.text,
-                    fontWeight: FontWeight.w600)),
+                style: const TextStyle(fontSize: 20, color: TvColors.muted, fontWeight: FontWeight.w600)),
           ),
         ],
         const SizedBox(width: 18),

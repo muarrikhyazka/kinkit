@@ -1,33 +1,21 @@
 import 'package:flutter/material.dart';
 
-/// Kinkit brand on a 10-foot dark canvas: deep navy background, Persian Blue
-/// (#16284C) cards, cream (#EFE8DA) text, amber (#FFB92E) accents, progress
-/// and focus rings. Kept in sync with tv/web/styles.css.
+/// Colours from react/src/index.css (.tv-* rules and the dark theme tokens).
 class TvColors {
-  static const bg = Color(0xFF0D1830);
-  static const card = Color(0xFF16284C);
-  static const cardHi = Color(0xFF1F3560);
-  static const border = Color(0xFF2A3D66);
-  static const track = Color(0xFF0F1D3A);
-  static const text = Color(0xFFEFE8DA);
-  static const muted = Color(0xFFA9B1C2);
-  static const primary = Color(0xFFFFB92E); // amber
-  static const onPrimary = Color(0xFF16284C);
-  static const accent = Color(0xFF9DB4E3); // light navy tint (panel titles, savings)
-  static const brandEnd = Color(0xFFFFD98A);
-  static const button = Color(0xFF2A4A8A);
-  static const positive = Color(0xFF6FCF97);
-  static const negative = Color(0xFFF2877E);
-  static const warning = Color(0xFFFF9D5C);
-  static const focus = Color(0xFFFFB92E);
-  // Trend chart: navy tint for income, amber for spending.
-  static const chartIncome = Color(0xFF8FA8DB);
-  static const chartSpent = Color(0xFFFFB92E);
+  static const bg = Color(0xFF0B0E1A);
+  static const card = Color(0xFF151A2E);
+  static const cardHi = Color(0xFF1C2238);
+  static const border = Color(0xFF262D47);
+  static const text = Color(0xFFF1F3F8);
+  static const muted = Color(0xFF9CA3AF);
+  static const primary = Color(0xFF818CF8);
+  static const accent = Color(0xFFC4B5FD);
+  static const brandEnd = Color(0xFFC084FC);
+  static const positive = Color(0xFF4ADE80);
+  static const negative = Color(0xFFF87171);
+  static const warning = Color(0xFFFBBF24);
+  static const focus = Color(0xFFFFFFFF);
 }
-
-/// Serif for the wordmark and headlines (platform serif, nothing bundled).
-const tvSerif = 'serif';
-const tvSerifFallback = <String>['Noto Serif', 'Georgia', 'Times New Roman'];
 
 ThemeData buildTvTheme() {
   final base = ThemeData(
@@ -36,7 +24,6 @@ ThemeData buildTvTheme() {
     scaffoldBackgroundColor: TvColors.bg,
     colorScheme: const ColorScheme.dark(
       primary: TvColors.primary,
-      onPrimary: TvColors.onPrimary,
       secondary: TvColors.accent,
       surface: TvColors.card,
       error: TvColors.negative,

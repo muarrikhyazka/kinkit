@@ -651,3 +651,33 @@ BEGIN
     END IF;
 END $$;
 -- === end household reminders ===
+
+-- === meal plan + chat bot extras (merged from the household "rumahbot") ===
+-- reminder_schedules (above, otherwise unused) holds bot-side scheduled jobs:
+-- job_name 'meal_plan' = weekly meal plan posted to the household chat.
+-- days = comma-separated weekdays (0=Sunday .. 6=Saturday), hour/minute are
+-- household-local, last_run = household-local date (YYYY-MM-DD) of the last
+-- post (claimed before sending). start_date: first local date it may run.
+ALTER TABLE reminder_schedules ADD COLUMN IF NOT EXISTS start_date DATE;
+-- Grocery promos scraped from public store catalogs (MEAL_PROMO_STORES).
+-- Public data shared by every household (no account_id); the whole table is
+-- replaced on each successful scrape.
+CREATE TABLE IF NOT EXISTS grocery_promos (
+    id BIGSERIAL PRIMARY KEY,
+    store TEXT NOT NULL,
+    name TEXT NOT NULL,
+    price TEXT NOT NULL DEFAULT '',
+    link TEXT NOT NULL DEFAULT '',
+    scraped_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+-- Feature requests sent from chat (/feedback, alias /fitur).
+CREATE TABLE IF NOT EXISTS bot_feedback (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    member_id BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    chat_user TEXT NOT NULL DEFAULT '',
+    text TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS bot_feedback_account_idx ON bot_feedback(account_id, created_at);
+-- === end meal plan + chat bot extras ===

@@ -132,6 +132,7 @@ func main() {
 	app.startMoneyWorker(context.Background())     // --- money ---: recurring generation + budget alerts
 	app.startRemindersWorker(context.Background()) // --- reminders ---: occurrences, chat sends, escalation, digest
 	app.startChoreWorker(context.Background())     // --- chores ---: hourly chore instance generation
+	app.startMealPlanWorker(context.Background())  // --- meal plan ---: weekly meal plan chat post (+ promo scrape)
 
 	r := newRouter(app)
 
@@ -169,6 +170,7 @@ func newRouter(app *App) http.Handler {
 		RegisterReminderRoutes(api, app)     // --- reminders ---: reminders, today, household tz/digest, chat link, bot
 		RegisterChoreRoutes(api, app)        // --- chores ---: chores, instances, approvals, /bot/chores/*
 		RegisterListRoutes(api, app)         // --- lists ---: shopping lists, staples, finish shopping, /bot/lists/*
+		RegisterMealPlanRoutes(api, app)     // --- meal plan ---: meal plan, ingredients, schedule, bot keywords, /bot/meal-plan etc.
 	})
 
 	if app.Cfg.StaticDir != "" {

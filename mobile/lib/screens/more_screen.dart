@@ -46,7 +46,7 @@ class MoreScreen extends ConsumerWidget {
                   Text('FAMILY NAME',
                       style: TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: p.muted)),
                   const SizedBox(height: 2),
-                  Text(me.householdName, style: serifStyle(fontSize: 26, color: p.text)),
+                  Text(me.householdName, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: p.text)),
                 ],
               ),
             ),
@@ -54,9 +54,9 @@ class MoreScreen extends ConsumerWidget {
             Card(
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: p.accent,
+                  backgroundColor: p.primaryLight,
                   child: Text(me.displayName.isEmpty ? '?' : me.displayName.substring(0, 1).toUpperCase(),
-                      style: serifStyle(color: p.onAccent)),
+                      style: TextStyle(color: p.primary, fontWeight: FontWeight.w700)),
                 ),
                 title: Text(me.displayName),
                 subtitle: Text('${me.email}\n${_roleLabel(me.role)}'),

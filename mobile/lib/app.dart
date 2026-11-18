@@ -5,6 +5,7 @@ import 'screens/home_shell.dart';
 import 'screens/login_screen.dart';
 import 'state/providers.dart';
 import 'theme.dart';
+import 'widgets/kinkit_logo.dart';
 
 final _navigatorKey = GlobalKey<NavigatorState>();
 
@@ -63,9 +64,9 @@ class _Splash extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.family_restroom, size: 56, color: p.primary),
+            const KinkitLogo(size: 64),
             const SizedBox(height: 12),
-            Text('kinkit', style: serifStyle(fontSize: 32, color: p.text)),
+            Text('kinkit', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: p.text)),
             const SizedBox(height: 24),
             const CircularProgressIndicator(),
           ],

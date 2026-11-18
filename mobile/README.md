@@ -50,8 +50,11 @@ flutter build ipa --release --dart-define=KINKIT_BASE_URL=https://kinkit.example
   builds are signed with the debug key (OK for testing, not for Play).
 - iOS: open `ios/Runner.xcworkspace` once to set your Team / bundle id
   (`PRODUCT_BUNDLE_IDENTIFIER`) before `flutter build ipa`.
-- The launcher icon is a placeholder vector (`android/app/src/main/res/drawable/ic_launcher.xml`).
-  Use `flutter_launcher_icons` for real icons on both platforms.
+- Launcher icons follow `brand/kinkit-logo.svg`: Android uses an adaptive vector icon
+  (`res/drawable-anydpi-v26/ic_launcher.xml` + `drawable-v26/ic_launcher_{background,foreground}.xml`)
+  with a vector fallback in `res/drawable/ic_launcher.xml`; iOS uses the single-size 1024px
+  `ios/Runner/Assets.xcassets/AppIcon.appiconset`. In-app the same logo is drawn by
+  `lib/widgets/kinkit_logo.dart` (splash + login).
 
 ## Configuring the server URL
 
@@ -91,14 +94,14 @@ lib/
   main.dart              bootstrap: SharedPreferences + PersistCookieJar, ProviderScope
   app.dart               MaterialApp, light/dark theme, AuthGate (login vs app)
   config.dart            --dart-define default server URL, URL normalisation
-  theme.dart             brand palette (Persian Blue #16284C, Cream #EFE8DA, Amber #FFB92E), light + dark ThemeData
+  theme.dart             palette from react/src/index.css (light + dark), ThemeData
   api/
     api_client.dart      KinkitApi (dio): typed methods for every endpoint used, ApiException
     models.dart          lenient JSON models mirroring backend-go structs
   state/
     providers.dart       Riverpod: prefs, base URL, theme mode, API client, auth, money formatter, selected month
     data_providers.dart  Riverpod FutureProviders per feature + invalidation helpers
-  screens/               login, home shell (bottom nav), today, household (reminders/chores/lists),
+  screens/               login, home shell (bottom nav), today, household (reminders/chores/lists/meals),
                          list detail, money (dashboard/spending/income/budget/goals tabs),
                          family, more, settings
   widgets/               async/empty/error states, month picker, stat cards, amount field,
@@ -114,8 +117,8 @@ State management: **Riverpod** (`flutter_riverpod`). Feature data uses
 `notifySpendingChanged()`).
 
 Navigation mirrors the web nav (`react/src/routes.jsx`): bottom bar
-**Today / Home / Money / Family / More**. Home has Reminders, Chores and
-Lists tabs; Money has Dashboard, Spending, Income, Budget and Goals tabs;
+**Today / Home / Money / Family / More**. Home has Reminders, Chores,
+Lists and Meals tabs; Money has Dashboard, Spending, Income, Budget and Goals tabs;
 More holds profile, settings and logout. Menus are hidden by role the same way the web
 does it (kids don't see income/budget/goals; viewers can't add; only
 family admins/parents edit budgets, goals and income). The backend still enforces
@@ -151,8 +154,11 @@ Amount inputs are entered in IDR (with web-style shorthand: `25k`, `2rb`,
 | Reminders (household categories, every N weeks/months, template gallery in the create sheet) | Home > Reminders (web: top-level `/reminders`) | `GET /api/reminders/upcoming?days=7`, `GET /api/reminders` (rows include `interval`), `PATCH /api/reminders/{id}` `{active}`, `DELETE /api/reminders/{id}`, `POST /api/reminders/occurrences/{id}/done`, `POST /api/reminders/occurrences/{id}/snooze` `{minutes}` or `{until: "tomorrow"}`, `POST /api/reminders` `{title, kind, start_date, time_of_day, category, notes, weekdays?, day_of_month?, interval, assignee_id?}`, `GET /api/family` (who-is-it-for picker) |
 | Chores | Home > Chores | `GET /api/chores/today`, `POST /api/chores/{instanceId}/complete` / `approve` / `reject` / `undo` `{note}` |
 | Shopping lists | Home > Lists | `GET /api/lists`, `POST /api/lists` `{name}` (emoji sent empty), `GET /api/lists/{id}`, `POST /api/lists/{id}/items` `{text}`, `PATCH /api/lists/{id}/items/{itemId}` `{checked}`, `DELETE /api/lists/{id}/items/{itemId}`, `POST /api/lists/{id}/clear-checked`, `POST /api/lists/{id}/finish` `{client_id, total_amount}` (finish shopping -> spending) |
+| Meal plan + must-use ingredients | Home > Meals (web: `/home/meals`) | `GET /api/meal-plan` (`?week=this` for this week), `GET /api/meal-plan/ingredients`, `POST /api/meal-plan/ingredients` `{name}`, `DELETE /api/meal-plan/ingredients/{id}` |
 
 ### Web-only for now (intentionally not on the phone yet)
+
+- Meal plan chat-post schedule (`GET/PUT /api/meal-plan/schedule`) and the chat bot keyword list (Settings > Chat keywords, `/api/bot-keywords`): parent settings, web only
 
 - Creating/editing chore definitions and schedules, chore photo proof
   (chores that require a photo are shown with a camera hint), staples,

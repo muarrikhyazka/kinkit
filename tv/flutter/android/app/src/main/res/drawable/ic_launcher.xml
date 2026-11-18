@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Placeholder launcher icon (vector). `flutter create .` or a tool like
-     flutter_launcher_icons can replace it with mipmap PNGs. -->
+<!-- Kinkit launcher icon (pre-Android 8 fallback), drawn from brand/kinkit-logo.svg:
+     indigo tile (#4F46E5) with the white house mark. Android 8+ uses the adaptive
+     icon in drawable-anydpi-v26/ic_launcher.xml. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="48dp"
     android:height="48dp"
-    android:viewportWidth="48"
-    android:viewportHeight="48">
-    <path android:fillColor="#16284C"
-        android:pathData="M10,0h28a10,10 0,0 1,10 10v28a10,10 0,0 1,-10 10h-28a10,10 0,0 1,-10 -10v-28a10,10 0,0 1,10 -10z" />
-    <path android:fillColor="#8FA8DB" android:pathData="M11,28h6v10h-6z" />
-    <path android:fillColor="#FFB92E" android:pathData="M21,20h6v18h-6z" />
-    <path android:fillColor="#EFE8DA" android:pathData="M31,12h6v26h-6z" />
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <path
+        android:fillColor="#4F46E5"
+        android:pathData="M16,0H48A16,16 0,0 1,64 16V48A16,16 0,0 1,48 64H16A16,16 0,0 1,0 48V16A16,16 0,0 1,16 0Z" />
+    <group>
+        <path
+            android:pathData="M14,31L32,16L50,31"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="5"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M19,28V46A3,3 0,0 0,22 49H42A3,3 0,0 0,45 46V28"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="5"
+            android:strokeLineJoin="round" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M26.5,39A5.5,5.5 0,1 0,37.5 39A5.5,5.5 0,1 0,26.5 39Z" />
+    </group>
 </vector>

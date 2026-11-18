@@ -73,16 +73,17 @@ Notes:
 - The manifest declares `LEANBACK_LAUNCHER`, `android.software.leanback` / `android.hardware.touchscreen`
   as `required="false"`, `INTERNET`, `usesCleartextTraffic="true"` (LAN servers over plain http), and
   `FLAG_KEEP_SCREEN_ON` so the screen doesn't sleep.
-- `res/drawable/banner.xml` (320x180dp) and `res/drawable/ic_launcher.xml` are placeholder vector art.
-  For Play Store / Amazon Appstore, add a 320x180 `res/drawable-xhdpi/banner.png` with the wordmark
-  and proper mipmap launcher icons, and set up a real release `signingConfig` (sideload builds use the debug key).
+- `res/drawable/banner.xml` (320x180dp: logo mark + "Kinkit" wordmark on indigo) and the launcher icon
+  (`res/drawable/ic_launcher.xml`, adaptive version in `drawable-anydpi-v26/`) are vector art drawn from
+  `brand/kinkit-logo.svg`; `lib/src/kinkit_logo.dart` draws the same logo in the header and pairing screen.
+  Set up a real release `signingConfig` before store submission (sideload builds use the debug key).
 - The layout is drawn on a fixed 960x540dp canvas and scaled to the screen (`TvCanvas`), with
   48dp/27dp overscan margins, so it looks the same on 720p, 1080p and 4K boxes.
 
 ## 4. Web build (Samsung Tizen / LG webOS / any browser)
 
 `tv/web/` is the whole app: `index.html`, `styles.css`, `app.js` (ES5, no dependencies),
-`config.xml` (Tizen), `appinfo.json` (webOS), and placeholder icons. It's laid out
+`config.xml` (Tizen), `appinfo.json` (webOS), and icons rendered from `brand/kinkit-logo.svg` (the same logo is inlined as SVG in `index.html`). It's laid out
 on a 1920x1080 stage that scales to the window, with a 5% overscan margin.
 
 **Quick test in any browser:** serve the folder (`python3 -m http.server -d tv/web 8080`) and open

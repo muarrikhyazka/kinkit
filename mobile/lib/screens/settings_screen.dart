@@ -74,7 +74,7 @@ class SettingsScreen extends ConsumerWidget {
                   title: const Text('Family name'),
                   subtitle: Text(
                     (me?.householdName.trim().isNotEmpty ?? false) ? me!.householdName : 'Not set',
-                    style: serifStyle(fontSize: 16, color: p.text),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: p.text),
                   ),
                   trailing: (me?.role == 'owner')
                       ? Tooltip(

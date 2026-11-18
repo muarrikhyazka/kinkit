@@ -10,24 +10,30 @@ import '../util/dates.dart';
 import '../widgets/async_view.dart';
 import '../widgets/k_app_bar.dart';
 import 'list_detail_screen.dart';
+import 'meal_plan_screen.dart';
 
-/// Home section: Reminders / Chores / Lists (web: /reminders, /home/chores,
-/// /home/lists; the phone keeps reminders as a Home tab), backed by
-/// backend-go/reminders.go, chores.go and lists.go.
+/// Home section: Reminders / Chores / Lists / Meals (web: /reminders,
+/// /home/chores, /home/lists, /home/meals; the phone keeps reminders as a
+/// Home tab), backed by backend-go/reminders.go, chores.go, lists.go and
+/// meal_plan.go.
 class HouseholdScreen extends StatelessWidget {
   const HouseholdScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: kAppBar(
           context,
           'Home',
-          bottom: const TabBar(tabs: [Tab(text: 'Reminders'), Tab(text: 'Chores'), Tab(text: 'Lists')]),
+          bottom: const TabBar(
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
+            tabs: [Tab(text: 'Reminders'), Tab(text: 'Chores'), Tab(text: 'Lists'), Tab(text: 'Meals')],
+          ),
         ),
-        body: const TabBarView(children: [RemindersTab(), ChoresTab(), ListsTab()]),
+        body: const TabBarView(children: [RemindersTab(), ChoresTab(), ListsTab(), MealsTab()]),
       ),
     );
   }

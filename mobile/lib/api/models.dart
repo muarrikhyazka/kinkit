@@ -1182,3 +1182,63 @@ class Reminder {
 
   String get categoryLabel => reminderCategoryLabel(category);
 }
+
+// ---------------------------------------------------------------- meal plan
+
+/// GET /api/meal-plan -> {plan: {...}} (backend-go/meal_plan.go)
+class MealPromo {
+  final String store, name, price, link;
+  const MealPromo({required this.store, required this.name, required this.price, required this.link});
+  factory MealPromo.fromJson(Json j) => MealPromo(
+        store: asString(j['store']),
+        name: asString(j['name']),
+        price: asString(j['price']),
+        link: asString(j['link']),
+      );
+}
+
+class MealDay {
+  final String day, date, protein, veggie;
+  final bool fried;
+  final MealPromo? promo;
+  const MealDay({required this.day, required this.date, required this.protein, required this.veggie, required this.fried, this.promo});
+  factory MealDay.fromJson(Json j) => MealDay(
+        day: asString(j['day']),
+        date: asString(j['date']),
+        protein: asString(j['protein']),
+        veggie: asString(j['veggie']),
+        fried: asBool(j['fried']),
+        promo: j['promo'] is Map ? MealPromo.fromJson(asJson(j['promo'])) : null,
+      );
+}
+
+class MealPlan {
+  final String weekStart, weekEnd;
+  final List<MealDay> days;
+  final List<String> ingredients, missing;
+  final int promoCount;
+  const MealPlan({
+    required this.weekStart,
+    required this.weekEnd,
+    required this.days,
+    required this.ingredients,
+    required this.missing,
+    required this.promoCount,
+  });
+  factory MealPlan.fromJson(Json j) => MealPlan(
+        weekStart: asString(j['week_start']),
+        weekEnd: asString(j['week_end']),
+        days: asList(j['days'], MealDay.fromJson),
+        ingredients: (j['ingredients'] is List) ? (j['ingredients'] as List).map((e) => e.toString()).toList() : const [],
+        missing: (j['missing'] is List) ? (j['missing'] as List).map((e) => e.toString()).toList() : const [],
+        promoCount: asInt(j['promo_count']),
+      );
+}
+
+/// GET /api/meal-plan/ingredients -> {items: [{id, name}]}
+class MealIngredient {
+  final int id;
+  final String name;
+  const MealIngredient({required this.id, required this.name});
+  factory MealIngredient.fromJson(Json j) => MealIngredient(id: asInt(j['id']), name: asString(j['name']));
+}

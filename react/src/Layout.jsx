@@ -9,7 +9,7 @@ import QuickAddSpending from './QuickAddSpending.jsx'
 import GamificationBadge from './GamificationBadge.jsx'
 import Modal from './Modal.jsx'
 import OnboardingChecklist from './OnboardingChecklist.jsx'
-import { IconLogout, IconCollapse, IconExpand, IconSun, IconMoon, IconPlus, IconMore, IconClose, IconGuide } from './icons.jsx'
+import { IconLogout, IconCollapse, IconExpand, IconSun, IconMoon, IconPlus, IconMore, IconClose, IconGuide, KinkitLogo } from './icons.jsx'
 
 const COLLAPSE_KEY = 'kinkit_sidebar_collapsed'
 
@@ -95,9 +95,12 @@ export default function Layout() {
       <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-top">
           {!collapsed && (
-            <div className="brand-block">
-              <div className="brand">Kinkit</div>
-              {familyName && <div className="brand-family" title={familyName}>{familyName}</div>}
+            <div className="brand-row">
+              <KinkitLogo className="brand-logo" aria-hidden="true" />
+              <div className="brand-block">
+                <div className="brand">Kinkit</div>
+                {familyName && <div className="brand-family" title={familyName}>{familyName}</div>}
+              </div>
             </div>
           )}
           <button className="icon-btn collapse-toggle" onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expand' : 'Collapse'} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-expanded={!collapsed}>
@@ -142,9 +145,12 @@ export default function Layout() {
 
       {/* ---- mobile (<640px): slim top bar + bottom tabs + FAB ---- */}
       <header className="mobile-topbar">
-        <div className="brand-block">
-          <div className="brand">Kinkit</div>
-          {familyName && <div className="brand-family" title={familyName}>{familyName}</div>}
+        <div className="brand-row">
+          <KinkitLogo className="brand-logo" aria-hidden="true" />
+          <div className="brand-block">
+            <div className="brand">Kinkit</div>
+            {familyName && <div className="brand-family" title={familyName}>{familyName}</div>}
+          </div>
         </div>
         <ConnStatus serverOnline={serverOnline} queueSize={queueSize} />
         {!isAdmin && (

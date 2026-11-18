@@ -1,12 +1,6 @@
 # Kinkit landing page
 
-The static marketing site for Kinkit. It is plain HTML, CSS and JS, with no build step, no dependencies and no external images.
-The page loads one Google Font, **DM Serif Display**, for headlines (`fonts.googleapis.com`, `display=swap`); if it is blocked the
-headlines fall back to Georgia/serif. Body text uses the system sans stack.
-
-Brand palette: Persian Blue `#16284C` (nav, hero, final CTA, footer), Cream `#EFE8DA` (body sections; cards `#FBF8F1`,
-borders `#DDD3C0`) and Amber `#FFB92E` (highlights, primary CTA with navy text, icons, tags). Dark mode uses `#0D1830`
-backgrounds with `#16284C` cards. Amber is never used as text on cream; amber-family text there uses `#8A5A00` for AA contrast.
+The static marketing site for Kinkit. It is plain HTML, CSS and JS, with no build step, no dependencies and no external images or fonts.
 
 ```
 landing/
@@ -15,7 +9,7 @@ landing/
 ├── main.js             # app links (APP_URL), menu, scroll reveal, FAQ, EN/ID toggle + Indonesian strings
 └── assets/
     ├── mockups.css     # CSS-built phone / laptop / TV device mockups of the dashboard
-    ├── favicon.svg     # same artwork as the inline data-URI favicon in index.html
+    ├── favicon.svg     # canonical logo (copy of brand/kinkit-logo.svg); same artwork as the inline favicon and #logo sprite in index.html
     └── og-image.svg    # 1200x630 social card
 ```
 
@@ -113,7 +107,8 @@ The page should only claim what the code does. When a feature changes, find its 
 | Chores with points, approval, photo proof, allowance earnings | `react/src/pages/Chores.jsx`, `backend-go/chores*.go`, allowance in `backend-go/family.go` |
 | Household reminders (cleaning/laundry/kitchen/groceries/home maintenance/vehicle/self-care plus bill/medicine/school/birthday), every N weeks/months, household templates, chat nudges | `react/src/pages/Reminders.jsx` (`REMINDER_TEMPLATES`), `backend-go/reminders*.go` (`reminderCategoryIDs`, `repeat_interval`) |
 | Shared shopping lists, bulk add, "finish trip" → spending | `react/src/pages/Lists.jsx`, `backend-go/lists*.go` |
-| Bot commands `/today` `/remind` `/buy` `/chores` | `bots/telegram_bot.py`, `bots/discord_bot.py`, `backend-go/*_bot.go` |
+| Bot commands `/today` `/remind` `/buy` `/chores` `/menu` | `bots/telegram_bot.py`, `bots/discord_bot.py`, `bots/kinkit_common.py`, `backend-go/*_bot.go`, `backend-go/meal_plan.go` |
+| Bot category buttons for new words, learned keywords | `bots/kinkit_common.py` (`log_spending`, `spc:` callbacks), `backend-go/bot_extras.go` (`/api/bot/keywords/learn`) |
 | Points (10/day + streak bonus) and levels Getting Started → Tracker → Budget Buddy → Money Master → Finance Wizard | `backend-go/gamification.go` (`badgeThresholds`), `react/src/GamificationBadge.jsx` |
 | Badges: First Log, First Budget Set, Streak 7, Streak 30, Under Budget, Saver | `badgeCatalog` in `backend-go/achievements.go` |
 | Weekly family challenges (log every day, no-spend weekend, Wants under a week's share) | `backend-go/achievements.go` |

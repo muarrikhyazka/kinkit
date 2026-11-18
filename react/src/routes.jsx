@@ -17,6 +17,8 @@ import Today from './pages/Today.jsx'
 import Reminders from './pages/Reminders.jsx'
 import Chores from './pages/Chores.jsx'
 import Lists from './pages/Lists.jsx'
+import MealPlan from './pages/MealPlan.jsx'
+import BotKeywords from './pages/BotKeywords.jsx'
 import { IconGoal } from './moneyIcons.jsx'
 import { IconDashboard, IconBudget, IconSpending, IconSetup, IconGuide, IconShield, IconToday, IconHome, IconBell } from './icons.jsx'
 
@@ -54,6 +56,7 @@ export const APP_ROUTES = [
     tabs: [
       { path: 'chores', label: 'Chores', Component: Chores },
       { path: 'lists', label: 'Lists', Component: Lists },
+      { path: 'meals', label: 'Meals', Component: MealPlan },
     ],
   },
   { path: 'dashboard', label: 'Dashboard', Icon: IconDashboard, Component: Dashboard, area: 'tenant', mobile: 'more', group: 'Money' },
@@ -79,6 +82,7 @@ export const APP_ROUTES = [
     tabs: [
       { path: 'general', label: 'Categories & accounts', Component: Setup, roles: MANAGERS },
       { path: 'bots', label: 'Bots', Component: Integrations, roles: MANAGERS },
+      { path: 'chat-keywords', label: 'Chat keywords', Component: BotKeywords, roles: MANAGERS },
       { path: 'data', label: 'Data & devices', Component: ImportExport, roles: MANAGERS },
       { path: 'display', label: 'Display', Component: DisplaySettings },
     ],

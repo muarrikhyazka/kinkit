@@ -8,9 +8,19 @@ each incoming message through that tenant's X-Bot-Token to the backend.
 Every /api/bot call carries X-Bot-User "telegram:<user id>" so the backend
 knows which household member is talking (after /link).
 
-Features: spending logging ("50k lunch"), /today, /remind, /reminders,
-/chores, /buy, /list, /done_shopping, /link, /help, and inline-keyboard
-buttons on reminder / chore messages (callback_query).
+Features: spending logging ("50k lunch", "makan siang 50rb", one per line;
+unknown words get a category picker that teaches the bot), /recent, /fix,
+/fixdate, /date, /today, /remind, /reminders, /chores, /buy, /list,
+/done_shopping, /menu, /ingredients, /addingredient, /removeingredient,
+/schedule, /feedback, /link, /about, /help (plus rumahbot's Indonesian
+names as aliases, see kinkit_common.ALIASES), and inline-keyboard buttons
+(callback_query) on reminder / chore / picker messages.
+
+Household group chats: the integration's chat_id gates everything except
+/help, /link and /about. Commands addressed to another bot in the group
+("/help@OtherBot") are ignored. Free-text spending logging in a group needs
+the bot's privacy mode OFF (BotFather > /setprivacy > Disable) or the bot to
+be a group admin; otherwise Telegram only delivers commands to it.
 
 Reload latency: a cheap GET /api/internal/integrations-version check runs
 every VERSION_CHECK_SECONDS (default 5s); the expensive full fetch+rebuild
@@ -39,7 +49,7 @@ def keyboard(buttons):
     return InlineKeyboardMarkup([[InlineKeyboardButton(label, callback_data=data) for label, data in row] for row in buttons])
 
 
-def make_handlers(bot_token, chat_id):
+def make_handlers(bot_token, chat_id, bot_username=None):
     def in_household_chat(update: Update):
         return not chat_id or str(update.effective_chat.id) == str(chat_id)
 
@@ -51,7 +61,7 @@ def make_handlers(bot_token, chat_id):
         msg = update.message
         if msg is None or not msg.text:
             return
-        parsed = kc.split_command(msg.text, prefixes=("/",))
+        parsed = kc.split_command(msg.text, prefixes=("/",), bot_username=bot_username)
         if parsed:
             cmd, args = parsed
             if cmd not in kc.ANYWHERE and not in_household_chat(update):
@@ -62,15 +72,15 @@ def make_handlers(bot_token, chat_id):
         if msg.text.startswith("/") or not in_household_chat(update):
             return
         try:
-            reply = await kc.log_spending(bot_token, actor(update), msg.text, "telegram")
+            replies = await kc.log_spending(bot_token, actor(update), msg.text, "telegram")
         except kc.BackendError as e:
             await msg.reply_text(f"Failed to save - {e.message}")
             return
         except (URLError, OSError):
             await msg.reply_text("Backend unreachable, try again later.")
             return
-        if reply:
-            await msg.reply_text(reply)
+        for text, buttons in replies or []:
+            await msg.reply_text(text, reply_markup=keyboard(buttons))
 
     async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         query = update.callback_query
@@ -91,27 +101,41 @@ def make_handlers(bot_token, chat_id):
     return handle_text, handle_callback
 
 
+BOT_COMMANDS = [
+    ("today", "Today's reminders, chores and budget"),
+    ("remind", "Add a reminder: /remind every 2 weeks on fri 10:00 change bed sheets"),
+    ("reminders", "Upcoming reminders"),
+    ("chores", "Today's chores"),
+    ("buy", "Add to shopping list: /buy milk, eggs"),
+    ("list", "Show the shopping list"),
+    ("done_shopping", "Finish the shopping trip"),
+    ("recent", "Last expenses: /recent 10"),
+    ("fix", "Change a category: /fix bakso Food"),
+    ("fixdate", "Change a date: /fixdate bakso 2026-10-20"),
+    ("date", "Log the next expenses on another day: /date 2026-10-20"),
+    ("menu", "Weekly meal plan"),
+    ("ingredients", "Must-use ingredients for the meal plan"),
+    ("addingredient", "Add a must-use ingredient"),
+    ("removeingredient", "Remove a must-use ingredient"),
+    ("schedule", "When the meal plan is posted"),
+    ("spending", "How to log spending"),
+    ("feedback", "Request a feature"),
+    ("link", "Link your chat account: /link CODE"),
+    ("about", "About this bot"),
+    ("help", "What can this bot do?"),
+]
+
+
 async def start_tenant(integ):
     application = Application.builder().token(integ["platform_token"]).build()
-    handle_text, handle_callback = make_handlers(integ["bot_token"], integ.get("chat_id"))
+    await application.initialize()
+    handle_text, handle_callback = make_handlers(integ["bot_token"], integ.get("chat_id"), application.bot.username)
     # Commands are routed through one text handler (also catches "/done-shopping",
-    # which Telegram's CommandHandler can't express).
+    # which Telegram's CommandHandler can't express, and rumahbot's aliases).
     application.add_handler(MessageHandler(filters.TEXT, handle_text))
     application.add_handler(CallbackQueryHandler(handle_callback))
-    await application.initialize()
     try:
-        await application.bot.set_my_commands([
-            ("today", "Today's reminders, chores and budget"),
-            ("remind", "Add a reminder: /remind every 2 weeks on fri 10:00 change bed sheets"),
-            ("reminders", "Upcoming reminders"),
-            ("chores", "Today's chores"),
-            ("buy", "Add to shopping list: /buy milk, eggs"),
-            ("list", "Show the shopping list"),
-            ("done_shopping", "Finish the shopping trip"),
-            ("recent", "Last 5 expenses"),
-            ("link", "Link your chat account: /link CODE"),
-            ("help", "What can this bot do?"),
-        ])
+        await application.bot.set_my_commands(BOT_COMMANDS)
     except Exception as e:
         logger.info(f"set_my_commands failed: {e}")
     await application.start()
@@ -119,8 +143,20 @@ async def start_tenant(integ):
     return application
 
 
+def integ_signature(integ):
+    """Restart a tenant's poller when any of these change."""
+    return (integ.get("platform_token"), integ.get("bot_token"), str(integ.get("chat_id") or ""))
+
+
+async def stop_tenant(application):
+    await application.updater.stop()
+    await application.stop()
+    await application.shutdown()
+
+
 async def run():
     apps = {}  # account_id -> Application
+    sigs = {}  # account_id -> integ_signature at start
     last_version = None
     last_full_rebuild = 0.0
     loop = asyncio.get_event_loop()
@@ -150,10 +186,19 @@ async def run():
             for integ in integrations:
                 aid = integ["account_id"]
                 seen.add(aid)
-                if aid in apps or not integ.get("platform_token"):
+                if not integ.get("platform_token"):
                     continue
+                if aid in apps and sigs.get(aid) == integ_signature(integ):
+                    continue
+                if aid in apps:
+                    logger.info(f"Restarting Telegram bot for account {aid} (token or chat changed)")
+                    try:
+                        await stop_tenant(apps.pop(aid))
+                    except Exception as e:
+                        logger.error(f"Failed to stop bot for account {aid}: {e}")
                 try:
                     apps[aid] = await start_tenant(integ)
+                    sigs[aid] = integ_signature(integ)
                     logger.info(f"Started Telegram bot for account {aid}")
                 except Exception as e:
                     logger.error(f"Failed to start bot for account {aid}: {e}")
@@ -161,10 +206,8 @@ async def run():
             for aid in list(apps.keys()):
                 if aid not in seen:
                     logger.info(f"Stopping Telegram bot for account {aid} (integration removed/disabled)")
-                    app_to_stop = apps.pop(aid)
-                    await app_to_stop.updater.stop()
-                    await app_to_stop.stop()
-                    await app_to_stop.shutdown()
+                    sigs.pop(aid, None)
+                    await stop_tenant(apps.pop(aid))
 
         await asyncio.sleep(VERSION_CHECK_SECONDS)
 

@@ -1,16 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#16284C"/>
-  <circle cx="1080" cy="80" r="240" fill="#FFB92E" opacity=".08"/>
-  <circle cx="980" cy="610" r="170" fill="#EFE8DA" opacity=".05"/>
-  <g transform="translate(80 80)">
-    <rect width="88" height="88" rx="22" fill="#EFE8DA"/>
-    <path d="M19.3 43 44 22l24.7 21" fill="none" stroke="#16284C" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M26 38.5v25a4 4 0 0 0 4 4h28a4 4 0 0 0 4-4v-25" fill="none" stroke="#16284C" stroke-width="7" stroke-linejoin="round"/>
-    <circle cx="44" cy="53.6" r="7.5" fill="#FFB92E"/>
-    <text x="120" y="58" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="30" font-weight="600" letter-spacing="9" fill="#EFE8DA">KINKIT</text>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#7c3aed"/></linearGradient>
+    <linearGradient id="kk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6366F1"/><stop offset="1" stop-color="#4F46E5"/></linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1080" cy="80" r="220" fill="#fff" opacity=".07"/>
+  <circle cx="980" cy="600" r="160" fill="#fff" opacity=".06"/>
+  <g transform="translate(80 90)">
+    <rect x="-3" y="-3" width="102" height="102" rx="27" fill="#fff" opacity=".35"/>
+    <g transform="scale(1.5)"><rect width="64" height="64" rx="16" fill="url(#kk)"/><path d="M14 31 32 16l18 15" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"/><circle cx="32" cy="39" r="5.5" fill="#FFFFFF"/></g>
+    <text x="124" y="66" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="800" fill="#fff">Kinkit</text>
   </g>
-  <text x="80" y="320" font-family="DM Serif Display, Georgia, Times New Roman, serif" font-size="64" fill="#EFE8DA">One home for your family's money</text>
-  <text x="80" y="410" font-family="DM Serif Display, Georgia, Times New Roman, serif" font-size="64" fill="#FFB92E">and everyone in it.</text>
-  <text x="80" y="500" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="600" letter-spacing="4" fill="#CFC6B4">SPENDING · BUDGETS · GOALS · ALLOWANCES · POINTS &amp; BADGES</text>
-  <text x="80" y="548" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="600" letter-spacing="4" fill="#CFC6B4">WEB · PHONE · TV · TELEGRAM &amp; DISCORD · SELF-HOSTABLE</text>
+  <text x="80" y="330" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="64" font-weight="800" fill="#fff">One home for your family's money</text>
+  <text x="80" y="410" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="64" font-weight="800" fill="#fff">— and everyone in it.</text>
+  <text x="80" y="500" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="30" fill="#e0e7ff">Spending · budgets · goals · allowances · points &amp; badges</text>
+  <text x="80" y="548" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="30" fill="#e0e7ff">Web · phone · TV · Telegram &amp; Discord · self-hostable</text>
 </svg>

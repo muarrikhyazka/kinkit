@@ -1,0 +1,35 @@
+/* Home › Meals (pages/MealPlan.jsx) and Settings › Chat keywords
+   (pages/BotKeywords.jsx). Uses the palette tokens from index.css only. */
+.meal-page .card, .kw-page .card { margin-bottom: 1rem; }
+.meal-note { font-size: .9rem; margin: .25rem 0 .75rem; }
+.meal-week-toggle { display: inline-flex; gap: .25rem; }
+.meal-days {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: .6rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.meal-day { border: 1px solid var(--border); border-radius: 10px; padding: .6rem .75rem; background: var(--card); }
+.meal-day-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .35rem; }
+.meal-dish { margin: .15rem 0; line-height: 1.35; }
+.meal-label {
+  display: inline-block; min-width: 2.6rem; font-size: .75rem; text-transform: uppercase;
+  letter-spacing: .03em; color: var(--muted);
+}
+.meal-fried { margin-left: .4rem; font-size: .7rem; }
+.meal-promo { font-size: .85rem; margin-top: .3rem; }
+.meal-chips { list-style: none; padding: 0; margin: 0 0 .75rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+.meal-chip { display: inline-flex; align-items: center; gap: .3rem; }
+.meal-add { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.meal-add input { flex: 1 1 12rem; min-width: 0; }
+.meal-add select { flex: 0 1 12rem; min-width: 0; }
+.meal-switch { display: flex; gap: .5rem; align-items: center; margin-bottom: .75rem; }
+.meal-days-pick { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .75rem; }
+.meal-days-pick button { min-width: 3rem; }
+.meal-time-row { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+.kw-search { width: 100%; margin-bottom: .75rem; }
+.kw-list { list-style: none; margin: 0; padding: 0; }
+.kw-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 12rem) auto; gap: .5rem;
+  align-items: center; padding: .35rem 0; border-bottom: 1px solid var(--border);
+}
+.kw-row:last-child { border-bottom: none; }
+.kw-word { overflow-wrap: anywhere; }

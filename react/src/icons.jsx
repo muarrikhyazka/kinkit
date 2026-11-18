@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 // Minimal inline SVG icons (no emoji), stroke-based, 20x20, inherits currentColor.
 const base = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' }
 
@@ -217,4 +219,23 @@ const CATEGORY_ICONS = {
 export const CategoryIcon = ({ id, ...p }) => {
   const Icon = CATEGORY_ICONS[id] || IconBell
   return <Icon {...p} />
+}
+
+// Kinkit app logo (matches brand/kinkit-logo.svg): purple gradient tile, white house + dot.
+export const KinkitLogo = ({ size = 32, ...p }) => {
+  const gid = `kk-${useId().replace(/:/g, '')}`
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width={size} height={size} {...p}>
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#6366F1" />
+          <stop offset="1" stopColor="#4F46E5" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="16" fill={`url(#${gid})`} />
+      <path d="M14 31 32 16l18 15" fill="none" stroke="#FFFFFF" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28" fill="none" stroke="#FFFFFF" strokeWidth="5" strokeLinejoin="round" />
+      <circle cx="32" cy="39" r="5.5" fill="#FFFFFF" />
+    </svg>
+  )
 }

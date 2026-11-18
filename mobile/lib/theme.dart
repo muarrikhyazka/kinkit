@@ -1,27 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// Brand palette: Persian Blue #16284C, Cream #EFE8DA, Amber #FFB92E.
-///
-/// Light: cream background, warm white cards, navy text/primary, amber accent
-/// (FAB / primary call to action, navy foreground). Dark: deep navy
-/// background, Persian Blue surfaces, cream text, amber primary.
-const kPersianBlue = Color(0xFF16284C);
-const kCream = Color(0xFFEFE8DA);
-const kAmber = Color(0xFFFFB92E);
-
-/// Serif used for headlines and the brand wordmark. No bundled font: Georgia
-/// on iOS, the platform serif (Noto Serif) on Android.
-const kSerifFamily = 'Georgia';
-const kSerifFallback = <String>['serif', 'Noto Serif', 'Times New Roman'];
-
-/// Headline / brand text style in the serif face.
-TextStyle serifStyle({double? fontSize, FontWeight fontWeight = FontWeight.w700, Color? color}) => TextStyle(
-      fontFamily: kSerifFamily,
-      fontFamilyFallback: kSerifFallback,
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      color: color,
-    );
+/// Brand palette - the CSS tokens from react/src/index.css (:root and
+/// [data-theme="dark"]).
 class KinkitPalette extends ThemeExtension<KinkitPalette> {
   final Color bg;
   final Color card;
@@ -33,8 +13,6 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
   final Color success;
   final Color danger;
   final Color warning;
-  final Color accent;
-  final Color onAccent;
 
   const KinkitPalette({
     required this.bg,
@@ -47,38 +25,32 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
     required this.success,
     required this.danger,
     required this.warning,
-    required this.accent,
-    required this.onAccent,
   });
 
   static const light = KinkitPalette(
-    bg: kCream,
-    card: Color(0xFFFBF8F1),
-    border: Color(0xFFDDD3C0),
-    text: kPersianBlue,
-    muted: Color(0xFF5A6377),
-    primary: kPersianBlue,
-    primaryLight: Color(0xFFE2E5EC),
-    success: Color(0xFF2E7D4F),
-    danger: Color(0xFFB3261E),
-    warning: Color(0xFF8F5A00),
-    accent: kAmber,
-    onAccent: kPersianBlue,
+    bg: Color(0xFFF1F3F8),
+    card: Color(0xFFFFFFFF),
+    border: Color(0xFFE5E7EB),
+    text: Color(0xFF1E2330),
+    muted: Color(0xFF6B7280),
+    primary: Color(0xFF4F46E5),
+    primaryLight: Color(0xFFEEF2FF),
+    success: Color(0xFF16A34A),
+    danger: Color(0xFFDC2626),
+    warning: Color(0xFFD97706),
   );
 
   static const dark = KinkitPalette(
-    bg: Color(0xFF0D1830),
-    card: kPersianBlue,
-    border: Color(0xFF2A3D66),
-    text: kCream,
-    muted: Color(0xFFA9B1C2),
-    primary: kAmber,
-    primaryLight: Color(0xFF233760),
-    success: Color(0xFF6FCF97),
-    danger: Color(0xFFF2877E),
-    warning: kAmber,
-    accent: kAmber,
-    onAccent: kPersianBlue,
+    bg: Color(0xFF0F1220),
+    card: Color(0xFF1A1F33),
+    border: Color(0xFF2C3350),
+    text: Color(0xFFE5E7EB),
+    muted: Color(0xFF9CA3AF),
+    primary: Color(0xFF818CF8),
+    primaryLight: Color(0xFF2A2F4A),
+    success: Color(0xFF22C55E),
+    danger: Color(0xFFF87171),
+    warning: Color(0xFFFBBF24),
   );
 
   @override
@@ -93,8 +65,6 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
     Color? success,
     Color? danger,
     Color? warning,
-    Color? accent,
-    Color? onAccent,
   }) =>
       KinkitPalette(
         bg: bg ?? this.bg,
@@ -107,8 +77,6 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
         success: success ?? this.success,
         danger: danger ?? this.danger,
         warning: warning ?? this.warning,
-        accent: accent ?? this.accent,
-        onAccent: onAccent ?? this.onAccent,
       );
 
   @override
@@ -126,8 +94,6 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
       success: l(success, other.success),
       danger: l(danger, other.danger),
       warning: l(warning, other.warning),
-      accent: l(accent, other.accent),
-      onAccent: l(onAccent, other.onAccent),
     );
   }
 }
@@ -141,21 +107,21 @@ extension KinkitThemeX on BuildContext {
 Color mainCategoryColor(String main) {
   switch (main) {
     case 'Needs':
-      return const Color(0xFF3D5A99);
+      return const Color(0xFF4F46E5);
     case 'Wants':
-      return const Color(0xFFE0A21F);
+      return const Color(0xFFF59E0B);
     case 'Savings':
-      return const Color(0xFF2E7D4F);
+      return const Color(0xFF16A34A);
   }
-  return const Color(0xFF7C8598);
+  return const Color(0xFF6B7280);
 }
 
 /// Stable per-category color (same idea as react/src/categoryColor.js).
 Color categoryColor(String? name) {
   const colors = [
-    Color(0xFF3D5A99), Color(0xFFE0A21F), Color(0xFF2E7D4F), Color(0xFF6F86B8),
-    Color(0xFFB3261E), Color(0xFF8B6F47), Color(0xFFC2410C), Color(0xFF0F766E),
-    Color(0xFF7A5FA8), Color(0xFF7C8598),
+    Color(0xFF4F46E5), Color(0xFF0EA5E9), Color(0xFF16A34A), Color(0xFFF59E0B),
+    Color(0xFFDC2626), Color(0xFF8B5CF6), Color(0xFFEC4899), Color(0xFF14B8A6),
+    Color(0xFFF97316), Color(0xFF64748B),
   ];
   final s = name ?? 'Other';
   var h = 0;
@@ -166,92 +132,44 @@ Color categoryColor(String? name) {
 }
 
 ThemeData buildTheme(Brightness brightness) {
-  final dark = brightness == Brightness.dark;
-  final p = dark ? KinkitPalette.dark : KinkitPalette.light;
-  // Light: navy primary on cream. Dark: amber primary with navy on-primary.
-  final onPrimary = dark ? kPersianBlue : kCream;
-  final scheme = ColorScheme.fromSeed(seedColor: kPersianBlue, brightness: brightness).copyWith(
+  final p = brightness == Brightness.dark ? KinkitPalette.dark : KinkitPalette.light;
+  final scheme = ColorScheme.fromSeed(seedColor: p.primary, brightness: brightness).copyWith(
     primary: p.primary,
-    onPrimary: onPrimary,
+    onPrimary: Colors.white,
     primaryContainer: p.primaryLight,
     onPrimaryContainer: p.text,
-    secondary: p.accent,
-    onSecondary: p.onAccent,
-    secondaryContainer: dark ? const Color(0xFF3A3420) : const Color(0xFFFFE7B3),
-    onSecondaryContainer: dark ? kCream : kPersianBlue,
-    tertiary: p.accent,
-    onTertiary: p.onAccent,
     surface: p.card,
     onSurface: p.text,
     onSurfaceVariant: p.muted,
-    surfaceContainerLowest: p.card,
-    surfaceContainerLow: p.card,
-    surfaceContainer: p.card,
-    surfaceContainerHigh: p.card,
-    surfaceContainerHighest: p.primaryLight,
     outline: p.border,
     outlineVariant: p.border,
     error: p.danger,
   );
   final radius = BorderRadius.circular(12);
-  final base = ThemeData(useMaterial3: true, brightness: brightness).textTheme;
-  TextStyle? serif(TextStyle? s) =>
-      s?.copyWith(fontFamily: kSerifFamily, fontFamilyFallback: kSerifFallback, color: p.text);
-  final textTheme = base
-      .apply(bodyColor: p.text, displayColor: p.text)
-      .copyWith(
-        displayLarge: serif(base.displayLarge),
-        displayMedium: serif(base.displayMedium),
-        displaySmall: serif(base.displaySmall),
-        headlineLarge: serif(base.headlineLarge),
-        headlineMedium: serif(base.headlineMedium),
-        headlineSmall: serif(base.headlineSmall),
-      );
-  // Bottom nav: navy bar (both modes), cream labels, amber pill behind a navy
-  // selected icon. Cream on navy and navy on amber are both well above AA.
-  final navBg = dark ? const Color(0xFF0A1428) : kPersianBlue;
   return ThemeData(
     useMaterial3: true,
     brightness: brightness,
     colorScheme: scheme,
     scaffoldBackgroundColor: p.bg,
-    canvasColor: p.bg,
-    textTheme: textTheme,
     extensions: [p],
     appBarTheme: AppBarTheme(
       backgroundColor: p.bg,
-      surfaceTintColor: Colors.transparent,
       foregroundColor: p.text,
       elevation: 0,
       scrolledUnderElevation: 0.5,
       centerTitle: false,
-      titleTextStyle: serifStyle(fontSize: 22, color: p.text),
+      titleTextStyle: TextStyle(color: p.text, fontSize: 20, fontWeight: FontWeight.w700),
     ),
     cardTheme: CardThemeData(
       color: p.card,
-      surfaceTintColor: Colors.transparent,
       elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       shape: RoundedRectangleBorder(borderRadius: radius, side: BorderSide(color: p.border)),
     ),
-    dialogTheme: DialogThemeData(
-      backgroundColor: p.card,
-      surfaceTintColor: Colors.transparent,
-      titleTextStyle: serifStyle(fontSize: 22, color: p.text),
-    ),
-    bottomSheetTheme: BottomSheetThemeData(backgroundColor: p.card, surfaceTintColor: Colors.transparent),
     navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: navBg,
-      surfaceTintColor: Colors.transparent,
-      indicatorColor: kAmber,
-      iconTheme: WidgetStateProperty.resolveWith((states) => IconThemeData(
-            color: states.contains(WidgetState.selected) ? kPersianBlue : kCream.withValues(alpha: 0.85),
-          )),
-      labelTextStyle: WidgetStateProperty.resolveWith((states) => TextStyle(
-            fontSize: 12,
-            color: states.contains(WidgetState.selected) ? kAmber : kCream,
-            fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500,
-          )),
+      backgroundColor: p.card,
+      indicatorColor: p.primaryLight,
+      labelTextStyle: WidgetStatePropertyAll(TextStyle(fontSize: 12, color: p.text)),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
@@ -263,32 +181,14 @@ ThemeData buildTheme(Brightness brightness) {
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         backgroundColor: p.primary,
-        foregroundColor: onPrimary,
+        foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       ),
     ),
-    textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: p.primary)),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(foregroundColor: p.primary, side: BorderSide(color: p.border)),
-    ),
-    segmentedButtonTheme: SegmentedButtonThemeData(
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.resolveWith(
-            (s) => s.contains(WidgetState.selected) ? p.accent : Colors.transparent),
-        foregroundColor: WidgetStateProperty.resolveWith(
-            (s) => s.contains(WidgetState.selected) ? p.onAccent : p.text),
-        side: WidgetStatePropertyAll(BorderSide(color: p.border)),
-      ),
-    ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: p.accent,
-      foregroundColor: p.onAccent,
-    ),
-    progressIndicatorTheme: ProgressIndicatorThemeData(color: p.accent, linearTrackColor: p.primaryLight),
-    switchTheme: SwitchThemeData(
-      thumbColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? p.onAccent : null),
-      trackColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? p.accent : null),
+      backgroundColor: p.primary,
+      foregroundColor: Colors.white,
     ),
     dividerTheme: DividerThemeData(color: p.border, space: 1),
     chipTheme: ChipThemeData(side: BorderSide(color: p.border)),

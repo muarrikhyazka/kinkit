@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import Modal from './Modal.jsx'
 import { BadgeIcon } from './icons.jsx'
 
-const COLORS = ['#16284C', '#FFB92E', '#EFE8DA', '#4A6FA5', '#C9A86A', '#2E4A7A', '#E0C48A']
+const COLORS = ['#f43f5e', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#facc15']
 
 export const prefersReducedMotion = () => {
   try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch { return false }

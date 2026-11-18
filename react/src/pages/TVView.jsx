@@ -4,6 +4,7 @@ import { currentUTCPeriod } from '../YearContext.jsx'
 import BarChart from '../BarChart.jsx'
 import { Skeleton } from '../Skeleton.jsx'
 import { useAuth } from '../AuthContext.jsx'
+import { KinkitLogo } from '../icons.jsx'
 
 const REFRESH_MS = 60_000 // auto-refresh for an always-on screen (TV/car head unit)
 
@@ -74,9 +75,12 @@ export default function TVView({ token }) {
   return (
     <div className="tv-view">
       <div className="tv-header">
-        <div className="tv-brand-block">
-          <div className="tv-brand">Kinkit</div>
-          {familyName && <div className="tv-family">{familyName}</div>}
+        <div className="tv-brand-row">
+          <KinkitLogo className="tv-logo" aria-hidden="true" />
+          <div className="tv-brand-block">
+            <div className="tv-brand">Kinkit</div>
+            {familyName && <div className="tv-family">{familyName}</div>}
+          </div>
         </div>
         <div className="tv-date">{MONTHS[month - 1]} {year}</div>
       </div>
@@ -100,9 +104,9 @@ export default function TVView({ token }) {
         <div className="tv-panel">
           <div className="tv-panel-title">6-Month Trend</div>
           {trend.length > 0 && <BarChart labels={trend.map(t => MONTHS[t.month - 1])} datasets={[
-            { label: 'Income', data: trend.map(t => t.income), color: '#5BC27A' },
-            { label: 'Expense', data: trend.map(t => t.expense), color: '#FFB92E' },
-          ]} height={320} onDark />}
+            { label: 'Income', data: trend.map(t => t.income), color: 'var(--success)' },
+            { label: 'Expense', data: trend.map(t => t.expense), color: 'var(--warning)' },
+          ]} height={320} />}
         </div>
         <div className="tv-panel">
           <div className="tv-panel-title">Top Expenses</div>

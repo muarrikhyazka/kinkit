@@ -184,10 +184,10 @@
     return out.slice(0, n);
   }
   function colorFor(ratio, realization) {
-    if (ratio === null) return realization > 0 ? '#f2877e' : '#a9b1c2';
-    if (ratio > 1) return '#f2877e';
-    if (ratio >= 0.8) return '#ff9d5c';
-    return '#6fcf97';
+    if (ratio === null) return realization > 0 ? '#f87171' : '#9ca3af';
+    if (ratio > 1) return '#f87171';
+    if (ratio >= 0.8) return '#fbbf24';
+    return '#4ade80';
   }
 
   // ---------------------------------------------------------------- money (mirrors react/src/api.js formatRupiah)
@@ -588,10 +588,10 @@
     var pct = r.budgetedExpenses > 0 ? Math.round(spent * 100 / r.budgetedExpenses) + '% of budget' : null;
     var top = topExpenses(r, 5);
     var html = '<div class="row cards">' +
-      card('Income', fmt(r.totalIncome), '#6fcf97') +
-      card('Budget', fmt(r.budgetedExpenses), '#ffb92e') +
-      card('Spent', fmt(spent), spent > r.budgetedExpenses && r.budgetedExpenses > 0 ? '#f2877e' : '#ff9d5c', pct) +
-      card('Savings', fmt(r.savings), '#9db4e3') + '</div>';
+      card('Income', fmt(r.totalIncome), '#4ade80') +
+      card('Budget', fmt(r.budgetedExpenses), '#818cf8') +
+      card('Spent', fmt(spent), spent > r.budgetedExpenses && r.budgetedExpenses > 0 ? '#f87171' : '#fbbf24', pct) +
+      card('Savings', fmt(r.savings), '#c4b5fd') + '</div>';
     html += '<div class="row panels">';
     html += '<div class="panel" style="flex:4;-webkit-flex:4"><div class="panel-title">This month</div><div class="panel-body kv-big">' +
       '<div class="k">Left to budget</div><div class="v ' + (r.leftForBudgeting >= 0 ? 'c-pos' : 'c-neg') + '">' + esc(fmt(r.leftForBudgeting)) + '</div>' +
@@ -626,8 +626,8 @@
   function pageTrend(d) {
     var t = d.trend;
     var html = '<div class="panel full"><div class="panel-title">6-month trend' +
-      '<span class="legend" style="margin-left:auto"><i style="background:#8fa8db"></i>Income</span>' +
-      '<span class="legend"><i style="background:#ffb92e"></i>Spent</span></div><div class="panel-body">';
+      '<span class="legend" style="margin-left:auto"><i style="background:#4ade80"></i>Income</span>' +
+      '<span class="legend"><i style="background:#fbbf24"></i>Spent</span></div><div class="panel-body">';
     if (!t.length) return html + '<div class="empty">No history yet</div></div></div>';
     html += '<div class="chart">' + trendSvg(d) + '</div>';
     return html + '</div></div>';
@@ -641,17 +641,17 @@
     var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">';
     for (var g = 0; g <= 4; g++) {
       var gy = top + plotH - plotH * g / 4;
-      svg += '<line x1="' + left + '" x2="' + W + '" y1="' + gy + '" y2="' + gy + '" stroke="#2a3d66" stroke-width="2"/>' +
-        '<text x="' + (left - 16) + '" y="' + (gy + 9) + '" fill="#a9b1c2" font-size="26" text-anchor="end">' + esc(fmtCompact(maxY * g / 4)) + '</text>';
+      svg += '<line x1="' + left + '" x2="' + W + '" y1="' + gy + '" y2="' + gy + '" stroke="#262d47" stroke-width="2"/>' +
+        '<text x="' + (left - 16) + '" y="' + (gy + 9) + '" fill="#9ca3af" font-size="26" text-anchor="end">' + esc(fmtCompact(maxY * g / 4)) + '</text>';
     }
     var slot = plotW / t.length, bw = Math.min(70, slot / 3);
     for (var j = 0; j < t.length; j++) {
       var cx = left + slot * j + slot / 2;
       var hi = plotH * t[j].income / maxY, he = plotH * t[j].expense / maxY;
-      svg += '<rect x="' + (cx - bw - 6) + '" y="' + (top + plotH - hi) + '" width="' + bw + '" height="' + hi + '" rx="8" fill="#8fa8db"/>';
-      svg += '<rect x="' + (cx + 6) + '" y="' + (top + plotH - he) + '" width="' + bw + '" height="' + he + '" rx="8" fill="#ffb92e"/>';
+      svg += '<rect x="' + (cx - bw - 6) + '" y="' + (top + plotH - hi) + '" width="' + bw + '" height="' + hi + '" rx="8" fill="#4ade80"/>';
+      svg += '<rect x="' + (cx + 6) + '" y="' + (top + plotH - he) + '" width="' + bw + '" height="' + he + '" rx="8" fill="#fbbf24"/>';
       var cur = t[j].year === d.year && t[j].month === d.month;
-      svg += '<text x="' + cx + '" y="' + (H - 16) + '" fill="' + (cur ? '#efe8da' : '#a9b1c2') + '" font-size="30" font-weight="' +
+      svg += '<text x="' + cx + '" y="' + (H - 16) + '" fill="' + (cur ? '#f1f3f8' : '#9ca3af') + '" font-size="30" font-weight="' +
         (cur ? 800 : 500) + '" text-anchor="middle">' + MONTHS[t[j].month - 1] + '</text>';
     }
     return svg + '</svg>';

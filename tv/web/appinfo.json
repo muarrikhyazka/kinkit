@@ -7,7 +7,7 @@
   "title": "Kinkit TV",
   "icon": "icon80.png",
   "largeIcon": "icon130.png",
-  "bgColor": "#0d1830",
+  "bgColor": "#0b0e1a",
   "resolution": "1920x1080",
   "disableBackHistoryAPI": true,
   "requiredPermissions": []

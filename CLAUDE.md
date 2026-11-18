@@ -13,7 +13,7 @@ reminders, family roles/allowances, gamification). One Go backend serves several
 | `tv/flutter/` | Smart-TV viewer for Android TV / Google TV / Fire TV, **view only** | Flutter / Dart |
 | `tv/web/` | Same TV viewer for Samsung Tizen / LG webOS / TV browsers, **view only** | Plain ES5 HTML/CSS/JS |
 | `landing/` | Marketing landing page (sells + explains the product) | Static HTML/CSS/JS, EN/ID |
-| `bots/` | Telegram + Discord bots | Python |
+| `bots/` | Telegram + Discord bots (rumahbot was merged in: spending log, keyword learning, meal plan, must-use ingredients) | Python |
 | `docker-compose.yml` | postgres + app + bots | |
 
 ## ⚠️ Cross-surface rule (most important)
@@ -68,6 +68,9 @@ This fills in the missing files and leaves `lib/` alone.
 - Money amounts are integers. Format them with the user's currency (`/api/me`); FX rates come from `/api/fx-rates`.
 - Auth: session cookie for web and phone; `X-Bot-Token` / `X-Service-Token` for bots and internal calls;
   TV share tokens (`/api/tv-tokens`) for the TV viewers.
+- Logo: `brand/kinkit-logo.svg` (purple tile, white house) is the single source. Web favicons/PWA icons,
+  the phone launcher icon, TV launcher/banner and tv/web icons, and the landing favicon/nav logo are all
+  renders of it; change it there first and re-export everywhere.
 - Keep visual identity consistent: the palette lives in `react/src/index.css`. Mirror changes in
   `mobile/lib/theme.dart`, `tv/flutter/lib/src/theme.dart`, `tv/web/styles.css`, and `landing/styles.css`.
 - The web UI copy is English. The landing page is EN with an ID toggle, so when you add landing copy,

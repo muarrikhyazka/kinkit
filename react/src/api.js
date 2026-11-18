@@ -291,3 +291,19 @@ export const remindersApi = {
   setDigest: (payload) => req('/household/digest', { method: 'PATCH', body: JSON.stringify(payload) }),
 }
 // --- end reminders ---
+
+// --- meal plan --- (weekly meal plan, must-use ingredients, chat post schedule,
+// learned chat-bot spending keywords; merged from the household "rumahbot")
+export const mealApi = {
+  plan: (week) => req(`/meal-plan${week === 'this' ? '?week=this' : ''}`),
+  ingredients: () => req('/meal-plan/ingredients'),
+  addIngredient: (name) => req('/meal-plan/ingredients', { method: 'POST', body: JSON.stringify({ name }) }),
+  deleteIngredient: (id) => req(`/meal-plan/ingredients/${id}`, { method: 'DELETE' }),
+  schedule: () => req('/meal-plan/schedule'),
+  // payload: { enabled?, days?: [0-6, 0=Sunday], time?: 'HH:MM', start_date?: 'YYYY-MM-DD' | '' }
+  setSchedule: (payload) => req('/meal-plan/schedule', { method: 'PUT', body: JSON.stringify(payload) }),
+  keywords: () => req('/bot-keywords'),
+  saveKeyword: (keyword, category) => req('/bot-keywords', { method: 'POST', body: JSON.stringify({ keyword, category }) }),
+  deleteKeyword: (id) => req(`/bot-keywords/${id}`, { method: 'DELETE' }),
+}
+// --- end meal plan ---

@@ -224,7 +224,7 @@
     'f.tv.t': 'Tautan tampilan TV &amp; mobil',
     'f.tv.d': 'Buka tautan berbagi di browser TV, tablet dinding, atau head unit mobil untuk menampilkan angka bulan ini dengan huruf besar. Tidak perlu login, diperbarui tiap menit, dan bisa dicabut seketika.',
     'f.bots.t': 'Bot Telegram &amp; Discord',
-    'f.bots.d': 'Kirim "50k makan siang" dan langsung tercatat, dengan kategori dipilih dari kata kunci Anda. Ketik <kbd>/recent</kbd> atau <kbd>/today</kbd>, buat pengingat dengan <kbd>/remind</kbd>, tambah daftar belanja dengan <kbd>/buy</kbd>, dan cek tugas dengan <kbd>/chores</kbd>. Hubungkan bot Anda sendiri di Pengaturan.',
+    'f.bots.d': 'Kirim "50k makan siang" dan langsung tercatat, dengan kategori dipilih dari kata kunci Anda; kata baru muncul dengan tombol kategori dan bot mengingat pilihan Anda. Ketik <kbd>/recent</kbd> atau <kbd>/today</kbd>, buat pengingat dengan <kbd>/remind</kbd>, tambah daftar belanja dengan <kbd>/buy</kbd>, cek tugas dengan <kbd>/chores</kbd>, dan lihat rencana menu mingguan dengan <kbd>/menu</kbd>. Hubungkan bot Anda sendiri di Pengaturan.',
     'f.native.t': 'Aplikasi Android untuk HP',
     'f.native.d': 'Aplikasi native untuk seluruh keluarga: Hari ini, pengingat, tugas rumah, daftar belanja, pengeluaran, dan anggaran. <a href="#download">Unduh APK-nya</a>. Aplikasi iPhone segera hadir.',
     'f.smarttv.t': 'Penampil smart TV',

@@ -12,12 +12,12 @@
 .rem-help > svg, .rem-delivery > svg { flex-shrink: 0; margin-top: .12rem; color: var(--primary); }
 .rem-help code { font-size: .8rem; word-break: break-word; }
 .rem-delivery { border: 1px dashed var(--border); color: var(--muted); }
-.rem-delivery.on { border-style: solid; border-color: color-mix(in srgb, var(--accent) 60%, var(--border)); background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--text); }
+.rem-delivery.on { border-style: solid; border-color: color-mix(in srgb, var(--warning) 60%, var(--border)); background: color-mix(in srgb, var(--warning) 12%, transparent); color: var(--text); }
 
 .rem-h-note { font-size: .8rem; font-weight: 500; margin-left: .35rem; }
 .rem-subh { font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: .9rem 0 .35rem; }
 .rem-subh:first-of-type { margin-top: .25rem; }
-.rem-subh.text-negative { color: var(--danger, var(--accent)); }
+.rem-subh.text-negative { color: var(--danger); }
 
 /* category badge icon */
 .rem-cat-ico {
@@ -26,7 +26,7 @@
   background: color-mix(in srgb, var(--primary) 10%, transparent); color: var(--primary);
 }
 .rem-cat-ico.cat-cleaning, .rem-cat-ico.cat-laundry, .rem-cat-ico.cat-chores { background: color-mix(in srgb, var(--primary) 12%, transparent); }
-.rem-cat-ico.cat-cooking, .rem-cat-ico.cat-groceries, .rem-cat-ico.cat-self_care { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--text); }
+.rem-cat-ico.cat-cooking, .rem-cat-ico.cat-groceries, .rem-cat-ico.cat-self_care { background: color-mix(in srgb, var(--warning) 22%, transparent); color: var(--text); }
 .rem-cat-ico.cat-home_maintenance, .rem-cat-ico.cat-vehicle { background: color-mix(in srgb, var(--muted) 16%, transparent); color: var(--text); }
 
 /* quick add gallery */

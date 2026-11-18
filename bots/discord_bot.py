@@ -6,8 +6,10 @@ accounts, one discord.py Client per connected integration's bot token.
 Every /api/bot call carries X-Bot-User "discord:<user id>".
 
 Commands are plain messages with a "!" (or "/") prefix: !today, !remind,
-!reminders, !chores, !buy, !list, !done-shopping, !link, !recent, !help.
-Anything else that looks like "50k lunch" is logged as spending.
+!reminders, !chores, !buy, !list, !done-shopping, !link, !recent, !fix,
+!fixdate, !date, !menu, !ingredients, !schedule, !feedback, !help (and the
+Indonesian aliases in kinkit_common.ALIASES). Anything else that looks like
+"50k lunch" is logged as spending; unknown words get category buttons.
 Buttons: reminder messages are posted by the backend with message
 components (custom_id "rem:<id>:..."); !chores replies carry
 "chore:<id>:done" buttons. Both are handled in on_interaction.
@@ -84,20 +86,24 @@ class TenantClient(discord.Client):
         if not self.in_household_channel(message.channel) or content.startswith(("!", "/")):
             return
         try:
-            reply = await kc.log_spending(self.bot_token, user, content, "discord")
+            replies = await kc.log_spending(self.bot_token, user, content, "discord")
         except kc.BackendError as e:
             await message.channel.send(f"Failed to save - {e.message}")
             return
         except (URLError, OSError):
             return
-        if reply:
-            await message.channel.send(reply)
+        for text, buttons in replies or []:
+            view = make_view(buttons)
+            if view is not None:
+                await message.channel.send(text[:2000], view=view)
+            else:
+                await message.channel.send(text[:2000])
 
     async def on_interaction(self, interaction: discord.Interaction):
         if interaction.type != discord.InteractionType.component:
             return
         data = (interaction.data or {}).get("custom_id", "")
-        if not (data.startswith("rem:") or data.startswith("chore:")):
+        if not data.startswith(kc.CALLBACK_PREFIXES):
             return
         if interaction.channel is not None and not self.in_household_channel(interaction.channel):
             return
@@ -147,7 +153,10 @@ async def run():
             for integ in integrations:
                 aid = integ["account_id"]
                 seen.add(aid)
-                if aid in clients or not integ.get("platform_token"):
+                if aid in clients:
+                    clients[aid][0].chat_id = integ.get("chat_id")  # follow channel changes
+                    continue
+                if not integ.get("platform_token"):
                     continue
                 client = TenantClient(integ["bot_token"], integ.get("chat_id"), intents=intents)
                 task = asyncio.create_task(client.start(integ["platform_token"]))
