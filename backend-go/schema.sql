@@ -622,3 +622,32 @@ CREATE TABLE IF NOT EXISTS shopping_item_stats (
 UPDATE chores SET emoji='' WHERE emoji <> '';
 UPDATE shopping_lists SET emoji='' WHERE emoji <> '';
 UPDATE savings_goals SET emoji='' WHERE emoji <> '';
+
+-- === household reminders: more categories + interval schedules ===
+-- Widen reminders.category (the inline CHECK in CREATE TABLE is named
+-- reminders_category_check by Postgres). Only rebuilt when the current
+-- definition lacks the newest category, so normal boots skip the ALTER.
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conrelid = 'reminders'::regclass AND conname = 'reminders_category_check'
+          AND pg_get_constraintdef(oid) LIKE '%self_care%'
+    ) THEN
+        ALTER TABLE reminders DROP CONSTRAINT IF EXISTS reminders_category_check;
+        ALTER TABLE reminders ADD CONSTRAINT reminders_category_check CHECK (category IN (
+            'bill','medicine','school','birthday','chores','other',
+            'cleaning','laundry','cooking','groceries','vehicle','home_maintenance','self_care'));
+    END IF;
+END $$;
+-- Repeat every N weeks/months (weekly/monthly kinds; 1 = every week/month).
+-- Anchored on start_date's week (Sunday-based) / month. Exposed in the API
+-- as "interval" ("interval" itself is an SQL keyword, hence the name).
+ALTER TABLE reminders ADD COLUMN IF NOT EXISTS repeat_interval INTEGER NOT NULL DEFAULT 1;
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid = 'reminders'::regclass AND conname = 'reminders_repeat_interval_check') THEN
+        ALTER TABLE reminders ADD CONSTRAINT reminders_repeat_interval_check CHECK (repeat_interval BETWEEN 1 AND 52);
+    END IF;
+END $$;
+-- === end household reminders ===

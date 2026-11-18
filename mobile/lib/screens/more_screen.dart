@@ -7,6 +7,20 @@ import '../widgets/async_view.dart';
 import '../widgets/k_app_bar.dart';
 import 'settings_screen.dart';
 
+String _roleLabel(String role) {
+  switch (role) {
+    case 'owner':
+      return 'Family Admin';
+    case 'parent':
+      return 'Parent';
+    case 'kid':
+      return 'Kid';
+    case 'viewer':
+      return 'Viewer';
+  }
+  return role;
+}
+
 /// "More": profile, settings and logout (web nav "Settings").
 class MoreScreen extends ConsumerWidget {
   const MoreScreen({super.key});
@@ -23,16 +37,29 @@ class MoreScreen extends ConsumerWidget {
       appBar: kAppBar(context, 'More'),
       body: ListView(
         children: [
+          if (me != null && me.householdName.trim().isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('FAMILY NAME',
+                      style: TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: p.muted)),
+                  const SizedBox(height: 2),
+                  Text(me.householdName, style: serifStyle(fontSize: 26, color: p.text)),
+                ],
+              ),
+            ),
           if (me != null)
             Card(
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: p.primaryLight,
+                  backgroundColor: p.accent,
                   child: Text(me.displayName.isEmpty ? '?' : me.displayName.substring(0, 1).toUpperCase(),
-                      style: TextStyle(color: p.primary, fontWeight: FontWeight.w700)),
+                      style: serifStyle(color: p.onAccent)),
                 ),
                 title: Text(me.displayName),
-                subtitle: Text('${me.email}\n${me.householdName} · ${me.role}'),
+                subtitle: Text('${me.email}\n${_roleLabel(me.role)}'),
                 isThreeLine: true,
               ),
             ),

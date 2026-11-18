@@ -65,7 +65,7 @@ class _Splash extends StatelessWidget {
           children: [
             Icon(Icons.family_restroom, size: 56, color: p.primary),
             const SizedBox(height: 12),
-            Text('kinkit', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: p.text)),
+            Text('kinkit', style: serifStyle(fontSize: 32, color: p.text)),
             const SizedBox(height: 24),
             const CircularProgressIndicator(),
           ],

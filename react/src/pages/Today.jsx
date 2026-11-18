@@ -107,7 +107,7 @@ export default function Today() {
         </div>
         {canManage(user) && (
           <div className="page-header-controls">
-            <Link to="/home/reminders" className="button-link secondary">+ Reminder</Link>
+            <Link to="/reminders?new=1" className="button-link secondary">+ Reminder</Link>
           </div>
         )}
       </div>
@@ -119,7 +119,7 @@ export default function Today() {
         <div className="card today-empty">
           <p style={{ margin: 0, color: 'var(--primary)' }} aria-hidden="true"><IconSun width={36} height={36} /></p>
           <p><strong>All clear for today.</strong></p>
-          <p className="muted">Add <Link to="/home/reminders">reminders</Link>, <Link to="/home/chores">chores</Link> or a <Link to="/home/lists">shopping list</Link> and they will show up here.</p>
+          <p className="muted">Add <Link to="/reminders">reminders</Link>, <Link to="/home/chores">chores</Link> or a <Link to="/home/lists">shopping list</Link> and they will show up here.</p>
         </div>
       ) : (
         <div className="today-grid">

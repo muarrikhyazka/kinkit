@@ -22,7 +22,25 @@ import (
 // Permissions: owner/parent manage rules; kids may mark occurrences
 // assigned to them (or to the whole family) done / snoozed; viewers read.
 
-var validReminderCategories = map[string]bool{"bill": true, "medicine": true, "school": true, "birthday": true, "chores": true, "other": true}
+// reminderCategoryIDs is the ordered list of categories (household first
+// in the clients; keep schema.sql's reminders_category_check in sync).
+var reminderCategoryIDs = []string{"cleaning", "laundry", "cooking", "groceries", "home_maintenance", "vehicle", "self_care",
+	"chores", "bill", "medicine", "school", "birthday", "other"}
+
+var validReminderCategories = func() map[string]bool {
+	m := map[string]bool{}
+	for _, c := range reminderCategoryIDs {
+		m[c] = true
+	}
+	return m
+}()
+
+// reminderCategoryLabels are the human labels used in chat replies.
+var reminderCategoryLabels = map[string]string{
+	"cleaning": "Cleaning", "laundry": "Laundry", "cooking": "Kitchen & meals", "groceries": "Groceries",
+	"home_maintenance": "Home maintenance", "vehicle": "Vehicle", "self_care": "Self-care", "chores": "Chores",
+	"bill": "Bills", "medicine": "Medicine", "school": "School", "birthday": "Birthdays", "other": "Other",
+}
 var validReminderChannels = map[string]bool{"chat": true, "push": true, "in-app": true}
 
 func RegisterReminderRoutes(r chi.Router, app *App) {
@@ -86,6 +104,7 @@ type reminderRow struct {
 	TimeOfDay            string     `json:"time_of_day"`
 	Weekdays             []int      `json:"weekdays"`
 	DayOfMonth           *int       `json:"day_of_month"`
+	Interval             int        `json:"interval"`
 	StartDate            string     `json:"start_date"`
 	EndDate              *string    `json:"end_date"`
 	OnceAt               *time.Time `json:"once_at"`
@@ -100,7 +119,7 @@ type reminderRow struct {
 }
 
 const reminderCols = `r.id, r.title, r.notes, r.assignee_id, r.created_by, r.kind, r.time_of_day, r.weekdays,
-	r.day_of_month, r.start_date, r.end_date, r.once_at, r.escalate_to, r.escalate_after_minutes, r.channels, r.active, r.category`
+	r.day_of_month, r.start_date, r.end_date, r.once_at, r.escalate_to, r.escalate_after_minutes, r.channels, r.active, r.category, r.repeat_interval`
 
 func scanReminder(row pgx.Row) (reminderRow, error) {
 	var x reminderRow
@@ -109,7 +128,7 @@ func scanReminder(row pgx.Row) (reminderRow, error) {
 	var start time.Time
 	var end *time.Time
 	err := row.Scan(&x.ID, &x.Title, &x.Notes, &x.AssigneeID, &x.CreatedBy, &x.Kind, &x.TimeOfDay, &wd,
-		&dom, &start, &end, &x.OnceAt, &x.EscalateTo, &esc, &x.Channels, &x.Active, &x.Category)
+		&dom, &start, &end, &x.OnceAt, &x.EscalateTo, &esc, &x.Channels, &x.Active, &x.Category, &x.Interval)
 	if err != nil {
 		return x, err
 	}
@@ -137,7 +156,7 @@ func scanReminder(row pgx.Row) (reminderRow, error) {
 }
 
 func (x reminderRow) schedule() reminderSchedule {
-	s := reminderSchedule{Kind: x.Kind, TimeOfDay: x.TimeOfDay, Weekdays: x.Weekdays, OnceAt: x.OnceAt}
+	s := reminderSchedule{Kind: x.Kind, TimeOfDay: x.TimeOfDay, Weekdays: x.Weekdays, OnceAt: x.OnceAt, Interval: x.Interval}
 	if x.DayOfMonth != nil {
 		s.DayOfMonth = *x.DayOfMonth
 	}
@@ -231,7 +250,11 @@ func (app *App) handleListReminders(w http.ResponseWriter, r *http.Request) {
 		}
 		out = append(out, x)
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"timezone": loc.String(), "reminders": out})
+	cats := make([]map[string]string, 0, len(reminderCategoryIDs))
+	for _, c := range reminderCategoryIDs {
+		cats = append(cats, map[string]string{"id": c, "label": reminderCategoryLabels[c]})
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"timezone": loc.String(), "reminders": out, "categories": cats})
 }
 
 // reminderInput is decoded on top of the existing row for PATCH, so absent
@@ -244,6 +267,7 @@ type reminderInput struct {
 	TimeOfDay            string     `json:"time_of_day"`
 	Weekdays             []int      `json:"weekdays"`
 	DayOfMonth           *int       `json:"day_of_month"`
+	Interval             int        `json:"interval"` // weekly/monthly: every N weeks/months (0 = 1)
 	StartDate            string     `json:"start_date"`
 	EndDate              *string    `json:"end_date"`
 	OnceAt               *time.Time `json:"once_at"`
@@ -282,7 +306,7 @@ func (app *App) validateReminderInput(ctx context.Context, aid int64, in reminde
 		in.Category = "other"
 	}
 	if !validReminderCategories[in.Category] {
-		return v, errors.New("category must be bill, medicine, school, birthday, chores or other")
+		return v, errors.New("category must be one of: " + strings.Join(reminderCategoryIDs, ", "))
 	}
 	if in.TimeOfDay == "" {
 		in.TimeOfDay = "09:00"
@@ -325,7 +349,13 @@ func (app *App) validateReminderInput(ctx context.Context, aid int64, in reminde
 	if in.Kind != "monthly" && in.Kind != "yearly" {
 		in.DayOfMonth = nil
 	}
-	v.sched = reminderSchedule{Kind: in.Kind, TimeOfDay: in.TimeOfDay, Weekdays: in.Weekdays, StartDate: v.startD, EndDate: v.endD, OnceAt: in.OnceAt}
+	if in.Interval < 0 || in.Interval > maxReminderInterval {
+		return v, fmt.Errorf("interval must be 1-%d", maxReminderInterval)
+	}
+	if in.Interval == 0 || (in.Kind != "weekly" && in.Kind != "monthly") {
+		in.Interval = 1
+	}
+	v.sched = reminderSchedule{Kind: in.Kind, TimeOfDay: in.TimeOfDay, Weekdays: in.Weekdays, StartDate: v.startD, EndDate: v.endD, OnceAt: in.OnceAt, Interval: in.Interval}
 	if in.DayOfMonth != nil {
 		v.sched.DayOfMonth = *in.DayOfMonth
 	}
@@ -390,10 +420,10 @@ func (app *App) insertReminder(ctx context.Context, aid int64, createdBy *int64,
 	in := v.in
 	var id int64
 	err := app.DB.QueryRow(ctx, `INSERT INTO reminders (account_id, title, notes, assignee_id, created_by, kind, time_of_day, weekdays,
-	    day_of_month, start_date, end_date, once_at, escalate_to, escalate_after_minutes, channels, active, category, schedule_from)
-	  VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17, now() - interval '1 minute') RETURNING id`,
+	    day_of_month, start_date, end_date, once_at, escalate_to, escalate_after_minutes, channels, active, category, repeat_interval, schedule_from)
+	  VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18, now() - interval '1 minute') RETURNING id`,
 		aid, strings.TrimSpace(in.Title), in.Notes, in.AssigneeID, createdBy, in.Kind, in.TimeOfDay, int32Slice(in.Weekdays),
-		in.DayOfMonth, v.startD, v.endD, in.OnceAt, in.EscalateTo, in.EscalateAfterMinutes, v.channels, v.active, in.Category).Scan(&id)
+		in.DayOfMonth, v.startD, v.endD, in.OnceAt, in.EscalateTo, in.EscalateAfterMinutes, v.channels, v.active, in.Category, in.Interval).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -457,7 +487,7 @@ func (app *App) handleUpdateReminder(w http.ResponseWriter, r *http.Request) {
 	// copies: json decoding writes through non-nil pointers, which would
 	// silently change `cur` and hide schedule changes.
 	in := reminderInput{Title: cur.Title, Notes: cur.Notes, AssigneeID: clonePtr(cur.AssigneeID), Kind: cur.Kind, TimeOfDay: cur.TimeOfDay,
-		Weekdays: slices.Clone(cur.Weekdays), DayOfMonth: clonePtr(cur.DayOfMonth), StartDate: cur.StartDate, EndDate: clonePtr(cur.EndDate),
+		Weekdays: slices.Clone(cur.Weekdays), DayOfMonth: clonePtr(cur.DayOfMonth), Interval: cur.Interval, StartDate: cur.StartDate, EndDate: clonePtr(cur.EndDate),
 		OnceAt: clonePtr(cur.OnceAt), EscalateTo: clonePtr(cur.EscalateTo), EscalateAfterMinutes: clonePtr(cur.EscalateAfterMinutes),
 		Channels: slices.Clone(cur.Channels), Active: clonePtr(&cur.Active), Category: cur.Category}
 	if cur.OnceAt != nil { // expose the once instant as local date + time for edits
@@ -483,7 +513,7 @@ func (app *App) handleUpdateReminder(w http.ResponseWriter, r *http.Request) {
 	n := v.in
 	schedChanged := n.Kind != cur.Kind || n.TimeOfDay != cur.TimeOfDay || fmt.Sprint(n.Weekdays) != fmt.Sprint(cur.Weekdays) ||
 		fmt.Sprint(derefInt(n.DayOfMonth)) != fmt.Sprint(derefInt(cur.DayOfMonth)) || v.startD.Format("2006-01-02") != cur.StartDate ||
-		fmt.Sprint(derefStr(n.EndDate)) != fmt.Sprint(derefStr(cur.EndDate)) || !timePtrEq(n.OnceAt, cur.OnceAt) || v.active != cur.Active
+		fmt.Sprint(derefStr(n.EndDate)) != fmt.Sprint(derefStr(cur.EndDate)) || !timePtrEq(n.OnceAt, cur.OnceAt) || v.active != cur.Active || n.Interval != cur.Interval
 	tx, err := app.DB.Begin(ctx)
 	if err != nil {
 		dbError(w, err)
@@ -491,10 +521,10 @@ func (app *App) handleUpdateReminder(w http.ResponseWriter, r *http.Request) {
 	}
 	defer tx.Rollback(ctx)
 	_, err = tx.Exec(ctx, `UPDATE reminders SET title=$1, notes=$2, assignee_id=$3, kind=$4, time_of_day=$5, weekdays=$6, day_of_month=$7,
-	    start_date=$8, end_date=$9, once_at=$10, escalate_to=$11, escalate_after_minutes=$12, channels=$13, active=$14, category=$15, updated_at=now()
-	  WHERE id=$16 AND account_id=$17`,
+	    start_date=$8, end_date=$9, once_at=$10, escalate_to=$11, escalate_after_minutes=$12, channels=$13, active=$14, category=$15, repeat_interval=$16, updated_at=now()
+	  WHERE id=$17 AND account_id=$18`,
 		strings.TrimSpace(n.Title), n.Notes, n.AssigneeID, n.Kind, n.TimeOfDay, int32Slice(n.Weekdays), n.DayOfMonth,
-		v.startD, v.endD, n.OnceAt, n.EscalateTo, n.EscalateAfterMinutes, v.channels, v.active, n.Category, id, aid)
+		v.startD, v.endD, n.OnceAt, n.EscalateTo, n.EscalateAfterMinutes, v.channels, v.active, n.Category, n.Interval, id, aid)
 	if err != nil {
 		dbError(w, err)
 		return

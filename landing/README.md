@@ -1,6 +1,12 @@
 # Kinkit landing page
 
-The static marketing site for Kinkit. It is plain HTML, CSS and JS, with no build step, no dependencies and no external images or fonts.
+The static marketing site for Kinkit. It is plain HTML, CSS and JS, with no build step, no dependencies and no external images.
+The page loads one Google Font, **DM Serif Display**, for headlines (`fonts.googleapis.com`, `display=swap`); if it is blocked the
+headlines fall back to Georgia/serif. Body text uses the system sans stack.
+
+Brand palette: Persian Blue `#16284C` (nav, hero, final CTA, footer), Cream `#EFE8DA` (body sections; cards `#FBF8F1`,
+borders `#DDD3C0`) and Amber `#FFB92E` (highlights, primary CTA with navy text, icons, tags). Dark mode uses `#0D1830`
+backgrounds with `#16284C` cards. Amber is never used as text on cream; amber-family text there uses `#8A5A00` for AA contrast.
 
 ```
 landing/
@@ -105,7 +111,7 @@ The page should only claim what the code does. When a feature changes, find its 
 | Starter categories / income sources on signup | `seedDefaults` in `backend-go/auth.go` |
 | Today page (what's due for the household) | `react/src/pages/Today.jsx`, `backend-go/today.go` (`GET /api/today`) |
 | Chores with points, approval, photo proof, allowance earnings | `react/src/pages/Chores.jsx`, `backend-go/chores*.go`, allowance in `backend-go/family.go` |
-| Repeating reminders (bill/medicine/school/birthday), chat nudges | `react/src/pages/Reminders.jsx`, `backend-go/reminders*.go` |
+| Household reminders (cleaning/laundry/kitchen/groceries/home maintenance/vehicle/self-care plus bill/medicine/school/birthday), every N weeks/months, household templates, chat nudges | `react/src/pages/Reminders.jsx` (`REMINDER_TEMPLATES`), `backend-go/reminders*.go` (`reminderCategoryIDs`, `repeat_interval`) |
 | Shared shopping lists, bulk add, "finish trip" → spending | `react/src/pages/Lists.jsx`, `backend-go/lists*.go` |
 | Bot commands `/today` `/remind` `/buy` `/chores` | `bots/telegram_bot.py`, `bots/discord_bot.py`, `backend-go/*_bot.go` |
 | Points (10/day + streak bonus) and levels Getting Started → Tracker → Budget Buddy → Money Master → Finance Wizard | `backend-go/gamification.go` (`badgeThresholds`), `react/src/GamificationBadge.jsx` |

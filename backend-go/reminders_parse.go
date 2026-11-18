@@ -21,6 +21,9 @@ import (
 //	every monday 7:00 trash           every mon, wed and fri 6pm gym
 //	every weekday 6:30 school run     every month on the 5th pay rent
 //	every year on mar 14 mom's birthday
+//	every 2 weeks on fri 10:00 change bed sheets
+//	every other week on tue and fri trash     every 3 months on the 1st oil change
+//	tiap 2 minggu jumat jam 9 cuci sajadah     setiap 3 bulan kuras tandon
 //
 // Times: 8am, 8:30pm, 8.30, 20:15, noon, midnight (optionally after "at").
 // Without a time, 09:00 is used ("tonight" = 20:00).
@@ -42,6 +45,8 @@ var (
 		"thu": 4, "thur": 4, "thurs": 4, "thursday": 4, "thursdays": 4,
 		"fri": 5, "friday": 5, "fridays": 5,
 		"sat": 6, "saturday": 6, "saturdays": 6,
+		// Indonesian ("minggu" is left out: it also means "week")
+		"ahad": 0, "senin": 1, "selasa": 2, "rabu": 3, "kamis": 4, "jumat": 5, "jum'at": 5, "sabtu": 6,
 	}
 	monthWords = map[string]time.Month{
 		"jan": 1, "january": 1, "feb": 2, "february": 2, "mar": 3, "march": 3, "apr": 4, "april": 4,
@@ -110,9 +115,86 @@ func parseTimeAt(words []string, i int, allowBare bool) (int, int, int, bool) {
 	return h, mi, used, true
 }
 
-// timeAfter reads an optional "[at] <time>" at words[i].
+// repeatUnit normalizes an interval unit word (English or Indonesian).
+func repeatUnit(w string) string {
+	switch w {
+	case "week", "weeks", "wk", "wks", "minggu", "pekan":
+		return "week"
+	case "month", "months", "mo", "mos", "bulan":
+		return "month"
+	case "day", "days", "hari":
+		return "day"
+	}
+	return ""
+}
+
+// parseWeekdayList reads "[on] mon, wed and fri" at words[i]. With allowOn,
+// a leading "on"/"pada" is accepted (and only consumed when weekdays follow).
+// Returns the weekdays (deduplicated, in order) and the next index.
+func parseWeekdayList(words []string, i int, allowOn bool) ([]int, int) {
+	j := i
+	if allowOn && j < len(words) {
+		switch cleanWord(words[j]) {
+		case "on", "pada", "hari", "setiap", "tiap":
+			j++
+		}
+	}
+	var days []int
+	seen := map[int]bool{}
+	for j < len(words) {
+		cw := cleanWord(words[j])
+		if cw == "and" || cw == "&" || cw == "dan" {
+			j++
+			continue
+		}
+		wd, ok := weekdayWords[cw]
+		if !ok {
+			break
+		}
+		if !seen[wd] {
+			seen[wd] = true
+			days = append(days, wd)
+		}
+		j++
+	}
+	if len(days) == 0 {
+		return nil, i
+	}
+	return days, j
+}
+
+// parseMonthDay reads "[on] [the|day|tanggal] 5th" at words[i]. A bare
+// number only counts when it can't be a time ("5 9am" -> 5, "9am" -> no).
+func parseMonthDay(words []string, i int) (int, int, bool) {
+	j := i
+	for j < len(words) {
+		switch cleanWord(words[j]) {
+		case "on", "the", "pada", "tanggal", "tgl", "day":
+			j++
+			continue
+		}
+		break
+	}
+	if j >= len(words) {
+		return 0, i, false
+	}
+	m := ordinalRe.FindStringSubmatch(cleanWord(words[j]))
+	if m == nil || strings.ContainsAny(words[j], ":.") {
+		return 0, i, false
+	}
+	if m[2] == "" && (j+1 >= len(words) || cleanWord(words[j+1]) == "am" || cleanWord(words[j+1]) == "pm") {
+		return 0, i, false
+	}
+	d, _ := strconv.Atoi(m[1])
+	if d < 1 || d > 31 {
+		return 0, i, false
+	}
+	return d, j + 1, true
+}
+
+// timeAfter reads an optional "[at|jam|pukul] <time>" at words[i].
 func timeAfter(words []string, i int) (int, int, int, bool) {
-	if i < len(words) && cleanWord(words[i]) == "at" {
+	if i < len(words) && (cleanWord(words[i]) == "at" || cleanWord(words[i]) == "jam" || cleanWord(words[i]) == "pukul") {
 		if h, m, n, ok := parseTimeAt(words, i+1, true); ok {
 			return h, m, n + 1, true
 		}
@@ -208,55 +290,94 @@ func parseReminderText(text string, now time.Time, loc *time.Location) (parsedRe
 		i = 3
 
 	// ---- recurring ----
-	case first == "every" || first == "daily" || first == "everyday":
+	case first == "every" || first == "tiap" || first == "setiap" || first == "daily" || first == "everyday":
 		s := reminderSchedule{StartDate: today, TimeOfDay: "09:00"}
 		i = 1
-		if first == "every" {
+		if first == "daily" || first == "everyday" {
+			s.Kind = "daily"
+		} else {
 			if len(words) < 2 {
 				return out, errNoWhen
 			}
 			w := cleanWord(words[1])
+			// "every 2 weeks", "every other week", "tiap 3 bulan"
+			n := 0
+			if w == "other" || w == "alternate" {
+				n = 2
+			} else if k, err := strconv.Atoi(w); err == nil {
+				if k < 1 || k > maxReminderInterval {
+					return out, fmt.Errorf("the repeat interval must be 1-%d", maxReminderInterval)
+				}
+				n = k
+			}
+			if n > 0 {
+				if len(words) < 3 {
+					return out, errNoWhen
+				}
+				i = 3
+				switch repeatUnit(cleanWord(words[2])) {
+				case "week":
+					s.Kind = "weekly"
+					var days []int
+					days, i = parseWeekdayList(words, i, true)
+					if len(days) == 0 {
+						days = []int{int(today.Weekday())}
+					}
+					s.Weekdays = days
+				case "month":
+					s.Kind = "monthly"
+					s.DayOfMonth = today.Day()
+					if d, j, ok := parseMonthDay(words, i); ok {
+						s.DayOfMonth, i = d, j
+					}
+				case "day":
+					if n != 1 {
+						return out, errors.New(`repeating every few days isn't supported yet. Try "every day", "every 2 weeks on fri" or "every 3 months"`)
+					}
+					s.Kind = "daily"
+				default:
+					return out, errNoWhen
+				}
+				if n > 1 {
+					s.Interval = n
+				}
+			}
 			switch {
-			case w == "day" || w == "morning" || w == "evening" || w == "night":
+			case n > 0: // handled above
+			case w == "day" || w == "hari" || w == "morning" || w == "pagi" || w == "evening" || w == "sore" || w == "night" || w == "malam":
 				s.Kind = "daily"
 				i = 2
 				switch w {
-				case "morning":
+				case "morning", "pagi":
 					s.TimeOfDay = "08:00"
-				case "evening":
+				case "evening", "sore":
 					s.TimeOfDay = "18:00"
-				case "night":
+				case "night", "malam":
 					s.TimeOfDay = "20:00"
 				}
 			case w == "weekday" || w == "weekdays":
 				s.Kind, s.Weekdays, i = "weekly", []int{1, 2, 3, 4, 5}, 2
 			case w == "weekend" || w == "weekends":
 				s.Kind, s.Weekdays, i = "weekly", []int{0, 6}, 2
-			case w == "week":
-				s.Kind, s.Weekdays, i = "weekly", []int{int(today.Weekday())}, 2
-			case w == "month":
+			case w == "week" || w == "minggu":
+				s.Kind = "weekly"
+				var days []int
+				days, i = parseWeekdayList(words, 2, true)
+				if len(days) == 0 {
+					days = []int{int(today.Weekday())}
+				}
+				s.Weekdays = days
+			case w == "month" || w == "bulan":
 				s.Kind = "monthly"
 				i = 2
-				if i < len(words) && cleanWord(words[i]) == "on" {
-					i++
-				}
-				if i < len(words) && cleanWord(words[i]) == "the" {
-					i++
-				}
 				s.DayOfMonth = today.Day()
-				if i < len(words) {
-					if m := ordinalRe.FindStringSubmatch(cleanWord(words[i])); m != nil && (m[2] != "" || i+1 < len(words) && cleanWord(words[i+1]) != "am" && cleanWord(words[i+1]) != "pm" && !strings.ContainsAny(words[i], ":.")) {
-						d, _ := strconv.Atoi(m[1])
-						if d >= 1 && d <= 31 {
-							s.DayOfMonth = d
-							i++
-						}
-					}
+				if d, j, ok := parseMonthDay(words, i); ok {
+					s.DayOfMonth, i = d, j
 				}
-			case w == "year":
+			case w == "year" || w == "tahun":
 				s.Kind = "yearly"
 				i = 2
-				if i < len(words) && cleanWord(words[i]) == "on" {
+				if i < len(words) && (cleanWord(words[i]) == "on" || cleanWord(words[i]) == "pada") {
 					i++
 				}
 				mon, d, n, ok := parseDayMonth(words, i)
@@ -273,31 +394,12 @@ func parseReminderText(text string, now time.Time, loc *time.Location) (parsedRe
 					break
 				}
 				// every mon, wed and fri
-				seen := map[int]bool{}
-				j := 1
-				for j < len(words) {
-					cw := cleanWord(words[j])
-					if cw == "and" || cw == "&" {
-						j++
-						continue
-					}
-					wd, ok := weekdayWords[cw]
-					if !ok {
-						break
-					}
-					if !seen[wd] {
-						seen[wd] = true
-						s.Weekdays = append(s.Weekdays, wd)
-					}
-					j++
-				}
-				if len(s.Weekdays) == 0 {
+				days, j := parseWeekdayList(words, 1, false)
+				if len(days) == 0 {
 					return out, errNoWhen
 				}
-				s.Kind, i = "weekly", j
+				s.Kind, s.Weekdays, i = "weekly", days, j
 			}
-		} else {
-			s.Kind = "daily"
 		}
 		if h, m, n, ok := timeAfter(words, i); ok {
 			s.TimeOfDay = fmtHHMM(h, m)
@@ -401,7 +503,7 @@ func parseReminderText(text string, now time.Time, loc *time.Location) (parsedRe
 	rest := words[i:]
 	for len(rest) > 0 {
 		switch cleanWord(rest[0]) {
-		case "to", "that", "-", ":", "–", "about", "for":
+		case "to", "that", "-", ":", "–", "about", "for", "untuk":
 			rest = rest[1:]
 			continue
 		}

@@ -922,8 +922,115 @@ class ReminderOccurrence {
   DateTime? get effective => status == 'snoozed' && snoozedUntil != null ? snoozedUntil : dueAt;
 }
 
-const reminderCategories = ['bill', 'medicine', 'school', 'birthday', 'chores', 'other'];
+/// Reminder category ids, household first (backend-go/reminders.go reminderCategoryIDs).
+const reminderCategories = [
+  'cleaning', 'laundry', 'cooking', 'groceries', 'home_maintenance', 'vehicle', 'self_care',
+  'chores', 'bill', 'medicine', 'school', 'birthday', 'other',
+];
+
+const reminderCategoryLabels = {
+  'cleaning': 'Cleaning',
+  'laundry': 'Laundry',
+  'cooking': 'Kitchen & meals',
+  'groceries': 'Groceries',
+  'home_maintenance': 'Home maintenance',
+  'vehicle': 'Vehicle',
+  'self_care': 'Self-care',
+  'chores': 'Chores',
+  'bill': 'Bills',
+  'medicine': 'Medicine',
+  'school': 'School',
+  'birthday': 'Birthdays',
+  'other': 'Other',
+};
+
+String reminderCategoryLabel(String id) => reminderCategoryLabels[id] ?? 'Other';
+
 const reminderKinds = ['once', 'daily', 'weekly', 'monthly', 'yearly'];
+
+/// Kinds that support "repeat every N" (the API `interval` field).
+bool reminderKindHasInterval(String kind) => kind == 'weekly' || kind == 'monthly';
+
+const _weekdayShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/// Schedule summary mirroring the backend's `description`
+/// ("Every 2 weeks on Fri at 10:00"). weekdays: 0 = Sunday .. 6.
+String describeReminderSchedule({
+  required String kind,
+  required String timeOfDay,
+  List<int> weekdays = const [],
+  int? dayOfMonth,
+  int interval = 1,
+}) {
+  final at = 'at $timeOfDay';
+  final n = interval < 1 ? 1 : interval;
+  switch (kind) {
+    case 'daily':
+      return 'Every day $at';
+    case 'weekly':
+      final days = [...weekdays]..sort();
+      if (days.isEmpty) return 'Pick at least one day';
+      final names = days.map((d) => _weekdayShort[d % 7]).toList();
+      final list = names.length > 1 ? '${names.sublist(0, names.length - 1).join(', ')} and ${names.last}' : names.first;
+      return n > 1 ? 'Every $n weeks on $list $at' : 'Every $list $at';
+    case 'monthly':
+      final on = dayOfMonth == null ? '' : ' on day $dayOfMonth';
+      return n > 1 ? 'Every $n months$on $at' : 'Every month$on $at';
+    case 'yearly':
+      return 'Every year $at';
+    default:
+      return 'Once $at';
+  }
+}
+
+/// A one-tap household reminder template (same list as the web's
+/// REMINDER_TEMPLATES in react/src/pages/Reminders.jsx).
+class ReminderTemplate {
+  final String title;
+  final String category;
+  final String kind;
+  final String timeOfDay;
+  final List<int> weekdays; // 0 = Sunday .. 6
+  final int? dayOfMonth; // null = the start date's day
+  final int interval;
+
+  const ReminderTemplate({
+    required this.title,
+    required this.category,
+    required this.kind,
+    required this.timeOfDay,
+    this.weekdays = const [],
+    this.dayOfMonth,
+    this.interval = 1,
+  });
+
+  String get description => describeReminderSchedule(
+      kind: kind, timeOfDay: timeOfDay, weekdays: weekdays, dayOfMonth: dayOfMonth, interval: interval);
+}
+
+const reminderTemplates = [
+  ReminderTemplate(title: 'Change bed sheets & towels', category: 'laundry', kind: 'weekly', interval: 2, weekdays: [5], timeOfDay: '10:00'),
+  ReminderTemplate(title: 'Wash prayer mats & sarung', category: 'laundry', kind: 'weekly', interval: 2, weekdays: [5], timeOfDay: '09:00'),
+  ReminderTemplate(title: 'Take out the trash', category: 'cleaning', kind: 'weekly', weekdays: [2, 5], timeOfDay: '19:00'),
+  ReminderTemplate(title: 'Water the plants', category: 'home_maintenance', kind: 'daily', timeOfDay: '07:00'),
+  ReminderTemplate(title: 'Clean the bathroom', category: 'cleaning', kind: 'weekly', weekdays: [6], timeOfDay: '09:00'),
+  ReminderTemplate(title: "Plan next week's meals", category: 'cooking', kind: 'weekly', weekdays: [4], timeOfDay: '20:30'),
+  ReminderTemplate(title: 'Weekly grocery run', category: 'groceries', kind: 'weekly', weekdays: [6], timeOfDay: '08:00'),
+  ReminderTemplate(title: 'Check tyre pressure', category: 'vehicle', kind: 'weekly', interval: 2, weekdays: [5], timeOfDay: '11:00'),
+  ReminderTemplate(title: 'Change motorbike oil', category: 'vehicle', kind: 'monthly', interval: 3, dayOfMonth: 1, timeOfDay: '09:00'),
+  ReminderTemplate(title: 'Clean the water tank', category: 'home_maintenance', kind: 'monthly', interval: 3, timeOfDay: '09:00'),
+  ReminderTemplate(title: 'Service the AC', category: 'home_maintenance', kind: 'monthly', interval: 6, timeOfDay: '10:00'),
+  ReminderTemplate(title: 'Self-care Saturday', category: 'self_care', kind: 'weekly', weekdays: [6], timeOfDay: '08:00'),
+  ReminderTemplate(title: 'Pay electricity bill', category: 'bill', kind: 'monthly', dayOfMonth: 20, timeOfDay: '09:00'),
+];
+
+/// Next date on or after [from] whose day of month is [day] (clamped to short months).
+DateTime nextDayOfMonth(int day, DateTime from) {
+  DateTime clamp(int y, int m) => DateTime(y, m, day.clamp(1, DateTime(y, m + 1, 0).day));
+  final today = DateTime(from.year, from.month, from.day);
+  final d = clamp(from.year, from.month);
+  return d.isBefore(today) ? clamp(from.year, from.month + 1) : d;
+}
 
 // ---------------------------------------------------------------- shopping lists
 
@@ -1034,6 +1141,10 @@ class Reminder {
   final String description; // human-readable schedule from the server
   final bool active;
   final DateTime? nextDue;
+  final List<int> weekdays; // weekly: 0 = Sunday .. 6
+  final int? dayOfMonth;
+  final int interval; // weekly/monthly: every N weeks/months
+  final int? assigneeId;
 
   const Reminder({
     required this.id,
@@ -1046,6 +1157,10 @@ class Reminder {
     this.description = '',
     this.active = true,
     this.nextDue,
+    this.weekdays = const [],
+    this.dayOfMonth,
+    this.interval = 1,
+    this.assigneeId,
   });
 
   factory Reminder.fromJson(Json j) => Reminder(
@@ -1059,5 +1174,11 @@ class Reminder {
         description: asString(j['description']),
         active: j['active'] == null ? true : asBool(j['active']),
         nextDue: DateTime.tryParse(asString(j['next_due']))?.toLocal(),
+        weekdays: j['weekdays'] is List ? [for (final w in j['weekdays'] as List) asInt(w)] : const [],
+        dayOfMonth: asIntOrNull(j['day_of_month']),
+        interval: j['interval'] == null ? 1 : (asInt(j['interval']) < 1 ? 1 : asInt(j['interval'])),
+        assigneeId: asIntOrNull(j['assignee_id']),
       );
+
+  String get categoryLabel => reminderCategoryLabel(category);
 }

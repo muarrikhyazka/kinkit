@@ -200,7 +200,7 @@
     'f.today.t': 'Hari ini',
     'f.today.d': 'Satu tampilan harian untuk semua yang jatuh tempo di rumah: pengingat, tugas, daftar, dan kondisi anggaran.',
     'f.chores.t': 'Tugas rumah, pengingat &amp; daftar belanja',
-    'f.chores.d': 'Tugas rumah dengan poin, persetujuan orang tua, dan bukti foto yang dihitung ke uang saku anak. Pengingat berulang untuk tagihan, obat, sekolah, dan ulang tahun yang mengingatkan orang yang tepat lewat Telegram atau Discord. Daftar belanja bersama: ketik "telur, 2 susu, roti x3", lalu jadikan belanjaan satu catatan pengeluaran.',
+    'f.chores.d': 'Tugas rumah dengan poin, persetujuan orang tua, dan bukti foto yang dihitung ke uang saku anak. Pengingat rumah tangga untuk cucian, bersih-bersih, tandon air, tagihan, obat, dan ulang tahun, berulang setiap hari, tiap 2 minggu, atau tiap 3 bulan, yang mengingatkan orang yang tepat lewat Telegram atau Discord. Daftar belanja bersama: ketik "telur, 2 susu, roti x3", lalu jadikan belanjaan satu catatan pengeluaran.',
 
     'g.fun': 'Seru &amp; memotivasi',
     'g.funSub': 'Kebiasaan keuangan yang baik, jadi permainan keluarga.',

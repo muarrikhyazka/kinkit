@@ -113,6 +113,7 @@ class TvData {
     required this.month,
     required this.currency,
     required this.displayName,
+    this.householdName,
     required this.report,
     required this.trend,
   });
@@ -123,11 +124,13 @@ class TvData {
     final m = _int(j['month']);
     final cur = _str(j['currency']).trim().toUpperCase();
     final name = j['display_name'];
+    final family = j['household_name'];
     return TvData(
       year: y > 0 ? y : now.year,
       month: (m >= 1 && m <= 12) ? m : now.month,
       currency: cur.isEmpty ? 'IDR' : cur,
       displayName: (name is String && name.trim().isNotEmpty) ? name.trim() : null,
+      householdName: (family is String && family.trim().isNotEmpty) ? family.trim() : null,
       report: TvReport.fromJson(_map(j['report'])),
       trend: _list(j['trend']).map(TvTrendPoint.fromJson).toList(),
     );
@@ -137,6 +140,7 @@ class TvData {
   final int month;
   final String currency;
   final String? displayName;
+  final String? householdName; // family name; the header falls back to displayName
   final TvReport report;
   final List<TvTrendPoint> trend; // oldest first
 }

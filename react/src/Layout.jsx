@@ -59,6 +59,7 @@ export default function Layout() {
   const [gamiRefresh, setGamiRefresh] = useState(0)
 
   const isAdmin = !!user?.is_admin
+  const familyName = (user?.household_name || '').trim()
   const canAdd = !isAdmin && canLogSpending(user)
   const canAddIncome = !isAdmin && canManage(user)
   const links = navRoutes(isAdmin ? 'admin' : 'tenant', user)
@@ -77,6 +78,10 @@ export default function Layout() {
     </li>
   )
 
+  useEffect(() => {
+    document.title = familyName ? `Kinkit · ${familyName}` : 'Kinkit'
+    return () => { document.title = 'Kinkit' }
+  }, [familyName])
   useEffect(() => onSpendingChanged(() => setGamiRefresh(k => k + 1)), [])
   useEffect(() => { setMoreOpen(false) }, [location.pathname])
   useEffect(() => { try { localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0') } catch { /* ignore */ } }, [collapsed])
@@ -89,7 +94,12 @@ export default function Layout() {
 
       <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-top">
-          {!collapsed && <div className="brand">Kinkit</div>}
+          {!collapsed && (
+            <div className="brand-block">
+              <div className="brand">Kinkit</div>
+              {familyName && <div className="brand-family" title={familyName}>{familyName}</div>}
+            </div>
+          )}
           <button className="icon-btn collapse-toggle" onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expand' : 'Collapse'} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-expanded={!collapsed}>
             {collapsed ? <IconExpand /> : <IconCollapse />}
           </button>
@@ -132,7 +142,10 @@ export default function Layout() {
 
       {/* ---- mobile (<640px): slim top bar + bottom tabs + FAB ---- */}
       <header className="mobile-topbar">
-        <div className="brand">Kinkit</div>
+        <div className="brand-block">
+          <div className="brand">Kinkit</div>
+          {familyName && <div className="brand-family" title={familyName}>{familyName}</div>}
+        </div>
         <ConnStatus serverOnline={serverOnline} queueSize={queueSize} />
         {!isAdmin && (
           <NavLink to="/help" className="icon-btn help-btn" aria-label="Help and guide"><IconGuide width={20} height={20} /></NavLink>

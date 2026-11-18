@@ -118,7 +118,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 8),
                     Text('kinkit',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: p.text)),
+                        style: serifStyle(fontSize: 36, color: p.text)),
                     Text('Family money & home, together',
                         textAlign: TextAlign.center, style: TextStyle(color: p.muted)),
                     const SizedBox(height: 28),
@@ -203,8 +203,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     FilledButton(
                       onPressed: _busy ? null : _submit,
                       child: _busy
-                          ? const SizedBox(
-                              height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
                           : Text(_signup ? 'Create household' : 'Log in'),
                     ),
                     const SizedBox(height: 24),

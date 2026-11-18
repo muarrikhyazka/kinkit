@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kinkit: family money, budgets and goals in one place</title>
   <meta name="description" content="Kinkit is one home for your family's money. Track spending, plan budgets, save for goals, give kids allowances and earn points and badges together, on the web, phone, TV, Telegram and Discord. Self-hostable, and your data is always exportable.">
-  <meta name="theme-color" content="#4f46e5" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0b0e1a" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#16284C" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0D1830" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark">
   <meta name="kinkit-app-url" content="">
   <link rel="canonical" href="https://kinkit.app/">
@@ -30,9 +30,13 @@
   <meta name="twitter:image" content="https://kinkit.app/assets/og-image.svg">
 
   <!-- Favicon: inline SVG (same artwork as assets/favicon.svg) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234f46e5'/%3E%3Cstop offset='1' stop-color='%237c3aed'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M14 31 32 16l18 15' fill='none' stroke='%23fff' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28' fill='none' stroke='%23fff' stroke-width='5' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='39' r='5.5' fill='%23facc15'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2316284C'/%3E%3Cpath d='M14 31 32 16l18 15' fill='none' stroke='%23EFE8DA' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28' fill='none' stroke='%23EFE8DA' stroke-width='5' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='39' r='5.5' fill='%23FFB92E'/%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="assets/favicon.svg">
 
+  <!-- Headline typeface (the only external request): DM Serif Display, with Georgia as fallback -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;display=swap">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="assets/mockups.css">
 
@@ -52,9 +56,8 @@
   <!-- Icon sprite (inline so it works from file:// too). Stroke icons, 24x24. -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
-      <linearGradient id="brand-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#7c3aed"/></linearGradient>
     </defs>
-    <symbol id="logo" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="url(#brand-grad)"/><path d="M14 31 32 16l18 15" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/><circle cx="32" cy="39" r="5.5" fill="#facc15"/></symbol>
+    <symbol id="logo" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="15" fill="#16284C" stroke="#EFE8DA" stroke-opacity=".35" stroke-width="2"/><path d="M14 31 32 16l18 15" fill="none" stroke="#EFE8DA" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28" fill="none" stroke="#EFE8DA" stroke-width="5" stroke-linejoin="round"/><circle cx="32" cy="39" r="5.5" fill="#FFB92E"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
     <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M21 11h-5a2 2 0 0 0 0 4h5z"/></symbol>
     <symbol id="i-pie" viewBox="0 0 24 24"><path d="M21.2 15.9A10 10 0 1 1 8 2.8"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></symbol>
@@ -190,9 +193,9 @@
                       <div class="m-card">
                         <div class="m-card-title">By category</div>
                         <div class="m-cats">
-                          <div class="m-cat"><i style="background:#4f46e5"></i>Groceries<b>2,3jt</b><span class="meter"><u style="width:72%;background:#4f46e5"></u></span></div>
-                          <div class="m-cat"><i style="background:#16a34a"></i>Transport<b>1,3jt</b><span class="meter"><u style="width:48%;background:#16a34a"></u></span></div>
-                          <div class="m-cat"><i style="background:#d97706"></i>Eating out<b>1,1jt</b><span class="meter"><u style="width:94%;background:#d97706"></u></span></div>
+                          <div class="m-cat"><i style="background:#16284C"></i>Groceries<b>2,3jt</b><span class="meter"><u style="width:72%;background:#16284C"></u></span></div>
+                          <div class="m-cat"><i style="background:#2F7D4F"></i>Transport<b>1,3jt</b><span class="meter"><u style="width:48%;background:#2F7D4F"></u></span></div>
+                          <div class="m-cat"><i style="background:#C98A0B"></i>Eating out<b>1,1jt</b><span class="meter"><u style="width:94%;background:#C98A0B"></u></span></div>
                         </div>
                       </div>
                     </div>
@@ -225,11 +228,11 @@
           </div>
 
           <div class="float-card" aria-hidden="true">
-            <span class="dot"><svg class="icon" style="stroke:#fff"><use href="#i-trophy"/></svg></span>
+            <span class="dot"><svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg></span>
             <span><span data-i18n="hero.float1">Badge earned: Under Budget</span><small data-i18n="hero.float1s">Needs + Wants within plan</small></span>
           </div>
           <div class="float-card chat" aria-hidden="true">
-            <span class="dot"><svg class="icon" style="stroke:#fff"><use href="#i-chat"/></svg></span>
+            <span class="dot"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span>
             <span>"25k makan siang"<small data-i18n="hero.float2s">Logged from Telegram</small></span>
           </div>
         </div>
@@ -353,7 +356,7 @@
               <article class="card reveal" data-delay="2">
                 <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-check-square"/></svg></span>
                 <h4 data-i18n="f.chores.t">Chores, reminders &amp; shopping lists</h4>
-                <p data-i18n="f.chores.d">Chores with points, parent approval and photo proof that count toward kids' allowances. Repeating reminders for bills, medicine, school and birthdays that nudge the right person on Telegram or Discord. Shared shopping lists where you type "eggs, 2 milk, bread x3", then turn the trip into one spending entry.</p>
+                <p data-i18n="f.chores.d">Chores with points, parent approval and photo proof that count toward kids' allowances. Household reminders for laundry, cleaning, the water tank, bills, medicine and birthdays, repeating daily or every 2 weeks or every 3 months, that nudge the right person on Telegram or Discord. Shared shopping lists where you type "eggs, 2 milk, bread x3", then turn the trip into one spending entry.</p>
               </article>
             </div>
           </div>
@@ -499,9 +502,9 @@
                     <div class="m-progress"><i></i></div>
                   </div>
                   <div class="m-cats m-card">
-                    <div class="m-cat"><i style="background:#4f46e5"></i>Sayur &amp; buah<b>48rb</b></div>
-                    <div class="m-cat"><i style="background:#16a34a"></i>Bensin<b>100rb</b></div>
-                    <div class="m-cat"><i style="background:#d97706"></i>Makan siang<b>25rb</b></div>
+                    <div class="m-cat"><i style="background:#16284C"></i>Sayur &amp; buah<b>48rb</b></div>
+                    <div class="m-cat"><i style="background:#2F7D4F"></i>Bensin<b>100rb</b></div>
+                    <div class="m-cat"><i style="background:#C98A0B"></i>Makan siang<b>25rb</b></div>
                     <div class="m-cat"><i style="background:#ec4899"></i>Netflix<b>54rb</b></div>
                     <div class="m-cat"><i style="background:#0ea5e9"></i>Listrik<b>350rb</b></div>
                   </div>
@@ -534,15 +537,15 @@
                       <div class="m-card">
                         <div class="m-card-title">Needs <em>Spent / plan</em></div>
                         <div class="m-cats">
-                          <div class="m-cat"><i style="background:#16a34a"></i>Groceries<b>2,3 / 3jt</b><span class="meter"><u style="width:76%;background:#16a34a"></u></span></div>
-                          <div class="m-cat"><i style="background:#d97706"></i>Utilities<b>0,9 / 1jt</b><span class="meter"><u style="width:90%;background:#d97706"></u></span></div>
+                          <div class="m-cat"><i style="background:#2F7D4F"></i>Groceries<b>2,3 / 3jt</b><span class="meter"><u style="width:76%;background:#2F7D4F"></u></span></div>
+                          <div class="m-cat"><i style="background:#C98A0B"></i>Utilities<b>0,9 / 1jt</b><span class="meter"><u style="width:90%;background:#C98A0B"></u></span></div>
                         </div>
                       </div>
                       <div class="m-card">
                         <div class="m-card-title">Wants</div>
                         <div class="m-cats">
-                          <div class="m-cat"><i style="background:#dc2626"></i>Eating out<b>1,2 / 1jt</b><span class="meter"><u style="width:100%;background:#dc2626"></u></span></div>
-                          <div class="m-cat"><i style="background:#16a34a"></i>Hobbies<b>0,2 / 0,5jt</b><span class="meter"><u style="width:40%;background:#16a34a"></u></span></div>
+                          <div class="m-cat"><i style="background:#C2412D"></i>Eating out<b>1,2 / 1jt</b><span class="meter"><u style="width:100%;background:#C2412D"></u></span></div>
+                          <div class="m-cat"><i style="background:#2F7D4F"></i>Hobbies<b>0,2 / 0,5jt</b><span class="meter"><u style="width:40%;background:#2F7D4F"></u></span></div>
                         </div>
                       </div>
                     </div>

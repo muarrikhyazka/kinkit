@@ -122,7 +122,7 @@ func (app *App) handleRevokeTVToken(w http.ResponseWriter, r *http.Request) {
 
 // GET /api/tv/data?k=<token> - no session. Returns
 //
-//	{year, month, currency, display_name,
+//	{year, month, currency, display_name, household_name (family name, "" when unset),
 //	 report: {total_income, budgeted_expenses, savings, left_for_budgeting, expenses_list:[...]},
 //	 trend: [{year, month, income, expense}] (6 months ending this UTC month)}
 func (app *App) handleTVData(w http.ResponseWriter, r *http.Request) {
@@ -135,10 +135,12 @@ func (app *App) handleTVData(w http.ResponseWriter, r *http.Request) {
 	var aid int64
 	var currency string
 	var display *string
+	var family string
 	err := app.DB.QueryRow(ctx,
 		`UPDATE tv_tokens t SET last_used_at=now() FROM users u
 		 WHERE t.token=$1 AND NOT t.revoked AND u.id=t.account_id AND NOT u.is_disabled
-		 RETURNING t.account_id, u.currency, u.display_name`, token).Scan(&aid, &currency, &display)
+		 RETURNING t.account_id, u.currency, u.display_name, COALESCE(u.household_name, '')`, token).
+		Scan(&aid, &currency, &display, &family)
 	if errors.Is(err, pgx.ErrNoRows) {
 		jsonError(w, http.StatusUnauthorized, "invalid or revoked TV link")
 		return
@@ -162,7 +164,7 @@ func (app *App) handleTVData(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
 	writeJSON(w, http.StatusOK, map[string]any{
 		"year": year, "month": month, "currency": currency, "display_name": display,
-		"report": report, "trend": trend,
+		"household_name": strings.TrimSpace(family), "report": report, "trend": trend,
 	})
 }
 

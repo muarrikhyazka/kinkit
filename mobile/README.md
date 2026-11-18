@@ -91,7 +91,7 @@ lib/
   main.dart              bootstrap: SharedPreferences + PersistCookieJar, ProviderScope
   app.dart               MaterialApp, light/dark theme, AuthGate (login vs app)
   config.dart            --dart-define default server URL, URL normalisation
-  theme.dart             palette from react/src/index.css (light + dark), ThemeData
+  theme.dart             brand palette (Persian Blue #16284C, Cream #EFE8DA, Amber #FFB92E), light + dark ThemeData
   api/
     api_client.dart      KinkitApi (dio): typed methods for every endpoint used, ApiException
     models.dart          lenient JSON models mirroring backend-go structs
@@ -148,7 +148,7 @@ Amount inputs are entered in IDR (with web-style shorthand: `25k`, `2rb`,
 | Goals + contribute | Money > Goals | `GET /api/goals`, `POST /api/goals`, `POST /api/goals/{id}/contribute` `{amount}` (negative = withdraw), `DELETE /api/goals/{id}` |
 | Family members | Family | `GET /api/family` |
 | Points / streak / badges | App bar chip, Today, Family | `GET /api/gamification` |
-| Reminders | Home > Reminders | `GET /api/reminders/upcoming?days=7`, `GET /api/reminders`, `PATCH /api/reminders/{id}` `{active}`, `DELETE /api/reminders/{id}`, `POST /api/reminders/occurrences/{id}/done`, `POST /api/reminders/occurrences/{id}/snooze` `{minutes}`, `POST /api/reminders` `{title, kind, start_date, time_of_day, category, notes, weekdays?, day_of_month?}` |
+| Reminders (household categories, every N weeks/months, template gallery in the create sheet) | Home > Reminders (web: top-level `/reminders`) | `GET /api/reminders/upcoming?days=7`, `GET /api/reminders` (rows include `interval`), `PATCH /api/reminders/{id}` `{active}`, `DELETE /api/reminders/{id}`, `POST /api/reminders/occurrences/{id}/done`, `POST /api/reminders/occurrences/{id}/snooze` `{minutes}` or `{until: "tomorrow"}`, `POST /api/reminders` `{title, kind, start_date, time_of_day, category, notes, weekdays?, day_of_month?, interval, assignee_id?}`, `GET /api/family` (who-is-it-for picker) |
 | Chores | Home > Chores | `GET /api/chores/today`, `POST /api/chores/{instanceId}/complete` / `approve` / `reject` / `undo` `{note}` |
 | Shopping lists | Home > Lists | `GET /api/lists`, `POST /api/lists` `{name}` (emoji sent empty), `GET /api/lists/{id}`, `POST /api/lists/{id}/items` `{text}`, `PATCH /api/lists/{id}/items/{itemId}` `{checked}`, `DELETE /api/lists/{id}/items/{itemId}`, `POST /api/lists/{id}/clear-checked`, `POST /api/lists/{id}/finish` `{client_id, total_amount}` (finish shopping -> spending) |
 
@@ -157,7 +157,7 @@ Amount inputs are entered in IDR (with web-style shorthand: `25k`, `2rb`,
 - Creating/editing chore definitions and schedules, chore photo proof
   (chores that require a photo are shown with a camera hint), staples,
   list reordering, item suggestions,
-  editing a reminder's schedule (pause/resume/delete are supported) and chat
+  editing an existing reminder's schedule (create, pause/resume/delete are supported) and chat
   linking, household time zone / digest.
 - Editing spending rows, receipts, recurring, assets, categories, member
   management, imports and bots.

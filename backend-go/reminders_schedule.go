@@ -25,6 +25,23 @@ type reminderSchedule struct {
 	StartDate  time.Time  // local calendar date (as UTC midnight)
 	EndDate    *time.Time // inclusive local date, nil = forever
 	OnceAt     *time.Time // kind once
+	Interval   int        // weekly/monthly: every N weeks/months (0/1 = every); anchored on StartDate's week/month
+}
+
+// maxReminderInterval caps "every N weeks/months".
+const maxReminderInterval = 52
+
+// every returns the effective repeat interval (>= 1; only weekly/monthly use it).
+func (s reminderSchedule) every() int {
+	if (s.Kind == "weekly" || s.Kind == "monthly") && s.Interval > 1 {
+		return s.Interval
+	}
+	return 1
+}
+
+// weekStart is the Sunday on or before local date d (weekdays are 0=Sunday).
+func weekStart(d time.Time) time.Time {
+	return dateOnly(d).AddDate(0, 0, -int(d.Weekday()))
 }
 
 var validReminderKinds = map[string]bool{"once": true, "daily": true, "weekly": true, "monthly": true, "yearly": true}
@@ -71,6 +88,9 @@ func (s reminderSchedule) validate() error {
 			return fmt.Errorf("weekdays must be 0 (Sunday) to 6 (Saturday)")
 		}
 	}
+	if s.Interval < 0 || s.Interval > maxReminderInterval {
+		return fmt.Errorf("interval must be 1-%d", maxReminderInterval)
+	}
 	if s.DayOfMonth < 0 || s.DayOfMonth > 31 {
 		return fmt.Errorf("day_of_month must be 1-31")
 	}
@@ -97,6 +117,12 @@ func (s reminderSchedule) matchesDay(d time.Time) bool {
 		if len(days) == 0 {
 			days = []int{int(s.StartDate.Weekday())}
 		}
+		if n := s.every(); n > 1 {
+			weeks := int(weekStart(d).Sub(weekStart(s.StartDate)).Hours()/24+0.5) / 7
+			if weeks%n != 0 {
+				return false
+			}
+		}
 		for _, w := range days {
 			if int(d.Weekday()) == w {
 				return true
@@ -104,6 +130,12 @@ func (s reminderSchedule) matchesDay(d time.Time) bool {
 		}
 		return false
 	case "monthly":
+		if n := s.every(); n > 1 {
+			months := (d.Year()*12 + int(d.Month())) - (s.StartDate.Year()*12 + int(s.StartDate.Month()))
+			if months%n != 0 {
+				return false
+			}
+		}
 		return d.Day() == min(dom, daysIn(d.Year(), d.Month()))
 	case "yearly":
 		return d.Month() == s.StartDate.Month() && d.Day() == min(dom, daysIn(d.Year(), d.Month()))
@@ -129,7 +161,8 @@ func occurrencesBetween(s reminderSchedule, loc *time.Location, from, to time.Ti
 		return nil
 	}
 	// Walk local calendar days covering [from, to) with a day of slack on
-	// both sides (zone offsets), capped to keep runaway ranges cheap.
+	// both sides (zone offsets), capped to keep runaway ranges cheap
+	// (800 days: enough for a year-long lookahead of "every 6 months").
 	first := dateOnly(from.In(loc)).AddDate(0, 0, -1)
 	last := dateOnly(to.In(loc)).AddDate(0, 0, 1)
 	if sd := dateOnly(s.StartDate); first.Before(sd) {
@@ -197,6 +230,13 @@ func describeSchedule(s reminderSchedule, loc *time.Location) string {
 			days = []int{int(s.StartDate.Weekday())}
 		}
 		sort.Ints(days)
+		if n := s.every(); n > 1 {
+			short := make([]string, len(days))
+			for i, d := range days {
+				short[i] = weekdayNames[d][:3]
+			}
+			return "Every " + strconv.Itoa(n) + " weeks on " + joinAnd(short) + at
+		}
 		if len(days) == 7 {
 			return "Every day" + at
 		}
@@ -212,6 +252,9 @@ func describeSchedule(s reminderSchedule, loc *time.Location) string {
 		}
 		return "Every " + joinAnd(names) + at
 	case "monthly":
+		if n := s.every(); n > 1 {
+			return "Every " + strconv.Itoa(n) + " months on the " + ordinalSuffix(dom) + at
+		}
 		return "Every month on the " + ordinalSuffix(dom) + at
 	case "yearly":
 		return "Every year on " + s.StartDate.Month().String()[:3] + " " + strconv.Itoa(dom) + at

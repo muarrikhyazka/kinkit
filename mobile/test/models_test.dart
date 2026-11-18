@@ -274,4 +274,44 @@ void main() {
     expect(d.items.first.estPrice, 18000);
     expect(d.items.last.checkedByName, 'Ayu');
   });
+
+  test('Reminder parses interval, weekdays and category label', () {
+    final r = Reminder.fromJson({
+      'id': 9, 'title': 'Change bed sheets', 'kind': 'weekly', 'time_of_day': '10:00', 'weekdays': [5],
+      'day_of_month': null, 'interval': 2, 'category': 'laundry', 'active': true,
+      'description': 'Every 2 weeks on Fri at 10:00', 'assignee_id': 3,
+    });
+    expect(r.interval, 2);
+    expect(r.weekdays, [5]);
+    expect(r.assigneeId, 3);
+    expect(r.categoryLabel, 'Laundry');
+    // older servers without the field -> every week
+    expect(Reminder.fromJson({'id': 1, 'title': 'x'}).interval, 1);
+  });
+
+  test('household categories and templates', () {
+    for (final c in ['cleaning', 'laundry', 'cooking', 'groceries', 'vehicle', 'home_maintenance', 'self_care']) {
+      expect(reminderCategories, contains(c));
+      expect(reminderCategoryLabel(c), isNot('Other'));
+    }
+    expect(reminderTemplates.length, 13);
+    for (final t in reminderTemplates) {
+      expect(reminderCategories, contains(t.category));
+      expect(reminderKinds, contains(t.kind));
+      expect(t.interval, greaterThanOrEqualTo(1));
+    }
+    final sheets = reminderTemplates.firstWhere((t) => t.title.startsWith('Change bed sheets'));
+    expect(sheets.description, 'Every 2 weeks on Fri at 10:00');
+    final trash = reminderTemplates.firstWhere((t) => t.title == 'Take out the trash');
+    expect(trash.description, 'Every Tue and Fri at 19:00');
+    final oil = reminderTemplates.firstWhere((t) => t.title == 'Change motorbike oil');
+    expect(oil.description, 'Every 3 months on day 1 at 09:00');
+  });
+
+  test('nextDayOfMonth clamps and rolls over', () {
+    expect(nextDayOfMonth(1, DateTime(2026, 11, 18)), DateTime(2026, 12, 1));
+    expect(nextDayOfMonth(20, DateTime(2026, 11, 18)), DateTime(2026, 11, 20));
+    expect(nextDayOfMonth(18, DateTime(2026, 11, 18, 15)), DateTime(2026, 11, 18));
+    expect(nextDayOfMonth(31, DateTime(2027, 2, 3)), DateTime(2027, 2, 28));
+  });
 }

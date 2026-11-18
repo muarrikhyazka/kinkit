@@ -65,10 +65,24 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const SectionTitle('Household'),
+          const SectionTitle('Family'),
           Card(
             child: Column(
               children: [
+                ListTile(
+                  leading: const Icon(Icons.family_restroom),
+                  title: const Text('Family name'),
+                  subtitle: Text(
+                    (me?.householdName.trim().isNotEmpty ?? false) ? me!.householdName : 'Not set',
+                    style: serifStyle(fontSize: 16, color: p.text),
+                  ),
+                  trailing: (me?.role == 'owner')
+                      ? Tooltip(
+                          message: 'Rename your family on the web (Settings)',
+                          child: Icon(Icons.open_in_browser, color: p.muted),
+                        )
+                      : null,
+                ),
                 ListTile(
                   leading: const Icon(Icons.currency_exchange),
                   title: const Text('Currency'),

@@ -129,7 +129,7 @@ func botLink(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 		Code string `json:"code"`
 	}
 	if err := decodeJSON(r, &d); err != nil || strings.TrimSpace(d.Code) == "" {
-		writeJSON(w, http.StatusOK, map[string]any{"ok": false, "message": "Usage: /link CODE (get the code in Kinkit › Home › Reminders)"})
+		writeJSON(w, http.StatusOK, map[string]any{"ok": false, "message": "Usage: /link CODE (get the code in Kinkit › Reminders)"})
 		return
 	}
 	ctx := r.Context()
@@ -144,7 +144,7 @@ func botLink(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 	  WHERE code_hash=$1 AND account_id=$2 AND used_at IS NULL AND expires_at > now() RETURNING id, member_id`,
 		hashLinkCode(d.Code), aid).Scan(&codeID, &memberID)
 	if err != nil {
-		writeJSON(w, http.StatusOK, map[string]any{"ok": false, "message": "That code is invalid or expired. Create a new one in Kinkit › Home › Reminders."})
+		writeJSON(w, http.StatusOK, map[string]any{"ok": false, "message": "That code is invalid or expired. Create a new one in Kinkit › Reminders."})
 		return
 	}
 	// a chat user maps to one member per household

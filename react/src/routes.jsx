@@ -18,7 +18,7 @@ import Reminders from './pages/Reminders.jsx'
 import Chores from './pages/Chores.jsx'
 import Lists from './pages/Lists.jsx'
 import { IconGoal } from './moneyIcons.jsx'
-import { IconDashboard, IconBudget, IconSpending, IconSetup, IconGuide, IconShield, IconToday, IconHome } from './icons.jsx'
+import { IconDashboard, IconBudget, IconSpending, IconSetup, IconGuide, IconShield, IconToday, IconHome, IconBell } from './icons.jsx'
 
 /**
  * SINGLE SOURCE OF TRUTH for in-app pages. App.jsx builds the <Route>s from
@@ -48,10 +48,10 @@ const READERS = ['owner', 'parent', 'viewer']
 
 export const APP_ROUTES = [
   { path: '', label: 'Today', Icon: IconToday, Component: Today, area: 'tenant', mobile: 'tab' },
+  { path: 'reminders', label: 'Reminders', Icon: IconBell, Component: Reminders, area: 'tenant', mobile: 'tab' },
   {
     path: 'home', label: 'Home', Icon: IconHome, area: 'tenant', mobile: 'tab',
     tabs: [
-      { path: 'reminders', label: 'Reminders', Component: Reminders },
       { path: 'chores', label: 'Chores', Component: Chores },
       { path: 'lists', label: 'Lists', Component: Lists },
     ],
@@ -102,6 +102,7 @@ export const LEGACY_REDIRECTS = {
   integrations: '/settings/bots',
   'import-export': '/settings/data',
   guide: '/help',
+  'home/reminders': '/reminders', // Reminders moved from a Home tab to its own page
 }
 
 const roleOf = user => user?.role || 'owner' // legacy sessions without a role are the owner

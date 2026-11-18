@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="kinkit_primary">#4F46E5</color>
-    <color name="kinkit_bg">#F1F3F8</color>
+    <!-- Brand: Persian Blue #16284C, Cream #EFE8DA, Amber #FFB92E. -->
+    <color name="kinkit_primary">#16284C</color>
+    <color name="kinkit_accent">#FFB92E</color>
+    <color name="kinkit_bg">#EFE8DA</color>
 </resources>

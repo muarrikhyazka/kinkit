@@ -69,8 +69,8 @@ function HouseholdTimeCard() {
 }
 
 const THEME_HINTS = {
-  light: 'Clean and bright - the default.',
-  dark: 'Easier on the eyes at night.',
+  light: 'Cream and Persian Blue with amber highlights - the default.',
+  dark: 'Deep navy with amber buttons - easier on the eyes at night.',
   playful: 'Bigger, rounder and more colourful - great for kids.',
   senior: 'Large text and high contrast for easier reading.',
 }

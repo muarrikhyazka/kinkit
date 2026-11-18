@@ -173,8 +173,47 @@ export const BadgeIcon = ({ id, ...p }) => {
   return <Icon {...p} />
 }
 
-// Reminder category icons.
-const CATEGORY_ICONS = { bill: IconBulb, medicine: IconPill, school: IconBook, birthday: IconGift, chores: IconBroom, other: IconBell }
+// --- household reminder categories ---
+export const IconSpray = (p) => (
+  <svg {...base} {...p}><path d="M9 8h5v3l2 2v8H7v-8l2-2V8z" /><path d="M10 8V5h4l2 2" /><path d="M19 4.5h.01M21 6.5h.01M19 8.5h.01" /></svg>
+)
+export const IconShirt = (p) => (
+  <svg {...base} {...p}><path d="M8 3l-5 3 2 4 2-1v12h10V9l2 1 2-4-5-3c-.5 1.5-2 2.5-4 2.5S8.5 4.5 8 3z" /></svg>
+)
+export const IconPot = (p) => (
+  <svg {...base} {...p}><path d="M4 10h16v6a4 4 0 01-4 4H8a4 4 0 01-4-4v-6z" /><path d="M2 10h2M20 10h2" /><path d="M9 6c0-1 1-1 1-2M14 6c0-1 1-1 1-2" /></svg>
+)
+export const IconCar = (p) => (
+  <svg {...base} {...p}><path d="M5 16V11l2-5h10l2 5v5" /><path d="M3 16h18v2H3z" /><circle cx="7.5" cy="13" r=".8" /><circle cx="16.5" cy="13" r=".8" /><path d="M6 18v2M18 18v2" /></svg>
+)
+export const IconWrench = (p) => (
+  <svg {...base} {...p}><path d="M14.7 6.3a4 4 0 00-5.4 5.1L3 17.7 6.3 21l6.3-6.3a4 4 0 005.1-5.4l-2.6 2.6-2.4-.6-.6-2.4 2.6-2.6z" /></svg>
+)
+export const IconHeart = (p) => (
+  <svg {...base} {...p}><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z" /></svg>
+)
+export const IconRepeat = (p) => (
+  <svg {...base} {...p}><path d="M17 2l3 3-3 3" /><path d="M4 11V9a4 4 0 014-4h12" /><path d="M7 22l-3-3 3-3" /><path d="M20 13v2a4 4 0 01-4 4H4" /></svg>
+)
+export const IconPause = (p) => (
+  <svg {...base} {...p}><path d="M9 5v14M15 5v14" /></svg>
+)
+export const IconPlay = (p) => (
+  <svg {...base} {...p}><path d="M7 4l13 8-13 8V4z" /></svg>
+)
+export const IconChat = (p) => (
+  <svg {...base} {...p}><path d="M21 12a8 8 0 01-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1121 12z" /><path d="M8.5 12h.01M12 12h.01M15.5 12h.01" /></svg>
+)
+export const IconUser = (p) => (
+  <svg {...base} {...p}><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0116 0" /></svg>
+)
+
+// Reminder category icons (ids match the backend's reminderCategoryIDs).
+const CATEGORY_ICONS = {
+  cleaning: IconSpray, laundry: IconShirt, cooking: IconPot, groceries: IconCart, vehicle: IconCar,
+  home_maintenance: IconWrench, self_care: IconHeart,
+  bill: IconBulb, medicine: IconPill, school: IconBook, birthday: IconGift, chores: IconBroom, other: IconBell,
+}
 export const CategoryIcon = ({ id, ...p }) => {
   const Icon = CATEGORY_ICONS[id] || IconBell
   return <Icon {...p} />

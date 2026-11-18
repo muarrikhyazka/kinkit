@@ -40,16 +40,48 @@ HELP_TEXT = (
     "\n"
     "/today - today's reminders, chores, shopping and budget\n"
     "/remind <when> <what> [@name] - e.g.\n"
+    "   /remind every tue and fri 19:00 take out the trash @budi\n"
+    "   /remind every 2 weeks on fri 10:00 change bed sheets\n"
+    "   /remind every other week on fri 9am wash prayer mats\n"
+    "   /remind every 3 months on the 1st change motorbike oil\n"
+    "   /remind every day 7am water the plants\n"
     "   /remind tomorrow 8am take medicine\n"
-    "   /remind every monday 7:00 trash @budi\n"
     "   /remind in 2 hours call grandma\n"
-    "/reminders - upcoming reminders\n"
+    "   Indonesian works too: /remind tiap 2 minggu jumat jam 9 cuci sajadah\n"
+    "/reminders - upcoming reminders (with category)\n"
     "/chores - today's chores\n"
     "/buy milk, eggs, bread - add to the shopping list\n"
     "/list [name] - show a list\n"
     "/done_shopping 250k - finish the shopping trip (total spent)\n"
-    "/link CODE - link your chat account (code from Kinkit › Home › Reminders)\n"
+    "/link CODE - link your chat account (code from Kinkit › Reminders)\n"
 )
+
+REMIND_USAGE = (
+    "Usage: /remind <when> <what> [@name]\n"
+    "Household examples:\n"
+    "  /remind every 2 weeks on fri 10:00 change bed sheets\n"
+    "  /remind every tue and fri 19:00 take out the trash\n"
+    "  /remind every sat 9am clean the bathroom @budi\n"
+    "  /remind every 3 months on the 1st change motorbike oil\n"
+    "  /remind every 6 months service the AC\n"
+    "Repeat every N weeks/months: \"every 2 weeks\", \"every other week\", \"every 3 months\" "
+    "(also \"tiap 2 minggu\", \"setiap 3 bulan\")."
+)
+
+
+def format_reminders(res):
+    """Text for /reminders: the backend's text, or built from items (with category labels)."""
+    if res.get("text"):
+        return res["text"]
+    items = res.get("items") or []
+    if not items:
+        return "No reminders in the next 7 days."
+    lines = ["Upcoming reminders (7 days)"]
+    for it in items:
+        label = it.get("category_label") or "Other"
+        who = f" ({it['who']})" if it.get("who") else ""
+        lines.append(f"- {it.get('title', '')} [{label}]{who}")
+    return "\n".join(lines)
 
 
 class BackendError(Exception):
@@ -175,15 +207,15 @@ async def run_command(bot_token, user, cmd, args):
             return res.get("text") or "Nothing today.", []
         if cmd == "remind":
             if not args:
-                return "Usage: /remind tomorrow 8am take medicine · /remind every monday 7:00 trash @budi · /remind in 2 hours call grandma", []
+                return REMIND_USAGE, []
             res = await abot_api(bot_token, "POST", "/api/bot/reminders", {"text": args}, user=user)
             return res.get("message", "OK"), []
         if cmd == "reminders":
             res = await abot_api(bot_token, "GET", "/api/bot/reminders", user=user)
-            return res.get("text", ""), []
+            return format_reminders(res), []
         if cmd == "link":
             if not args:
-                return "Usage: /link CODE - create the code in Kinkit › Home › Reminders › Link my chat account.", []
+                return "Usage: /link CODE - create the code in Kinkit › Reminders › Link my chat account.", []
             res = await abot_api(bot_token, "POST", "/api/bot/link", {"code": args.split()[0]}, user=user)
             return res.get("message", "OK"), []
         if cmd == "chores":

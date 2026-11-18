@@ -1,26 +1,25 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'react-chartjs-2'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
-import { categoryColor } from './categoryColor'
+import { categoryColor, chartTheme, readableOn } from './categoryColor'
 import { formatRupiah } from './api'
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels)
-
-const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark'
 
 /** Chart.js pie chart - hoverable slices, percentage labels, no collisions. */
 export default function PieChart({ data }) {
   const total = data.reduce((s, d) => s + d.total, 0)
   if (total <= 0) return <div className="muted">No data yet.</div>
 
-  const textColor = isDark() ? '#e5e7eb' : '#1e2330'
+  const { text: textColor, card } = chartTheme()
+  const colors = data.map(d => categoryColor(d.category_name))
 
   const chartData = {
     labels: data.map(d => d.category_name),
     datasets: [{
       data: data.map(d => d.total),
-      backgroundColor: data.map(d => categoryColor(d.category_name)),
-      borderColor: isDark() ? '#1a1f33' : '#fff',
+      backgroundColor: colors,
+      borderColor: card,
       borderWidth: 2,
     }],
   }
@@ -37,7 +36,7 @@ export default function PieChart({ data }) {
       },
       datalabels: {
         display: (ctx) => ctx.dataset.data[ctx.dataIndex] / total >= 0.06,
-        color: '#fff',
+        color: (ctx) => readableOn(colors[ctx.dataIndex]),
         font: { size: 11, weight: 700 },
         formatter: (v) => `${Math.round((v / total) * 100)}%`,
       },

@@ -33,7 +33,7 @@ export default function Login() {
   return (
     <div className="login-page">
       <form className="card login-card" onSubmit={handleSubmit}>
-        <h1>Kinkit</h1>
+        <h1 className="login-brand">Kinkit</h1>
         <p className="muted">Money management for every household, anywhere</p>
         {error && <div className="error-box">{error}</div>}
 
@@ -51,7 +51,7 @@ export default function Login() {
           Password
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={mode === 'signup' ? 8 : undefined} />
         </label>
-        <button type="submit" disabled={busy}>
+        <button type="submit" className="accent" disabled={busy}>
           {busy ? 'Please wait...' : mode === 'signup' ? 'Create account' : 'Login'}
         </button>
         <button type="button" className="link-btn" onClick={() => { setMode(m => (m === 'login' ? 'signup' : 'login')); setError('') }}>

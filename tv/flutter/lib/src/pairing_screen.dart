@@ -184,7 +184,13 @@ class _PairingScreenState extends State<PairingScreen> {
       children: [
         ShaderMask(
           shaderCallback: (r) => const LinearGradient(colors: [TvColors.primary, TvColors.brandEnd]).createShader(r),
-          child: const Text('Kinkit TV', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white)),
+          child: const Text('Kinkit TV',
+              style: TextStyle(
+                  fontFamily: tvSerif,
+                  fontFamilyFallback: tvSerifFallback,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white)),
         ),
         const SizedBox(height: 6),
         const Text(

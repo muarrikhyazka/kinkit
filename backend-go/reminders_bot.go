@@ -61,6 +61,9 @@ func botListReminders(w http.ResponseWriter, r *http.Request, app *App, aid int6
 		Title string `json:"title"`
 		Due   string `json:"due"`
 		Who   string `json:"who,omitempty"`
+		// category id + human label (e.g. "laundry" / "Laundry")
+		Category      string `json:"category"`
+		CategoryLabel string `json:"category_label"`
 	}
 	items := []item{}
 	var b strings.Builder
@@ -71,15 +74,17 @@ func botListReminders(w http.ResponseWriter, r *http.Request, app *App, aid int6
 			break
 		}
 		when := o.effective().In(loc).Format("Mon 2 Jan 15:04")
-		line := "\n• " + when + " — " + o.Title
+		label := reminderCategoryLabel(o.Category)
+		mark := "•"
+		if o.Overdue {
+			mark = "!"
+		}
+		line := "\n" + mark + " " + when + " — " + o.Title + " [" + label + "]"
 		if o.AssigneeName != "" {
 			line += " (" + o.AssigneeName + ")"
 		}
-		if o.Overdue {
-			line = "\n! " + when + " — " + o.Title
-		}
 		b.WriteString(line)
-		items = append(items, item{o.ID, o.Title, o.effective().Format(time.RFC3339), o.AssigneeName})
+		items = append(items, item{o.ID, o.Title, o.effective().Format(time.RFC3339), o.AssigneeName, o.Category, label})
 	}
 	if len(occ) == 0 {
 		b.Reset()
@@ -152,7 +157,7 @@ func botCreateReminder(w http.ResponseWriter, r *http.Request, app *App, aid int
 		Text string `json:"text"`
 	}
 	if err := decodeJSON(r, &d); err != nil || strings.TrimSpace(d.Text) == "" {
-		reply(false, "Usage: /remind tomorrow 8am take medicine · /remind every monday 7:00 trash @budi · /remind in 2 hours call grandma")
+		reply(false, "Usage: /remind tomorrow 8am take medicine · /remind every tue and fri 19:00 take out the trash @budi · /remind every 2 weeks on fri 10:00 change bed sheets · /remind every 3 months on the 1st change motorbike oil")
 		return
 	}
 	loc := householdLocation(ctx, app, aid)
@@ -163,7 +168,8 @@ func botCreateReminder(w http.ResponseWriter, r *http.Request, app *App, aid int
 		return
 	}
 	in := reminderInput{Title: p.Title, Kind: p.Schedule.Kind, TimeOfDay: p.Schedule.TimeOfDay, Weekdays: p.Schedule.Weekdays,
-		StartDate: p.Schedule.StartDate.Format("2006-01-02"), OnceAt: p.Schedule.OnceAt, Category: guessReminderCategory(p.Title)}
+		StartDate: p.Schedule.StartDate.Format("2006-01-02"), OnceAt: p.Schedule.OnceAt, Interval: p.Schedule.Interval,
+		Category: guessReminderCategory(p.Title)}
 	if p.Schedule.DayOfMonth > 0 {
 		dom := p.Schedule.DayOfMonth
 		in.DayOfMonth = &dom
@@ -196,7 +202,8 @@ func botCreateReminder(w http.ResponseWriter, r *http.Request, app *App, aid int
 		dbError(w, err)
 		return
 	}
-	reply(true, fmt.Sprintf("Reminder set: %s\n%s · for %s", v.in.Title, describeSchedule(v.sched, loc), who), "id", id)
+	reply(true, fmt.Sprintf("Reminder set: %s\n%s · for %s · %s", v.in.Title, describeSchedule(v.sched, loc), who, reminderCategoryLabel(v.in.Category)),
+		"id", id, "category", v.in.Category, "interval", v.in.Interval, "description", describeSchedule(v.sched, loc))
 }
 
 // guessReminderCategory picks a category from keywords in the title.
@@ -219,8 +226,20 @@ func guessReminderCategory(title string) string {
 		return "bill"
 	case has("school", "homework", "pr ", "exam", "class", "sekolah"):
 		return "school"
-	case has("trash", "bins", "laundry", "clean", "dishes", "water the", "sampah"):
-		return "chores"
+	case has("laundry", "bed sheet", "bedsheet", "sheets", "towel", "sarung", "prayer mat", "sajadah", "ironing", "cuci baju", "seprai", "sprei", "handuk", "setrika"):
+		return "laundry"
+	case has("grocer", "supermarket", "market run", "belanja", "pasar"):
+		return "groceries"
+	case has("meal", "cook", "kitchen", "fridge", "recipe", "masak", "dapur", "kulkas"):
+		return "cooking"
+	case has("tyre", "tire", "oil change", "motorbike", "motor ", "car ", "vehicle", "service the car", "stnk", "ban ", "oli", "mobil"):
+		return "vehicle"
+	case has("water tank", "tandon", "toren", "filter", "aircon", " ac", "ac ", "plants", "water the", "garden", "gutter", "siram", "tanaman", "kuras"):
+		return "home_maintenance"
+	case has("self-care", "self care", "me time", "workout", "gym", "skincare", "haircut", "meditat", "olahraga"):
+		return "self_care"
+	case has("trash", "bins", "clean", "dishes", "vacuum", "mop", "sweep", "bathroom", "toilet", "sampah", "sapu", "pel", "bersih"):
+		return "cleaning"
 	}
 	return "other"
 }
@@ -282,6 +301,14 @@ func botOccError(w http.ResponseWriter, err error) {
 		msg = "That reminder no longer exists."
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"ok": false, "message": msg})
+}
+
+// reminderCategoryLabel is the human label for a category id.
+func reminderCategoryLabel(c string) string {
+	if l, ok := reminderCategoryLabels[c]; ok {
+		return l
+	}
+	return "Other"
 }
 
 func firstWord(s string) string {

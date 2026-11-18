@@ -59,7 +59,7 @@ function AccountSettings() {
       const d = await api.updateHousehold({ name: household.trim() })
       setHousehold(d.name)
       await refreshUser()
-      toast.success('Household name saved')
+      toast.success('Family name saved')
     } catch (err) { toast.error(err.message) }
   }
 
@@ -84,12 +84,12 @@ function AccountSettings() {
         Display currency - amounts are stored in IDR and converted to the selected currency for display
         using daily exchange rates, so shown values are approximate. Your stored data never changes.
       </p>
-      {/* --- family: household name (owner only) --- */}
+      {/* --- family name (family admin only); shown in the sidebar, top bar and page title --- */}
       <form className="inline-form" onSubmit={saveHousehold} style={{ marginBottom: '1rem' }}>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '.3rem', flex: '1 1 240px' }}>
-          <span>Household name</span>
+          <span>Family name</span>
           <input value={household} onChange={e => setHousehold(e.target.value)} disabled={!isOwner} maxLength={80}
-            placeholder="e.g. The Smiths" title={isOwner ? undefined : 'Only the family admin can rename the household'} />
+            placeholder="e.g. The Prasidana Family" title={isOwner ? undefined : 'Only the family admin can change the family name'} />
         </label>
         {isOwner && <button type="submit" style={{ alignSelf: 'flex-end' }}>Save</button>}
       </form>

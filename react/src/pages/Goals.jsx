@@ -10,7 +10,7 @@ import { SkeletonCard } from '../Skeleton.jsx'
 import { IconClose, IconEdit, IconPlus } from '../icons.jsx'
 import { prettyDate } from './Recurring.jsx'
 
-const COLORS = ['#4f46e5', '#16a34a', '#d97706', '#db2777', '#0891b2', '#7c3aed']
+const COLORS = ['#16284C', '#FFB92E', '#4A6FA5', '#B5793A', '#2A7039', '#8C9BB5']
 
 /** SVG progress ring. pct may exceed 100 (ring stays full). */
 export function GoalRing({ pct, color = 'var(--primary)', size = 84, stroke = 8, label }) {

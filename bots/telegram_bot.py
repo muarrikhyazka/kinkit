@@ -102,7 +102,7 @@ async def start_tenant(integ):
     try:
         await application.bot.set_my_commands([
             ("today", "Today's reminders, chores and budget"),
-            ("remind", "Add a reminder: /remind tomorrow 8am take medicine"),
+            ("remind", "Add a reminder: /remind every 2 weeks on fri 10:00 change bed sheets"),
             ("reminders", "Upcoming reminders"),
             ("chores", "Today's chores"),
             ("buy", "Add to shopping list: /buy milk, eggs"),

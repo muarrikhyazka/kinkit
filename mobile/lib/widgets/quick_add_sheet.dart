@@ -162,7 +162,7 @@ class _QuickAddSheetState extends ConsumerState<QuickAddSheet> {
               FilledButton(
                 onPressed: _saving ? null : _save,
                 child: _saving
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
                     : const Text('Save'),
               ),
             ],

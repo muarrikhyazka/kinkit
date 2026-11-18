@@ -310,16 +310,20 @@ func TestTVTokenAccess(t *testing.T) {
 	}
 	screen := newClient(t, srv) // no session
 	var data struct {
-		Year   int              `json:"year"`
-		Month  int              `json:"month"`
-		Report map[string]any   `json:"report"`
-		Trend  []map[string]any `json:"trend"`
+		Year          int              `json:"year"`
+		Month         int              `json:"month"`
+		HouseholdName *string          `json:"household_name"`
+		Report        map[string]any   `json:"report"`
+		Trend         []map[string]any `json:"trend"`
 	}
 	if code := screen.do("GET", "/api/tv/data?k="+tok.Token, nil, &data); code != 200 {
 		t.Fatalf("tv data: %d", code)
 	}
 	if len(data.Trend) != 6 || data.Report["expenses_list"] == nil || data.Trend[5]["expense"] != float64(15000) {
 		t.Fatalf("tv data shape: %+v", data)
+	}
+	if data.HouseholdName == nil {
+		t.Fatalf("tv data: household_name missing")
 	}
 	// Packaged TV viewers (other origins) may read the public endpoints, never session ones.
 	for path, want := range map[string]string{"/api/tv/data?k=" + tok.Token: "*", "/api/fx-rates": "*", "/api/me": ""} {

@@ -133,7 +133,8 @@ No cookies and no custom headers; the token goes in the query string. `401` mean
   "year": 2026,                    // int, current UTC year
   "month": 11,                     // int 1-12, current UTC month
   "currency": "IDR",               // account display currency (IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD, INR)
-  "display_name": "The Smiths",    // string or null - shown next to the logo
+  "display_name": "John Smith",    // string or null - owner's name; header fallback when household_name is ""
+  "household_name": "The Smiths",  // string, family name ("" when unset) - shown next to the logo
   "report": {
     "total_income": 25000000,      // int, IDR      -> "Income" card
     "budgeted_expenses": 15000000, // int, IDR      -> "Budget" card, % of budget

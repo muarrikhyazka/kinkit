@@ -330,7 +330,7 @@ function IncomeExpenseChart({ trend }) {
     <BarChart
       labels={trend.map(t => MONTHS[t.month - 1])}
       datasets={[
-        { label: hasActual ? 'Income (planned)' : 'Income', data: trend.map(t => t.income), color: hasActual ? '#86efac' : 'var(--success)' },
+        { label: hasActual ? 'Income (planned)' : 'Income', data: trend.map(t => t.income), color: hasActual ? '#8FBF95' : 'var(--success)' },
         ...(hasActual ? [{ label: 'Income (received)', data: trend.map(t => t.income_actual || 0), color: 'var(--success)' }] : []),
         { label: 'Expense', data: trend.map(t => t.expense), color: 'var(--warning)' },
       ]}

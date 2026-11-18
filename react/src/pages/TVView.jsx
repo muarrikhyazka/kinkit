@@ -3,6 +3,7 @@ import { api, dataApi, formatRupiah, MONTHS, setCurrency } from '../api'
 import { currentUTCPeriod } from '../YearContext.jsx'
 import BarChart from '../BarChart.jsx'
 import { Skeleton } from '../Skeleton.jsx'
+import { useAuth } from '../AuthContext.jsx'
 
 const REFRESH_MS = 60_000 // auto-refresh for an always-on screen (TV/car head unit)
 
@@ -18,6 +19,8 @@ export default function TVView({ token }) {
   const [report, setReport] = useState(null)
   const [trend, setTrend] = useState([])
   const [error, setError] = useState('')
+  const [family, setFamily] = useState('')
+  const auth = useAuth()
   // UTC "current month", re-evaluated on every refresh so an always-on screen
   // rolls over to the new month by itself.
   const [period, setPeriod] = useState(currentUTCPeriod)
@@ -29,6 +32,7 @@ export default function TVView({ token }) {
         dataApi.tvData(token)
           .then(d => {
             if (d.currency) setCurrency(d.currency)
+            setFamily((d.household_name || d.display_name || '').trim())
             setReport(d.report); setTrend(d.trend); setPeriod({ year: d.year, month: d.month }); setError('')
           })
           .catch(e => {
@@ -59,6 +63,8 @@ export default function TVView({ token }) {
     )
   }
 
+  // Share-token mode: from /api/tv/data. Logged-in mode: from /api/me.
+  const familyName = token ? family : (auth?.user?.household_name || auth?.user?.display_name || '').trim()
   const netFlow = report.total_income - report.budgeted_expenses
   const topExpenses = [...report.expenses_list]
     .filter(r => r.realization > 0)
@@ -68,7 +74,10 @@ export default function TVView({ token }) {
   return (
     <div className="tv-view">
       <div className="tv-header">
-        <div className="tv-brand">Kinkit</div>
+        <div className="tv-brand-block">
+          <div className="tv-brand">Kinkit</div>
+          {familyName && <div className="tv-family">{familyName}</div>}
+        </div>
         <div className="tv-date">{MONTHS[month - 1]} {year}</div>
       </div>
 
@@ -91,9 +100,9 @@ export default function TVView({ token }) {
         <div className="tv-panel">
           <div className="tv-panel-title">6-Month Trend</div>
           {trend.length > 0 && <BarChart labels={trend.map(t => MONTHS[t.month - 1])} datasets={[
-            { label: 'Income', data: trend.map(t => t.income), color: 'var(--success)' },
-            { label: 'Expense', data: trend.map(t => t.expense), color: 'var(--warning)' },
-          ]} height={320} />}
+            { label: 'Income', data: trend.map(t => t.income), color: '#5BC27A' },
+            { label: 'Expense', data: trend.map(t => t.expense), color: '#FFB92E' },
+          ]} height={320} onDark />}
         </div>
         <div className="tv-panel">
           <div className="tv-panel-title">Top Expenses</div>

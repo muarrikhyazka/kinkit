@@ -90,7 +90,7 @@ func (app *App) materialize(ctx context.Context, aid int64, now time.Time, horiz
 		var end *time.Time
 		x := &j.r
 		if err := rows.Scan(&x.ID, &x.Title, &x.Notes, &x.AssigneeID, &x.CreatedBy, &x.Kind, &x.TimeOfDay, &wd,
-			&dom, &start, &end, &x.OnceAt, &x.EscalateTo, &esc, &x.Channels, &x.Active, &x.Category,
+			&dom, &start, &end, &x.OnceAt, &x.EscalateTo, &esc, &x.Channels, &x.Active, &x.Category, &x.Interval,
 			&j.aid, &j.tz, &j.from, &j.matUntil); err != nil {
 			rows.Close()
 			return 0, err

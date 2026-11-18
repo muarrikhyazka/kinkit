@@ -5,7 +5,8 @@ import 'package:kinkit_tv/src/money.dart';
 
 const sample = '''
 {
-  "year": 2026, "month": 11, "currency": "IDR", "display_name": "The Smiths",
+  "year": 2026, "month": 11, "currency": "IDR", "display_name": "John Smith",
+  "household_name": "The Smiths",
   "report": {
     "total_income": 20000000, "budgeted_expenses": 12000000, "savings": 3000000,
     "left_for_budgeting": 5000000,
@@ -29,7 +30,8 @@ void main() {
     expect(d.year, 2026);
     expect(d.month, 11);
     expect(d.currency, 'IDR');
-    expect(d.displayName, 'The Smiths');
+    expect(d.displayName, 'John Smith');
+    expect(d.householdName, 'The Smiths');
     expect(d.report.totalIncome, 20000000);
     expect(d.report.budgetedExpenses, 12000000);
     expect(d.report.savings, 3000000);
@@ -58,6 +60,7 @@ void main() {
     expect(d.month, 3);
     expect(d.currency, 'IDR');
     expect(d.displayName, isNull);
+    expect(d.householdName, isNull);
     expect(d.report.totalIncome, 2);
     expect(d.report.expenses, isEmpty);
     expect(d.trend, isEmpty);

@@ -142,7 +142,7 @@ export default function Guide() {
           can add members with their email and a temporary password (they can change it later on the Family page). Each member logs in with their own email.
         </p>
         <ul className="guide-list">
-          <li><strong>Family Admin</strong> - everything, including renaming the household (Settings). The family admin can't be removed.</li>
+          <li><strong>Family Admin</strong> - everything, including setting the <strong>family name</strong> (Settings › Categories &amp; accounts), which shows under the Kinkit name in the sidebar, in the browser tab title and on the TV view. The family admin can't be removed.</li>
           <li><strong>Parent</strong> - full access to the household's money and can manage members (except the family admin).</li>
           <li><strong>Kid</strong> - can see the household and log spending, and edit or delete only the entries they logged. A monthly <strong>allowance</strong> shows how much of it they have spent this month.</li>
           <li><strong>Viewer</strong> - read-only.</li>
@@ -171,7 +171,7 @@ export default function Guide() {
         </p>
       </Section>
 
-      <Section Icon={IconBell} title="Home › Reminders">
+      <Section Icon={IconBell} title="Reminders">
         <ul className="guide-list">
           <li>The family admin and parents add reminders for bills, medicine, school, birthdays, chores or anything else: once, daily, weekly (pick days), monthly (day 31 means the last day of shorter months) or yearly.</li>
           <li>Assign a reminder to one person or to the whole family. Optionally pick someone to tell if nobody marks it done within a number of minutes.</li>
@@ -182,7 +182,7 @@ export default function Guide() {
 
       <Section Icon={IconLink} title="Chat commands and linking">
         <p>
-          Link your own chat account once: <strong>Home › Reminders › Link my chat account</strong> gives a code, then send
+          Link your own chat account once: <strong>Reminders › Link my chat account</strong> gives a code, then send
           <kbd>/link CODE</kbd> to the household bot. Reminders for you then mention you, and what you do in chat counts as you
           (for example chore points).
         </p>

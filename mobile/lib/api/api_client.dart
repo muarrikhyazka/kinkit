@@ -279,6 +279,10 @@ class KinkitApi {
   Future<void> reminderSnooze(int occurrenceId, {int minutes = 60}) =>
       _post('/reminders/occurrences/$occurrenceId/snooze', {'minutes': minutes});
 
+  /// Snooze until the same time tomorrow (household time zone).
+  Future<void> reminderSnoozeTomorrow(int occurrenceId) =>
+      _post('/reminders/occurrences/$occurrenceId/snooze', {'until': 'tomorrow'});
+
   /// POST /api/reminders. [startDate] YYYY-MM-DD, [timeOfDay] HH:MM (household time zone).
   Future<void> createReminder({
     required String title,
@@ -289,6 +293,8 @@ class KinkitApi {
     String notes = '',
     List<int>? weekdays,
     int? dayOfMonth,
+    int interval = 1,
+    int? assigneeId,
   }) =>
       _post('/reminders', {
         'title': title,
@@ -299,6 +305,9 @@ class KinkitApi {
         'notes': notes,
         if (weekdays != null) 'weekdays': weekdays,
         if (dayOfMonth != null) 'day_of_month': dayOfMonth,
+        // every N weeks/months (weekly/monthly only; the server forces 1 otherwise)
+        'interval': interval < 1 ? 1 : interval,
+        if (assigneeId != null) 'assignee_id': assigneeId,
       });
 
   Future<List<Reminder>> reminders() async =>
