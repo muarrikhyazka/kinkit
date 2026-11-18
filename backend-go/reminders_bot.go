@@ -64,7 +64,7 @@ func botListReminders(w http.ResponseWriter, r *http.Request, app *App, aid int6
 	}
 	items := []item{}
 	var b strings.Builder
-	b.WriteString("📅 Upcoming reminders (7 days)")
+	b.WriteString("Upcoming reminders (7 days)")
 	for i, o := range occ {
 		if i == 15 {
 			b.WriteString(fmt.Sprintf("\n…and %d more", len(occ)-i))
@@ -76,7 +76,7 @@ func botListReminders(w http.ResponseWriter, r *http.Request, app *App, aid int6
 			line += " (" + o.AssigneeName + ")"
 		}
 		if o.Overdue {
-			line = "\n❗ " + when + " — " + o.Title
+			line = "\n! " + when + " — " + o.Title
 		}
 		b.WriteString(line)
 		items = append(items, item{o.ID, o.Title, o.effective().Format(time.RFC3339), o.AssigneeName})
@@ -159,7 +159,7 @@ func botCreateReminder(w http.ResponseWriter, r *http.Request, app *App, aid int
 	now := time.Now().UTC()
 	p, err := parseReminderText(d.Text, now, loc)
 	if err != nil {
-		reply(false, "🤔 "+err.Error())
+		reply(false, err.Error())
 		return
 	}
 	in := reminderInput{Title: p.Title, Kind: p.Schedule.Kind, TimeOfDay: p.Schedule.TimeOfDay, Weekdays: p.Schedule.Weekdays,
@@ -176,7 +176,7 @@ func botCreateReminder(w http.ResponseWriter, r *http.Request, app *App, aid int
 		} else {
 			id, name, err := app.findMemberByName(ctx, aid, p.Assignee)
 			if err != nil {
-				reply(false, "🤔 "+err.Error())
+				reply(false, err.Error())
 				return
 			}
 			in.AssigneeID, who = &id, name
@@ -184,7 +184,7 @@ func botCreateReminder(w http.ResponseWriter, r *http.Request, app *App, aid int
 	}
 	v, err := app.validateReminderInput(ctx, aid, in, loc, false)
 	if err != nil {
-		reply(false, "🤔 "+err.Error())
+		reply(false, err.Error())
 		return
 	}
 	var createdBy *int64
@@ -196,7 +196,7 @@ func botCreateReminder(w http.ResponseWriter, r *http.Request, app *App, aid int
 		dbError(w, err)
 		return
 	}
-	reply(true, fmt.Sprintf("✅ Reminder set: %s\n🗓 %s · for %s", v.in.Title, describeSchedule(v.sched, loc), who), "id", id)
+	reply(true, fmt.Sprintf("Reminder set: %s\n%s · for %s", v.in.Title, describeSchedule(v.sched, loc), who), "id", id)
 }
 
 // guessReminderCategory picks a category from keywords in the title.
@@ -238,7 +238,7 @@ func botOccurrenceDone(w http.ResponseWriter, r *http.Request, app *App, aid int
 		botOccError(w, err)
 		return
 	}
-	msg := "✅ Done: " + o.Title
+	msg := "Done: " + o.Title
 	if n := app.memberDisplayName(ctx, m); n != "" {
 		msg += " — by " + n
 	}
@@ -267,7 +267,7 @@ func botOccurrenceSnooze(w http.ResponseWriter, r *http.Request, app *App, aid i
 		return
 	}
 	loc := householdLocation(ctx, app, aid)
-	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "message": "⏰ Snoozed: " + o.Title + " until " + until.In(loc).Format("Mon 15:04")})
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "message": "Snoozed: " + o.Title + " until " + until.In(loc).Format("Mon 15:04")})
 }
 
 // botOccError: chat-friendly errors (200 + ok:false) for expected cases.
@@ -281,7 +281,7 @@ func botOccError(w http.ResponseWriter, err error) {
 	if strings.Contains(msg, "no rows") {
 		msg = "That reminder no longer exists."
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"ok": false, "message": "🚫 " + msg})
+	writeJSON(w, http.StatusOK, map[string]any{"ok": false, "message": msg})
 }
 
 func firstWord(s string) string {

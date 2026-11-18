@@ -12,7 +12,7 @@ import '../widgets/month_picker.dart';
 import '../widgets/stat_card.dart';
 
 /// Monthly budget plan vs actuals (web: pages/Budgeting.jsx, one month at a
-/// time). Owners/parents can tap a row to change the planned amount
+/// time). Family admins/parents can tap a row to change the planned amount
 /// (POST /api/budgeting/income | /api/budgeting/expense).
 class BudgetScreen extends ConsumerWidget {
   /// True inside the Money tabs (no own app bar).

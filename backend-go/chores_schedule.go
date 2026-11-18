@@ -185,9 +185,7 @@ func choreDoneMessage(name string, forOther bool, points int, status string) str
 		fmt.Fprintf(&b, "Nice work %s!", name)
 	}
 	if points > 0 {
-		fmt.Fprintf(&b, " +%d points ⭐", points)
-	} else {
-		b.WriteString(" ✅")
+		fmt.Fprintf(&b, " +%d points", points)
 	}
 	if status == choreSubmitted {
 		b.WriteString(" (waiting for approval)")

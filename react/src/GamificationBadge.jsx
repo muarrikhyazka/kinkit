@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from './api'
 import Celebration, { diffNewRewards } from './Celebration.jsx'
+import { IconFlame, IconStar } from './icons.jsx'
 
 /**
  * Compact points/streak/level strip for the sidebar. Shows the logged-in
@@ -37,7 +38,7 @@ export default function GamificationBadge({ collapsed, refreshKey }) {
   if (collapsed) {
     return (
       <>
-        <Link to="/family" className="gami-badge-collapsed" title={title} aria-label={title}>🔥{streak}</Link>
+        <Link to="/family" className="gami-badge-collapsed" title={title} aria-label={title}><IconFlame width={14} height={14} className="gami-ico" />{streak}</Link>
         {celebration}
       </>
     )
@@ -47,8 +48,8 @@ export default function GamificationBadge({ collapsed, refreshKey }) {
     <>
       <Link to="/family" className="gami-badge" title={`${title} - see achievements`}>
         <div className="gami-row">
-          <span className="gami-points">⭐ {points} pts</span>
-          <span className="gami-streak">🔥 {streak}d</span>
+          <span className="gami-points"><IconStar width={13} height={13} className="gami-ico" /> {points} pts</span>
+          <span className="gami-streak"><IconFlame width={13} height={13} className="gami-ico" /> {streak}d</span>
         </div>
         <div className="gami-badge-name">{level}</div>
         {next && (

@@ -71,7 +71,14 @@ class FamilyScreen extends ConsumerWidget {
                             if (m.allowanceMonthly != null && canSeeMoney)
                               'allowance ${money.format(m.allowanceMonthly!)}',
                           ].join(' · ')),
-                          trailing: Text('⭐ ${m.pointsThisMonth}', style: TextStyle(color: p.text)),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.star_rounded, size: 16, color: p.warning),
+                              const SizedBox(width: 3),
+                              Text('${m.pointsThisMonth}', style: TextStyle(color: p.text)),
+                            ],
+                          ),
                         ),
                     ],
                   ),
@@ -84,8 +91,13 @@ class FamilyScreen extends ConsumerWidget {
                         for (var i = 0; i < g.leaderboard.length; i++)
                           ListTile(
                             dense: true,
-                            leading: Text(i < 3 ? ['\u{1F947}', '\u{1F948}', '\u{1F949}'][i] : '${i + 1}.',
-                                style: const TextStyle(fontSize: 18)),
+                            leading: i < 3
+                                ? Icon(Icons.emoji_events_rounded,
+                                    color: const [Color(0xFFD4A017), Color(0xFF9CA3AF), Color(0xFFB87333)][i])
+                                : SizedBox(
+                                    width: 24,
+                                    child: Text('${i + 1}.', textAlign: TextAlign.center, style: const TextStyle(fontSize: 16)),
+                                  ),
                             title: Text(g.leaderboard[i].displayName),
                             trailing: Text('${g.leaderboard[i].pointsMonth} pts'),
                           ),
@@ -112,7 +124,10 @@ class FamilyScreen extends ConsumerWidget {
     );
   }
 
-  static String _roleLabel(String role) => role.isEmpty ? role : role[0].toUpperCase() + role.substring(1);
+  static String _roleLabel(String role) {
+    if (role == 'owner') return 'Family Admin';
+    return role.isEmpty ? role : role[0].toUpperCase() + role.substring(1);
+  }
 
   static Color _roleColor(String role) {
     switch (role) {
@@ -148,7 +163,7 @@ class _BadgeChip extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Text(b.icon.isEmpty ? '\u{1F3C5}' : b.icon, style: const TextStyle(fontSize: 26)),
+              Icon(_badgeIcon(b.key), size: 28, color: b.earned ? p.primary : p.muted),
               const SizedBox(height: 4),
               Text(b.name,
                   textAlign: TextAlign.center,
@@ -161,4 +176,27 @@ class _BadgeChip extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Material icon for a gamification badge key. Server `icon` strings are never rendered.
+IconData _badgeIcon(String key) {
+  switch (key) {
+    case 'first_log':
+      return Icons.edit_note_rounded;
+    case 'first_budget':
+      return Icons.account_balance_wallet_rounded;
+    case 'streak_7':
+      return Icons.local_fire_department;
+    case 'streak_30':
+      return Icons.whatshot_rounded;
+    case 'under_budget':
+      return Icons.verified_rounded;
+    case 'saver':
+      return Icons.savings_rounded;
+    case 'chores_10':
+      return Icons.cleaning_services_rounded;
+    case 'chores_50':
+      return Icons.workspace_premium_rounded;
+  }
+  return Icons.military_tech_rounded;
 }

@@ -436,7 +436,7 @@ func (app *App) handleUpdateSettings(w http.ResponseWriter, r *http.Request) {
 
 	info, currencyOK := currencies[d.Currency]
 	if currencyOK && !canManageFamily(m.Role) {
-		jsonError(w, http.StatusForbidden, "only owners and parents can change the household currency")
+		jsonError(w, http.StatusForbidden, "only family admins and parents can change the household currency")
 		return
 	}
 	name := strings.TrimSpace(d.DisplayName)

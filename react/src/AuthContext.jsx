@@ -63,4 +63,4 @@ export const useAuth = () => useContext(AuthCtx)
 // household; kids may log spending; viewers are read-only.
 export const canManage = user => !user?.role || user.role === 'owner' || user.role === 'parent'
 export const canLogSpending = user => canManage(user) || user?.role === 'kid'
-export const ROLE_LABELS = { owner: 'Owner', parent: 'Parent', kid: 'Kid', viewer: 'Viewer' }
+export const ROLE_LABELS = { owner: 'Family Admin', parent: 'Parent', kid: 'Kid', viewer: 'Viewer' }

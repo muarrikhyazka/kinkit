@@ -59,8 +59,8 @@ export default function Login() {
         </button>
         <p className="muted login-hint">
           {mode === 'login'
-            ? 'Family members log in here too, with the email and temporary password the household owner or a parent set up for them.'
-            : 'Signing up creates a new household with you as its owner. Joining an existing family? Ask the owner to add you on the Family page instead.'}
+            ? 'Family members log in here too, with the email and temporary password the family admin or a parent set up for them.'
+            : 'Signing up creates a new household with you as its family admin. Joining an existing family? Ask the family admin to add you on the Family page instead.'}
         </p>
       </form>
     </div>

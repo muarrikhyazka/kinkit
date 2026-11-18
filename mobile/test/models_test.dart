@@ -92,7 +92,7 @@ void main() {
       'target_amount': 10000000,
       'target_date': '2027-06-01',
       'saved_amount': 2500000,
-      'emoji': '\u{1F3D6}',
+      'emoji': '',
       'color': '',
       'created_at': '2026-01-01T00:00:00Z',
       'linked_amount': 0,
@@ -128,7 +128,7 @@ void main() {
         'next_level_at': 200,
       },
       'badges': [
-        {'key': 'first_log', 'name': 'First Log', 'description': 'x', 'icon': '\u{1F4DD}', 'earned': true, 'earned_at': null},
+        {'key': 'first_log', 'name': 'First Log', 'description': 'x', 'icon': '', 'earned': true, 'earned_at': null},
       ],
       'challenges': [],
       'leaderboard': [
@@ -236,7 +236,7 @@ void main() {
       'date': '2026-11-18',
       'me': {'id': 1, 'role': 'owner', 'can_manage': true},
       'items': [
-        {'id': 9, 'chore_id': 2, 'title': 'Dishes', 'emoji': '\u{1F37D}', 'points': 5, 'reward_amount': null,
+        {'id': 9, 'chore_id': 2, 'title': 'Dishes', 'emoji': 'legacy-icon', 'points': 5, 'reward_amount': null,
          'due_date': '2026-11-18', 'due_time': null, 'member_id': 3, 'member_name': 'Ayu', 'status': 'submitted',
          'done': false, 'overdue': false, 'completed_at': null, 'has_photo': false, 'note': '',
          'requires_approval': true, 'requires_photo': false, 'points_awarded': 0},
@@ -247,7 +247,7 @@ void main() {
     });
     expect(c.canManage, isTrue);
     expect(c.items.single.submitted, isTrue);
-    expect(c.items.single.label, startsWith('\u{1F37D}'));
+    expect(c.items.single.label, 'Dishes');
     expect(c.week.total, 6);
   });
 

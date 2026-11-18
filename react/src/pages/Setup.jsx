@@ -89,13 +89,13 @@ function AccountSettings() {
         <label style={{ display: 'flex', flexDirection: 'column', gap: '.3rem', flex: '1 1 240px' }}>
           <span>Household name</span>
           <input value={household} onChange={e => setHousehold(e.target.value)} disabled={!isOwner} maxLength={80}
-            placeholder="e.g. The Smiths" title={isOwner ? undefined : 'Only the household owner can rename the household'} />
+            placeholder="e.g. The Smiths" title={isOwner ? undefined : 'Only the family admin can rename the household'} />
         </label>
         {isOwner && <button type="submit" style={{ alignSelf: 'flex-end' }}>Save</button>}
       </form>
       <label style={{ display: 'flex', flexDirection: 'column', gap: '.3rem', maxWidth: '220px' }}>
         <span>Currency</span>
-        <select value={currency} onChange={handleChange} disabled={!manager} title={manager ? undefined : 'Only owners and parents can change the household currency'}>
+        <select value={currency} onChange={handleChange} disabled={!manager} title={manager ? undefined : 'Only the family admin and parents can change the household currency'}>
           {CURRENCY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
       </label>

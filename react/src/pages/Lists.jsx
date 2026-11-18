@@ -201,7 +201,7 @@ export default function Lists() {
         {lists?.map(l => (
           <button key={l.id} role="tab" aria-selected={l.id === activeId}
             className={`list-chip ${l.id === activeId ? 'active' : ''}`} onClick={() => selectList(l.id)}>
-            {l.emoji && <span aria-hidden="true">{l.emoji}</span>} {l.name}
+            {l.name}
             {l.open_count > 0 && <span className="list-chip-count">{l.open_count}</span>}
           </button>
         ))}
@@ -400,7 +400,7 @@ function ItemRow({ item, readOnly, manager, onToggle, onDelete, onEdit }) {
           <span className="list-item-name">{item.qty && <span className="list-qty">{item.qty}</span>}{item.name}</span>
           {(item.note || item.est_price || who) && (
             <span className="list-item-meta">
-              {[item.note, item.est_price ? `~${formatRupiah(item.est_price)}` : '', who ? `${item.checked ? '✓' : '+'} ${who}` : '', item.staple_id ? 'staple' : '']
+              {[item.note, item.est_price ? `~${formatRupiah(item.est_price)}` : '', who ? `${item.checked ? 'got by' : 'added by'} ${who}` : '', item.staple_id ? 'staple' : '']
                 .filter(Boolean).join(' · ')}
             </span>
           )}
@@ -421,7 +421,6 @@ function ItemRow({ item, readOnly, manager, onToggle, onDelete, onEdit }) {
 function ListModal({ list, onClose, onSaved, onDeleted }) {
   const toast = useToast()
   const [name, setName] = useState(list?.name || '')
-  const [emoji, setEmoji] = useState(list?.emoji || '')
   const [store, setStore] = useState(list?.store || '')
   const [busy, setBusy] = useState(false)
 
@@ -430,7 +429,7 @@ function ListModal({ list, onClose, onSaved, onDeleted }) {
     if (!name.trim()) return
     setBusy(true)
     try {
-      const l = list ? await listsApi.updateList(list.id, { name, emoji, store }) : await listsApi.createList({ name, emoji, store })
+      const l = list ? await listsApi.updateList(list.id, { name, emoji: '', store }) : await listsApi.createList({ name, emoji: '', store })
       onSaved(l)
     } catch (err) { toast.error(err.message) } finally { setBusy(false) }
   }
@@ -447,7 +446,6 @@ function ListModal({ list, onClose, onSaved, onDeleted }) {
       <form className="list-form" onSubmit={save}>
         <label>Name<input data-autofocus value={name} onChange={e => setName(e.target.value)} placeholder="Groceries" required maxLength={60} /></label>
         <div className="list-form-row">
-          <label className="narrow">Emoji<input value={emoji} onChange={e => setEmoji(e.target.value)} placeholder="🛒" maxLength={8} /></label>
           <label>Store / place<input value={store} onChange={e => setStore(e.target.value)} placeholder="Supermarket, market, pharmacy…" maxLength={80} /></label>
         </div>
         <div className="list-form-actions">

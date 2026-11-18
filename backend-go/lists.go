@@ -207,7 +207,7 @@ func (app *App) ensureDefaultList(ctx context.Context, aid int64) error {
 		return err
 	}
 	if _, err := tx.Exec(ctx,
-		"INSERT INTO shopping_lists (account_id, name, emoji) SELECT $1, 'Groceries', '🛒' "+
+		"INSERT INTO shopping_lists (account_id, name, emoji) SELECT $1, 'Groceries', '' "+
 			"WHERE NOT EXISTS (SELECT 1 FROM shopping_lists WHERE account_id=$1)", aid); err != nil {
 		return err
 	}
@@ -303,10 +303,8 @@ func (app *App) handleCreateList(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, http.StatusBadRequest, "name is required")
 		return
 	}
+	// "emoji" is accepted for older clients but no longer stored: Kinkit shows no emoji.
 	emoji, store := "", ""
-	if d.Emoji != nil {
-		emoji = listClip(strings.TrimSpace(*d.Emoji), 8)
-	}
 	if d.Store != nil {
 		store = listClip(strings.TrimSpace(*d.Store), 80)
 	}
@@ -375,7 +373,7 @@ func (app *App) handleUpdateList(w http.ResponseWriter, r *http.Request) {
 		add("name", n)
 	}
 	if d.Emoji != nil {
-		add("emoji", listClip(strings.TrimSpace(*d.Emoji), 8))
+		add("emoji", "")
 	}
 	if d.Store != nil {
 		add("store", listClip(strings.TrimSpace(*d.Store), 80))

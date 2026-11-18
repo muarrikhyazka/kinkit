@@ -320,7 +320,7 @@ func (app *App) handleUpdateHousehold(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if me.Role != roleOwner {
-		jsonError(w, http.StatusForbidden, "only the household owner can rename the household")
+		jsonError(w, http.StatusForbidden, "only the family admin can rename the household")
 		return
 	}
 	var d struct {
@@ -381,7 +381,7 @@ func (app *App) handleCreateMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !canManageFamily(me.Role) {
-		jsonError(w, http.StatusForbidden, "only owners and parents can add members")
+		jsonError(w, http.StatusForbidden, "only family admins and parents can add members")
 		return
 	}
 	var d map[string]any
@@ -458,7 +458,7 @@ func (app *App) handleUpdateMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !canManageFamily(me.Role) {
-		jsonError(w, http.StatusForbidden, "only owners and parents can edit members")
+		jsonError(w, http.StatusForbidden, "only family admins and parents can edit members")
 		return
 	}
 	ctx := r.Context()
@@ -467,7 +467,7 @@ func (app *App) handleUpdateMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if targetRole == roleOwner && me.Role != roleOwner {
-		jsonError(w, http.StatusForbidden, "parents can't edit the household owner")
+		jsonError(w, http.StatusForbidden, "parents can't edit the family admin")
 		return
 	}
 	var d map[string]any
@@ -488,7 +488,7 @@ func (app *App) handleUpdateMember(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if targetRole == roleOwner {
-			jsonError(w, http.StatusBadRequest, "the owner's role can't be changed")
+			jsonError(w, http.StatusBadRequest, "the family admin's role can't be changed")
 			return
 		}
 		if id == me.ID && role != me.Role {
@@ -545,7 +545,7 @@ func (app *App) handleDeleteMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !canManageFamily(me.Role) {
-		jsonError(w, http.StatusForbidden, "only owners and parents can remove members")
+		jsonError(w, http.StatusForbidden, "only family admins and parents can remove members")
 		return
 	}
 	ctx := r.Context()
@@ -554,7 +554,7 @@ func (app *App) handleDeleteMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if targetRole == roleOwner {
-		jsonError(w, http.StatusBadRequest, "the household owner can't be removed")
+		jsonError(w, http.StatusBadRequest, "the family admin can't be removed")
 		return
 	}
 	if id == me.ID {

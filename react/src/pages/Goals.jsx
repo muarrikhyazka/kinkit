@@ -33,7 +33,7 @@ export function GoalRing({ pct, color = 'var(--primary)', size = 84, stroke = 8,
 function GoalModal({ initial, categories, assets, onClose, onSaved }) {
   const toast = useToast()
   const [form, setForm] = useState(() => ({
-    name: initial?.name || '', emoji: initial?.emoji || '', color: initial?.color || COLORS[0],
+    name: initial?.name || '', emoji: '', color: initial?.color || COLORS[0],
     target_amount: initial?.target_amount ?? '', target_date: initial?.target_date || '',
     saved_amount: initial?.saved_amount ?? 0, category_id: initial?.category_id ?? '', asset_ids: initial?.asset_ids || [],
   }))
@@ -70,10 +70,7 @@ function GoalModal({ initial, categories, assets, onClose, onSaved }) {
       <form className="money-form" onSubmit={submit} noValidate>
         {error && <div className="error-box" role="alert">{error}</div>}
         <label className="span-2">Name
-          <span className="goal-name-row">
-            <input aria-label="Emoji" className="goal-emoji-input" value={form.emoji} onChange={e => set('emoji', e.target.value)} placeholder="🎯" maxLength={4} />
-            <input data-autofocus value={form.name} onChange={e => set('name', e.target.value)} placeholder="Emergency fund, holiday, new laptop..." required />
-          </span>
+          <input data-autofocus value={form.name} onChange={e => set('name', e.target.value)} placeholder="Emergency fund, holiday, new laptop..." required />
         </label>
         <label>Target amount<MoneyInput value={form.target_amount} onChange={v => set('target_amount', v)} placeholder="e.g. 20jt" required /></label>
         <label>Target date <span className="muted">(optional)</span><input type="date" value={form.target_date} onChange={e => set('target_date', e.target.value)} /></label>
@@ -119,7 +116,7 @@ function GoalCard({ goal, onEdit, onDelete, onContribute }) {
       <div className="goal-card-top">
         <GoalRing pct={goal.pct} color={goal.color || 'var(--primary)'} />
         <div className="goal-card-info">
-          <h2>{goal.emoji && <span aria-hidden="true">{goal.emoji} </span>}{goal.name}</h2>
+          <h2>{goal.name}</h2>
           <div className="goal-amounts"><strong>{formatRupiah(goal.progress)}</strong> <span className="muted">of {formatRupiah(goal.target_amount)}</span></div>
           {done ? (
             <div className="text-positive">Goal reached!</div>
@@ -165,7 +162,7 @@ export function TopGoalsCard({ limit = 3 }) {
           <div className="top-goal" key={g.id}>
             <GoalRing pct={g.pct} color={g.color || 'var(--primary)'} size={56} stroke={6} />
             <div>
-              <div><strong>{g.emoji && `${g.emoji} `}{g.name}</strong></div>
+              <div><strong>{g.name}</strong></div>
               <div className="muted">{formatRupiah(g.progress)} of {formatRupiah(g.target_amount)}</div>
               {g.monthly_needed != null && g.remaining > 0 && <div className="muted">{formatRupiah(g.monthly_needed)}/month</div>}
             </div>

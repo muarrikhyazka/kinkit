@@ -26,7 +26,7 @@ class GoalsScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setState) => AlertDialog(
-          title: Text('${g.emoji.isNotEmpty ? '${g.emoji} ' : ''}${g.name}'),
+          title: Text(g.name),
           content: Form(
             key: formKey,
             child: Column(
@@ -148,7 +148,7 @@ class GoalsScreen extends ConsumerWidget {
                         children: [
                           Row(
                             children: [
-                              Text(g.emoji.isNotEmpty ? g.emoji : '\u{1F3AF}', style: const TextStyle(fontSize: 24)),
+                              Icon(g.reached ? Icons.emoji_events_rounded : Icons.flag_rounded, size: 26, color: g.reached ? p.success : p.primary),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
@@ -183,7 +183,7 @@ class GoalsScreen extends ConsumerWidget {
                             Text('${money.format(g.monthlyNeeded!)}/month needed'
                                 '${g.monthsLeft != null ? ' · ${g.monthsLeft} months left' : ''}',
                                 style: TextStyle(fontSize: 12, color: p.muted)),
-                          if (g.reached) Text('Goal reached \u{1F389}', style: TextStyle(color: p.success)),
+                          if (g.reached) Text('Goal reached', style: TextStyle(color: p.success)),
                           if (canManage)
                             Align(
                               alignment: Alignment.centerRight,
@@ -216,7 +216,6 @@ class _NewGoalSheet extends ConsumerStatefulWidget {
 class _NewGoalSheetState extends ConsumerState<_NewGoalSheet> {
   final _form = GlobalKey<FormState>();
   final _name = TextEditingController();
-  final _emoji = TextEditingController();
   final _target = TextEditingController();
   DateTime? _date;
   bool _saving = false;
@@ -225,7 +224,6 @@ class _NewGoalSheetState extends ConsumerState<_NewGoalSheet> {
   @override
   void dispose() {
     _name.dispose();
-    _emoji.dispose();
     _target.dispose();
     super.dispose();
   }
@@ -241,7 +239,6 @@ class _NewGoalSheetState extends ConsumerState<_NewGoalSheet> {
             name: _name.text.trim(),
             targetAmount: parseAmount(_target.text)!,
             targetDate: _date == null ? null : isoDate(_date!),
-            emoji: _emoji.text.trim(),
           );
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
@@ -268,27 +265,12 @@ class _NewGoalSheetState extends ConsumerState<_NewGoalSheet> {
             children: [
               Text('New goal', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: p.text)),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 72,
-                    child: TextFormField(
-                      controller: _emoji,
-                      textAlign: TextAlign.center,
-                      decoration: const InputDecoration(labelText: 'Emoji', hintText: '\u{1F3D6}'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _name,
-                      autofocus: true,
-                      textCapitalization: TextCapitalization.sentences,
-                      decoration: const InputDecoration(labelText: 'Name'),
-                      validator: (v) => (v ?? '').trim().isEmpty ? 'Enter a name' : null,
-                    ),
-                  ),
-                ],
+              TextFormField(
+                controller: _name,
+                autofocus: true,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(labelText: 'Name'),
+                validator: (v) => (v ?? '').trim().isEmpty ? 'Enter a name' : null,
               ),
               const SizedBox(height: 12),
               AmountField(controller: _target, label: 'Target amount (Rp)'),

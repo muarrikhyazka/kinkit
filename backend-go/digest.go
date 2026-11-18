@@ -17,30 +17,22 @@ import (
 const digestMaxItems = 6
 const digestLateWindow = 3 * time.Hour
 
-var digestSectionEmoji = map[string]string{
-	"reminders": "⏰", "chores": "🧹", "lists": "🛒", "budget": "💰", "coming_up": "📅",
-}
-
 // buildDigestText renders sections as a concise chat message (pure).
 func buildDigestText(greeting string, day time.Time, sections []TodaySection) string {
 	var b strings.Builder
-	b.WriteString("☀️ " + greeting + "! " + day.Format("Monday, 2 Jan"))
+	b.WriteString(greeting + "! " + day.Format("Monday, 2 Jan"))
 	if len(sections) == 0 {
-		b.WriteString("\n\nNothing scheduled today. Enjoy! 🌿")
+		b.WriteString("\n\nNothing scheduled today. Enjoy!")
 		return b.String()
 	}
 	for _, s := range sections {
-		emoji := digestSectionEmoji[s.Key]
-		if emoji == "" {
-			emoji = "•"
-		}
-		b.WriteString("\n\n" + emoji + " " + s.Title)
+		b.WriteString("\n\n" + s.Title)
 		if s.Key == "budget" && s.Summary != "" {
 			// one line is enough for money
 			b.WriteString(": " + s.Summary)
 			for _, it := range s.Items {
 				if it.Overdue && strings.Contains(it.Title, "over budget") {
-					b.WriteString("\n  ⚠️ " + it.Title + " (" + it.Detail + ")")
+					b.WriteString("\n  ! " + it.Title + " (" + it.Detail + ")")
 				}
 			}
 			continue
@@ -52,9 +44,9 @@ func buildDigestText(greeting string, day time.Time, sections []TodaySection) st
 			}
 			mark := "•"
 			if it.Done {
-				mark = "✅"
+				mark = "[x]"
 			} else if it.Overdue {
-				mark = "❗"
+				mark = "!"
 			}
 			line := "\n" + mark + " " + it.Title
 			var extra []string

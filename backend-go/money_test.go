@@ -332,7 +332,7 @@ func TestGoalsProgress(t *testing.T) {
 	}
 	if code := c.do("POST", "/api/goals", map[string]any{
 		"name": "Bike", "target_amount": 10000, "target_date": target.Format(isoDateLayout), "saved_amount": 1000,
-		"category_id": cat.ID, "asset_ids": []int64{asset.ID}, "emoji": "🚲", "color": "#4f46e5",
+		"category_id": cat.ID, "asset_ids": []int64{asset.ID}, "color": "#4f46e5",
 	}, &add); code != 200 {
 		t.Fatalf("create: %d", code)
 	}

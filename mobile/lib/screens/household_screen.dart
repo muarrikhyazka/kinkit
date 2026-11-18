@@ -54,7 +54,7 @@ const _categoryIcons = {
 };
 
 /// Reminders: "Upcoming" occurrences (done / snooze) and "All" reminder
-/// definitions (pause / delete for owners & parents).
+/// definitions (pause / delete for family admins & parents).
 class RemindersTab extends ConsumerStatefulWidget {
   const RemindersTab({super.key});
 
@@ -486,7 +486,7 @@ class ChoresTab extends ConsumerWidget {
           children: [
             Card(
               child: ListTile(
-                leading: const Text('\u{1F9F9}', style: TextStyle(fontSize: 26)),
+                leading: Icon(Icons.cleaning_services_rounded, size: 28, color: p.primary),
                 title: Text('This week: ${d.week.done}/${d.week.total} done'),
                 subtitle: Text('+${d.week.points} chore points'),
               ),
@@ -577,7 +577,7 @@ class ListsTab extends ConsumerWidget {
                     child: ListTile(
                       leading: CircleAvatar(
                         backgroundColor: p.primaryLight,
-                        child: Text(l.emoji.isNotEmpty ? l.emoji : '\u{1F6D2}'),
+                        child: Icon(Icons.shopping_cart_outlined, color: p.primary),
                       ),
                       title: Text(l.name),
                       subtitle: Text([

@@ -175,11 +175,9 @@ func applyChoreInput(c *choreRow, d map[string]any) error {
 			return errors.New("description too long (max 1000)")
 		}
 	}
-	if v, ok := d["emoji"]; ok {
-		s, _ := v.(string)
-		if c.Emoji = strings.TrimSpace(s); len(c.Emoji) > 32 {
-			return errors.New("emoji too long")
-		}
+	// "emoji" is accepted for older clients but no longer stored: Kinkit shows no emoji.
+	if _, ok := d["emoji"]; ok {
+		c.Emoji = ""
 	}
 	if v, ok := d["points"]; ok {
 		n, okN := asInt64(v)
@@ -366,7 +364,7 @@ func requireChoreManager(w http.ResponseWriter, r *http.Request) (memberInfo, bo
 		return me, false
 	}
 	if !canManageFamily(me.Role) {
-		jsonError(w, http.StatusForbidden, "only owners and parents can manage chores")
+		jsonError(w, http.StatusForbidden, "only family admins and parents can manage chores")
 		return me, false
 	}
 	return me, true
@@ -1112,7 +1110,7 @@ func (app *App) choreTransition(ctx context.Context, aid int64, actor memberInfo
 			WHERE id=$7`, newStatus, memberID, actorPtr, approvedBy, photo, note, iid)
 	case "approve":
 		if !manager {
-			return res, nil, &choreErr{http.StatusForbidden, "only owners and parents can approve chores"}
+			return res, nil, &choreErr{http.StatusForbidden, "only family admins and parents can approve chores"}
 		}
 		if status != choreSubmitted {
 			return res, nil, &choreErr{http.StatusConflict, "nothing to approve (status: " + status + ")"}
@@ -1125,7 +1123,7 @@ func (app *App) choreTransition(ctx context.Context, aid int64, actor memberInfo
 			memberID, actorPtr, iid)
 	case "reject":
 		if !manager {
-			return res, nil, &choreErr{http.StatusForbidden, "only owners and parents can reject chores"}
+			return res, nil, &choreErr{http.StatusForbidden, "only family admins and parents can reject chores"}
 		}
 		if !choreIsDone(status) {
 			return res, nil, &choreErr{http.StatusConflict, "only a finished chore can be sent back (status: " + status + ")"}
@@ -1354,7 +1352,7 @@ func (app *App) choreActionHandler(action string) http.HandlerFunc {
 		removeChorePhoto(oldPhoto)
 		msg := map[string]string{"approve": "Approved", "reject": "Sent back", "undo": "Undone"}[action]
 		if action == "approve" && res.MemberName != "" {
-			msg = fmt.Sprintf("Approved - +%d points for %s ⭐", res.Points, res.MemberName)
+			msg = fmt.Sprintf("Approved - +%d points for %s", res.Points, res.MemberName)
 		}
 		app.writeChoreResult(w, ctx, me.AccountID, iid, res, msg)
 	}
@@ -1422,9 +1420,6 @@ func choresTodayProvider(ctx context.Context, app *App, aid int64, member member
 	waitingN := 0
 	for _, v := range list {
 		title := v.Title
-		if v.Emoji != "" {
-			title = v.Emoji + " " + v.Title
-		}
 		it := TodayItem{Kind: "chore", ID: v.ID, Title: title, MemberID: v.MemberID, MemberName: v.MemberName,
 			Done: v.Done, Overdue: v.Overdue, Link: "/home/chores"}
 		due, _ := time.Parse(dateLayout, v.DueDate)
@@ -1492,9 +1487,6 @@ func botChoresToday(w http.ResponseWriter, r *http.Request, app *App, aid int64)
 	items := make([]map[string]any, 0, len(list))
 	for _, v := range list {
 		title := v.Title
-		if v.Emoji != "" {
-			title = v.Emoji + " " + v.Title
-		}
 		name := v.MemberName
 		if v.MemberID == nil {
 			name = "Anyone"
@@ -1534,7 +1526,7 @@ func botChoreDone(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 			case http.StatusNotFound:
 				msg = "I couldn't find that chore."
 			case http.StatusConflict:
-				msg = "That chore is already done 👍"
+				msg = "That chore is already done."
 			case http.StatusBadRequest:
 				msg = "This chore needs a photo - finish it in the Kinkit app."
 			case http.StatusForbidden:

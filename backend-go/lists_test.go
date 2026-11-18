@@ -156,7 +156,7 @@ func TestListsCRUDAndItems(t *testing.T) {
 	gid := res.Lists[0].ID
 
 	var hw shoppingList
-	if code := c.do("POST", "/api/lists", map[string]any{"name": "Hardware", "emoji": "🔧", "store": "Ace"}, &hw); code != 200 || hw.Store != "Ace" {
+	if code := c.do("POST", "/api/lists", map[string]any{"name": "Hardware", "store": "Ace"}, &hw); code != 200 || hw.Store != "Ace" {
 		t.Fatalf("create list: %d %+v", code, hw)
 	}
 	if code := c.do("PATCH", fmt.Sprintf("/api/lists/%d", hw.ID), map[string]any{"name": "Tools"}, &hw); code != 200 || hw.Name != "Tools" {

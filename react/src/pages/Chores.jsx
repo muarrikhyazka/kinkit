@@ -9,12 +9,11 @@ import StatCard from '../StatCard.jsx'
 import MoneyInput from '../MoneyInput.jsx'
 import Celebration, { diffNewRewards } from '../Celebration.jsx'
 import { SkeletonCard, SkeletonStats } from '../Skeleton.jsx'
-import { IconChevronLeft, IconChevronRight, IconClose, IconEdit, IconPlus } from '../icons.jsx'
+import { IconBroom, IconCamera, IconCheck, IconChevronLeft, IconChevronRight, IconClose, IconEdit, IconPlus, IconSparkle } from '../icons.jsx'
 
 // ---------- helpers ----------
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const EMOJIS = ['🧹', '🍽️', '🛏️', '🧺', '🐶', '🪴', '🗑️', '📚', '🚗', '🧽', '🛒', '🍳']
 const STATUS_LABEL = { todo: 'To do', submitted: 'Waiting for approval', approved: 'Done', rejected: 'Try again', missed: 'Missed' }
 
 // Dates are household-local calendar days as YYYY-MM-DD; do the math in UTC.
@@ -51,7 +50,7 @@ function newlyApproved(items, memberId) {
   if (!prev) return []
   const seen = new Set(prev)
   return mine.filter(i => !seen.has(i.id)).map(i => ({
-    icon: i.emoji || '✅', title: `Approved: ${i.title}`, text: i.points ? `+${i.points} points` : 'Great job!',
+    iconKey: 'chore_approved', title: `Approved: ${i.title}`, text: i.points ? `+${i.points} points` : 'Great job!',
   }))
 }
 
@@ -130,17 +129,17 @@ function KidView({ data, actions, memberId }) {
   return (
     <>
       <div className="cards-row">
-        <StatCard label="Points this week" value={`⭐ ${week.points}`} tone="positive" sub={`${week.done} chore${week.done === 1 ? '' : 's'} done this week`} />
+        <StatCard label="Points this week" value={String(week.points)} tone="positive" sub={`${week.done} chore${week.done === 1 ? '' : 's'} done this week`} />
         <StatCard label="Today" value={`${done.length} / ${items.length}`} sub={todo.length ? `${todo.length} to go` : items.length ? 'All done - amazing!' : 'Nothing today'} />
         {week.earned_month > 0 && <StatCard label="Earned this month" value={formatRupiah(week.earned_month)} tone="savings" sub="from chores, on top of your allowance" />}
       </div>
       {items.length === 0 && (
-        <div className="card empty-hint"><p className="chore-big-emoji" aria-hidden="true">🎉</p><p>No chores for you today.</p></div>
+        <div className="card empty-hint"><p className="chore-big-emoji" aria-hidden="true"><IconSparkle width={44} height={44} /></p><p>No chores for you today.</p></div>
       )}
       <ul className="chore-kid-grid">
         {todo.map(i => (
           <li key={i.id} className={`chore-kid-card ${i.overdue ? 'overdue' : ''} ${i.status === 'rejected' ? 'rejected' : ''}`}>
-            <span className="chore-big-emoji" aria-hidden="true">{i.emoji || '✨'}</span>
+            <span className="chore-big-emoji" aria-hidden="true"><IconBroom width={44} height={44} /></span>
             <strong className="chore-kid-title">{i.title}</strong>
             <div className="chore-kid-meta">
               {i.points > 0 && <span className="chip">+{i.points} pts</span>}
@@ -151,11 +150,11 @@ function KidView({ data, actions, memberId }) {
             </div>
             {i.status === 'rejected' && <div className="chore-note">Try again{i.note ? `: ${i.note}` : ''}</div>}
             {i.requires_photo ? (
-              <PhotoButton className="chore-done-btn" label={busy === i.id ? 'Sending...' : '📷 Take photo & finish'} disabled={busy === i.id} onPick={f => complete(i, f)} />
+              <PhotoButton className="chore-done-btn" label={busy === i.id ? 'Sending...' : <><IconCamera width={18} height={18} aria-hidden="true" /> Take photo & finish</>} disabled={busy === i.id} onPick={f => complete(i, f)} />
             ) : (
               <>
-                <button className="chore-done-btn" disabled={busy === i.id} onClick={() => complete(i)}>{busy === i.id ? 'Saving...' : '✅ Done!'}</button>
-                <PhotoButton className="link-btn" label="📷 Done with a photo" disabled={busy === i.id} onPick={f => complete(i, f)} />
+                <button className="chore-done-btn" disabled={busy === i.id} onClick={() => complete(i)}>{busy === i.id ? 'Saving...' : <><IconCheck width={18} height={18} aria-hidden="true" /> Done!</>}</button>
+                <PhotoButton className="link-btn" label={<><IconCamera width={15} height={15} aria-hidden="true" /> Done with a photo</>} disabled={busy === i.id} onPick={f => complete(i, f)} />
               </>
             )}
           </li>
@@ -167,7 +166,7 @@ function KidView({ data, actions, memberId }) {
           <ul className="chore-list">
             {done.map(i => (
               <li key={i.id} className="chore-row">
-                <span className="chore-emoji" aria-hidden="true">{i.emoji || '✨'}</span>
+                <span className="chore-emoji" aria-hidden="true"><IconBroom width={20} height={20} /></span>
                 <span className="chore-row-main"><strong>{i.title}</strong> <StatusPill status={i.status} /></span>
                 {(i.status === 'submitted' || !i.requires_approval) && i.member_id === memberId && (
                   <button className="link-btn" onClick={() => undo(i)}>Undo</button>
@@ -214,7 +213,7 @@ function ApprovalQueue({ waiting, actions }) {
               <button className="chore-thumb" onClick={() => setPhoto(i)} aria-label={`View photo for ${i.title}`}>
                 <img src={choresApi.photoUrl(i.id)} alt="" loading="lazy" />
               </button>
-            ) : <span className="chore-emoji" aria-hidden="true">{i.emoji || '✨'}</span>}
+            ) : <span className="chore-emoji" aria-hidden="true"><IconBroom width={20} height={20} /></span>}
             <span className="chore-row-main">
               <strong>{i.title}</strong>
               <span className="muted"> · {i.member_name || 'someone'} · {dayLabel(i.due_date)}{i.points ? ` · +${i.points} pts` : ''}</span>
@@ -265,7 +264,7 @@ function TodayBoard({ data, actions, canManage }) {
               <ul className="chore-list">
                 {g.items.map(i => (
                   <li key={i.id} className={`chore-row ${i.done ? 'is-done' : ''}`}>
-                    <span className="chore-emoji" aria-hidden="true">{i.emoji || '✨'}</span>
+                    <span className="chore-emoji" aria-hidden="true"><IconBroom width={20} height={20} /></span>
                     <span className="chore-row-main">
                       <strong>{i.title}</strong>
                       <span className="chore-row-sub"><StatusPill status={i.status} />{i.overdue && <span className="muted"> from {dayLabel(i.due_date)}</span>}</span>
@@ -327,7 +326,7 @@ function WeekGrid({ today, nonce }) {
                         {cell.map((i, k) => (
                           <span key={i.id || `p${i.chore_id}-${k}`} className={`chore-cell ${i.projected ? 'chore-projected' : `chore-${i.status}`}`}
                             title={`${i.title} - ${i.projected ? 'upcoming' : STATUS_LABEL[i.status]}`}>
-                            <span aria-hidden="true">{i.emoji || '•'}</span><span className="sr-only">{i.title}: {i.projected ? 'upcoming' : STATUS_LABEL[i.status]}</span>
+                            <span aria-hidden="true">•</span><span className="sr-only">{i.title}: {i.projected ? 'upcoming' : STATUS_LABEL[i.status]}</span>
                           </span>
                         ))}
                       </td>
@@ -356,7 +355,6 @@ function ChoreModal({ chore, members, today, onClose, onSaved }) {
   const kids = members.filter(m => m.role === 'kid')
   const [form, setForm] = useState({
     title: chore?.title || '',
-    emoji: chore?.emoji || '🧹',
     description: chore?.description || '',
     points: chore?.points ?? 10,
     reward: chore?.reward_amount ?? '',
@@ -384,7 +382,7 @@ function ChoreModal({ chore, members, today, onClose, onSaved }) {
     if (form.mode === 'rotation' && form.rotation.length < 2) { setError('Pick at least two people to rotate between.'); return }
     if (form.schedule === 'weekly' && form.weekdays.length === 0) { setError('Pick at least one weekday.'); return }
     const payload = {
-      title: form.title, emoji: form.emoji, description: form.description,
+      title: form.title, emoji: '', description: form.description,
       points: Number(form.points) || 0,
       reward_amount: Number(form.reward) || null,
       member_id: form.mode === 'fixed' ? Number(form.member) || null : null,
@@ -412,12 +410,6 @@ function ChoreModal({ chore, members, today, onClose, onSaved }) {
         <label className="span-2">Chore
           <input data-autofocus value={form.title} onChange={e => set('title', e.target.value)} required maxLength={120} placeholder="e.g. Feed the cat" />
         </label>
-        <div className="span-2 chore-emoji-pick" role="group" aria-label="Icon">
-          {EMOJIS.map(em => (
-            <button type="button" key={em} className={form.emoji === em ? 'active' : ''} aria-pressed={form.emoji === em} onClick={() => set('emoji', em)}>{em}</button>
-          ))}
-          <input aria-label="Custom emoji" value={form.emoji} onChange={e => set('emoji', e.target.value)} maxLength={8} />
-        </div>
         <label>Points
           <input type="number" min={0} max={10000} value={form.points} onChange={e => set('points', e.target.value)} />
         </label>
@@ -525,14 +517,14 @@ function ManageChores({ today, nonce, onChanged }) {
       {list.error && <div className="error-box" role="alert">{list.error}</div>}
       {!d ? <SkeletonCard lines={3} /> : chores.length === 0 ? (
         <div className="empty-hint">
-          <p className="chore-big-emoji" aria-hidden="true">🧹</p>
+          <p className="chore-big-emoji" aria-hidden="true"><IconBroom width={44} height={44} /></p>
           <p>No chores yet. Add one - like "Make your bed" every day, or "Take out the trash" taking turns.</p>
         </div>
       ) : (
         <ul className="chore-list">
           {chores.map(c => (
             <li key={c.id} className={`chore-row ${c.active ? '' : 'inactive'}`}>
-              <span className="chore-emoji" aria-hidden="true">{c.emoji || '✨'}</span>
+              <span className="chore-emoji" aria-hidden="true"><IconBroom width={20} height={20} /></span>
               <span className="chore-row-main">
                 <strong>{c.title}</strong>{!c.active && <span className="muted"> (paused)</span>}
                 <span className="chore-row-sub muted">

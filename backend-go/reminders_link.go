@@ -162,5 +162,5 @@ func botLink(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 		dbError(w, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "member_id": memberID, "message": "🔗 Linked! Hi " + name + ", reminders for you will mention you here."})
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "member_id": memberID, "message": "Linked! Hi " + name + ", reminders for you will mention you here."})
 }

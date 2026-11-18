@@ -63,7 +63,7 @@ function HouseholdTimeCard() {
           </select>
         </label>
       </div>
-      {!canEdit && <p className="muted">Only owners and parents can change these.</p>}
+      {!canEdit && <p className="muted">Only the family admin and parents can change these.</p>}
     </div>
   )
 }

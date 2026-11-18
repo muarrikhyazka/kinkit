@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/data_providers.dart';
 import '../theme.dart';
 
-/// Compact "⭐ 120  🔥 3" chip for the app bar (web: GamificationBadge.jsx).
+/// Compact "[star] 120  [flame] 3" chip for the app bar (web: GamificationBadge.jsx).
 class GamificationBadge extends ConsumerWidget {
   final VoidCallback? onTap;
   const GamificationBadge({super.key, this.onTap});
@@ -25,9 +25,17 @@ class GamificationBadge extends ConsumerWidget {
           margin: const EdgeInsets.symmetric(horizontal: 8),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(color: p.primaryLight, borderRadius: BorderRadius.circular(99)),
-          child: Text(
-            '⭐ ${g.myPoints}  \u{1F525} ${g.myStreak}',
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: p.text),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.star_rounded, size: 16, color: p.warning),
+              const SizedBox(width: 3),
+              Text('${g.myPoints}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: p.text)),
+              const SizedBox(width: 8),
+              Icon(Icons.local_fire_department, size: 16, color: p.warning),
+              const SizedBox(width: 3),
+              Text('${g.myStreak}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: p.text)),
+            ],
           ),
         ),
       ),
@@ -54,9 +62,13 @@ class GamificationCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Text('⭐ ${g.myPoints} pts', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: p.text)),
+                Icon(Icons.star_rounded, size: 20, color: p.warning),
+                const SizedBox(width: 4),
+                Text('${g.myPoints} pts', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: p.text)),
                 const Spacer(),
-                Text('\u{1F525} ${g.myStreak} day streak', style: TextStyle(color: p.warning, fontWeight: FontWeight.w600)),
+                Icon(Icons.local_fire_department, size: 18, color: p.warning),
+                const SizedBox(width: 4),
+                Text('${g.myStreak} day streak', style: TextStyle(color: p.warning, fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 6),

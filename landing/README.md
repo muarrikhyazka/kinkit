@@ -99,7 +99,7 @@ The page should only claim what the code does. When a feature changes, find its 
 | Export to PDF | `react/src/pages/Dashboard.jsx` ("Export PDF" uses `window.print()` with print CSS in `react/src/index.css`) |
 | Multi-currency display: IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD, INR; daily rates; stored in IDR | `CURRENCY_OPTIONS` in `react/src/pages/Setup.jsx`, `backend-go/fx.go` |
 | Household, members sign in with their own email | `react/src/pages/Family.jsx`, `backend-go/family.go`, `backend-go/auth.go` |
-| Roles: Owner, Parent, Kid (own entries only), Viewer (read-only) | `backend-go/family.go`, role gating in `react/src/routes.jsx` |
+| Roles: Family Admin, Parent, Kid (own entries only), Viewer (read-only) | `backend-go/family.go`, role gating in `react/src/routes.jsx` |
 | Kid monthly allowance with spent-this-month meter | `react/src/pages/Family.jsx` (`allowance_monthly`), `backend-go/family.go` |
 | Undo instead of confirmation on delete | `react/src/Toast.jsx`; described in `Guide.jsx` ("Deleting and undo") |
 | Starter categories / income sources on signup | `seedDefaults` in `backend-go/auth.go` |

@@ -6,8 +6,10 @@ import { useAuth, canManage } from '../AuthContext.jsx'
 import { useToast } from '../Toast.jsx'
 import { SkeletonCard, SkeletonStats } from '../Skeleton.jsx'
 import { formatDue } from './Reminders.jsx'
+import { IconBell, IconBroom, IconCart, IconBudget, IconCalendar, IconCheck, IconClock, IconSun } from '../icons.jsx'
 
-const SECTION_EMOJI = { reminders: '🔔', chores: '🧹', lists: '🛒', budget: '💰', coming_up: '📅' }
+const SECTION_ICONS = { reminders: IconBell, chores: IconBroom, lists: IconCart, budget: IconBudget, coming_up: IconCalendar }
+const SectionIcon = ({ id }) => { const Icon = SECTION_ICONS[id] || IconCalendar; return <Icon width={18} height={18} aria-hidden="true" /> }
 const DISMISS_TZ_KEY = 'kinkit_tz_prompt_dismissed'
 
 /** One-time prompt for owners/parents while the household time zone is still UTC. */
@@ -71,9 +73,9 @@ function TodayItemRow({ item, timeZone, onChanged }) {
       {item.done && <span className="badge badge-savings">Done</span>}
       {actions.length > 0 && (
         <span className="occ-actions">
-          {actions.includes('done') && <button className="small" disabled={busy} onClick={() => act('done')} aria-label={`Mark "${item.title}" done`}>✓ Done</button>}
+          {actions.includes('done') && <button className="small" disabled={busy} onClick={() => act('done')} aria-label={`Mark "${item.title}" done`}><IconCheck width={14} height={14} aria-hidden="true" /> Done</button>}
           {actions.includes('approve') && <button className="small" disabled={busy} onClick={() => act('approve')} aria-label={`Approve "${item.title}"`}>Approve</button>}
-          {actions.includes('snooze') && <button className="secondary small" disabled={busy} onClick={() => act('snooze')} aria-label={`Snooze "${item.title}" for one hour`}>⏰ 1h</button>}
+          {actions.includes('snooze') && <button className="secondary small" disabled={busy} onClick={() => act('snooze')} aria-label={`Snooze "${item.title}" for one hour`}><IconClock width={14} height={14} aria-hidden="true" /> 1h</button>}
         </span>
       )}
     </li>
@@ -115,7 +117,7 @@ export default function Today() {
 
       {!d ? <><SkeletonStats count={2} /><SkeletonCard lines={4} /></> : sections.length === 0 ? (
         <div className="card today-empty">
-          <p style={{ fontSize: '2rem', margin: 0 }} aria-hidden="true">🌤️</p>
+          <p style={{ margin: 0, color: 'var(--primary)' }} aria-hidden="true"><IconSun width={36} height={36} /></p>
           <p><strong>All clear for today.</strong></p>
           <p className="muted">Add <Link to="/home/reminders">reminders</Link>, <Link to="/home/chores">chores</Link> or a <Link to="/home/lists">shopping list</Link> and they will show up here.</p>
         </div>
@@ -123,7 +125,7 @@ export default function Today() {
         <div className="today-grid">
           {sections.map(s => (
             <section key={s.key} className="card today-section" aria-labelledby={`today-${s.key}`}>
-              <h2 id={`today-${s.key}`}><span aria-hidden="true">{SECTION_EMOJI[s.key] || '•'}</span> {s.title}</h2>
+              <h2 id={`today-${s.key}`}><SectionIcon id={s.key} /> {s.title}</h2>
               {s.summary && <p className="muted">{s.summary}</p>}
               {s.items?.length > 0 && (
                 <ul className="today-items">

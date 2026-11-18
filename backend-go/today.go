@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -175,7 +176,7 @@ func todayRemindersProvider(ctx context.Context, app *App, aid int64, m memberIn
 		return nil, nil
 	}
 	if open == 0 {
-		sec.Summary = "All reminders done 🎉"
+		sec.Summary = "All reminders done. Nice!"
 	} else {
 		sec.Summary = fmt.Sprintf("%d reminder%s left today", open, plural(open))
 	}
@@ -211,8 +212,8 @@ func todayComingUpProvider(ctx context.Context, app *App, aid int64, m memberInf
 		}
 		seen[o.ReminderID] = true
 		title := o.Title
-		if o.Category == "birthday" {
-			title = "🎂 " + title
+		if o.Category == "birthday" && !strings.Contains(strings.ToLower(title), "birthday") {
+			title = "Birthday: " + title
 		}
 		sec.Items = append(sec.Items, TodayItem{Kind: "reminder", ID: o.ID, Title: title, Due: o.DueAt.Format(time.RFC3339),
 			Detail: o.DueAt.In(loc).Format("Mon 2 Jan · 15:04"), MemberID: o.AssigneeID, MemberName: o.AssigneeName, Link: "/home/reminders"})

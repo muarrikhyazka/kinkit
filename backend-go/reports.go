@@ -133,7 +133,7 @@ func (app *App) handleYearsByCategory(w http.ResponseWriter, r *http.Request) {
 	      WHERE sp.account_id=$1`
 	args := []any{aid}
 	q, args = appendCeiling(q, args, r, "sp.amount")
-	q += " GROUP BY year, category_name"
+	q += " GROUP BY 1, 2" // positional: bare category_name would bind to sp.category_name, not the alias
 	rows, err := app.DB.Query(ctx, q, args...)
 	if err != nil {
 		dbError(w, err)
@@ -531,7 +531,7 @@ func (app *App) handleReportYear(w http.ResponseWriter, r *http.Request) {
 	      WHERE sp.account_id=$1 AND EXTRACT(YEAR FROM sp.tx_date)::int=$2`
 	args := []any{aid, year}
 	q, args = appendCeiling(q, args, r, "sp.amount")
-	q += " GROUP BY category_name ORDER BY total DESC"
+	q += " GROUP BY 1 ORDER BY total DESC" // positional, see handleYearsByCategory
 	rows, err := app.DB.Query(context.Background(), q, args...)
 	if err != nil {
 		dbError(w, err)
@@ -751,7 +751,7 @@ func (app *App) handleSummary(w http.ResponseWriter, r *http.Request) {
 		`SELECT COALESCE(c.name, sp.category_name, 'Other') as category_name, COALESCE(SUM(sp.amount),0) as total
 		 FROM spending sp LEFT JOIN categories c ON c.id=sp.category_id
 		 WHERE sp.account_id=$1 AND EXTRACT(YEAR FROM sp.tx_date)::int=$2 AND EXTRACT(MONTH FROM sp.tx_date)::int=$3
-		 GROUP BY category_name ORDER BY total DESC`, aid, year, month)
+		 GROUP BY 1 ORDER BY total DESC`, aid, year, month)
 	if err != nil {
 		dbError(w, err)
 		return

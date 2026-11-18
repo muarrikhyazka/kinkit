@@ -118,7 +118,7 @@ Navigation mirrors the web nav (`react/src/routes.jsx`): bottom bar
 Lists tabs; Money has Dashboard, Spending, Income, Budget and Goals tabs;
 More holds profile, settings and logout. Menus are hidden by role the same way the web
 does it (kids don't see income/budget/goals; viewers can't add; only
-owners/parents edit budgets, goals and income). The backend still enforces
+family admins/parents edit budgets, goals and income). The backend still enforces
 permissions.
 
 ### Money
@@ -150,7 +150,7 @@ Amount inputs are entered in IDR (with web-style shorthand: `25k`, `2rb`,
 | Points / streak / badges | App bar chip, Today, Family | `GET /api/gamification` |
 | Reminders | Home > Reminders | `GET /api/reminders/upcoming?days=7`, `GET /api/reminders`, `PATCH /api/reminders/{id}` `{active}`, `DELETE /api/reminders/{id}`, `POST /api/reminders/occurrences/{id}/done`, `POST /api/reminders/occurrences/{id}/snooze` `{minutes}`, `POST /api/reminders` `{title, kind, start_date, time_of_day, category, notes, weekdays?, day_of_month?}` |
 | Chores | Home > Chores | `GET /api/chores/today`, `POST /api/chores/{instanceId}/complete` / `approve` / `reject` / `undo` `{note}` |
-| Shopping lists | Home > Lists | `GET /api/lists`, `POST /api/lists` `{name, emoji}`, `GET /api/lists/{id}`, `POST /api/lists/{id}/items` `{text}`, `PATCH /api/lists/{id}/items/{itemId}` `{checked}`, `DELETE /api/lists/{id}/items/{itemId}`, `POST /api/lists/{id}/clear-checked`, `POST /api/lists/{id}/finish` `{client_id, total_amount}` (finish shopping -> spending) |
+| Shopping lists | Home > Lists | `GET /api/lists`, `POST /api/lists` `{name}` (emoji sent empty), `GET /api/lists/{id}`, `POST /api/lists/{id}/items` `{text}`, `PATCH /api/lists/{id}/items/{itemId}` `{checked}`, `DELETE /api/lists/{id}/items/{itemId}`, `POST /api/lists/{id}/clear-checked`, `POST /api/lists/{id}/finish` `{client_id, total_amount}` (finish shopping -> spending) |
 
 ### Web-only for now (intentionally not on the phone yet)
 

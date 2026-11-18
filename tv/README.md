@@ -13,7 +13,7 @@ account data they read comes from the token-based, read-only
 
 ## 1. Get a TV token
 
-1. Sign in to the Kinkit web app as an owner/manager.
+1. Sign in to the Kinkit web app as a family admin or parent.
 2. Open **Settings > Data & devices > TV / car display links**.
 3. Enter a name (e.g. "Living room TV") and press **Create link**. The link is copied:
    `https://your-kinkit-server/tv?k=<TOKEN>`

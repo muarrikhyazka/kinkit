@@ -266,12 +266,12 @@ func TestBuildDigestText(t *testing.T) {
 	}
 	got := buildDigestText("Good morning", day, secs)
 	for _, want := range []string{
-		"☀️ Good morning! Thursday, 19 Nov",
-		"⏰ Reminders\n• Take medicine (08:00, Budi)\n✅ Water plants (07:00)",
-		"🧹 Chores\n• Chore A",
+		"Good morning! Thursday, 19 Nov",
+		"Reminders\n• Take medicine (08:00, Budi)\n[x] Water plants (07:00)",
+		"Chores\n• Chore A",
 		"…and 2 more",
-		"💰 Budget: Spent Rp1.000 of Rp2.000 this month (50%)",
-		"⚠️ Food is over budget (Rp600 of Rp500)",
+		"Budget: Spent Rp1.000 of Rp2.000 this month (50%)",
+		"! Food is over budget (Rp600 of Rp500)",
 	} {
 		if !strings.Contains(got, want) {
 			t.Errorf("digest missing %q in:\n%s", want, got)
@@ -314,7 +314,7 @@ func TestSendChatMessageWithButtons(t *testing.T) {
 	telegramAPIBase, discordAPIBase = srv.URL, srv.URL
 	defer func() { telegramAPIBase, discordAPIBase = oldT, oldD }()
 
-	msg := chatMessage{Text: "⏰ Pay <rent>", Mention: "42", MentionName: "Budi", Buttons: reminderButtons(7)}
+	msg := chatMessage{Text: "Reminder: Pay <rent>", Mention: "42", MentionName: "Budi", Buttons: reminderButtons(7)}
 	if err := sendChatMessageWithButtons(context.Background(), "telegram", "TKN", "100", msg); err != nil {
 		t.Fatal(err)
 	}

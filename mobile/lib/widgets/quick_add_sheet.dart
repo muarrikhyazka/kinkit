@@ -13,7 +13,7 @@ import 'async_view.dart';
 enum QuickAddKind { spending, income }
 
 /// Opens the quick-add bottom sheet (web: QuickAddSpending.jsx).
-/// Owners/parents/viewers-with-read can switch to income when [allowIncome].
+/// Family admins/parents/viewers-with-read can switch to income when [allowIncome].
 Future<void> showQuickAdd(BuildContext context, {QuickAddKind initial = QuickAddKind.spending, bool allowIncome = false}) {
   return showModalBottomSheet<void>(
     context: context,

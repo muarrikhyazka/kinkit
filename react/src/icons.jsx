@@ -102,3 +102,80 @@ export const IconBell = (p) => (
   <svg {...base} {...p}><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 01-3.4 0" /></svg>
 )
 // --- end home ---
+export const IconStar = (p) => (
+  <svg {...base} {...p}><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3z" /></svg>
+)
+export const IconFlame = (p) => (
+  <svg {...base} {...p}><path d="M12 21c-3.9 0-7-2.8-7-6.6 0-3.1 2-5.3 3.6-7 .4 1.8 1.4 3 2.6 3.6C11 7.6 12.4 5 14.5 3c.6 3 4.5 5.8 4.5 11.4 0 3.8-3.1 6.6-7 6.6z" /><path d="M12 21c-1.7 0-3-1.2-3-2.9 0-1.9 1.6-2.8 3-4.6 1.4 1.8 3 2.7 3 4.6 0 1.7-1.3 2.9-3 2.9z" /></svg>
+)
+export const IconCamera = (p) => (
+  <svg {...base} {...p}><path d="M4 8h3l2-3h6l2 3h3a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z" /><circle cx="12" cy="13.5" r="3.5" /></svg>
+)
+export const IconBroom = (p) => (
+  <svg {...base} {...p}><path d="M19 3l-6.5 6.5" /><path d="M10.5 9.5l4 4" /><path d="M10.5 9.5C7 10 4.5 12.5 4 21c4-.5 8-2 10.5-7.5" /><path d="M7.5 16.5L6 19" /></svg>
+)
+export const IconCart = (p) => (
+  <svg {...base} {...p}><path d="M3 4h2l2.4 11h10.2L20 8H6.2" /><circle cx="9" cy="19.5" r="1.3" /><circle cx="17" cy="19.5" r="1.3" /></svg>
+)
+export const IconCalendar = (p) => (
+  <svg {...base} {...p}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>
+)
+export const IconClock = (p) => (
+  <svg {...base} {...p}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+)
+export const IconTrophy = (p) => (
+  <svg {...base} {...p}><path d="M7 4h10v5a5 5 0 01-10 0V4z" /><path d="M7 6H4v1.5A3.5 3.5 0 007.5 11M17 6h3v1.5a3.5 3.5 0 01-3.5 3.5" /><path d="M12 14v4M8 21h8M9.5 18h5" /></svg>
+)
+export const IconTarget = (p) => (
+  <svg {...base} {...p}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.2" /></svg>
+)
+export const IconPiggy = (p) => (
+  <svg {...base} {...p}><path d="M5 11a7 6 0 0113.3-2.4L21 8v4l-1.6.6A7 6 0 0116 16.6V20h-3v-2.6a8 8 0 01-2 0V20H8v-3.4A6 6 0 015 11z" /><path d="M10 7.5h3" /><circle cx="16" cy="10.5" r=".6" /></svg>
+)
+export const IconPill = (p) => (
+  <svg {...base} {...p}><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)" /><path d="M8.5 8.5l7 7" /></svg>
+)
+export const IconBook = (p) => (
+  <svg {...base} {...p}><path d="M2 5h6a4 4 0 014 4v11a3 3 0 00-3-3H2V5z" /><path d="M22 5h-6a4 4 0 00-4 4v11a3 3 0 013-3h7V5z" /></svg>
+)
+export const IconGift = (p) => (
+  <svg {...base} {...p}><rect x="3" y="8" width="18" height="4" rx="1" /><path d="M5 12v9h14v-9M12 8v13" /><path d="M12 8C10.5 4 7 4 7 6s2.5 2 5 2c2.5 0 5 0 5-2s-3.5-2-5 2z" /></svg>
+)
+export const IconBulb = (p) => (
+  <svg {...base} {...p}><path d="M9 18h6M10 21h4" /><path d="M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z" /></svg>
+)
+export const IconSparkle = (p) => (
+  <svg {...base} {...p}><path d="M12 3l1.9 5.6L19.5 10.5l-5.6 1.9L12 18l-1.9-5.6L4.5 10.5l5.6-1.9L12 3z" /><path d="M19 17v4M17 19h4" /></svg>
+)
+export const IconMedal = (p) => (
+  <svg {...base} {...p}><path d="M8 3l2.5 6M16 3l-2.5 6" /><circle cx="12" cy="15" r="6" /><path d="M12 12.5v5" /></svg>
+)
+
+// Achievement / challenge icons, keyed by the badge `key` or challenge `id` from /api/gamification.
+const BADGE_ICONS = {
+  first_log: IconSpending,
+  first_budget: IconBudget,
+  streak_7: IconFlame,
+  streak_30: IconFlame,
+  under_budget: IconTarget,
+  saver: IconPiggy,
+  chores_10: IconBroom,
+  chores_50: IconTrophy,
+  log_every_day: IconCalendar,
+  no_spend_weekend: IconPiggy,
+  wants_under: IconTarget,
+  all_chores: IconBroom,
+  level_up: IconStar,
+  chore_approved: IconCheck,
+}
+export const BadgeIcon = ({ id, ...p }) => {
+  const Icon = BADGE_ICONS[id] || IconMedal
+  return <Icon {...p} />
+}
+
+// Reminder category icons.
+const CATEGORY_ICONS = { bill: IconBulb, medicine: IconPill, school: IconBook, birthday: IconGift, chores: IconBroom, other: IconBell }
+export const CategoryIcon = ({ id, ...p }) => {
+  const Icon = CATEGORY_ICONS[id] || IconBell
+  return <Icon {...p} />
+}

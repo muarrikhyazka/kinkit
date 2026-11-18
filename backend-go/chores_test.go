@@ -144,10 +144,10 @@ func TestChoreRewardDeltaIdempotent(t *testing.T) {
 }
 
 func TestChoreHelpers(t *testing.T) {
-	if got := choreDoneMessage("Andi", false, 10, choreSubmitted); got != "Nice work Andi! +10 points ⭐ (waiting for approval)" {
+	if got := choreDoneMessage("Andi", false, 10, choreSubmitted); got != "Nice work Andi! +10 points (waiting for approval)" {
 		t.Errorf("message: %q", got)
 	}
-	if got := choreDoneMessage("Andi", true, 0, choreApproved); got != "Marked done for Andi! ✅" {
+	if got := choreDoneMessage("Andi", true, 0, choreApproved); got != "Marked done for Andi!" {
 		t.Errorf("message: %q", got)
 	}
 	for in, ok := range map[string]bool{"07:30": true, "7:05": true, "23:59": true, "24:00": false, "7:5": false, "abc": false, "": false} {
@@ -287,7 +287,7 @@ func TestChoresCRUDAndRotation(t *testing.T) {
 		t.Fatalf("viewer create: %d", code)
 	}
 
-	id := f.createChore(t, map[string]any{"title": "Dishes", "emoji": "🍽️", "points": 5, "schedule": "daily",
+	id := f.createChore(t, map[string]any{"title": "Dishes", "points": 5, "schedule": "daily",
 		"rotation_member_ids": []int64{f.k1ID, f.k2ID}})
 	_, who, status := f.todayInstance(t, id)
 	if who == nil || *who != f.k1ID || status != "todo" {
@@ -601,7 +601,7 @@ func TestChoreBotEndpoints(t *testing.T) {
 	if _, err := f.app.DB.Exec(ctx, "UPDATE members SET telegram_user_id='tg-kid1', display_name='Andi' WHERE id=$1", f.k1ID); err != nil {
 		t.Fatal(err)
 	}
-	mine := f.createChore(t, map[string]any{"title": "Homework", "emoji": "📚", "points": 10, "member_id": f.k1ID, "requires_approval": true})
+	mine := f.createChore(t, map[string]any{"title": "Homework", "points": 10, "member_id": f.k1ID, "requires_approval": true})
 	theirs := f.createChore(t, map[string]any{"title": "Vacuum", "points": 5, "member_id": f.k2ID})
 	mid, _, _ := f.todayInstance(t, mine)
 	tid, _, _ := f.todayInstance(t, theirs)
@@ -627,7 +627,7 @@ func TestChoreBotEndpoints(t *testing.T) {
 		t.Fatalf("bot today (no actor): %d %+v", code, all)
 	}
 	bot("telegram:tg-kid1").do("GET", "/api/bot/chores/today", nil, &kid)
-	if len(kid.Items) != 1 || kid.Items[0].ID != mid || kid.Items[0].Title != "📚 Homework" || kid.Items[0].AssigneeName != "Andi" || kid.Items[0].Points != 10 {
+	if len(kid.Items) != 1 || kid.Items[0].ID != mid || kid.Items[0].Title != "Homework" || kid.Items[0].AssigneeName != "Andi" || kid.Items[0].Points != 10 {
 		t.Fatalf("bot today (kid): %+v", kid)
 	}
 	noTok := &testClient{t: t, base: f.owner.base, c: &http.Client{}}
@@ -645,7 +645,7 @@ func TestChoreBotEndpoints(t *testing.T) {
 	if code := bot("telegram:tg-kid1").do("POST", "/api/bot/chores/"+itoa(mid)+"/done", nil, &res); code != 200 || res["ok"] != true {
 		t.Fatalf("kid done own: %d %v", code, res)
 	}
-	if msg := res["message"].(string); msg != "Nice work Andi! +10 points ⭐ (waiting for approval)" {
+	if msg := res["message"].(string); msg != "Nice work Andi! +10 points (waiting for approval)" {
 		t.Fatalf("message: %q", msg)
 	}
 	if code := bot("telegram:tg-kid1").do("POST", "/api/bot/chores/"+itoa(mid)+"/done", nil, &res); code != 409 || res["ok"] != false {

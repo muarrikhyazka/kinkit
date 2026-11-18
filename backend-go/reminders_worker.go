@@ -297,7 +297,7 @@ func (app *App) sendDueReminders(ctx context.Context, now time.Time) (int, error
 
 func reminderText(d dueOcc, loc *time.Location) string {
 	var b strings.Builder
-	b.WriteString("⏰ " + d.title)
+	b.WriteString("Reminder: " + d.title)
 	if d.notes != "" {
 		b.WriteString("\n" + d.notes)
 	}
@@ -360,7 +360,7 @@ func (app *App) escalateReminders(ctx context.Context, now time.Time) (int, erro
 		if e.assignee != "" {
 			who = e.assignee
 		}
-		text := fmt.Sprintf("⚠️ Not done yet: %s (for %s, due %s)", e.d.title, who, e.d.dueAt.In(loadLoc(e.d.tz)).Format("15:04"))
+		text := fmt.Sprintf("Not done yet: %s (for %s, due %s)", e.d.title, who, e.d.dueAt.In(loadLoc(e.d.tz)).Format("15:04"))
 		if len(chs) > 0 && app.deliver(ctx, chs, func(p string) chatMessage {
 			return chatMessage{Text: text, Mention: e.d.mention(p), MentionName: e.escName, Buttons: reminderButtons(e.d.id)}
 		}, fmt.Sprintf("escalation %d", e.d.id)) == 0 {

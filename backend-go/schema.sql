@@ -615,3 +615,10 @@ CREATE TABLE IF NOT EXISTS shopping_item_stats (
     PRIMARY KEY (account_id, name_key)
 );
 -- === end lists ===
+
+-- Kinkit shows no emoji: clear any emoji stored before the API stopped
+-- saving them. Idempotent (only touches non-empty rows); columns stay
+-- NOT NULL DEFAULT ''.
+UPDATE chores SET emoji='' WHERE emoji <> '';
+UPDATE shopping_lists SET emoji='' WHERE emoji <> '';
+UPDATE savings_goals SET emoji='' WHERE emoji <> '';

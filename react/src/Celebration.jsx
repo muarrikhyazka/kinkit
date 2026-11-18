@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import Modal from './Modal.jsx'
+import { BadgeIcon } from './icons.jsx'
 
 const COLORS = ['#f43f5e', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#facc15']
 
@@ -34,7 +35,8 @@ function Confetti({ count = 60 }) {
 
 /**
  * Celebration dialog for newly earned badges / level-ups.
- *   <Celebration items={[{ icon, title, text }]} onClose={...} />
+ *   <Celebration items={[{ iconKey, title, text }]} onClose={...} />
+ * iconKey is a badge/challenge key (see BadgeIcon in icons.jsx).
  * Rendered in a portal so it works even when the opener is in a hidden
  * container (e.g. the desktop sidebar on a phone).
  */
@@ -48,7 +50,7 @@ export default function Celebration({ items, onClose }) {
         <ul className="celebration-list">
           {items.map((it, i) => (
             <li key={i}>
-              <span className="celebration-icon" aria-hidden="true">{it.icon}</span>
+              <span className="celebration-icon" aria-hidden="true"><BadgeIcon id={it.iconKey} width={28} height={28} /></span>
               <div>
                 <strong>{it.title}</strong>
                 {it.text && <div className="muted">{it.text}</div>}
@@ -86,9 +88,9 @@ export function diffNewRewards(state) {
   if (!prev) return []
   const items = []
   if (current.level > (prev.level ?? 0)) {
-    items.push({ icon: '🌟', title: `Level up: ${m.level}`, text: `${m.points} points${m.next_level ? ` - next: ${m.next_level} at ${m.next_level_at}` : ''}` })
+    items.push({ iconKey: 'level_up', title: `Level up: ${m.level}`, text: `${m.points} points${m.next_level ? ` - next: ${m.next_level} at ${m.next_level_at}` : ''}` })
   }
   const seen = new Set(prev.badges || [])
-  earned.filter(b => !seen.has(b.key)).forEach(b => items.push({ icon: b.icon, title: `Badge: ${b.name}`, text: b.description }))
+  earned.filter(b => !seen.has(b.key)).forEach(b => items.push({ iconKey: b.key, title: `Badge: ${b.name}`, text: b.description }))
   return items
 }

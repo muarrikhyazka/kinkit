@@ -333,7 +333,7 @@
               <article class="card reveal" data-delay="1">
                 <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span>
                 <h4 data-i18n="f.roles.t">Roles that fit real families</h4>
-                <p data-i18n="f.roles.d">Owner and Parent manage everything. Kids log spending and can only edit their own entries. Viewers have read-only access, which suits a grandparent or an accountant.</p>
+                <p data-i18n="f.roles.d">Family Admin and Parent manage everything. Kids log spending and can only edit their own entries. Viewers have read-only access, which suits a grandparent or an accountant.</p>
               </article>
               <article class="card reveal" data-delay="2">
                 <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-coins"/></svg></span>
@@ -448,7 +448,7 @@
           <li class="step reveal">
             <div class="step-num" aria-hidden="true">1</div>
             <h3 data-i18n="how.s1.t">Create your household</h3>
-            <p data-i18n="how.s1.d">Sign up and you're the Owner. Kinkit starts you with sensible categories and income sources.</p>
+            <p data-i18n="how.s1.d">Sign up and you're the Family Admin. Kinkit starts you with sensible categories and income sources.</p>
             <ul>
               <li data-i18n="how.s1.l1">Invite a partner, kids or grandparents</li>
               <li data-i18n="how.s1.l2">Give each one a role and an allowance</li>
@@ -614,7 +614,7 @@
           </article>
           <article class="theme-card reveal" data-delay="2">
             <div class="theme-preview tp-playful" aria-hidden="true">
-              <span class="tp-title">Playful ⭐</span>
+              <span class="tp-title">Playful <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></span>
               <span class="tp-row">My allowance <span class="tp-good">60%</span></span>
               <span class="tp-btn">+ Add</span>
             </div>
@@ -699,10 +699,10 @@
 <pre aria-hidden="true"><span class="c"># your server, your data</span>
 <span class="p">$</span> cp .env.example .env   <span class="c"># set passwords</span>
 <span class="p">$</span> docker compose up -d
- <span class="ok">✔</span> kinkit-postgres       Started
- <span class="ok">✔</span> kinkit                Started
- <span class="ok">✔</span> kinkit-telegram-bot   Started
- <span class="ok">✔</span> kinkit-discord-bot    Started
+ <span class="ok">[+]</span> kinkit-postgres       Started
+ <span class="ok">[+]</span> kinkit                Started
+ <span class="ok">[+]</span> kinkit-telegram-bot   Started
+ <span class="ok">[+]</span> kinkit-discord-bot    Started
 <span class="c"># open http://localhost:5010</span></pre>
           </div>
           <div class="export-chips" aria-label="Export formats">

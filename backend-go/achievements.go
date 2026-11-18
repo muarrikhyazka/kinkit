@@ -103,15 +103,15 @@ type badgeDef struct {
 }
 
 var badgeCatalog = []badgeDef{
-	{"first_log", "First Log", "Logged your first spending", "📝"},
-	{"first_budget", "First Budget Set", "The household set a monthly budget", "🗂️"},
-	{"streak_7", "Streak 7", "Logged spending 7 days in a row", "🔥"},
-	{"streak_30", "Streak 30", "Logged spending 30 days in a row", "🏆"},
-	{"under_budget", "Under Budget", "Closed a month with Needs + Wants spending at or below budget", "🎯"},
-	{"saver", "Saver", "Closed a month with Savings at or above the savings budget", "🐷"},
+	{"first_log", "First Log", "Logged your first spending", ""},
+	{"first_budget", "First Budget Set", "The household set a monthly budget", ""},
+	{"streak_7", "Streak 7", "Logged spending 7 days in a row", ""},
+	{"streak_30", "Streak 30", "Logged spending 30 days in a row", ""},
+	{"under_budget", "Under Budget", "Closed a month with Needs + Wants spending at or below budget", ""},
+	{"saver", "Saver", "Closed a month with Savings at or above the savings budget", ""},
 	// --- chores ---
-	{"chores_10", "Helping hand", "Finished 10 chores", "🧹"},
-	{"chores_50", "Chore champion", "Finished 50 chores", "🏅"},
+	{"chores_10", "Helping hand", "Finished 10 chores", ""},
+	{"chores_50", "Chore champion", "Finished 50 chores", ""},
 }
 
 const (
@@ -314,10 +314,10 @@ var challengeDefs = []struct {
 	Bonus                              int64
 	LowerIsBetter                      bool
 }{
-	{"log_every_day", "Log every day this week", "Log at least one spending entry on each of the 7 days (Mon-Sun, UTC).", "📅", "days", bonusLogEveryDay, false},
-	{"no_spend_weekend", "No-spend weekend", "Spend nothing on Saturday and Sunday (log something during the week so we know you're tracking).", "🛋️", "days", bonusNoSpendWkend, false},
-	{"wants_under", "Keep Wants under budget", "Keep this week's Wants spending under a week's share of your monthly Wants budget.", "🧺", "amount", bonusWantsUnderCap, true},
-	{"all_chores", "Finish all your chores this week", "Get every chore due this week done (and approved) by Sunday.", "🧽", "chores", bonusAllChores, false},
+	{"log_every_day", "Log every day this week", "Log at least one spending entry on each of the 7 days (Mon-Sun, UTC).", "", "days", bonusLogEveryDay, false},
+	{"no_spend_weekend", "No-spend weekend", "Spend nothing on Saturday and Sunday (log something during the week so we know you're tracking).", "", "days", bonusNoSpendWkend, false},
+	{"wants_under", "Keep Wants under budget", "Keep this week's Wants spending under a week's share of your monthly Wants budget.", "", "amount", bonusWantsUnderCap, true},
+	{"all_chores", "Finish all your chores this week", "Get every chore due this week done (and approved) by Sunday.", "", "chores", bonusAllChores, false},
 }
 
 func (app *App) loadWeekStats(ctx context.Context, aid int64, weekStart, now time.Time, householdCreated time.Time) weekStats {

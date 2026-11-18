@@ -8,7 +8,7 @@ import PageHeader from '../PageHeader.jsx'
 import StatCard from '../StatCard.jsx'
 import MoneyInput from '../MoneyInput.jsx'
 import { SkeletonCard, SkeletonStats } from '../Skeleton.jsx'
-import { IconClose, IconEdit, IconPlus } from '../icons.jsx'
+import { BadgeIcon, IconClose, IconEdit, IconPlus } from '../icons.jsx'
 
 // nav icon for routes.jsx (two people)
 export const IconFamily = (p) => (
@@ -43,7 +43,7 @@ function AllowanceBar({ member }) {
         <div className="allowance-parts muted">
           {base > 0 && <span>Allowance {formatRupiah(base)}</span>}
           {base > 0 && <span aria-hidden="true"> + </span>}
-          <span className="allowance-earned">🧹 {formatRupiah(earned)} earned from chores</span>
+          <span className="allowance-earned">{formatRupiah(earned)} earned from chores</span>
           <span> = {formatRupiah(allowance)}</span>
         </div>
       )}
@@ -133,7 +133,7 @@ function MemberModal({ member, myRole, onClose, onSaved }) {
             minLength={editing ? undefined : 8} required={!editing} placeholder="8+ characters" />
           {!editing && <span className="muted">They can change it later from the Family page.</span>}
         </label>
-        {myRole === 'parent' && isOwnerRow && <p className="muted">Parents can't edit the owner.</p>}
+        {myRole === 'parent' && isOwnerRow && <p className="muted">Parents can't edit the family admin.</p>}
         <div className="family-form-actions">
           <button type="button" className="secondary" onClick={onClose}>Cancel</button>
           <button type="submit" disabled={busy}>{busy ? 'Saving...' : editing ? 'Save' : 'Add member'}</button>
@@ -178,7 +178,7 @@ function Achievements({ g }) {
             const over = c.lower_is_better && c.progress > c.target
             return (
               <li key={c.key} className={`challenge ${c.completed ? 'done' : ''} ${!c.available ? 'locked' : ''}`}>
-                <span className="challenge-icon" aria-hidden="true">{c.icon}</span>
+                <span className="challenge-icon" aria-hidden="true"><BadgeIcon id={c.key || c.id} width={28} height={28} /></span>
                 <div className="challenge-body">
                   <div className="challenge-head">
                     <strong>{c.name}</strong>
@@ -214,7 +214,7 @@ function Achievements({ g }) {
         <ul className="badge-grid">
           {g.badges.map(b => (
             <li key={b.key} className={`badge-tile ${b.earned ? 'earned' : ''}`} title={b.description}>
-              <span className="badge-tile-icon" aria-hidden="true">{b.icon}</span>
+              <span className="badge-tile-icon" aria-hidden="true"><BadgeIcon id={b.key} width={28} height={28} /></span>
               <strong>{b.name}</strong>
               <span className="muted">{b.earned ? `Earned ${b.earned_at?.slice(0, 10)}` : b.description}</span>
               <span className="sr-only">{b.earned ? 'earned' : 'not earned yet'}</span>
@@ -289,7 +289,7 @@ export default function Family() {
                     {m.is_me && <span className="muted"> (you)</span>}
                   </div>
                   <div className="muted">{m.email}</div>
-                  {m.chores_done_week > 0 && <div className="muted">🧹 {m.chores_done_week} chore{m.chores_done_week === 1 ? '' : 's'} done this week</div>}
+                  {m.chores_done_week > 0 && <div className="muted">{m.chores_done_week} chore{m.chores_done_week === 1 ? '' : 's'} done this week</div>}
                   {m.role === 'kid' && <AllowanceBar member={m} />}
                 </div>
                 <div className="row-actions">
@@ -327,7 +327,7 @@ export default function Family() {
           <ol className="leaderboard">
             {g.leaderboard.map((r, i) => (
               <li key={r.member_id} className={r.member_id === g.member?.id ? 'me' : ''}>
-                <span className="leader-rank" aria-hidden="true">{['🥇', '🥈', '🥉'][i] || i + 1}</span>
+                <span className={`leader-rank${i < 3 ? ` rank-${i + 1}` : ''}`} aria-hidden="true">{i + 1}</span>
                 <span className="leader-name">{r.display_name} <RoleBadge role={r.role} /></span>
                 <span className="leader-points">{r.points_month} pts</span>
               </li>

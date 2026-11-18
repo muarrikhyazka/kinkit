@@ -138,12 +138,12 @@ export default function Guide() {
       {/* --- family --- */}
       <Section Icon={IconFamily} title="Family & achievements">
         <p>
-          A Kinkit account is a <strong>household</strong>. Whoever signed up is its <strong>Owner</strong>; on the <strong>Family</strong> page the owner or a parent
+          A Kinkit account is a <strong>household</strong>. Whoever signed up is its <strong>Family Admin</strong>; on the <strong>Family</strong> page the family admin or a parent
           can add members with their email and a temporary password (they can change it later on the Family page). Each member logs in with their own email.
         </p>
         <ul className="guide-list">
-          <li><strong>Owner</strong> - everything, including renaming the household (Settings). The owner can't be removed.</li>
-          <li><strong>Parent</strong> - full access to the household's money and can manage members (except the owner).</li>
+          <li><strong>Family Admin</strong> - everything, including renaming the household (Settings). The family admin can't be removed.</li>
+          <li><strong>Parent</strong> - full access to the household's money and can manage members (except the family admin).</li>
           <li><strong>Kid</strong> - can see the household and log spending, and edit or delete only the entries they logged. A monthly <strong>allowance</strong> shows how much of it they have spent this month.</li>
           <li><strong>Viewer</strong> - read-only.</li>
         </ul>
@@ -162,20 +162,20 @@ export default function Guide() {
         <p>
           The start page. It greets you and collects what matters today: reminders due (and overdue), chores, shopping lists,
           how much of this month's budget is used, and reminders coming up in the next days. Tick reminders and chores
-          straight from here; owners and parents can approve chores kids have finished.
+          straight from here; the family admin and parents can approve chores kids have finished.
         </p>
         <p>
           Days follow the <strong>household time zone</strong> (Settings › Display). Data is stored in UTC, the time zone only
-          decides when "today" starts and when "every day at 08:00" fires. Owners and parents are asked once to switch from UTC to
+          decides when "today" starts and when "every day at 08:00" fires. The family admin and parents are asked once to switch from UTC to
           the time zone of their device.
         </p>
       </Section>
 
       <Section Icon={IconBell} title="Home › Reminders">
         <ul className="guide-list">
-          <li>Owners and parents add reminders for bills, medicine, school, birthdays, chores or anything else: once, daily, weekly (pick days), monthly (day 31 means the last day of shorter months) or yearly.</li>
+          <li>The family admin and parents add reminders for bills, medicine, school, birthdays, chores or anything else: once, daily, weekly (pick days), monthly (day 31 means the last day of shorter months) or yearly.</li>
           <li>Assign a reminder to one person or to the whole family. Optionally pick someone to tell if nobody marks it done within a number of minutes.</li>
-          <li>Reminders arrive in the family's Telegram or Discord chat with <strong>✅ Done</strong> and <strong>⏰ Snooze</strong> buttons, and show on Today. Everyone except viewers can mark their own (or whole-family) reminders done.</li>
+          <li>Reminders arrive in the family's Telegram or Discord chat with <strong>Done</strong> and <strong>Snooze</strong> buttons, and show on Today. Everyone except viewers can mark their own (or whole-family) reminders done.</li>
           <li><strong>Morning digest</strong>: every morning (07:00 by default, change it in Settings › Display) the chat gets a short summary of the day.</li>
         </ul>
       </Section>
@@ -198,7 +198,7 @@ export default function Guide() {
 
       <Section Icon={IconHome} title="Home › Chores">
         <ul className="guide-list">
-          <li><strong>Parents</strong> add chores with <strong>Add chore</strong>: a title and icon, points, an optional money reward, and how often (once, every day, chosen weekdays or monthly, with an optional "due by" time).</li>
+          <li><strong>Parents</strong> add chores with <strong>Add chore</strong>: a title, points, an optional money reward, and how often (once, every day, chosen weekdays or monthly, with an optional "due by" time).</li>
           <li><strong>Who does it</strong>: one person, <strong>take turns</strong> (each time the chore comes up the next person in the list gets it) or <strong>anyone</strong> (whoever does it first gets the credit).</li>
           <li><strong>Kids</strong> see big cards for today and tap <strong>Done!</strong> - optionally with a photo from the camera. If a chore needs a photo, the button opens the camera.</li>
           <li>With <strong>approval</strong> switched on, a finished chore waits in the parent's <strong>Waiting for approval</strong> list (with the photo). Approve to give the points, or <strong>Send back</strong> with a note so they can try again.</li>
@@ -233,7 +233,7 @@ export default function Guide() {
       <Section Icon={IconLink} title="On your phone">
         <p>
           On small screens the sidebar is replaced by a bottom tab bar: <strong>Today</strong>, <strong>Home</strong>, <strong>Transactions</strong> and <strong>More</strong>.
-          <strong> More</strong> opens a sheet with Dashboard, Budget, Savings, Family, Settings, Help, the theme picker and logout. The round <strong>+</strong> button adds spending (or income, for owners and parents) from anywhere.
+          <strong> More</strong> opens a sheet with Dashboard, Budget, Savings, Family, Settings, Help, the theme picker and logout. The round <strong>+</strong> button adds spending (or income, for the family admin and parents) from anywhere.
         </p>
       </Section>
 

@@ -161,6 +161,8 @@ input:focus, select:focus { outline: 2px solid var(--primary-light); border-colo
 .gami-badge .progress-bar { background: rgba(255,255,255,.1); height: 5px; }
 .gami-badge .progress-fill { background: linear-gradient(90deg,#818cf8,#c084fc); }
 .gami-badge-collapsed { text-align: center; font-size: .9rem; margin-bottom: .6rem; }
+.gami-ico { vertical-align: -2px; color: #fbbf24; }
+.gami-streak .gami-ico, .gami-badge-collapsed .gami-ico { color: #fb923c; }
 
 /* ---- TV / car head-unit view ---- */
 .tv-view {
@@ -593,18 +595,22 @@ a.gami-badge, a.gami-badge-collapsed { text-decoration: none; display: block; co
 .leaderboard li { display: flex; align-items: center; gap: .75rem; padding: .5rem .25rem; border-bottom: 1px solid var(--border); }
 .leaderboard li.me { background: var(--primary-light); border-radius: 8px; }
 .leader-rank { width: 2rem; text-align: center; font-weight: 700; }
+.leader-rank.rank-1, .leader-rank.rank-2, .leader-rank.rank-3 { width: 1.7rem; height: 1.7rem; line-height: 1.7rem; border-radius: 50%; color: #fff; font-size: .85rem; margin: 0 .15rem; }
+.leader-rank.rank-1 { background: #d4a017; }
+.leader-rank.rank-2 { background: #9ca3af; }
+.leader-rank.rank-3 { background: #b87333; }
 .leader-name { flex: 1; min-width: 0; }
 .leader-points { font-weight: 700; white-space: nowrap; }
 .challenge { display: flex; gap: .8rem; padding: .8rem 0; border-bottom: 1px solid var(--border); }
 .challenge:last-child { border-bottom: 0; }
 .challenge.locked { opacity: .7; }
 .challenge.done .chip { background: #dcfce7; color: #166534; }
-.challenge-icon, .badge-tile-icon, .celebration-icon { font-size: 1.6rem; line-height: 1; }
+.challenge-icon, .badge-tile-icon, .celebration-icon { display: inline-flex; align-items: center; justify-content: center; line-height: 1; color: var(--primary); flex-shrink: 0; }
 .challenge-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .3rem; }
 .challenge-head { display: flex; justify-content: space-between; gap: .5rem; align-items: center; flex-wrap: wrap; }
 .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .75rem; }
 .badge-tile { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .3rem; padding: .9rem .6rem; border: 1px dashed var(--border); border-radius: 12px; }
-.badge-tile:not(.earned) .badge-tile-icon { filter: grayscale(1); opacity: .45; }
+.badge-tile:not(.earned) .badge-tile-icon { color: var(--muted); opacity: .45; }
 .badge-tile.earned { border-style: solid; border-color: var(--primary); background: var(--primary-light); }
 .family-form { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem 1rem; }
 .family-form label { display: flex; flex-direction: column; gap: .3rem; }
@@ -660,7 +666,6 @@ a.gami-badge, a.gami-badge-collapsed { text-decoration: none; display: block; co
 .goal-contribute .money-input { flex: 1; min-width: 140px; }
 .goal-card-actions { margin-left: auto; display: inline-flex; gap: .3rem; align-items: center; }
 .goal-name-row { display: flex; gap: .5rem; }
-.goal-emoji-input { width: 3.2rem !important; text-align: center; flex-shrink: 0; }
 .goal-assets { border: 1px solid var(--border); border-radius: 8px; padding: .5rem .8rem .7rem; }
 .goal-assets legend { padding: 0 .3rem; }
 .checkbox-label { display: flex; align-items: center; gap: .45rem; font-weight: 400; }
@@ -877,7 +882,7 @@ button.secondary.danger-text { background: transparent; border: 1px solid var(--
 .chore-row.is-done .chore-row-main strong, .chore-row.inactive { opacity: .6; }
 .chore-row-main { flex: 1; min-width: 0; }
 .chore-row-sub { display: block; font-size: .82rem; margin-top: .15rem; }
-.chore-emoji { font-size: 1.5rem; line-height: 1; width: 2rem; text-align: center; flex-shrink: 0; }
+.chore-emoji { display: inline-flex; align-items: center; justify-content: center; width: 2rem; flex-shrink: 0; color: var(--primary); }
 .chore-note { font-size: .85rem; color: var(--muted); font-style: italic; margin-top: .2rem; }
 .chore-count { background: #fef3c7; color: #92400e; margin-left: .3rem; }
 .chore-thumb { padding: 0; width: 52px; height: 52px; border-radius: 10px; overflow: hidden; background: var(--border); flex-shrink: 0; }
@@ -890,7 +895,7 @@ button.secondary.danger-text { background: transparent; border: 1px solid var(--
 .chore-kid-card { background: var(--card); border: 2px solid var(--border); border-radius: 20px; padding: 1.1rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: .55rem; }
 .chore-kid-card.overdue { border-color: var(--warning); }
 .chore-kid-card.rejected { border-color: var(--danger); }
-.chore-big-emoji { font-size: 3rem; line-height: 1; margin: 0; }
+.chore-big-emoji { display: flex; justify-content: center; line-height: 1; margin: 0; color: var(--primary); }
 .chore-kid-title { font-size: 1.15rem; }
 .chore-kid-meta { display: flex; gap: .4rem; flex-wrap: wrap; justify-content: center; align-items: center; font-size: .85rem; }
 .chore-done-btn { width: 100%; min-height: 52px; font-size: 1.1rem; font-weight: 700; border-radius: 14px; background: var(--success); color: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -954,7 +959,7 @@ button.small, .button-link.small { padding: .3rem .65rem; font-size: .8rem; }
 .occ-list, .today-items { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
 .occ, .today-item { display: flex; align-items: center; gap: .7rem; padding: .65rem 0; border-bottom: 1px solid var(--border); }
 .occ:last-child, .today-item:last-child { border-bottom: none; }
-.occ-emoji { font-size: 1.3rem; }
+.occ-emoji { display: inline-flex; align-items: center; color: var(--primary); flex-shrink: 0; }
 .occ-main, .today-item-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .1rem; }
 .occ-main .muted, .today-item-main .muted { font-size: .8rem; }
 .occ.done strong, .today-item.done strong { text-decoration: line-through; opacity: .6; }
@@ -973,3 +978,8 @@ button.small, .button-link.small { padding: .3rem .65rem; font-size: .8rem; }
   .occ-actions button { min-height: 40px; }
 }
 /* --- end reminders / today --- */
+
+/* Inline SVG icons next to button / text labels */
+button > svg, .chore-photo-btn > svg, .schedule-preview > svg, .inline-ico { vertical-align: -0.15em; flex-shrink: 0; }
+.chore-done-btn, .chore-photo-btn { gap: .4rem; }
+.today-section h2 svg { color: var(--primary); }

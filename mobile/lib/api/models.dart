@@ -74,7 +74,7 @@ class Me {
         householdName: asString(j['household_name']),
       );
 
-  /// owner/parent run the household (budget edits, family management).
+  /// owner (Family Admin)/parent run the household (budget edits, family management).
   bool get canManage => role == 'owner' || role == 'parent';
 
   /// Everyone but kids may see income / budget / savings (routes.jsx READERS).
@@ -828,7 +828,7 @@ class ChoreInstance {
       );
 
   bool get submitted => status == 'submitted';
-  String get label => emoji.isNotEmpty ? '$emoji $title' : title;
+  String get label => title;
 }
 
 class ChoreWeek {
@@ -956,7 +956,7 @@ class ShoppingList {
         checkedCount: asInt(j['checked_count']),
       );
 
-  String get label => emoji.isNotEmpty ? '$emoji $name' : name;
+  String get label => name;
 }
 
 class ListItem {

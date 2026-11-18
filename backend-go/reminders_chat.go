@@ -18,7 +18,7 @@ import (
 // plain sendChatMessage stays as is.
 
 type chatButton struct {
-	Label string // shown to the user, e.g. "✅ Done"
+	Label string // shown to the user, e.g. "Done"
 	Data  string // callback data / custom_id, e.g. "rem:12:done" (<=64 bytes)
 }
 
@@ -120,9 +120,9 @@ func sendChatMessageWithButtons(ctx context.Context, platform, token, chatID str
 func reminderButtons(occID int64) [][]chatButton {
 	id := fmt.Sprint(occID)
 	return [][]chatButton{{
-		{Label: "✅ Done", Data: "rem:" + id + ":done"},
-		{Label: "⏰ Snooze 1h", Data: "rem:" + id + ":snooze60"},
-		{Label: "🌅 Tomorrow", Data: "rem:" + id + ":snooze_tomorrow"},
+		{Label: "Done", Data: "rem:" + id + ":done"},
+		{Label: "Snooze 1h", Data: "rem:" + id + ":snooze60"},
+		{Label: "Tomorrow", Data: "rem:" + id + ":snooze_tomorrow"},
 	}}
 }
 

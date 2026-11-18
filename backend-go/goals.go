@@ -92,9 +92,7 @@ func (in *goalInput) normalize(ctx context.Context, app *App, aid int64) (*time.
 			return nil, fmt.Errorf("unknown asset")
 		}
 	}
-	if r := []rune(in.Emoji); len(r) > 8 {
-		in.Emoji = string(r[:8])
-	}
+	in.Emoji = "" // accepted for older clients but no longer stored: Kinkit shows no emoji
 	if len(in.Color) > 32 {
 		in.Color = in.Color[:32]
 	}

@@ -457,7 +457,7 @@ func TestChatLinkAndBotFlow(t *testing.T) {
 		t.Fatalf("bot list: %v", res)
 	}
 	h.bot(t, "telegram:999", "GET", "/api/bot/today", nil, &res)
-	if !strings.Contains(res["text"].(string), "☀️") || res["timezone"] != "Asia/Jakarta" {
+	if !strings.HasPrefix(res["text"].(string), "Good ") || res["timezone"] != "Asia/Jakarta" {
 		t.Fatalf("bot today: %v", res)
 	}
 	// button callbacks

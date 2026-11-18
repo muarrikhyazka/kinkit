@@ -38,7 +38,7 @@ func (app *App) handleSetTimezone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !canManageFamily(m.Role) {
-		jsonError(w, http.StatusForbidden, "only owners and parents can change the household time zone")
+		jsonError(w, http.StatusForbidden, "only family admins and parents can change the household time zone")
 		return
 	}
 	var d struct {
@@ -116,7 +116,7 @@ func (app *App) handleSetDigest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !canManageFamily(m.Role) {
-		jsonError(w, http.StatusForbidden, "only owners and parents can change the digest")
+		jsonError(w, http.StatusForbidden, "only family admins and parents can change the digest")
 		return
 	}
 	s := app.loadDigestSettings(r, m.AccountID)

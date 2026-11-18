@@ -6,19 +6,18 @@ import { useToast, useHiddenIds } from '../Toast.jsx'
 import Modal from '../Modal.jsx'
 import PageHeader from '../PageHeader.jsx'
 import { SkeletonCard } from '../Skeleton.jsx'
-import { IconEdit, IconClose, IconPlus, IconCopy } from '../icons.jsx'
+import { IconEdit, IconClose, IconPlus, IconCopy, IconCheck, IconClock, IconCalendar, CategoryIcon } from '../icons.jsx'
 
 // ---------- helpers (shared with Today.jsx) ----------
 
 export const REMINDER_CATEGORIES = [
-  { id: 'bill', label: 'Bill', emoji: '💡' },
-  { id: 'medicine', label: 'Medicine', emoji: '💊' },
-  { id: 'school', label: 'School', emoji: '🎒' },
-  { id: 'birthday', label: 'Birthday', emoji: '🎂' },
-  { id: 'chores', label: 'Chores', emoji: '🧹' },
-  { id: 'other', label: 'Other', emoji: '🔔' },
+  { id: 'bill', label: 'Bill' },
+  { id: 'medicine', label: 'Medicine' },
+  { id: 'school', label: 'School' },
+  { id: 'birthday', label: 'Birthday' },
+  { id: 'chores', label: 'Chores' },
+  { id: 'other', label: 'Other' },
 ]
-export const categoryEmoji = id => REMINDER_CATEGORIES.find(c => c.id === id)?.emoji || '🔔'
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 /** "Today 08:00", "Tomorrow 07:30", "Mon 12 Dec 09:00" in the household time zone. */
@@ -46,8 +45,8 @@ export function OccurrenceActions({ occurrenceId, title, onChanged }) {
   }
   return (
     <span className="occ-actions">
-      <button className="secondary small" disabled={busy} onClick={() => run(() => remindersApi.done(occurrenceId), `Done: ${title}`)} aria-label={`Mark "${title}" done`}>✓ Done</button>
-      <button className="secondary small" disabled={busy} onClick={() => run(() => remindersApi.snooze(occurrenceId, { minutes: 60 }), 'Snoozed for 1 hour')} aria-label={`Snooze "${title}" for one hour`}>⏰ 1h</button>
+      <button className="secondary small" disabled={busy} onClick={() => run(() => remindersApi.done(occurrenceId), `Done: ${title}`)} aria-label={`Mark "${title}" done`}><IconCheck width={14} height={14} aria-hidden="true" /> Done</button>
+      <button className="secondary small" disabled={busy} onClick={() => run(() => remindersApi.snooze(occurrenceId, { minutes: 60 }), 'Snoozed for 1 hour')} aria-label={`Snooze "${title}" for one hour`}><IconClock width={14} height={14} aria-hidden="true" /> 1h</button>
     </span>
   )
 }
@@ -125,7 +124,7 @@ function ReminderModal({ initial, members, onClose, onSaved }) {
         <div className="form-row">
           <label>Category
             <select value={f.category} onChange={e => set('category', e.target.value)}>
-              {REMINDER_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.emoji} {c.label}</option>)}
+              {REMINDER_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
             </select>
           </label>
           <label>Who
@@ -171,7 +170,7 @@ function ReminderModal({ initial, members, onClose, onSaved }) {
             </label>
           )}
         </div>
-        <p className="schedule-preview">🗓 {previewSchedule(f)}</p>
+        <p className="schedule-preview"><IconCalendar width={15} height={15} aria-hidden="true" /> {previewSchedule(f)}</p>
         <div className="form-row">
           <label>If nobody marks it done, tell
             <select value={f.escalate_to} onChange={e => set('escalate_to', e.target.value)}>
@@ -217,10 +216,10 @@ function ChatLinkCard() {
     <div className="card">
       <h2>Get reminders in chat</h2>
       {s.bots.length === 0 ? (
-        <p className="muted">No chat bot is connected for your household yet. An owner or parent can connect Telegram or Discord under Settings › Bots.</p>
+        <p className="muted">No chat bot is connected for your household yet. The family admin or a parent can connect Telegram or Discord under Settings › Bots.</p>
       ) : (
         <>
-          <p className="muted">Link your own chat account so reminders for you mention you, and so ✅ Done in chat counts as you.</p>
+          <p className="muted">Link your own chat account so reminders for you mention you, and so tapping Done in chat counts as you.</p>
           {linked.length > 0 && (
             <p>Linked: {linked.map(p => (
               <span key={p} className="badge badge-savings" style={{ marginRight: '.4rem' }}>
@@ -293,7 +292,7 @@ export default function Reminders() {
     <ul className="occ-list">
       {list.map(o => (
         <li key={o.id} className={`occ ${o.status === 'done' ? 'done' : ''} ${o.overdue ? 'overdue' : ''}`}>
-          <span className="occ-emoji" aria-hidden="true">{categoryEmoji(o.category)}</span>
+          <span className="occ-emoji" aria-hidden="true"><CategoryIcon id={o.category} width={20} height={20} /></span>
           <span className="occ-main">
             <strong>{o.title}</strong>
             <span className="muted">
@@ -346,7 +345,7 @@ export default function Reminders() {
               <tbody>
                 {ruleRows.map(r => (
                   <tr key={r.id} className={r.active ? '' : 'muted'}>
-                    <td data-label="Reminder">{categoryEmoji(r.category)} {r.title}{!r.active && <span className="badge" style={{ marginLeft: '.4rem' }}>Paused</span>}</td>
+                    <td data-label="Reminder"><CategoryIcon id={r.category} width={15} height={15} aria-hidden="true" className="inline-ico" /> {r.title}{!r.active && <span className="badge" style={{ marginLeft: '.4rem' }}>Paused</span>}</td>
                     <td data-label="When">{r.description}</td>
                     <td data-label="Who">{r.assignee_name || 'Whole family'}</td>
                     <td data-label="Next">{r.active && r.next_due ? formatDue(r.next_due, tz) : '-'}</td>
