@@ -18,7 +18,10 @@ class TvStore {
   static const _kCacheAt = 'kinkit_tv.cache_at';
   static const _kFx = 'kinkit_tv.fx_json';
 
-  String get lastServer => _prefs.getString(_kServer) ?? '';
+  String get lastServer => _prefs.getString(_kServer) ?? defaultServer;
+
+  /// Server pre-filled on first pairing: `--dart-define=KINKIT_SERVER=https://...`.
+  static const String defaultServer = String.fromEnvironment('KINKIT_SERVER');
 
   PairingConfig? get config {
     final s = _prefs.getString(_kServer);

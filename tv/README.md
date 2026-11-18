@@ -87,7 +87,7 @@ on a 1920x1080 stage that scales to the window, with a 5% overscan margin.
 
 **Quick test in any browser:** serve the folder (`python3 -m http.server -d tv/web 8080`) and open
 `http://localhost:8080/?server=https://your-kinkit-server&k=TOKEN`. Arrow keys, Enter, Esc/Backspace
-act as the remote. Calls to a different origin need CORS on the backend (see section 6).
+act as the remote. The backend allows cross-origin reads of the two TV endpoints (see section 6).
 
 **Same-origin hosting (no CORS needed):** if `tv/web/` is served by the Kinkit server itself
 (e.g. at `/tv-app/`), opening `/tv-app/?k=TOKEN` pairs itself using the page's own origin as the server.
@@ -160,6 +160,7 @@ Money: every amount is in **IDR**. Like the web app (`react/src/api.js` `formatR
 
 ## 6. Backend notes
 
-- **CORS:** the backend sends no CORS headers. The Android app isn't affected (native HTTP), and neither are pages served from the Kinkit origin. Packaged Tizen/webOS apps usually aren't either: their web runtimes allow cross-origin XHR for packaged apps (Tizen through `<access origin="*">`). A **plain TV browser or kiosk page hosted on another origin is blocked** unless the backend adds, for `GET /api/tv/data` and `GET /api/fx-rates` only:
-  `Access-Control-Allow-Origin: *` (no credentials needed, since the token is in the URL; the apps send only simple GETs, so no preflight / OPTIONS handler is required).
+- **CORS:** `GET /api/tv/data` and `GET /api/fx-rates` (only those) send `Access-Control-Allow-Origin: *` (`publicCORS` in `backend-go/tvshare.go`), so the web build works from any origin, including `file://` in packaged Tizen/webOS apps. No credentials are allowed; the token is in the URL and the apps send only simple GETs, so no preflight is needed.
+- **Default server:** build with `--dart-define=KINKIT_SERVER=https://your-server` (Flutter) or set `<html data-default-server="https://your-server">` in `tv/web/index.html` to pre-fill the server field on first pairing.
+- **Signing (Flutter):** `android/key.properties` (storeFile, storePassword, keyAlias, keyPassword) switches release builds from the debug key to your keystore. Keep the same keystore so new APKs install as updates.
 - **Mixed content:** an https-hosted web build can't call an http-only server. Use https, or host the web build on http too.

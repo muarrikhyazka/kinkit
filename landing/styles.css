@@ -420,3 +420,13 @@ kbd {
   .site-header, .menu-btn, .lang-toggle { display: none; }
   .js .reveal { opacity: 1; transform: none; }
 }
+
+/* ---------- download ---------- */
+.pill a { color: inherit; text-decoration: none; }
+.pill a:hover { text-decoration: underline; }
+.dl-cards .card { display: flex; flex-direction: column; }
+.dl-cards .card p { flex: 1; }
+.dl-cards .card code { font-size: .85em; }
+.dl-btn { margin-top: 1rem; align-self: flex-start; gap: .45rem; }
+.dl-btn .icon { width: 18px; height: 18px; }
+.dl-meta { margin-top: .4rem; min-height: 1.2em; color: var(--muted); font-size: .82rem; }

@@ -76,8 +76,6 @@ This fills in the missing files and leaves `lib/` alone.
 
 ## Known gaps / TODO
 
-- The backend sends no CORS headers. A `tv/web` viewer served from a different origin needs
-  `Access-Control-Allow-Origin` on `GET /api/tv/data` and `/api/fx-rates`.
 - `/api/tv/data` has no FX rate and no "spent" total; the TV apps compute or fetch these.
 - The landing pricing tiers are placeholders (marked in an HTML comment), and the canonical domain
   `https://kinkit.app/` is assumed.

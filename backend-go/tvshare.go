@@ -237,3 +237,14 @@ func (app *App) tvTrend(ctx context.Context, aid int64, year, month, count int) 
 	}
 	return out, nil
 }
+
+// publicCORS lets the packaged TV viewers (tv/web on Tizen/webOS, served from
+// file:// or another origin) read the two public, read-only GET endpoints.
+// No credentials are allowed, so session cookies are never exposed; the TV
+// token travels in ?k=. Plain GETs need no preflight.
+func publicCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		next.ServeHTTP(w, r)
+	})
+}

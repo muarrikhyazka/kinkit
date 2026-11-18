@@ -120,7 +120,13 @@ The page should only claim what the code does. When a feature changes, find its 
 | Telegram & Discord bots: "50k makan siang", keyword categories, `/recent` (`!recent` on Discord), bring your own bot | `bots/telegram_bot.py`, `bots/discord_bot.py`, `backend-go/bot.go`, `backend-go/integrations.go`, `react/src/pages/Integrations.jsx` |
 | Export spending CSV (date range), income CSV, full JSON backup | `backend-go/importexport.go` (`/export/all.json` etc.), `react/src/pages/ImportExport.jsx` |
 | Self-host with docker-compose (Postgres, app on :5010, Telegram & Discord bots) | `docker-compose.yml`, `backend-go/Dockerfile`, `bots/Dockerfile`, `.env.example` |
-| **Coming soon:** native iOS/Android app | `mobile/` (Flutter, in progress) |
-| **Coming soon:** smart TV viewer for Android TV / Google TV, Samsung Tizen, LG webOS | `tv/` (in progress) |
+| Android phone app (APK download) | `mobile/` (Flutter); built APK served at `downloads/kinkit-android.apk` |
+| Smart TV viewer: Android TV / Google TV / Fire TV APK, LG webOS IPK, Tizen project zip | `tv/flutter/`, `tv/web/`; served at `downloads/kinkit-tv-android.apk`, `kinkit-tv-webos.ipk`, `kinkit-tv-tizen-webos-source.zip` |
+| **Coming soon:** native iPhone app | `mobile/ios` exists but needs a Mac/Xcode to build and sign |
+
+The `downloads/` folder isn't in the repo; the deploy puts the built files next to `index.html`.
+Each download card hides its size when its file is missing, but the button still shows, so only
+deploy the page together with the files. Set `<meta name="kinkit-app-url">` to the app's base URL
+when the landing page and the app are on different hosts.
 
 Mockup numbers and names (e.g. "Rp 6,1jt", "The Wijaya family") are illustrative sample data, not real users.

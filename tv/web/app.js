@@ -244,11 +244,17 @@
   function dataUrl(cfg) { return cfg.server + '/api/tv/data?k=' + encodeURIComponent(cfg.token); }
   function fxUrl(cfg) { return cfg.server + '/api/fx-rates'; }
 
+  // Server pre-filled on first pairing: <html data-default-server="https://...">
+  function defaultServer() {
+    var v = document.documentElement.getAttribute('data-default-server');
+    return v ? v.replace(/\/+$/, '') : '';
+  }
+
   // ---------------------------------------------------------------- app state
   var state = {
     screen: null, cfg: null, data: null, updatedAt: null, offline: false, offlineReason: '',
     page: 0, pageCount: 1, paused: false, fxAt: 0,
-    pair: { server: '', token: '', active: 'server', upper: false, busy: false },
+    pair: { server: defaultServer(), token: '', active: 'server', upper: false, busy: false },
     held: null, // { code, since, fired }
     swallow: null // keyCode whose remaining repeats/keyup must be ignored (after a long press)
   };

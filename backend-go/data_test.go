@@ -321,6 +321,17 @@ func TestTVTokenAccess(t *testing.T) {
 	if len(data.Trend) != 6 || data.Report["expenses_list"] == nil || data.Trend[5]["expense"] != float64(15000) {
 		t.Fatalf("tv data shape: %+v", data)
 	}
+	// Packaged TV viewers (other origins) may read the public endpoints, never session ones.
+	for path, want := range map[string]string{"/api/tv/data?k=" + tok.Token: "*", "/api/fx-rates": "*", "/api/me": ""} {
+		resp, err := http.Get(srv.URL + path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp.Body.Close()
+		if got := resp.Header.Get("Access-Control-Allow-Origin"); got != want {
+			t.Fatalf("%s: Access-Control-Allow-Origin=%q, want %q", path, got, want)
+		}
+	}
 	if code := screen.do("GET", "/api/tv/data?k=wrong", nil, nil); code != 401 {
 		t.Fatalf("bad token: %d", code)
 	}

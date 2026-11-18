@@ -8,6 +8,7 @@
   <meta name="theme-color" content="#4f46e5" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b0e1a" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark">
+  <meta name="kinkit-app-url" content="">
   <link rel="canonical" href="https://kinkit.app/">
 
   <!-- Open Graph / social cards. Replace the domain once the site has its final URL.
@@ -109,6 +110,7 @@
         <li><a href="#how" data-i18n="nav.how">How it works</a></li>
         <li><a href="#screens" data-i18n="nav.screens">Every screen</a></li>
         <li><a href="#privacy" data-i18n="nav.privacy">Your data</a></li>
+        <li><a href="#download" data-i18n="nav.download">Download</a></li>
         <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
         <li><a href="#faq" data-i18n="nav.faq">FAQ</a></li>
         <li class="mobile-only"><a href="/login" data-app-link="login" data-i18n="nav.signin">Sign in</a></li>
@@ -133,7 +135,7 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="pill"><b data-i18n="hero.pillTag">New</b> <span data-i18n="hero.pill">Phone and smart TV apps are on the way</span></p>
+          <p class="pill"><b data-i18n="hero.pillTag">New</b> <a href="#download" data-i18n="hero.pill">Android phone and TV apps are here</a></p>
           <h1 id="hero-title" data-i18n="hero.title">One home for your family's money <span class="grad">and everyone in it.</span></h1>
           <p class="hero-lead" data-i18n="hero.lead">Kinkit helps your household track spending, plan budgets, save for goals and keep the kids motivated, together. Use it in the browser, on your phone, on the living-room TV or straight from Telegram and Discord.</p>
           <div class="hero-ctas">
@@ -419,16 +421,14 @@
                 <p data-i18n="f.bots.d">Send "50k makan siang" and it's logged, with the category picked from your keywords. Ask for <kbd>/recent</kbd> or <kbd>/today</kbd>, set reminders with <kbd>/remind</kbd>, add to the shopping list with <kbd>/buy</kbd>, and check chores with <kbd>/chores</kbd>. Connect your own bot in Settings.</p>
               </article>
               <article class="card reveal" data-delay="1">
-                <span class="tag" data-i18n="tag.soon">Coming soon</span>
                 <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
-                <h4 data-i18n="f.native.t">iOS &amp; Android app</h4>
-                <p data-i18n="f.native.d">A native phone app for the whole family is in the works.</p>
+                <h4 data-i18n="f.native.t">Android phone app</h4>
+                <p data-i18n="f.native.d">A native app for the whole family: Today, reminders, chores, lists, spending and budgets. <a href="#download">Download the APK</a>. iPhone app coming soon.</p>
               </article>
               <article class="card reveal" data-delay="2">
-                <span class="tag" data-i18n="tag.soon">Coming soon</span>
                 <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
                 <h4 data-i18n="f.smarttv.t">Smart TV viewer</h4>
-                <p data-i18n="f.smarttv.d">A view-only family dashboard for Android TV / Google TV, Samsung Tizen and LG webOS.</p>
+                <p data-i18n="f.smarttv.d">A view-only family dashboard for Android TV / Google TV / Fire TV and LG webOS, with a Samsung Tizen package for developer mode. <a href="#download">Get it</a>.</p>
               </article>
             </div>
           </div>
@@ -512,9 +512,10 @@
             </div>
             <div>
               <h3><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg><span data-i18n="screens.phone.t">Phone</span></h3>
-              <p data-i18n="screens.phone.d">Install the web app today, with a bottom tab bar, a round + button and offline sync.</p>
+              <p data-i18n="screens.phone.d">Use the Android app, or install the web app on any phone, with a bottom tab bar, a round + button and offline sync.</p>
               <span class="status now" data-i18n="status.now">Available now</span>
-              <span class="status soon" data-i18n="status.native">Native iOS &amp; Android: coming soon</span>
+              <span class="status now" data-i18n="status.android">Android app: available now</span>
+              <span class="status soon" data-i18n="status.native">iPhone app: coming soon</span>
             </div>
           </div>
           <!-- laptop -->
@@ -577,9 +578,9 @@
             </div>
             <div>
               <h3><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg><span data-i18n="screens.tv.t">TV &amp; car</span></h3>
-              <p data-i18n="screens.tv.d">Open a TV link in any TV browser or car head unit today. Dedicated apps for Android TV / Google TV, Samsung Tizen and LG webOS are on the way.</p>
+              <p data-i18n="screens.tv.d">Open a TV link in any TV browser or car head unit, or install the TV app on Android TV / Google TV / Fire TV or LG webOS.</p>
               <span class="status now" data-i18n="status.tvnow">TV link: available now</span>
-              <span class="status soon" data-i18n="status.tvsoon">Smart TV apps: coming soon</span>
+              <span class="status now" data-i18n="status.tvsoon">Smart TV apps: available now</span>
             </div>
           </div>
         </div>
@@ -626,6 +627,53 @@
               <span class="tp-btn">+ Add</span>
             </div>
             <div class="theme-body"><h3 data-i18n="themes.senior.t">Senior (high-contrast)</h3><p data-i18n="themes.senior.d">Larger text, bigger buttons and strong black-on-white contrast.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DOWNLOAD ================= -->
+    <section class="section section-alt" id="download" aria-labelledby="download-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-i18n="dl.eyebrow">Download</span>
+          <h2 id="download-title" data-i18n="dl.title">Get Kinkit on your phone and TV</h2>
+          <p data-i18n="dl.lead">Free to install. Sign in with the same account you use on the web; the TV apps pair with a TV link instead and never ask for a password.</p>
+        </div>
+        <div class="cards dl-cards">
+          <article class="card reveal">
+            <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
+            <h4 data-i18n="dl.android.t">Android phone</h4>
+            <p data-i18n="dl.android.d">Android 7 or newer. Open the file on your phone and allow "Install unknown apps" when asked.</p>
+            <a class="btn btn-primary btn-sm dl-btn" href="downloads/kinkit-android.apk" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.apk">Download APK</span></a>
+            <span class="dl-meta" data-dl-size="downloads/kinkit-android.apk"></span>
+          </article>
+          <article class="card reveal" data-delay="1">
+            <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
+            <h4 data-i18n="dl.atv.t">Android TV, Google TV &amp; Fire TV</h4>
+            <p data-i18n="dl.atv.d">Install with the Downloader app (type this page's address, then pick the file) or with <code>adb install</code>. Pair it with a TV link from Settings › Data &amp; devices.</p>
+            <a class="btn btn-primary btn-sm dl-btn" href="downloads/kinkit-tv-android.apk" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.apk">Download APK</span></a>
+            <span class="dl-meta" data-dl-size="downloads/kinkit-tv-android.apk"></span>
+          </article>
+          <article class="card reveal" data-delay="2">
+            <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
+            <h4 data-i18n="dl.webos.t">LG webOS TV</h4>
+            <p data-i18n="dl.webos.d">For TVs in Developer Mode: install with <code>ares-install</code>. Any TV can also just open its TV link in the browser.</p>
+            <a class="btn btn-ghost btn-sm dl-btn" href="downloads/kinkit-tv-webos.ipk" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.ipk">Download IPK</span></a>
+            <span class="dl-meta" data-dl-size="downloads/kinkit-tv-webos.ipk"></span>
+          </article>
+          <article class="card reveal" data-delay="3">
+            <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
+            <h4 data-i18n="dl.tizen.t">Samsung Tizen TV</h4>
+            <p data-i18n="dl.tizen.d">Samsung requires each package to be signed with your own certificate. Open this project in Tizen Studio and run it on a TV in Developer Mode, or use the TV link in the browser.</p>
+            <a class="btn btn-ghost btn-sm dl-btn" href="downloads/kinkit-tv-tizen-webos-source.zip" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.zip">Download project (.zip)</span></a>
+            <span class="dl-meta" data-dl-size="downloads/kinkit-tv-tizen-webos-source.zip"></span>
+          </article>
+          <article class="card reveal">
+            <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg></span>
+            <h4 data-i18n="dl.web.t">iPhone, iPad &amp; computers</h4>
+            <p data-i18n="dl.web.d">Use the web app in Safari or any browser, then choose "Add to Home Screen" to get its own icon. A native iPhone app is coming soon.</p>
+            <a class="btn btn-ghost btn-sm dl-btn" href="/login" data-app-link="login"><span data-i18n="dl.open">Open the web app</span></a>
           </article>
         </div>
       </div>

@@ -13,7 +13,7 @@ import (
 // too) starts with requireAccount() and every query is scoped by
 // account_id=$N - never trust a path/body id alone.
 func RegisterFinanceRoutes(r chi.Router, app *App) {
-	r.Get("/fx-rates", app.handleFxRates) // no login_required in Python either
+	r.With(publicCORS).Get("/fx-rates", app.handleFxRates) // public; CORS so packaged TV viewers can read it
 
 	r.Get("/setup", app.handleGetSetup)
 

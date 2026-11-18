@@ -14,6 +14,9 @@
   // Examples: 'https://app.kinkit.app'  or  'https://kinkit.example.com'
   // ---------------------------------------------------------------------
   var APP_URL = '';
+  // A deploy can set it without editing this file: <meta name="kinkit-app-url" content="https://...">
+  var appMeta = document.querySelector('meta[name="kinkit-app-url"]');
+  if (appMeta && appMeta.content) APP_URL = appMeta.content;
 
   // Paths inside the app. The React app shows its sign-up form on /login
   // (toggle "Sign up"); point SIGNUP at '/login' if no /signup route exists.
@@ -26,6 +29,15 @@
   document.querySelectorAll('[data-app-link]').forEach(function (a) {
     var path = APP_PATHS[a.getAttribute('data-app-link')];
     if (path) a.setAttribute('href', base + path);
+  });
+
+  // ---------- download sizes (HEAD request; hidden when the file is missing) ----------
+  document.querySelectorAll('[data-dl-size]').forEach(function (el) {
+    if (!window.fetch) return;
+    fetch(el.getAttribute('data-dl-size'), { method: 'HEAD' }).then(function (r) {
+      var n = r.ok ? Number(r.headers.get('content-length')) : 0;
+      if (n > 0) el.textContent = n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+    }).catch(function () {});
   });
 
   // ---------- footer year ----------
@@ -106,6 +118,24 @@
     'nav.privacy': 'Data Anda',
     'nav.pricing': 'Harga',
     'nav.faq': 'Tanya jawab',
+    'nav.download': 'Unduh',
+    'dl.eyebrow': 'Unduh',
+    'dl.title': 'Pasang Kinkit di HP dan TV',
+    'dl.lead': 'Gratis dipasang. Masuk dengan akun yang sama seperti di web; aplikasi TV dipasangkan lewat tautan TV dan tidak pernah meminta kata sandi.',
+    'dl.android.t': 'HP Android',
+    'dl.android.d': 'Android 7 atau lebih baru. Buka filenya di HP dan izinkan "Instal aplikasi tidak dikenal" saat diminta.',
+    'dl.atv.t': 'Android TV, Google TV &amp; Fire TV',
+    'dl.atv.d': 'Pasang dengan aplikasi Downloader (ketik alamat halaman ini, lalu pilih filenya) atau dengan <code>adb install</code>. Pasangkan dengan tautan TV dari Pengaturan › Data &amp; perangkat.',
+    'dl.webos.t': 'TV LG webOS',
+    'dl.webos.d': 'Untuk TV dalam Developer Mode: pasang dengan <code>ares-install</code>. TV apa pun juga bisa langsung membuka tautan TV di browser.',
+    'dl.tizen.t': 'TV Samsung Tizen',
+    'dl.tizen.d': 'Samsung mewajibkan setiap paket ditandatangani dengan sertifikat Anda sendiri. Buka proyek ini di Tizen Studio dan jalankan di TV dalam Developer Mode, atau pakai tautan TV di browser.',
+    'dl.web.t': 'iPhone, iPad &amp; komputer',
+    'dl.web.d': 'Pakai aplikasi web di Safari atau browser apa pun, lalu pilih "Tambahkan ke Layar Utama" agar punya ikon sendiri. Aplikasi iPhone native segera hadir.',
+    'dl.apk': 'Unduh APK',
+    'dl.ipk': 'Unduh IPK',
+    'dl.zip': 'Unduh proyek (.zip)',
+    'dl.open': 'Buka aplikasi web',
     'nav.signin': 'Masuk',
     'nav.menu': 'Buka menu',
     'nav.close': 'Tutup menu',
@@ -113,7 +143,7 @@
     'cta.how': 'Lihat cara kerjanya',
 
     'hero.pillTag': 'Baru',
-    'hero.pill': 'Aplikasi HP dan smart TV segera hadir',
+    'hero.pill': 'Aplikasi Android untuk HP dan TV sudah tersedia',
     'hero.title': 'Satu rumah untuk keuangan keluarga <span class="grad">dan semua anggotanya.</span>',
     'hero.lead': 'Kinkit membantu keluarga mencatat pengeluaran, menyusun anggaran, menabung untuk tujuan, dan menjaga semangat anak-anak, bersama-sama. Pakai di browser, di HP, di TV ruang keluarga, atau langsung dari Telegram dan Discord.',
     'hero.note1': 'Gratis untuk mulai',
@@ -195,10 +225,10 @@
     'f.tv.d': 'Buka tautan berbagi di browser TV, tablet dinding, atau head unit mobil untuk menampilkan angka bulan ini dengan huruf besar. Tidak perlu login, diperbarui tiap menit, dan bisa dicabut seketika.',
     'f.bots.t': 'Bot Telegram &amp; Discord',
     'f.bots.d': 'Kirim "50k makan siang" dan langsung tercatat, dengan kategori dipilih dari kata kunci Anda. Ketik <kbd>/recent</kbd> atau <kbd>/today</kbd>, buat pengingat dengan <kbd>/remind</kbd>, tambah daftar belanja dengan <kbd>/buy</kbd>, dan cek tugas dengan <kbd>/chores</kbd>. Hubungkan bot Anda sendiri di Pengaturan.',
-    'f.native.t': 'Aplikasi iOS &amp; Android',
-    'f.native.d': 'Aplikasi HP native untuk seluruh keluarga sedang dikerjakan.',
+    'f.native.t': 'Aplikasi Android untuk HP',
+    'f.native.d': 'Aplikasi native untuk seluruh keluarga: Hari ini, pengingat, tugas rumah, daftar belanja, pengeluaran, dan anggaran. <a href="#download">Unduh APK-nya</a>. Aplikasi iPhone segera hadir.',
     'f.smarttv.t': 'Penampil smart TV',
-    'f.smarttv.d': 'Dasbor keluarga khusus tampilan untuk Android TV / Google TV, Samsung Tizen, dan LG webOS.',
+    'f.smarttv.d': 'Dasbor keluarga khusus tampilan untuk Android TV / Google TV / Fire TV dan LG webOS, plus paket Samsung Tizen untuk mode developer. <a href="#download">Dapatkan</a>.',
 
     'how.eyebrow': 'Cara kerja',
     'how.title': 'Siap dipakai dalam tiga langkah',
@@ -225,15 +255,16 @@
     'screens.webAlt': 'Kinkit di laptop: halaman Anggaran dengan jumlah rencana dan realisasi.',
     'screens.tvAlt': 'Tampilan TV Kinkit: pengeluaran bulan ini, sisa anggaran, dan pemasukan dengan huruf besar, diperbarui tiap menit.',
     'screens.phone.t': 'HP',
-    'screens.phone.d': 'Pasang aplikasi webnya hari ini, lengkap dengan tab bawah, tombol + bulat, dan sinkron offline.',
+    'screens.phone.d': 'Pakai aplikasi Android, atau pasang aplikasi webnya di HP apa pun, lengkap dengan tab bawah, tombol + bulat, dan sinkron offline.',
     'screens.web.t': 'Web',
     'screens.web.d': 'Pengalaman lengkap: anggaran, impor, dasbor, pengaturan keluarga, dan ekspor PDF.',
     'screens.tv.t': 'TV &amp; mobil',
-    'screens.tv.d': 'Buka tautan TV di browser TV atau head unit mobil mana pun hari ini. Aplikasi khusus untuk Android TV / Google TV, Samsung Tizen, dan LG webOS segera hadir.',
+    'screens.tv.d': 'Buka tautan TV di browser TV atau head unit mobil mana pun, atau pasang aplikasi TV di Android TV / Google TV / Fire TV atau LG webOS.',
     'status.now': 'Tersedia sekarang',
-    'status.native': 'iOS &amp; Android native: segera hadir',
+    'status.android': 'Aplikasi Android: tersedia sekarang',
+    'status.native': 'Aplikasi iPhone: segera hadir',
     'status.tvnow': 'Tautan TV: tersedia sekarang',
-    'status.tvsoon': 'Aplikasi smart TV: segera hadir',
+    'status.tvsoon': 'Aplikasi smart TV: tersedia sekarang',
 
     'themes.eyebrow': 'Tema untuk semua',
     'themes.title': 'Dari si kecil sampai kakek-nenek',
