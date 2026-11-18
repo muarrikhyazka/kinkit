@@ -202,6 +202,9 @@ async def run():
                     logger.info(f"Started Telegram bot for account {aid}")
                 except Exception as e:
                     logger.error(f"Failed to start bot for account {aid}: {e}")
+                    # Transient (e.g. Telegram timeout): retry on the next check
+                    # instead of waiting for the periodic full refresh.
+                    last_full_rebuild = 0.0
 
             for aid in list(apps.keys()):
                 if aid not in seen:
