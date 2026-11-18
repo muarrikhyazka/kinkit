@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { api, formatRupiah, MONTHS, MONTH_NAMES } from '../api'
 import { useYearMonth } from '../YearContext.jsx'
 import { useApi, useSetup } from '../useApi'
@@ -9,6 +8,7 @@ import MoneyInput from '../MoneyInput.jsx'
 import PageHeader from '../PageHeader.jsx'
 import { SkeletonCard } from '../Skeleton.jsx'
 import { IconCheck, IconAlert } from '../icons.jsx'
+import { ChevronLink } from '../ChevronLink.jsx'
 
 /**
  * One editable budget cell with its own save state:
@@ -99,7 +99,10 @@ function AlertsCard() {
         </label>
       </div>
       {ready.length === 0 ? (
-        <p className="muted">No chat connected yet - <Link to="/settings/bots">connect Telegram or Discord</Link> (bot token + chat id) to receive alerts.</p>
+        <>
+          <p className="muted">No chat connected yet. Connect Telegram or Discord (bot token + chat id) to receive alerts.</p>
+          <ChevronLink to="/settings/bots" className="standalone">Connect Telegram or Discord</ChevronLink>
+        </>
       ) : (
         <p className="muted">Sending to: {ready.map(c => c.platform[0].toUpperCase() + c.platform.slice(1)).join(', ')}</p>
       )}
@@ -219,8 +222,8 @@ export default function Budgeting() {
       <p className="muted form-hint bva-legend">
         Under each cell: what actually happened.
         <span className="bva-swatch ok" /> under 80% <span className="bva-swatch warn" /> 80-100% <span className="bva-swatch over" /> over budget
-        {' '}· log received money on the <Link to="/transactions/income">Transactions › Income</Link>.
       </p>
+      <p className="form-hint"><ChevronLink to="/transactions/income">Log received money in Transactions › Income</ChevronLink></p>
 
       <div className="card table-scroll">
         <table className="budget-table">
@@ -228,9 +231,9 @@ export default function Budgeting() {
             <tr>
               <th>Income</th>
               {MONTHS.map(m => <th key={m}>{m}</th>)}
-              <th>Total</th>
-              <th>Last Year</th>
-              <th>Avg Past Years</th>
+              <th className="num">Total</th>
+              <th className="num">Last Year</th>
+              <th className="num">Avg Past Years</th>
             </tr>
           </thead>
           <tbody>
@@ -255,9 +258,9 @@ export default function Budgeting() {
                       </td>
                     )
                   })}
-                  <td>{formatRupiah(rowTotal)}</td>
-                  <td className="muted">{formatRupiah(hist.lastYear)}</td>
-                  <td className="muted">{formatRupiah(hist.avg)}</td>
+                  <td className="num">{formatRupiah(rowTotal)}</td>
+                  <td className="num muted">{formatRupiah(hist.lastYear)}</td>
+                  <td className="num muted">{formatRupiah(hist.avg)}</td>
                 </tr>
               )
             })}
@@ -269,7 +272,7 @@ export default function Budgeting() {
                   {actualMaps.incomeMonth[i] > 0 && <div className="bva-note">Got {formatRupiah(actualMaps.incomeMonth[i])}</div>}
                 </td>
               ))}
-              <td>{formatRupiah(monthTotals.reduce((s, t) => s + t, 0))}</td>
+              <td className="num">{formatRupiah(monthTotals.reduce((s, t) => s + t, 0))}</td>
               <td></td>
               <td></td>
             </tr>
@@ -285,9 +288,9 @@ export default function Budgeting() {
               <tr>
                 <th>Category</th>
                 {MONTHS.map(m => <th key={m}>{m}</th>)}
-                <th>Total</th>
-                <th>Last Year</th>
-                <th>Avg Past Years</th>
+                <th className="num">Total</th>
+                <th className="num">Last Year</th>
+                <th className="num">Avg Past Years</th>
               </tr>
             </thead>
             <tbody>
@@ -313,9 +316,9 @@ export default function Budgeting() {
                         </td>
                       )
                     })}
-                    <td>{formatRupiah(rowTotal)}</td>
-                    <td className="muted">{formatRupiah(hist.lastYear)}</td>
-                    <td className="muted">{formatRupiah(hist.avg)}</td>
+                    <td className="num">{formatRupiah(rowTotal)}</td>
+                    <td className="num muted">{formatRupiah(hist.lastYear)}</td>
+                    <td className="num muted">{formatRupiah(hist.avg)}</td>
                   </tr>
                 )
               })}

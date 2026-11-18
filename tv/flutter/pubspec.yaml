@@ -21,3 +21,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    # Kiki the mascot (brand/mascot*.svg rendered without the baked-in shadow; lib/src/mascot.dart draws it).
+    - assets/mascot/

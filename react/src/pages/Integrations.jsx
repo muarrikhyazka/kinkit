@@ -62,7 +62,7 @@ function IntegrationCard({ integration, onUpdate, onDelete }) {
 
   return (
     <div className="card">
-      <h2 style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+      <h2 className="card-title-icon">
         <meta.Icon width={18} height={18} aria-hidden="true" /> {meta.label}
         <span className={`badge ${integration.enabled ? 'badge-savings' : ''}`} style={{ marginLeft: 'auto' }}>
           {integration.enabled ? 'Enabled' : 'Disabled'}
@@ -70,7 +70,7 @@ function IntegrationCard({ integration, onUpdate, onDelete }) {
         <button className="icon-btn danger round" onClick={() => onDelete(integration)} title="Remove" aria-label={`Remove ${meta.label} integration`}><IconClose width={12} height={12} /></button>
       </h2>
 
-      <label style={{ display: 'flex', flexDirection: 'column', gap: '.3rem', marginBottom: '.6rem' }}>
+      <label className="field-stack field-gap">
         <span>{meta.tokenHint}</span>
         <input value={platformToken} onChange={e => setPlatformToken(e.target.value)} placeholder={tokenPlaceholder} type="password" autoComplete="off" />
         <span className="muted">
@@ -79,7 +79,7 @@ function IntegrationCard({ integration, onUpdate, onDelete }) {
             : 'No token saved yet.'}
         </span>
       </label>
-      <label style={{ display: 'flex', flexDirection: 'column', gap: '.3rem', marginBottom: '.6rem' }}>
+      <label className="field-stack field-gap">
         <span>Allowed chat/channel ID (optional - leave blank to allow any)</span>
         <input value={chatId} onChange={e => setChatId(e.target.value)} placeholder="e.g. -1001234567890" />
       </label>
@@ -146,21 +146,21 @@ export default function Integrations() {
 
       {!connected.has('telegram') && (
         <div className="card">
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}><IconTelegram width={18} height={18} /> Telegram</h2>
+          <h2 className="card-title-icon"><IconTelegram width={18} height={18} /> Telegram</h2>
           <p className="muted">Not connected yet.</p>
           <button onClick={() => connect('telegram')}>Connect Telegram</button>
         </div>
       )}
       {!connected.has('discord') && (
         <div className="card">
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}><IconDiscord width={18} height={18} /> Discord</h2>
+          <h2 className="card-title-icon"><IconDiscord width={18} height={18} /> Discord</h2>
           <p className="muted">Not connected yet.</p>
           <button onClick={() => connect('discord')}>Connect Discord</button>
         </div>
       )}
 
       <div className="card">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+        <h2 className="card-title-icon">
           <IconLink width={18} height={18} /> How it works
         </h2>
         <p>Each platform you connect above gets its own secret token (<code>X-Bot-Token</code> header) tied only to your account. One shared bot process can serve every Kinkit user at once - it just looks up the right account from the token each message carries.</p>

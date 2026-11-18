@@ -525,6 +525,8 @@
     $('clock-date').textContent = DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()];
   }
 
+  // Kiki "thinking" for no-data states (styles.css .mk; same as tv/flutter _Empty).
+  var MASCOT_THINK = '<div class="mk"><div class="mk-shadow"></div><img class="mk-img" src="mascot/mascot-think-512.png" alt=""></div>';
   var lastPageKey = '';
   function renderViewer() {
     var d = state.data;
@@ -536,7 +538,7 @@
     if (!d) {
       $('v-name').textContent = ''; $('v-month').textContent = ''; $('v-dots').innerHTML = '';
       body.innerHTML = state.offline
-        ? '<div class="page"><div class="center-msg"><h1 class="c-warn">Cannot reach Kinkit</h1><p>' + esc(state.offlineReason) +
+        ? '<div class="page"><div class="center-msg">' + MASCOT_THINK + '<h1 class="c-warn">Cannot reach Kinkit</h1><p>' + esc(state.offlineReason) +
           '</p><p>Retrying every minute. Server: ' + esc(state.cfg ? state.cfg.server : '') +
           '</p><p class="c-acc">Hold BACK or press RED for settings</p></div></div>'
         : '<div class="page"><div class="center-msg"><div class="spinner"></div></div></div>';
@@ -601,7 +603,7 @@
         '<div class="muted" style="font-size:26px;margin-top:8px">Spent ' + esc(fmt(spent)) + ' of ' + esc(fmt(r.budgetedExpenses)) + '</div>' : '') +
       '</div></div>';
     html += '<div class="panel" style="flex:5;-webkit-flex:5"><div class="panel-title">Top expenses</div><div class="panel-body">';
-    if (!top.length) html += '<div class="empty">No spending yet this month</div>';
+    if (!top.length) html += '<div class="empty">' + MASCOT_THINK + 'No spending yet this month</div>';
     for (var i = 0; i < top.length; i++) {
       html += '<div class="exp-row"><span class="name">' + esc(top[i].name) + '</span><span class="amt">' + esc(fmt(top[i].realization)) + '</span></div>';
     }
@@ -611,7 +613,7 @@
   function pageBudget(items, idx, total) {
     var html = '<div class="panel full"><div class="panel-title">Budget vs actual' +
       (total > 1 ? '<span class="right">' + (idx + 1) + ' / ' + total + '</span>' : '') + '</div><div class="panel-body">';
-    if (!items.length) html += '<div class="empty">No budget set for this month</div>';
+    if (!items.length) html += '<div class="empty">' + MASCOT_THINK + 'No budget set for this month</div>';
     for (var i = 0; i < PER_BUDGET_PAGE && items.length; i++) {
       var e = items[i];
       if (!e) { html += '<div class="bud-row"></div>'; continue; }
@@ -628,7 +630,7 @@
     var html = '<div class="panel full"><div class="panel-title">6-month trend' +
       '<span class="legend" style="margin-left:auto"><i style="background:#4ade80"></i>Income</span>' +
       '<span class="legend"><i style="background:#fbbf24"></i>Spent</span></div><div class="panel-body">';
-    if (!t.length) return html + '<div class="empty">No history yet</div></div></div>';
+    if (!t.length) return html + '<div class="empty">' + MASCOT_THINK + 'No history yet</div></div></div>';
     html += '<div class="chart">' + trendSvg(d) + '</div>';
     return html + '</div></div>';
   }

@@ -1,4 +1,3 @@
-import { useId } from 'react'
 
 // Minimal inline SVG icons (no emoji), stroke-based, 20x20, inherits currentColor.
 const base = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' }
@@ -221,21 +220,12 @@ export const CategoryIcon = ({ id, ...p }) => {
   return <Icon {...p} />
 }
 
-// Kinkit app logo (matches brand/kinkit-logo.svg): purple gradient tile, white house + dot.
-export const KinkitLogo = ({ size = 32, ...p }) => {
-  const gid = `kk-${useId().replace(/:/g, '')}`
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width={size} height={size} {...p}>
-      <defs>
-        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#6366F1" />
-          <stop offset="1" stopColor="#4F46E5" />
-        </linearGradient>
-      </defs>
-      <rect width="64" height="64" rx="16" fill={`url(#${gid})`} />
-      <path d="M14 31 32 16l18 15" fill="none" stroke="#FFFFFF" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28" fill="none" stroke="#FFFFFF" strokeWidth="5" strokeLinejoin="round" />
-      <circle cx="32" cy="39" r="5.5" fill="#FFFFFF" />
-    </svg>
-  )
-}
+// Kinkit app logo (matches brand/kinkit-logo.svg): white tile (hairline #E0E7FF border), purple #4F46E5 house + dot.
+export const KinkitLogo = ({ size = 32, ...p }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width={size} height={size} {...p}>
+    <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="15.25" fill="#FFFFFF" stroke="#E0E7FF" strokeWidth="1.5" />
+    <path d="M14 31 32 16l18 15" fill="none" stroke="#4F46E5" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28" fill="none" stroke="#4F46E5" strokeWidth="5" strokeLinejoin="round" />
+    <circle cx="32" cy="39" r="5.5" fill="#4F46E5" />
+  </svg>
+)

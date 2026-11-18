@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { api, formatRupiah, MONTHS, MONTH_NAMES } from '../api'
 import { useYearMonth } from '../YearContext.jsx'
 import { useApi } from '../useApi'
@@ -12,6 +11,7 @@ import StatCard from '../StatCard.jsx'
 import Collapsible from '../Collapsible.jsx'
 import { SkeletonStats, SkeletonCard } from '../Skeleton.jsx'
 import CustomDashboard from './CustomDashboard.jsx'
+import { ChevronLink } from '../ChevronLink.jsx'
 
 const TABS = ['Across Years', 'Year', 'Month', 'Week', 'Custom']
 // Which period control each tab needs in the page header.
@@ -112,7 +112,7 @@ function PatternChart({ title, desc, labels, data, label = 'Average' }) {
   return (
     <div className="card">
       <h2>{title}</h2>
-      {desc && <p className="muted" style={{ marginTop: '-.5rem' }}>{desc}</p>}
+      {desc && <p className="muted">{desc}</p>}
       <LineChart labels={labels} datasets={[{ label, data, color: 'var(--primary)' }]} />
     </div>
   )
@@ -158,15 +158,15 @@ function YearsTab() {
 
       <div className="card table-scroll">
         <table>
-          <thead><tr><th>Year</th><th>Income (planned)</th><th>Income (received)</th><th>Expense</th><th>Net</th></tr></thead>
+          <thead><tr><th>Year</th><th className="num">Income (planned)</th><th className="num">Income (received)</th><th className="num">Expense</th><th className="num">Net</th></tr></thead>
           <tbody>
             {years.map(y => (
               <tr key={y.year}>
                 <td>{y.year}</td>
-                <td>{formatRupiah(y.income)}</td>
-                <td>{formatRupiah(y.income_actual || 0)}</td>
-                <td>{formatRupiah(y.expense)}</td>
-                <td className={y.income - y.expense >= 0 ? 'text-positive' : 'text-negative'}>{formatRupiah(y.income - y.expense)}</td>
+                <td className="num">{formatRupiah(y.income)}</td>
+                <td className="num">{formatRupiah(y.income_actual || 0)}</td>
+                <td className="num">{formatRupiah(y.expense)}</td>
+                <td className={`num ${y.income - y.expense >= 0 ? 'text-positive' : 'text-negative'}`}>{formatRupiah(y.income - y.expense)}</td>
               </tr>
             ))}
           </tbody>
@@ -192,14 +192,14 @@ function YearsTab() {
               <thead>
                 <tr>
                   <th>Category</th>
-                  {byCategory.years.map(y => <th key={y}>{y}</th>)}
+                  {byCategory.years.map(y => <th key={y} className="num">{y}</th>)}
                 </tr>
               </thead>
               <tbody>
                 {byCategory.rows.map(row => (
                   <tr key={row.category_name}>
                     <td><span className="cat-dot" style={{ background: categoryColor(row.category_name) }} />{row.category_name}</td>
-                    {byCategory.years.map(y => <td key={y}>{formatRupiah(row[String(y)])}</td>)}
+                    {byCategory.years.map(y => <td key={y} className="num">{formatRupiah(row[String(y)])}</td>)}
                   </tr>
                 ))}
               </tbody>
@@ -356,7 +356,10 @@ function BudgetProgress({ report, spent }) {
         {pct !== null && <span className={`budget-progress-pct ${state}`}>{Math.round(pct)}%</span>}
       </div>
       {pct === null ? (
-        <p className="muted">No budget set for this month yet - plan it on the <Link to="/budget">Budget</Link> page.</p>
+        <>
+          <p className="muted">No budget set for this month yet.</p>
+          <ChevronLink to="/budget" className="standalone">Plan it on the Budget page</ChevronLink>
+        </>
       ) : (
         <>
           <div className="progress-bar progress-lg" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label="Budget used">
@@ -468,14 +471,14 @@ function MonthTab() {
           {recent.length > 0 && (
             <div className="table-scroll">
               <table className="responsive-table">
-                <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead>
+                <thead><tr><th>Date</th><th>Description</th><th>Category</th><th className="num">Amount</th></tr></thead>
                 <tbody>
                   {recent.map(s => (
                     <tr key={s.id}>
                       <td data-label="Date">{s.tx_date}</td>
                       <td data-label="Description">{s.description}</td>
                       <td data-label="Category"><span className="tag" style={{ background: categoryColor(s.category_name) + '22', color: categoryColor(s.category_name) }}>{s.category_name || 'Other'}</span></td>
-                      <td data-label="Amount">{formatRupiah(s.amount)}</td>
+                      <td data-label="Amount" className="num">{formatRupiah(s.amount)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -489,7 +492,7 @@ function MonthTab() {
         <h2>Budget vs Actual by Category</h2>
         <table>
           <thead>
-            <tr><th>Category</th><th>Allocation</th><th>Realization</th><th>Progress</th></tr>
+            <tr><th>Category</th><th className="num">Allocation</th><th className="num">Realization</th><th>Progress</th></tr>
           </thead>
           <tbody>
             {byCategorySorted.map((r, i) => {
@@ -499,9 +502,9 @@ function MonthTab() {
               return (
                 <tr key={i}>
                   <td><span className="cat-dot" style={{ background: color }} />{r.category_name}</td>
-                  <td>{formatRupiah(r.allocation)}</td>
-                  <td>{formatRupiah(r.realization)}</td>
-                  <td>
+                  <td className="num">{formatRupiah(r.allocation)}</td>
+                  <td className="num">{formatRupiah(r.realization)}</td>
+                  <td className="progress-cell">
                     <div className="progress-bar">
                       <div className={`progress-fill ${over ? 'over' : ''}`} style={{ width: `${Math.min(100, pctRaw)}%`, background: over ? undefined : color }} />
                     </div>
@@ -540,7 +543,7 @@ function WeekTab() {
         <StatCard label="Busiest Week" value={busiest ? formatRupiah(busiest.total) : '-'} tone="negative" sub={busiest ? `Week ${busiest.week}` : undefined} />
       </div>
 
-      {weeks.length === 0 && <div className="card muted">No transactions this month yet.</div>}
+      {weeks.length === 0 && <div className="card empty-hint"><p>No transactions this month yet.</p></div>}
 
       {weeks.length > 0 && (
         <div className="card">
@@ -568,7 +571,7 @@ function WeekTab() {
 
       {weeks.map(w => (
         <div className="card" key={w.week}>
-          <h2>Week {w.week} <span className="muted" style={{ fontWeight: 400, fontSize: '.85rem' }}>({formatRupiah(w.total)})</span></h2>
+          <h2 className="card-title-row">Week {w.week} <span className="muted num">{formatRupiah(w.total)}</span></h2>
           <div className="progress-bar" style={{ marginBottom: '.8rem' }}>
             <div className="progress-fill" style={{ width: `${(w.total / maxTotal) * 100}%` }} />
           </div>

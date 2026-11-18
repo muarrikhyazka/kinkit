@@ -3,6 +3,7 @@ import { dataApi } from './api'
 import { useApi } from './useApi'
 import { useToast } from './Toast.jsx'
 import { IconCopy, IconCheck, IconTv } from './icons.jsx'
+import { ChevronLink } from './ChevronLink.jsx'
 
 const tvUrl = token => `${window.location.origin}/tv?k=${encodeURIComponent(token)}`
 const when = iso => (iso ? new Date(iso).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' : 'never')
@@ -91,8 +92,8 @@ export default function TVTokens() {
                 <button type="button" className="icon-btn" onClick={() => copy(t)} aria-label={`Copy link for ${t.name}`} title="Copy link">
                   {copied === t.id ? <IconCheck width={16} height={16} /> : <IconCopy width={16} height={16} />}
                 </button>
-                <a className="link-btn" href={tvUrl(t.token)} target="_blank" rel="noopener">Open</a>
-                <button type="button" className="secondary" onClick={() => revoke(t)}>Revoke</button>
+                <ChevronLink href={tvUrl(t.token)} external>Open</ChevronLink>
+                <button type="button" className="secondary danger-text" onClick={() => revoke(t)}>Revoke</button>
               </div>
             </li>
           ))}

@@ -1,6 +1,7 @@
 import { IconDashboard, IconSpending, IconBudget, IconAssets, IconSetup, IconPlus, IconEdit, IconLink, IconMore } from '../icons.jsx'
 import { IconHome, IconToday, IconBell } from '../icons.jsx' // --- home ---
 import PageHeader from '../PageHeader.jsx'
+import { ChevronLink } from '../ChevronLink.jsx'
 import { IconDevices, IconPaperclip, IconDownload } from '../Receipts.jsx' // --- data ---
 import { IconRepeat, IconIncome, IconGoal } from '../moneyIcons.jsx' // --- money ---
 import { IconFamily } from './Family.jsx' // --- family ---
@@ -8,7 +9,7 @@ import { IconFamily } from './Family.jsx' // --- family ---
 function Section({ Icon, title, children }) {
   return (
     <div className="card">
-      <h2 style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+      <h2 className="card-title-icon">
         <Icon width={18} height={18} aria-hidden="true" /> {title}
       </h2>
       {children}
@@ -35,7 +36,7 @@ export default function Guide() {
 
       <Section Icon={IconPlus} title="Add Spending">
         <p>
-          Click the green <strong>Add</strong> button in the sidebar (or the round <strong>+</strong> button on your phone) from any page.
+          Click the <strong>Add</strong> button at the top of the sidebar (or the round <strong>+</strong> button on your phone) from any page.
           Fill date, description, category and amount, then save. Add several rows at once with <strong>+ Add Row</strong>.
         </p>
         <ul className="guide-list">
@@ -301,9 +302,13 @@ export default function Guide() {
         <ul className="guide-list">
           <li>Works offline: spending added while offline queues locally and syncs once the server is reachable again (see the connection dot). If the server rejects a queued entry, it's listed at the top of the page so nothing disappears silently.</li>
           <li>Themes: Light, Dark, Playful (kids) and Senior (high-contrast) - pick one under Settings › Display (or the More sheet on your phone); the sun/moon button in the sidebar cycles through them; saved per browser.</li>
-          <li>Need to log spending from chat instead of opening the app? See <strong>Settings › Bots</strong> to connect Telegram or Discord.</li>
+          <li>Need to log spending from chat instead of opening the app? Connect Telegram or Discord under <strong>Settings › Bots</strong>.</li>
           <li>TV view shows a big, auto-refreshing summary of the current month - handy for a TV or car head unit.</li>
         </ul>
+        <div className="guide-goto">
+          <ChevronLink to="/settings/bots">Settings › Bots</ChevronLink>
+          <ChevronLink to="/settings/display">Settings › Display</ChevronLink>
+        </div>
       </div>
     </div>
   )

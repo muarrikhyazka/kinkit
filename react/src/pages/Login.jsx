@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../AuthContext.jsx'
 import { KinkitLogo } from '../icons.jsx'
+import Mascot from '../Mascot.jsx'
 
 export default function Login() {
   const { login, signup } = useAuth()
@@ -34,6 +35,7 @@ export default function Login() {
   return (
     <div className="login-page">
       <form className="card login-card" onSubmit={handleSubmit}>
+        <div className="login-mascot"><Mascot pose={error ? 'think' : 'idle'} size={112} wave /></div>
         <div className="login-brand"><KinkitLogo className="login-logo" aria-hidden="true" /><h1>Kinkit</h1></div>
         <p className="muted">Money management for every household, anywhere</p>
         {error && <div className="error-box">{error}</div>}

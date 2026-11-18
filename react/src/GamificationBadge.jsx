@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from './api'
 import Celebration, { diffNewRewards } from './Celebration.jsx'
-import { IconFlame, IconStar } from './icons.jsx'
+import { IconFlame, IconStar, IconChevronRight } from './icons.jsx'
 
 /**
  * Compact points/streak/level strip for the sidebar. Shows the logged-in
@@ -51,7 +51,7 @@ export default function GamificationBadge({ collapsed, refreshKey }) {
           <span className="gami-points"><IconStar width={13} height={13} className="gami-ico" /> {points} pts</span>
           <span className="gami-streak"><IconFlame width={13} height={13} className="gami-ico" /> {streak}d</span>
         </div>
-        <div className="gami-badge-name">{level}</div>
+        <div className="gami-badge-name"><span>{level}</span><IconChevronRight className="chev" width={14} height={14} aria-hidden="true" /></div>
         {next && (
           <div className="progress-bar" title={`${nextAt - points} pts to ${next}`}>
             <div className="progress-fill" style={{ width: `${Math.min(100, (points / nextAt) * 100)}%` }} />

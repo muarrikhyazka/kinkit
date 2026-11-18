@@ -161,7 +161,7 @@ export default function Income() {
                   <td data-label="Date">{prettyDate(r.tx_date)}</td>
                   <td data-label="Source">{r.source_name || <span className="muted">-</span>}</td>
                   <td data-label="Description">{r.description || <span className="muted">-</span>}</td>
-                  <td data-label="Amount" className="text-positive">{formatRupiah(r.amount)}</td>
+                  <td data-label="Amount" className="num text-positive">{formatRupiah(r.amount)}</td>
                   <td className="row-actions">
                     <button className="icon-btn" onClick={() => setEditing(r)} aria-label={`Edit income of ${formatRupiah(r.amount)}`} title="Edit"><IconEdit width={14} height={14} /></button>
                     <button className="icon-btn danger round" onClick={() => remove(r)} aria-label={`Delete income of ${formatRupiah(r.amount)}`} title="Delete"><IconClose width={14} height={14} /></button>

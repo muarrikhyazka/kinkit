@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import Modal from './Modal.jsx'
 import { BadgeIcon } from './icons.jsx'
+import Mascot from './Mascot.jsx'
 
 const COLORS = ['#f43f5e', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#facc15']
 
@@ -47,6 +48,7 @@ export default function Celebration({ items, onClose }) {
     <>
       {!reduced && <Confetti />}
       <Modal title={items.length > 1 ? 'You earned new rewards!' : 'Nice work!'} onClose={onClose} className="celebration">
+        <div className="celebration-mascot"><Mascot pose="celebrate" size={128} animate={!reduced} /></div>
         <ul className="celebration-list">
           {items.map((it, i) => (
             <li key={i}>

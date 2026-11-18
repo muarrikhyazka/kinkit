@@ -9,7 +9,7 @@ import QuickAddSpending from './QuickAddSpending.jsx'
 import GamificationBadge from './GamificationBadge.jsx'
 import Modal from './Modal.jsx'
 import OnboardingChecklist from './OnboardingChecklist.jsx'
-import { IconLogout, IconCollapse, IconExpand, IconSun, IconMoon, IconPlus, IconMore, IconClose, IconGuide, KinkitLogo } from './icons.jsx'
+import { IconLogout, IconCollapse, IconExpand, IconSun, IconMoon, IconPlus, IconMore, IconClose, IconGuide, IconChevronRight, KinkitLogo } from './icons.jsx'
 
 const COLLAPSE_KEY = 'kinkit_sidebar_collapsed'
 
@@ -190,13 +190,13 @@ export default function Layout() {
             {moreLinks.map(r => (
               <li key={r.path}>
                 <NavLink to={routeTo(r)} end={routeEnd(r)}>
-                  <r.Icon aria-hidden="true" /><span>{r.label}</span>
+                  <r.Icon aria-hidden="true" /><span>{r.label}</span><IconChevronRight className="chev" width={16} height={16} aria-hidden="true" />
                 </NavLink>
               </li>
             ))}
             {!isAdmin && (
               <li>
-                <NavLink to="/help"><IconGuide aria-hidden="true" /><span>Help</span></NavLink>
+                <NavLink to="/help"><IconGuide aria-hidden="true" /><span>Help</span><IconChevronRight className="chev" width={16} height={16} aria-hidden="true" /></NavLink>
               </li>
             )}
           </ul>

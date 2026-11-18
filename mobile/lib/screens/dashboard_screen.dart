@@ -9,6 +9,7 @@ import '../util/dates.dart';
 import '../util/money.dart';
 import '../widgets/async_view.dart';
 import '../widgets/k_app_bar.dart';
+import '../widgets/mascot.dart';
 import '../widgets/month_picker.dart';
 import '../widgets/stat_card.dart';
 
@@ -117,7 +118,8 @@ class _DashboardBody extends ConsumerWidget {
           StatCard(
             label: 'Left for budgeting',
             value: money.format(report.leftForBudgeting),
-            accent: netFlow >= 0 ? p.success : p.danger,
+            accent: p.primary,
+            negative: netFlow < 0,
             icon: Icons.account_balance_wallet_outlined,
             sub: 'Budgeted expenses: ${money.format(report.budgetedExpenses)}',
           ),
@@ -147,7 +149,11 @@ class _DashboardBody extends ConsumerWidget {
           ),
         const SectionTitle('Top expenses'),
         if (top.isEmpty)
-          const EmptyState(icon: Icons.bar_chart, title: 'No expenses this month yet')
+          const EmptyState(
+            mascot: MascotPose.think,
+            title: 'No expenses this month yet',
+            message: 'Spending you log this month shows up here.',
+          )
         else
           Card(
             child: Padding(
@@ -163,7 +169,7 @@ class _DashboardBody extends ConsumerWidget {
                           Row(
                             children: [
                               Expanded(child: Text(e.categoryName, overflow: TextOverflow.ellipsis)),
-                              Text(money.format(e.realization), style: const TextStyle(fontWeight: FontWeight.w600)),
+                              Text(money.format(e.realization), style: const TextStyle(fontWeight: FontWeight.w600, fontFeatures: kTabular)),
                             ],
                           ),
                           const SizedBox(height: 4),
@@ -187,7 +193,7 @@ class _DashboardBody extends ConsumerWidget {
                     title: Text(s.description.isEmpty ? (s.categoryName ?? 'Spending') : s.description,
                         overflow: TextOverflow.ellipsis),
                     subtitle: Text('${prettyDate(s.txDate)} · ${s.categoryName ?? 'Other'}'),
-                    trailing: Text(money.format(s.amount)),
+                    trailing: Text(money.format(s.amount), style: const TextStyle(fontFeatures: kTabular)),
                   ),
               ],
             ),

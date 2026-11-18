@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config.dart';
 import '../state/providers.dart';
 import '../theme.dart';
 import '../widgets/kinkit_logo.dart';
+import '../widgets/mascot.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   /// Error from the initial session check (e.g. server unreachable).
@@ -103,7 +105,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final p = context.palette;
     final server = ref.watch(baseUrlProvider);
-    return Scaffold(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: plainOverlayStyle(Theme.of(context).brightness),
+      child: Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -115,14 +119,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Center(child: KinkitLogo(size: 64)),
-                    const SizedBox(height: 8),
-                    Text('kinkit',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: p.text)),
+                    // Kiki waves hello (web Login.jsx); thinks when something went wrong.
+                    Center(
+                      child: Mascot(
+                        key: ValueKey(_error == null ? 'idle' : 'think'),
+                        pose: _error == null ? MascotPose.idle : MascotPose.think,
+                        size: 112,
+                        wave: _error == null,
+                      ),
+                    ),
+                    const SizedBox(height: KSpace.s2),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const KinkitLogo(size: 36),
+                        const SizedBox(width: KSpace.s3),
+                        Text('Kinkit', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: p.text)),
+                      ],
+                    ),
+                    const SizedBox(height: KSpace.s1),
                     Text('Family money & home, together',
                         textAlign: TextAlign.center, style: TextStyle(color: p.muted)),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: KSpace.s5),
                     SegmentedButton<bool>(
                       segments: const [
                         ButtonSegment(value: false, label: Text('Log in')),
@@ -185,8 +203,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: p.danger.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
+                          color: p.dangerLight,
+                          borderRadius: BorderRadius.circular(KRadius.md),
                         ),
                         child: Row(
                           children: [
@@ -213,9 +231,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
                     InkWell(
+                      borderRadius: BorderRadius.circular(KRadius.md),
                       onTap: () => setState(() => _showServer = !_showServer),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: KSpace.s1, vertical: KSpace.s3),
                         child: Row(
                           children: [
                             Icon(Icons.dns_outlined, size: 18, color: p.muted),
@@ -257,6 +276,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

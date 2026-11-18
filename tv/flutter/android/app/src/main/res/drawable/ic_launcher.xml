@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Kinkit launcher icon (pre-Android 8 fallback), drawn from brand/kinkit-logo.svg:
-     indigo tile (#4F46E5) with the white house mark. Android 8+ uses the adaptive
-     icon in drawable-anydpi-v26/ic_launcher.xml. -->
+     white rounded tile with a hairline #E0E7FF border and the purple (#4F46E5) house
+     mark. Android 8+ uses the adaptive icon in drawable-anydpi-v26/ic_launcher.xml. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="48dp"
     android:height="48dp"
     android:viewportWidth="64"
     android:viewportHeight="64">
     <path
-        android:fillColor="#4F46E5"
-        android:pathData="M16,0H48A16,16 0,0 1,64 16V48A16,16 0,0 1,48 64H16A16,16 0,0 1,0 48V16A16,16 0,0 1,16 0Z" />
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#E0E7FF"
+        android:strokeWidth="1.5"
+        android:pathData="M16,0.75H48A15.25,15.25 0,0 1,63.25 16V48A15.25,15.25 0,0 1,48 63.25H16A15.25,15.25 0,0 1,0.75 48V16A15.25,15.25 0,0 1,16 0.75Z" />
     <group>
         <path
             android:pathData="M14,31L32,16L50,31"
-            android:strokeColor="#FFFFFF"
+            android:strokeColor="#4F46E5"
             android:strokeWidth="5"
             android:strokeLineCap="round"
             android:strokeLineJoin="round" />
         <path
             android:pathData="M19,28V46A3,3 0,0 0,22 49H42A3,3 0,0 0,45 46V28"
-            android:strokeColor="#FFFFFF"
+            android:strokeColor="#4F46E5"
             android:strokeWidth="5"
             android:strokeLineJoin="round" />
         <path
-            android:fillColor="#FFFFFF"
+            android:fillColor="#4F46E5"
             android:pathData="M26.5,39A5.5,5.5 0,1 0,37.5 39A5.5,5.5 0,1 0,26.5 39Z" />
     </group>
 </vector>

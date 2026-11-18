@@ -73,7 +73,8 @@ class _SpendingScreenState extends ConsumerState<SpendingScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(money.format(r.amount), style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: p.text)),
+                Text(money.format(r.amount),
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: p.text, fontFeatures: kTabular)),
                 const SizedBox(height: 4),
                 Text(r.description.isEmpty ? '(no description)' : r.description, style: TextStyle(color: p.text)),
                 const SizedBox(height: 12),
@@ -99,7 +100,7 @@ class _SpendingScreenState extends ConsumerState<SpendingScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: FilledButton.icon(
-                          style: FilledButton.styleFrom(backgroundColor: p.danger),
+                          style: FilledButton.styleFrom(backgroundColor: p.danger, foregroundColor: p.onPrimary),
                           icon: const Icon(Icons.delete_outline),
                           label: const Text('Delete'),
                           onPressed: () {
@@ -208,7 +209,8 @@ class _SpendingScreenState extends ConsumerState<SpendingScreen> {
                               style: TextStyle(color: p.muted),
                             ),
                           ),
-                          Text(money.format(total), style: TextStyle(fontWeight: FontWeight.w700, color: p.danger)),
+                          Text(money.format(total),
+                              style: TextStyle(fontWeight: FontWeight.w700, color: p.text, fontFeatures: kTabular)),
                         ],
                       ),
                     ),
@@ -222,7 +224,7 @@ class _SpendingScreenState extends ConsumerState<SpendingScreen> {
                                   style: TextStyle(fontWeight: FontWeight.w600, color: p.muted, fontSize: 13)),
                             ),
                             Text(money.format(groups[day]!.fold<int>(0, (a, r) => a + r.amount)),
-                                style: TextStyle(color: p.muted, fontSize: 13)),
+                                style: TextStyle(color: p.muted, fontSize: 13, fontFeatures: kTabular)),
                           ],
                         ),
                       ),
@@ -265,7 +267,7 @@ class _SpendingScreenState extends ConsumerState<SpendingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(money.format(r.amount), style: TextStyle(fontWeight: FontWeight.w600, color: p.text)),
+          Text(money.format(r.amount), style: TextStyle(fontWeight: FontWeight.w600, color: p.text, fontFeatures: kTabular)),
           if (r.checked) Icon(Icons.check, size: 14, color: p.success),
         ],
       ),

@@ -2,12 +2,31 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api, dataApi, onSpendingChanged } from './api'
 import { useSetup } from './useApi'
-import { IconCheck, IconClose } from './icons.jsx'
+import { IconCheck, IconClose, IconChevronRight } from './icons.jsx'
 
 const DISMISS_KEY = 'kinkit_onboarding_dismissed'
 
 function readDismissed() {
   try { return localStorage.getItem(DISMISS_KEY) === '1' } catch { return false }
+}
+
+// Open steps are whole clickable rows with a chevron; done steps are plain.
+function Step({ step: s }) {
+  const body = (
+    <>
+      <span className="onboarding-check" aria-hidden="true">{s.done ? <IconCheck width={14} height={14} /> : null}</span>
+      <span className="onboarding-step-text">
+        <span>
+          <span className="onboarding-title">{s.title}</span>
+          {s.optional && <span className="muted"> (optional)</span>}
+          <span className="sr-only">{s.done ? ' - done' : ' - to do'}</span>
+        </span>
+        <span className="muted">{s.hint}</span>
+      </span>
+      {!s.done && <IconChevronRight className="chev" width={18} height={18} aria-hidden="true" />}
+    </>
+  )
+  return s.done ? <div className="onboarding-step">{body}</div> : <Link to={s.to} className="onboarding-step">{body}</Link>
 }
 
 const hasAmount = list => Array.isArray(list) && list.some(x => Number(x?.amount) > 0)
@@ -63,7 +82,7 @@ export default function OnboardingChecklist() {
       <div className="onboarding-head">
         <div>
           <h2 id="onboarding-title">Getting started</h2>
-          <p className="muted">{doneCount} of {steps.length} done</p>
+          <p className="muted" style={{ margin: 0 }}>{doneCount} of {steps.length} done</p>
         </div>
         <button className="icon-btn" onClick={dismiss} aria-label="Dismiss getting started checklist" title="Dismiss"><IconClose width={14} height={14} /></button>
       </div>
@@ -71,13 +90,7 @@ export default function OnboardingChecklist() {
       <ol className="onboarding-steps">
         {steps.map(s => (
           <li key={s.id} className={s.done ? 'done' : ''}>
-            <span className="onboarding-check" aria-hidden="true">{s.done ? <IconCheck width={14} height={14} /> : null}</span>
-            <div>
-              {s.done ? <span className="onboarding-title">{s.title}</span> : <Link to={s.to} className="onboarding-title">{s.title}</Link>}
-              {s.optional && <span className="muted"> (optional)</span>}
-              <span className="sr-only">{s.done ? ' - done' : ' - to do'}</span>
-              <div className="muted">{s.hint}</div>
-            </div>
+            <Step step={s} />
           </li>
         ))}
       </ol>

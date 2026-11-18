@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { api, remindersApi, todayISO } from '../api'
 import { useApi } from '../useApi'
 import { useAuth, canManage } from '../AuthContext.jsx'
@@ -12,6 +12,7 @@ import {
   IconUser, IconChat, IconBell, CategoryIcon,
 } from '../icons.jsx'
 import '../reminders.css'
+import { ChevronLink } from '../ChevronLink.jsx'
 
 // ---------- helpers (shared with Today.jsx) ----------
 
@@ -433,7 +434,7 @@ export default function Reminders() {
       <div className={`rem-delivery ${bots.length ? 'on' : ''}`} role="note">
         <IconChat width={16} height={16} aria-hidden="true" />
         <span>{chatHint}{' '}
-          {!bots.length && manager && <Link to="/settings/bots">Connect a chat bot</Link>}
+          {!bots.length && manager && <ChevronLink to="/settings/bots">Connect a chat bot</ChevronLink>}
         </span>
       </div>
       {(upcoming.error || rules.error) && <div className="error-box">{upcoming.error || rules.error}</div>}

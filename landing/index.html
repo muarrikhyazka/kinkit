@@ -30,11 +30,11 @@
   <meta name="twitter:image" content="https://kinkit.app/assets/og-image.svg">
 
   <!-- Favicon: inline SVG (same artwork as assets/favicon.svg) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='kk' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%236366F1'/%3E%3Cstop offset='1' stop-color='%234F46E5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23kk)'/%3E%3Cpath d='M14 31 32 16l18 15' fill='none' stroke='%23FFFFFF' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28' fill='none' stroke='%23FFFFFF' stroke-width='5' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='39' r='5.5' fill='%23FFFFFF'/%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="assets/favicon.svg?v=2">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='0.75' y='0.75' width='62.5' height='62.5' rx='15.25' fill='%23FFFFFF' stroke='%23E0E7FF' stroke-width='1.5'/%3E%3Cpath d='M14 31 32 16l18 15' fill='none' stroke='%234F46E5' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28' fill='none' stroke='%234F46E5' stroke-width='5' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='39' r='5.5' fill='%234F46E5'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="assets/favicon.svg?v=3">
 
-  <link rel="stylesheet" href="styles.css?v=3">
-  <link rel="stylesheet" href="assets/mockups.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="assets/mockups.css?v=5">
 
   <script type="application/ld+json">
   {
@@ -49,14 +49,11 @@
   <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
-  <!-- Icon sprite (inline so it works from file:// too). Stroke icons, 24x24. -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-    <defs>
-      <linearGradient id="brand-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6366F1"/><stop offset="1" stop-color="#4F46E5"/></linearGradient>
-    </defs>
-    <symbol id="logo" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="url(#brand-grad)"/><path d="M14 31 32 16l18 15" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"/><circle cx="32" cy="39" r="5.5" fill="#FFFFFF"/></symbol>
+  <!-- Icon sprite (inline so it works from file:// too). Stroke icons, 24x24.
+       Also holds Kiki's shared gradients/filters (ids kk-*), used by every inline mascot below. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="logo" viewBox="0 0 64 64"><rect x="0.75" y="0.75" width="62.5" height="62.5" rx="15.25" fill="#FFFFFF" stroke="#E0E7FF" stroke-width="1.5"/><path d="M14 31 32 16l18 15" fill="none" stroke="#4F46E5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28" fill="none" stroke="#4F46E5" stroke-width="5" stroke-linejoin="round"/><circle cx="32" cy="39" r="5.5" fill="#4F46E5"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
-    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M21 11h-5a2 2 0 0 0 0 4h5z"/></symbol>
     <symbol id="i-pie" viewBox="0 0 24 24"><path d="M21.2 15.9A10 10 0 1 1 8 2.8"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16v-5M12 16V8M17 16v-8"/></symbol>
     <symbol id="i-repeat" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></symbol>
@@ -72,12 +69,10 @@
     <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
     <symbol id="i-check-square" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/></symbol>
     <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
-    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
     <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></symbol>
     <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3.3.3 1.6 1.2 2.8 2.5 2.8z"/></symbol>
     <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.7V17c0 .6-.5 1-1 1.2-1.2.5-2 2-2 3.8M14 14.7V17c0 .6.5 1 1 1.2 1.2.5 2 2 2 3.8M18 2H6v7a6 6 0 0 0 12 0z"/></symbol>
     <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></symbol>
-    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
     <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.5 3.3A1.6 1.6 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="10.5" r="1"/></symbol>
     <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
     <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></symbol>
@@ -88,13 +83,13 @@
     <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></symbol>
     <symbol id="i-server" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="8" rx="2"/><rect x="2" y="13" width="20" height="8" rx="2"/><path d="M6 7h.01M6 17h.01"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
-    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-undo" viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></symbol>
-    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></symbol>
-    <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4z"/></symbol>
+  
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <defs><radialGradient id="kk-body" cx="0.36" cy="0.30" r="0.80"><stop offset="0" stop-color="#8B93FA"/><stop offset="0.45" stop-color="#5B54EC"/><stop offset="0.85" stop-color="#4338CA"/><stop offset="1" stop-color="#3730A3"/></radialGradient><linearGradient id="kk-ao" x1="0" y1="0" x2="0" y2="1"><stop offset="0.55" stop-color="#312E81" stop-opacity="0"/><stop offset="1" stop-color="#1E1B4B" stop-opacity="0.55"/></linearGradient><linearGradient id="kk-rim" x1="0" y1="0" x2="1" y2="0"><stop offset="0.70" stop-color="#C7D2FE" stop-opacity="0"/><stop offset="0.875" stop-color="#C7D2FE" stop-opacity="0.45"/><stop offset="0.93" stop-color="#C7D2FE" stop-opacity="0"/></linearGradient><radialGradient id="kk-face" cx="0.42" cy="0.32" r="0.75"><stop offset="0" stop-color="#FFFFFF"/><stop offset="0.6" stop-color="#F5F3FF"/><stop offset="1" stop-color="#D9DDFB"/></radialGradient><linearGradient id="kk-roof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4338CA"/><stop offset="1" stop-color="#312E81"/></linearGradient><linearGradient id="kk-limb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C83F7"/><stop offset="0.55" stop-color="#4F46E5"/><stop offset="1" stop-color="#3730A3"/></linearGradient><linearGradient id="kk-foot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4338CA"/><stop offset="1" stop-color="#2E2A7A"/></linearGradient><radialGradient id="kk-eye" cx="0.45" cy="0.35" r="0.7"><stop offset="0" stop-color="#3B3591"/><stop offset="1" stop-color="#17153B"/></radialGradient><radialGradient id="kk-cheek" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#F9A8D4" stop-opacity="0.95"/><stop offset="1" stop-color="#F9A8D4" stop-opacity="0"/></radialGradient><radialGradient id="kk-coin" cx="0.38" cy="0.32" r="0.75"><stop offset="0" stop-color="#FEF3C7"/><stop offset="0.35" stop-color="#FCD34D"/><stop offset="0.8" stop-color="#F59E0B"/><stop offset="1" stop-color="#B45309"/></radialGradient><linearGradient id="kk-coinface" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F59E0B"/><stop offset="1" stop-color="#FDE68A"/></linearGradient><clipPath id="kk-clip"><path d="M128 50C134 50 139 52.5 144 56.5L188 93C196.5 100 201 107.5 201.5 118C204 142 204.5 166 202 188C200 205 189 214 171 214L85 214C67 214 56 205 54 188C51.5 166 52 142 54.5 118C55 107.5 59.5 100 68 93L112 56.5C117 52.5 122 50 128 50Z"/></clipPath><filter id="kk-blur-s" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><filter id="kk-blur-h" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter></defs>
   </svg>
 
   <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
@@ -109,8 +104,8 @@
         <li><a href="#features" data-i18n="nav.features">Features</a></li>
         <li><a href="#how" data-i18n="nav.how">How it works</a></li>
         <li><a href="#screens" data-i18n="nav.screens">Every screen</a></li>
-        <li><a href="#privacy" data-i18n="nav.privacy">Your data</a></li>
         <li><a href="#download" data-i18n="nav.download">Download</a></li>
+        <li><a href="#privacy" data-i18n="nav.privacy">Your data</a></li>
         <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
         <li><a href="#faq" data-i18n="nav.faq">FAQ</a></li>
         <li class="mobile-only"><a href="/login" data-app-link="login" data-i18n="nav.signin">Sign in</a></li>
@@ -120,8 +115,8 @@
           <button type="button" data-lang="en" aria-pressed="true" lang="en" title="English">EN</button>
           <button type="button" data-lang="id" aria-pressed="false" lang="id" title="Bahasa Indonesia">ID</button>
         </div>
-        <a class="btn btn-ghost btn-sm btn-signin" href="/login" data-app-link="login" data-i18n="nav.signin">Sign in</a>
-        <a class="btn btn-primary btn-sm btn-start" href="/signup" data-app-link="signup" data-i18n="cta.start">Start free</a>
+        <a class="btn btn-chrome-ghost btn-sm btn-signin" href="/login" data-app-link="login" data-i18n="nav.signin">Sign in</a>
+        <a class="btn btn-onchrome btn-sm btn-start" href="/signup" data-app-link="signup" data-i18n="cta.start">Start free</a>
         <button class="menu-btn" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Open menu" data-i18n-aria="nav.menu">
           <svg class="icon i-open" aria-hidden="true"><use href="#i-menu"/></svg>
           <svg class="icon i-close" aria-hidden="true"><use href="#i-x"/></svg>
@@ -135,52 +130,42 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="pill"><b data-i18n="hero.pillTag">New</b> <a href="#download" data-i18n="hero.pill">Android phone and TV apps are here</a></p>
-          <h1 id="hero-title" data-i18n="hero.title">One home for your family's money <span class="grad">and everyone in it.</span></h1>
-          <p class="hero-lead" data-i18n="hero.lead">Kinkit helps your household track spending, plan budgets, save for goals and keep the kids motivated, together. Use it in the browser, on your phone, on the living-room TV or straight from Telegram and Discord.</p>
+          <a class="link-chev hero-news" href="#download"><span data-i18n="hero.news">Android phone and TV apps are here</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+          <h1 id="hero-title" data-i18n="hero.title">One home for your family's money, <span class="soft">and everyone in it.</span></h1>
+          <p class="hero-lead" data-i18n="hero.lead">Track spending, plan budgets, save for goals and keep the kids motivated, together. Use it in the browser, on your phone, on the living-room TV or straight from Telegram and Discord.</p>
           <div class="hero-ctas">
-            <a class="btn btn-primary" href="/signup" data-app-link="signup">
-              <span data-i18n="cta.start">Start free</span>
-              <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
-            </a>
-            <a class="btn btn-ghost" href="#how">
-              <svg class="icon" aria-hidden="true"><use href="#i-play"/></svg>
-              <span data-i18n="cta.how">See how it works</span>
-            </a>
+            <a class="btn btn-primary" href="/signup" data-app-link="signup" data-i18n="cta.start">Start free</a>
+            <a class="link-chev lg" href="#how"><span data-i18n="cta.how">See how it works</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
           </div>
-          <ul class="hero-notes">
-            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="hero.note1">Free to start</span></li>
-            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="hero.note2">Export everything, anytime</span></li>
-            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="hero.note3">Self-host if you prefer</span></li>
-          </ul>
+          <p class="hero-note" data-i18n="hero.note">Free to start. Kinkit never asks for your bank login.</p>
         </div>
 
-        <div class="hero-visual" role="img" aria-label="The Kinkit dashboard on a laptop and a phone, showing this month's spending against budget, income, savings and a spending-by-category chart." data-i18n-aria="hero.visualAlt">
+        <div class="hero-visual" role="img" aria-label="The Kinkit dashboard on a laptop, showing this month's spending against budget, income, savings and spending by category, with Kiki the mascot waving." data-i18n-aria="hero.visualAlt">
           <!-- Laptop: Dashboard > Month -->
           <div class="device device-laptop mock" aria-hidden="true">
             <div class="bezel">
               <div class="screen">
                 <div class="m-app">
                   <div class="m-side">
-                    <div class="m-brand"><i></i>Kinkit</div>
+                    <div class="m-brand"><i class="m-logo"></i><span>Kinkit<small>The Wijaya family</small></span></div>
+                    <div class="m-add">+ Add</div>
                     <div class="m-nav">
                       <span>Today</span><span>Home</span>
                       <span class="m-group">Money</span>
                       <span class="on">Dashboard</span><span>Transactions</span><span>Budget</span><span>Savings</span>
                       <span class="m-group">Family</span><span>Family</span>
                     </div>
-                    <div class="m-add">+ Add</div>
                   </div>
                   <div class="m-main">
                     <div class="m-head"><b>Dashboard</b><span class="m-period">‹ Nov 2026 ›</span></div>
+                    <div class="m-stats">
+                      <div class="m-stat t-income"><small>Income</small><strong>Rp 14,5jt</strong></div>
+                      <div class="m-stat t-spend"><small>Spending</small><strong>Rp 6,1jt</strong></div>
+                      <div class="m-stat"><small>Saved</small><strong>Rp 3,2jt</strong></div>
+                    </div>
                     <div class="m-card">
                       <div class="m-card-title">Spent Rp 6,1jt of Rp 9jt budgeted <em>68%</em></div>
                       <div class="m-progress"><i></i></div>
-                    </div>
-                    <div class="m-stats">
-                      <div class="m-stat"><small>Income</small><strong class="up">Rp 14,5jt</strong></div>
-                      <div class="m-stat"><small>Spending</small><strong>Rp 6,1jt</strong></div>
-                      <div class="m-stat"><small>Saved</small><strong class="up">Rp 3,2jt</strong></div>
                     </div>
                     <div class="m-row">
                       <div class="m-card">
@@ -190,9 +175,9 @@
                       <div class="m-card">
                         <div class="m-card-title">By category</div>
                         <div class="m-cats">
-                          <div class="m-cat"><i style="background:#4f46e5"></i>Groceries<b>2,3jt</b><span class="meter"><u style="width:72%;background:#4f46e5"></u></span></div>
-                          <div class="m-cat"><i style="background:#16a34a"></i>Transport<b>1,3jt</b><span class="meter"><u style="width:48%;background:#16a34a"></u></span></div>
-                          <div class="m-cat"><i style="background:#d97706"></i>Eating out<b>1,1jt</b><span class="meter"><u style="width:94%;background:#d97706"></u></span></div>
+                          <div class="m-cat"><i></i>Groceries<b>2,3jt</b><span class="meter"><u style="width:72%"></u></span></div>
+                          <div class="m-cat"><i></i>Transport<b>1,3jt</b><span class="meter"><u style="width:48%"></u></span></div>
+                          <div class="m-cat"><i></i>Eating out<b>1,1jt</b><span class="meter"><u style="width:40%"></u></span></div>
                         </div>
                       </div>
                     </div>
@@ -202,42 +187,13 @@
             </div>
             <div class="base"></div>
           </div>
-
-          <!-- Phone: mobile dashboard -->
-          <div class="device device-phone mock" aria-hidden="true">
-            <div class="notch"></div>
-            <div class="screen">
-              <div class="m-phone">
-                <div class="m-head"><b>Dashboard</b><span class="m-period">Nov</span></div>
-                <div class="m-badge"><span class="fl"></span>7-day streak · +10 pts</div>
-                <div class="m-stats">
-                  <div class="m-stat"><small>Left to spend</small><strong class="up">2,9jt</strong></div>
-                  <div class="m-stat"><small>Allowance</small><strong class="warn">80%</strong></div>
-                </div>
-                <div class="m-card">
-                  <div class="m-card-title">This week</div>
-                  <div class="m-bars"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-                </div>
-                <div class="m-chips"><span>Bensin</span><span>Makan siang</span><span>Sayur</span></div>
-                <div class="m-tabbar"><span>Today</span><span>Home</span><span class="fab"></span><span>Spending</span><span>More</span></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="float-card" aria-hidden="true">
-            <span class="dot"><svg class="icon" style="stroke:#fff"><use href="#i-trophy"/></svg></span>
-            <span><span data-i18n="hero.float1">Badge earned: Under Budget</span><small data-i18n="hero.float1s">Needs + Wants within plan</small></span>
-          </div>
-          <div class="float-card chat" aria-hidden="true">
-            <span class="dot"><svg class="icon" style="stroke:#fff"><use href="#i-chat"/></svg></span>
-            <span>"25k makan siang"<small data-i18n="hero.float2s">Logged from Telegram</small></span>
-          </div>
+          <div class="hero-kiki" aria-hidden="true"><svg class="mk mk--idle mk--animate mk--wave-once" viewBox="0 0 256 256" width="256" height="256" aria-hidden="true" focusable="false"><ellipse class="mk-shadow" cx="128" cy="226" rx="64" ry="9" fill="#1E1B4B" opacity="0.28" filter="url(#kk-blur-s)"/><g class="mk-bob"><g class="mk-arm mk-arm-l"><ellipse cx="53.0" cy="171.0" rx="11.5" ry="26.6" transform="rotate(-159.8 53.0 171.0)" fill="url(#kk-limb)"/><ellipse cx="50.1" cy="161.7" rx="4.0" ry="8.0" transform="rotate(-159.8 53.0 171.0)" fill="#A5B4FC" opacity="0.55"/></g><g class="mk-body"><ellipse cx="98" cy="213" rx="17" ry="9" fill="url(#kk-foot)"/><ellipse cx="158" cy="213" rx="17" ry="9" fill="url(#kk-foot)"/><path d="M128 50C134 50 139 52.5 144 56.5L188 93C196.5 100 201 107.5 201.5 118C204 142 204.5 166 202 188C200 205 189 214 171 214L85 214C67 214 56 205 54 188C51.5 166 52 142 54.5 118C55 107.5 59.5 100 68 93L112 56.5C117 52.5 122 50 128 50Z" fill="url(#kk-body)"/><g clip-path="url(#kk-clip)"><rect x="40" y="40" width="176" height="180" fill="url(#kk-rim)"/><rect x="40" y="40" width="176" height="180" fill="url(#kk-ao)"/><ellipse cx="96" cy="96" rx="22" ry="13" transform="rotate(-38 96 96)" fill="#FFFFFF" opacity="0.38" filter="url(#kk-blur-h)"/></g><path d="M60 104L128 47L196 104" fill="none" stroke="url(#kk-roof)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/><path d="M66 97L126 47.5" fill="none" stroke="#818CF8" stroke-width="3.2" stroke-linecap="round" opacity="0.75"/><path d="M130 47.5L170 81" fill="none" stroke="#A5B4FC" stroke-width="2.4" stroke-linecap="round" opacity="0.45"/><ellipse cx="128" cy="149" rx="55" ry="47" fill="#312E81" opacity="0.18"/><ellipse cx="128" cy="151" rx="53" ry="45" fill="url(#kk-face)"/><ellipse cx="89" cy="157" rx="12" ry="7.5" fill="url(#kk-cheek)"/><ellipse cx="167" cy="157" rx="12" ry="7.5" fill="url(#kk-cheek)"/><g class="mk-eyes"><ellipse cx="108" cy="136" rx="11.5" ry="14" fill="url(#kk-eye)"/><circle cx="111.5" cy="131" r="4.6" fill="#FFFFFF"/><circle cx="104.2" cy="141.5" r="2" fill="#FFFFFF" opacity="0.85"/><ellipse cx="148" cy="136" rx="11.5" ry="14" fill="url(#kk-eye)"/><circle cx="151.5" cy="131" r="4.6" fill="#FFFFFF"/><circle cx="144.2" cy="141.5" r="2" fill="#FFFFFF" opacity="0.85"/></g><path class="mk-mouth" d="M119 157Q128 166 137 157" fill="none" stroke="#1E1B4B" stroke-width="4.5" stroke-linecap="round"/></g><g class="mk-arm mk-arm-r mk-wave"><ellipse cx="208.0" cy="137.0" rx="11.5" ry="31.6" transform="rotate(33.7 208.0 137.0)" fill="url(#kk-limb)"/><ellipse cx="205.1" cy="125.9" rx="4.0" ry="9.5" transform="rotate(33.7 208.0 137.0)" fill="#A5B4FC" opacity="0.55"/></g></g></svg></div>
         </div>
       </div>
     </section>
 
-    <!-- ================= TRUST STRIP (no fake logos, testimonials or user counts) ================= -->
-    <section class="trust" aria-label="Why families can trust Kinkit" data-i18n-aria="trust.label">
+    <!-- ================= FACTS (no fake logos, testimonials or user counts) ================= -->
+    <section class="facts" aria-label="Why families can trust Kinkit" data-i18n-aria="trust.label">
       <div class="container">
         <ul>
           <li><svg class="icon" aria-hidden="true"><use href="#i-server"/></svg><span data-i18n="trust.1">Self-hostable with docker-compose</span></li>
@@ -252,66 +208,75 @@
     <section class="section" id="features" aria-labelledby="features-title">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow" data-i18n="features.eyebrow">Features</span>
-          <h2 id="features-title" data-i18n="features.title">Everything a household needs, nothing it doesn't</h2>
-          <p data-i18n="features.lead">From the first "25k makan siang" to a year-end review, Kinkit covers money, family roles, motivation and every screen in the house.</p>
+          <h2 id="features-title" data-i18n="features.title">Money, home and family in one app</h2>
+          <p data-i18n="features.lead">From the first "25k makan siang" to the year-end review. Four parts, one household.</p>
         </div>
 
         <div class="feature-groups">
           <!-- Money -->
           <div class="feature-group">
-            <div class="group-head reveal">
-              <span class="group-icon g-money"><svg class="icon" aria-hidden="true"><use href="#i-wallet"/></svg></span>
-              <div><h3 data-i18n="g.money">Money</h3><p data-i18n="g.moneySub">Know where it goes, and plan where it should.</p></div>
+            <div class="group-aside reveal">
+              <h3 data-i18n="g.money">Money</h3>
+              <p data-i18n="g.moneySub">Know where it goes, and plan where it should.</p>
+              <div class="group-visual mock m-loose" aria-hidden="true">
+                <div class="m-card">
+                  <div class="m-card-title">Needs <em>Spent / plan</em></div>
+                  <div class="m-cats">
+                    <div class="m-cat"><i></i>Groceries<b>2,3 / 3jt</b><span class="meter"><u class="ok" style="width:76%"></u></span></div>
+                    <div class="m-cat"><i></i>Utilities<b>0,9 / 1jt</b><span class="meter"><u class="warn" style="width:90%"></u></span></div>
+                    <div class="m-cat"><i></i>Eating out<b class="over">1,2 / 1jt</b><span class="meter"><u class="over" style="width:100%"></u></span></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cards">
-              <article class="card reveal">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-zap"/></svg></span>
+            <div class="feat-list">
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-zap"/></svg>
                 <h4 data-i18n="f.quick.t">Log spending in seconds</h4>
                 <p data-i18n="f.quick.d">Add from any page. Type <kbd>25k</kbd>, <kbd>2rb</kbd> or <kbd>1.5jt</kbd>. Kinkit remembers each description's category and offers your recent entries as one-tap chips.</p>
               </article>
-              <article class="card reveal" data-delay="1">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-pie"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-pie"/></svg>
                 <h4 data-i18n="f.budget.t">Budgets that show reality</h4>
                 <p data-i18n="f.budget.d">Plan income and spending per category, grouped as Needs, Wants and Savings. Every cell shows what you actually spent: green, then amber at 80%, red when over.</p>
               </article>
-              <article class="card reveal" data-delay="2">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg>
                 <h4 data-i18n="f.alerts.t">Budget alerts in your chat</h4>
                 <p data-i18n="f.alerts.d">Get a Telegram or Discord message when a category reaches 80% of its monthly budget, and again if it goes over.</p>
               </article>
-              <article class="card reveal">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-trend"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-trend"/></svg>
                 <h4 data-i18n="f.income.t">Income: planned vs received</h4>
                 <p data-i18n="f.income.d">Record money that actually came in and compare it with the plan for the month, the year and across years.</p>
               </article>
-              <article class="card reveal" data-delay="1">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-repeat"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-repeat"/></svg>
                 <h4 data-i18n="f.recurring.t">Recurring payments on autopilot</h4>
                 <p data-i18n="f.recurring.d">Enter rent, subscriptions or loan payments once (monthly, weekly or yearly) and Kinkit adds each one for you. Pause and resume any time.</p>
               </article>
-              <article class="card reveal" data-delay="2">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-target"/></svg>
                 <h4 data-i18n="f.goals.t">Savings goals and net worth</h4>
                 <p data-i18n="f.goals.d">Each goal gets a progress ring and shows how much to save per month to hit its date. Track account balances and progress toward a net-worth target.</p>
               </article>
-              <article class="card reveal">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg>
                 <h4 data-i18n="f.receipts.t">Receipts that read themselves</h4>
                 <p data-i18n="f.receipts.d">Snap a receipt and keep it with its transaction. "Read amount from receipt" finds the total on your device, so the photo isn't sent anywhere to be read.</p>
               </article>
-              <article class="card reveal" data-delay="1">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-file-up"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-file-up"/></svg>
                 <h4 data-i18n="f.csv.t">Bank CSV import</h4>
                 <p data-i18n="f.csv.d">Import BCA, Mandiri or any generic CSV. Preview and re-categorise rows first. Importing a file twice never creates duplicates, and any import can be undone.</p>
               </article>
-              <article class="card reveal" data-delay="2">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg>
                 <h4 data-i18n="f.dash.t">Dashboards your way</h4>
                 <p data-i18n="f.dash.d">Week, Month, Year and Across Years views, plus a Custom tab where you pick the charts and drag to reorder them. Hide big one-offs, then export to PDF.</p>
               </article>
-              <article class="card reveal">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg>
                 <h4 data-i18n="f.fx.t">Multi-currency display</h4>
                 <p data-i18n="f.fx.d">See amounts in IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD or INR, converted with daily exchange rates. Your stored data stays in rupiah.</p>
               </article>
@@ -320,38 +285,48 @@
 
           <!-- Home & family -->
           <div class="feature-group">
-            <div class="group-head reveal">
-              <span class="group-icon g-home"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg></span>
-              <div><h3 data-i18n="g.home">Home &amp; family</h3><p data-i18n="g.homeSub">One household, everyone with the right access.</p></div>
+            <div class="group-aside reveal">
+              <h3 data-i18n="g.home">Home &amp; family</h3>
+              <p data-i18n="g.homeSub">One household, everyone with the right access.</p>
+              <div class="group-visual mock m-loose" aria-hidden="true">
+                <div class="m-card">
+                  <div class="m-card-title">Today <em>Thu 19 Nov</em></div>
+                  <div class="m-list m-today">
+                    <div><span class="tick done"></span><span class="lbl">Water the plants<small>Chore · Raka · 5 pts</small></span></div>
+                    <div><span class="tick"></span><span class="lbl">Pay electricity<small>Reminder · due today</small></span></div>
+                    <div><span class="tick"></span><span class="lbl">Groceries<small>List · 4 items</small></span></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cards">
-              <article class="card reveal">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></span>
+            <div class="feat-list">
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-users"/></svg>
                 <h4 data-i18n="f.household.t">One household, everyone signs in</h4>
                 <p data-i18n="f.household.d">Add family members with their own email and password. Everyone works on the same household's money.</p>
               </article>
-              <article class="card reveal" data-delay="1">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>
                 <h4 data-i18n="f.roles.t">Roles that fit real families</h4>
                 <p data-i18n="f.roles.d">Family Admin and Parent manage everything. Kids log spending and can only edit their own entries. Viewers have read-only access, which suits a grandparent or an accountant.</p>
               </article>
-              <article class="card reveal" data-delay="2">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-coins"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-coins"/></svg>
                 <h4 data-i18n="f.allowance.t">Kid allowances</h4>
                 <p data-i18n="f.allowance.d">Give each kid a monthly allowance and let them see how much they've spent so far this month.</p>
               </article>
-              <article class="card reveal">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-undo"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-undo"/></svg>
                 <h4 data-i18n="f.undo.t">Undo instead of "Are you sure?"</h4>
                 <p data-i18n="f.undo.d">Deleted something by mistake? Every delete shows an Undo button for a few seconds, so nobody gets stuck answering confirmation dialogs.</p>
               </article>
-              <article class="card reveal" data-delay="1">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg>
                 <h4 data-i18n="f.today.t">Today</h4>
                 <p data-i18n="f.today.d">One daily view of what's due for the household: reminders, chores, lists and how the budget is doing.</p>
               </article>
-              <article class="card reveal" data-delay="2">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-check-square"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-check-square"/></svg>
                 <h4 data-i18n="f.chores.t">Chores, reminders &amp; shopping lists</h4>
                 <p data-i18n="f.chores.d">Chores with points, parent approval and photo proof that count toward kids' allowances. Household reminders for laundry, cleaning, the water tank, bills, medicine and birthdays, repeating daily or every 2 weeks or every 3 months, that nudge the right person on Telegram or Discord. Shared shopping lists where you type "eggs, 2 milk, bread x3", then turn the trip into one spending entry.</p>
               </article>
@@ -360,75 +335,89 @@
 
           <!-- Fun & motivation -->
           <div class="feature-group">
-            <div class="group-head reveal">
-              <span class="group-icon g-fun"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></span>
-              <div><h3 data-i18n="g.fun">Fun &amp; motivation</h3><p data-i18n="g.funSub">Good money habits, turned into a family game.</p></div>
+            <div class="group-aside reveal">
+              <h3 data-i18n="g.fun">Fun &amp; motivation</h3>
+              <p data-i18n="g.funSub">Good money habits, turned into a family game.</p>
+              <div class="group-visual kiki-celebrate" aria-hidden="true">
+                <svg class="mk mk--celebrate" viewBox="0 0 256 256" width="256" height="256" aria-hidden="true" focusable="false" data-mk-animate><ellipse class="mk-shadow" cx="128" cy="226" rx="64" ry="9" fill="#1E1B4B" opacity="0.28" filter="url(#kk-blur-s)"/><g class="mk-bob"><g class="mk-arm mk-arm-l"><ellipse cx="49.0" cy="130.0" rx="11.5" ry="30.2" transform="rotate(-33.0 49.0 130.0)" fill="url(#kk-limb)"/><ellipse cx="46.1" cy="119.4" rx="4.0" ry="9.1" transform="rotate(-33.0 49.0 130.0)" fill="#A5B4FC" opacity="0.55"/></g><g class="mk-arm mk-arm-r"><ellipse cx="207.0" cy="130.0" rx="11.5" ry="30.2" transform="rotate(33.0 207.0 130.0)" fill="url(#kk-limb)"/><ellipse cx="204.1" cy="119.4" rx="4.0" ry="9.1" transform="rotate(33.0 207.0 130.0)" fill="#A5B4FC" opacity="0.55"/></g><g class="mk-body"><ellipse cx="98" cy="213" rx="17" ry="9" fill="url(#kk-foot)"/><ellipse cx="158" cy="213" rx="17" ry="9" fill="url(#kk-foot)"/><path d="M128 50C134 50 139 52.5 144 56.5L188 93C196.5 100 201 107.5 201.5 118C204 142 204.5 166 202 188C200 205 189 214 171 214L85 214C67 214 56 205 54 188C51.5 166 52 142 54.5 118C55 107.5 59.5 100 68 93L112 56.5C117 52.5 122 50 128 50Z" fill="url(#kk-body)"/><g clip-path="url(#kk-clip)"><rect x="40" y="40" width="176" height="180" fill="url(#kk-rim)"/><rect x="40" y="40" width="176" height="180" fill="url(#kk-ao)"/><ellipse cx="96" cy="96" rx="22" ry="13" transform="rotate(-38 96 96)" fill="#FFFFFF" opacity="0.38" filter="url(#kk-blur-h)"/></g><path d="M60 104L128 47L196 104" fill="none" stroke="url(#kk-roof)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/><path d="M66 97L126 47.5" fill="none" stroke="#818CF8" stroke-width="3.2" stroke-linecap="round" opacity="0.75"/><path d="M130 47.5L170 81" fill="none" stroke="#A5B4FC" stroke-width="2.4" stroke-linecap="round" opacity="0.45"/><ellipse cx="128" cy="149" rx="55" ry="47" fill="#312E81" opacity="0.18"/><ellipse cx="128" cy="151" rx="53" ry="45" fill="url(#kk-face)"/><ellipse cx="89" cy="157" rx="12" ry="7.5" fill="url(#kk-cheek)"/><ellipse cx="167" cy="157" rx="12" ry="7.5" fill="url(#kk-cheek)"/><g class="mk-eyes" fill="none" stroke="#1E1B4B" stroke-width="5.5" stroke-linecap="round"><path d="M97 140Q108 125 119 140"/><path d="M137 140Q148 125 159 140"/></g><g class="mk-mouth"><path d="M116 154Q128 154 140 154Q139 170 128 170Q117 170 116 154Z" fill="#1E1B4B"/><path d="M121.5 164.5Q128 160.5 134.5 164.5Q131.5 168 128 168Q124.5 168 121.5 164.5Z" fill="#F472B6"/></g></g><g class="mk-coin"><circle cx="222" cy="93.8" r="20" fill="#92400E" opacity="0.35"/><circle cx="222" cy="92" r="20" fill="url(#kk-coin)"/><circle cx="222" cy="92" r="14.8" fill="url(#kk-coinface)" opacity="0.9"/><path d="M214.4 92.6L222.0 85.5L229.6 92.6M216.7 90.8V99.1H227.3V90.8" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="214.4" cy="83.0" rx="5.6" ry="3.2" transform="rotate(-35 214.4 83.0)" fill="#FFFFFF" opacity="0.8"/></g><g class="mk-shine" fill="#FBBF24"><path d="M246 64l2.2 5 5 2.2-5 2.2-2.2 5-2.2-5-5-2.2 5-2.2z" opacity="0.9"/></g></g></svg>
+                <div class="mock m-loose">
+                  <div class="m-card">
+                    <div class="m-level"><span class="coin"></span>Budget Buddy<em>240 pts</em></div>
+                    <div class="m-progress" style="margin-top:10px"><i style="width:60%"></i></div>
+                    <div class="m-tags"><span>First Log</span><span>Streak 7</span><span>Under Budget</span></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="cards">
-              <article class="card reveal">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></span>
+            <div class="feat-list">
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>
                 <h4 data-i18n="f.points.t">Points and levels</h4>
                 <p data-i18n="f.points.d">Earn 10 points a day for logging, plus a streak bonus. Climb from Getting Started to Tracker, Budget Buddy, Money Master and Finance Wizard.</p>
               </article>
-              <article class="card reveal" data-delay="1">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-flame"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-flame"/></svg>
                 <h4 data-i18n="f.badges.t">Streaks and badges</h4>
                 <p data-i18n="f.badges.d">Unlock First Log, Streak 7, Streak 30, First Budget Set, Under Budget and Saver, each with a confetti celebration.</p>
               </article>
-              <article class="card reveal" data-delay="2">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-flag"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-flag"/></svg>
                 <h4 data-i18n="f.challenges.t">Weekly family challenges</h4>
                 <p data-i18n="f.challenges.d">Log every day, have a no-spend weekend, keep Wants under a week's share of the budget. Each one adds bonus points to the household total.</p>
               </article>
-              <article class="card reveal">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg>
                 <h4 data-i18n="f.leader.t">Monthly leaderboard</h4>
                 <p data-i18n="f.leader.d">See who earned the most points this month. A friendly race that makes everyone want to log.</p>
               </article>
-              <article class="card reveal" data-delay="1">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-palette"/></svg></span>
+              <article class="feat wide reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-palette"/></svg>
                 <h4 data-i18n="f.themes.t">A theme for every age</h4>
-                <p data-i18n="f.themes.d">Light, Dark, a Playful theme for kids and a high-contrast Senior theme with bigger text. <a href="#themes">See them</a>.</p>
+                <p data-i18n="f.themes.d">Light, Dark, a Playful theme for kids and a high-contrast Senior theme with bigger text.</p>
+                <a class="link-chev" href="#themes"><span data-i18n="f.themes.link">See the themes</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
               </article>
             </div>
           </div>
 
           <!-- Everywhere -->
           <div class="feature-group">
-            <div class="group-head reveal">
-              <span class="group-icon g-every"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg></span>
-              <div><h3 data-i18n="g.every">Everywhere</h3><p data-i18n="g.everySub">Web, phone, TV and the chat apps you already use.</p></div>
+            <div class="group-aside reveal">
+              <h3 data-i18n="g.every">Everywhere</h3>
+              <p data-i18n="g.everySub">Web, phone, TV and the chat apps you already use.</p>
+              <a class="link-chev" href="#screens"><span data-i18n="g.everyLink">See it on every screen</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
             </div>
-            <div class="cards">
-              <article class="card reveal">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-monitor"/></svg></span>
+            <div class="feat-list">
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-monitor"/></svg>
                 <h4 data-i18n="f.web.t">Web app you can install</h4>
                 <p data-i18n="f.web.d">Works in any modern browser. Install it on Android, iPhone or desktop to get its own icon and a full-screen window.</p>
               </article>
-              <article class="card reveal" data-delay="1">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-wifi"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-wifi"/></svg>
                 <h4 data-i18n="f.offline.t">Works offline</h4>
                 <p data-i18n="f.offline.d">No signal at the market? Spending you add offline stays on the device and syncs as soon as you're back online, and nothing disappears silently.</p>
               </article>
-              <article class="card reveal" data-delay="2">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-car"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>
+                <h4 data-i18n="f.native.t">Android phone app</h4>
+                <p data-i18n="f.native.d">A native app for the whole family: Today, reminders, chores, lists, spending and budgets. iPhone app coming soon.</p>
+                <a class="link-chev" href="#download"><span data-i18n="f.native.link">Download the APK</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+              </article>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg>
+                <h4 data-i18n="f.smarttv.t">Smart TV viewer</h4>
+                <p data-i18n="f.smarttv.d">A view-only family dashboard for Android TV / Google TV / Fire TV and LG webOS, with a Samsung Tizen package for developer mode.</p>
+                <a class="link-chev" href="#download"><span data-i18n="f.smarttv.link">Get the TV app</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+              </article>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-car"/></svg>
                 <h4 data-i18n="f.tv.t">TV &amp; car display links</h4>
                 <p data-i18n="f.tv.d">Open a share link on a TV browser, wall tablet or car head unit to show this month's numbers in big type. It needs no login, refreshes every minute and can be revoked instantly.</p>
               </article>
-              <article class="card reveal">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span>
+              <article class="feat reveal">
+                <svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg>
                 <h4 data-i18n="f.bots.t">Telegram &amp; Discord bots</h4>
                 <p data-i18n="f.bots.d">Send "50k makan siang" and it's logged, with the category picked from your keywords; new words get category buttons and the bot remembers your pick. Ask for <kbd>/recent</kbd> or <kbd>/today</kbd>, set reminders with <kbd>/remind</kbd>, add to the shopping list with <kbd>/buy</kbd>, check chores with <kbd>/chores</kbd> and get the weekly meal plan with <kbd>/menu</kbd>. Connect your own bot in Settings.</p>
-              </article>
-              <article class="card reveal" data-delay="1">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
-                <h4 data-i18n="f.native.t">Android phone app</h4>
-                <p data-i18n="f.native.d">A native app for the whole family: Today, reminders, chores, lists, spending and budgets. <a href="#download">Download the APK</a>. iPhone app coming soon.</p>
-              </article>
-              <article class="card reveal" data-delay="2">
-                <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
-                <h4 data-i18n="f.smarttv.t">Smart TV viewer</h4>
-                <p data-i18n="f.smarttv.d">A view-only family dashboard for Android TV / Google TV / Fire TV and LG webOS, with a Samsung Tizen package for developer mode. <a href="#download">Get it</a>.</p>
               </article>
             </div>
           </div>
@@ -437,41 +426,40 @@
     </section>
 
     <!-- ================= HOW IT WORKS ================= -->
-    <section class="section section-alt" id="how" aria-labelledby="how-title">
+    <section class="section" id="how" aria-labelledby="how-title">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow" data-i18n="how.eyebrow">How it works</span>
           <h2 id="how-title" data-i18n="how.title">Up and running in three steps</h2>
           <p data-i18n="how.lead">No spreadsheets and no bank passwords. Just your household, logging as you go.</p>
         </div>
         <ol class="steps">
           <li class="step reveal">
-            <div class="step-num" aria-hidden="true">1</div>
+            <div class="step-num" aria-hidden="true">01</div>
             <h3 data-i18n="how.s1.t">Create your household</h3>
             <p data-i18n="how.s1.d">Sign up and you're the Family Admin. Kinkit starts you with sensible categories and income sources.</p>
             <ul>
-              <li data-i18n="how.s1.l1">Invite a partner, kids or grandparents</li>
-              <li data-i18n="how.s1.l2">Give each one a role and an allowance</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s1.l1">Invite a partner, kids or grandparents</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s1.l2">Give each one a role and an allowance</span></li>
             </ul>
           </li>
-          <li class="step reveal" data-delay="1">
-            <div class="step-num" aria-hidden="true">2</div>
+          <li class="step reveal">
+            <div class="step-num" aria-hidden="true">02</div>
             <h3 data-i18n="how.s2.t">Log as you go</h3>
             <p data-i18n="how.s2.d">Use whatever is closest to hand. Every entry lands in the same place.</p>
             <ul>
-              <li data-i18n="how.s2.l1">Quick add in the app, even offline</li>
-              <li data-i18n="how.s2.l2">A chat message to your Telegram or Discord bot</li>
-              <li data-i18n="how.s2.l3">A receipt photo, a bank CSV or a recurring rule</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s2.l1">Quick add in the app, even offline</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s2.l2">A chat message to your Telegram or Discord bot</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s2.l3">A receipt photo, a bank CSV or a recurring rule</span></li>
             </ul>
           </li>
-          <li class="step reveal" data-delay="2">
-            <div class="step-num" aria-hidden="true">3</div>
+          <li class="step reveal">
+            <div class="step-num" aria-hidden="true">03</div>
             <h3 data-i18n="how.s3.t">See it, and stay on track</h3>
             <p data-i18n="how.s3.d">Budgets, goals and dashboards tell the story, and the game keeps everyone going.</p>
             <ul>
-              <li data-i18n="how.s3.l1">Budget vs actual, with alerts at 80%</li>
-              <li data-i18n="how.s3.l2">Goals with the monthly amount you need to save</li>
-              <li data-i18n="how.s3.l3">Points, badges and weekly challenges</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s3.l1">Budget vs actual, with alerts at 80%</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s3.l2">Goals with the monthly amount you need to save</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s3.l3">Points, badges and weekly challenges</span></li>
             </ul>
           </li>
         </ol>
@@ -482,7 +470,6 @@
     <section class="section" id="screens" aria-labelledby="screens-title">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow" data-i18n="screens.eyebrow">Every screen</span>
           <h2 id="screens-title" data-i18n="screens.title">On the phone, the laptop and the living-room TV</h2>
           <p data-i18n="screens.lead">The same household and the same numbers, sized for wherever your family is.</p>
         </div>
@@ -493,19 +480,22 @@
               <div class="notch"></div>
               <div class="screen" aria-hidden="true">
                 <div class="m-phone">
-                  <div class="m-head"><b>Spending</b><span class="m-period">‹ Nov ›</span></div>
-                  <div class="m-card">
-                    <div class="m-card-title">Spent of budget <em>68%</em></div>
-                    <div class="m-progress"><i></i></div>
+                  <div class="m-topbar"><i class="m-logo"></i>Kinkit</div>
+                  <div class="m-phone-body">
+                    <div class="m-head"><b>Spending</b><span class="m-period">‹ Nov ›</span></div>
+                    <div class="m-card">
+                      <div class="m-card-title">Spent of budget <em>68%</em></div>
+                      <div class="m-progress"><i></i></div>
+                    </div>
+                    <div class="m-card m-list">
+                      <div><span>Sayur &amp; buah</span><b>48rb</b></div>
+                      <div><span>Bensin</span><b>100rb</b></div>
+                      <div><span>Makan siang</span><b>25rb</b></div>
+                      <div><span>Netflix</span><b>54rb</b></div>
+                      <div><span>Listrik</span><b>350rb</b></div>
+                    </div>
+                    <div class="m-card m-level"><span class="coin"></span>Budget Buddy<em>240 pts</em></div>
                   </div>
-                  <div class="m-cats m-card">
-                    <div class="m-cat"><i style="background:#4f46e5"></i>Sayur &amp; buah<b>48rb</b></div>
-                    <div class="m-cat"><i style="background:#16a34a"></i>Bensin<b>100rb</b></div>
-                    <div class="m-cat"><i style="background:#d97706"></i>Makan siang<b>25rb</b></div>
-                    <div class="m-cat"><i style="background:#ec4899"></i>Netflix<b>54rb</b></div>
-                    <div class="m-cat"><i style="background:#0ea5e9"></i>Listrik<b>350rb</b></div>
-                  </div>
-                  <div class="m-badge"><span class="fl"></span>Budget Buddy · 240 pts</div>
                   <div class="m-tabbar"><span>Today</span><span>Home</span><span class="fab"></span><span class="on">Spending</span><span>More</span></div>
                 </div>
               </div>
@@ -513,36 +503,37 @@
             <div>
               <h3><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg><span data-i18n="screens.phone.t">Phone</span></h3>
               <p data-i18n="screens.phone.d">Use the Android app, or install the web app on any phone, with a bottom tab bar, a round + button and offline sync.</p>
-              <span class="status now" data-i18n="status.now">Available now</span>
-              <span class="status now" data-i18n="status.android">Android app: available now</span>
-              <span class="status soon" data-i18n="status.native">iPhone app: coming soon</span>
+              <ul class="status-list">
+                <li data-i18n="status.android">Android app: available now</li>
+                <li class="soon" data-i18n="status.native">iPhone app: coming soon</li>
+              </ul>
             </div>
           </div>
           <!-- laptop -->
-          <div class="screen-item reveal" data-delay="1">
+          <div class="screen-item reveal">
             <div class="device device-laptop mock" role="img" aria-label="Kinkit on a laptop: the Budget page with planned and actual amounts." data-i18n-aria="screens.webAlt">
               <div class="bezel">
                 <div class="screen" aria-hidden="true">
                   <div class="m-app">
                     <div class="m-side">
-                      <div class="m-brand"><i></i>Kinkit</div>
-                      <div class="m-nav"><span>Today</span><span>Dashboard</span><span>Transactions</span><span class="on">Budget</span><span>Savings</span><span>Family</span></div>
+                      <div class="m-brand"><i class="m-logo"></i><span>Kinkit</span></div>
                       <div class="m-add">+ Add</div>
+                      <div class="m-nav"><span>Today</span><span>Dashboard</span><span>Transactions</span><span class="on">Budget</span><span>Savings</span><span>Family</span></div>
                     </div>
                     <div class="m-main">
                       <div class="m-head"><b>Budget</b><span class="m-period">‹ 2026 ›</span></div>
                       <div class="m-card">
                         <div class="m-card-title">Needs <em>Spent / plan</em></div>
                         <div class="m-cats">
-                          <div class="m-cat"><i style="background:#16a34a"></i>Groceries<b>2,3 / 3jt</b><span class="meter"><u style="width:76%;background:#16a34a"></u></span></div>
-                          <div class="m-cat"><i style="background:#d97706"></i>Utilities<b>0,9 / 1jt</b><span class="meter"><u style="width:90%;background:#d97706"></u></span></div>
+                          <div class="m-cat"><i></i>Groceries<b>2,3 / 3jt</b><span class="meter"><u class="ok" style="width:76%"></u></span></div>
+                          <div class="m-cat"><i></i>Utilities<b>0,9 / 1jt</b><span class="meter"><u class="warn" style="width:90%"></u></span></div>
                         </div>
                       </div>
                       <div class="m-card">
                         <div class="m-card-title">Wants</div>
                         <div class="m-cats">
-                          <div class="m-cat"><i style="background:#dc2626"></i>Eating out<b>1,2 / 1jt</b><span class="meter"><u style="width:100%;background:#dc2626"></u></span></div>
-                          <div class="m-cat"><i style="background:#16a34a"></i>Hobbies<b>0,2 / 0,5jt</b><span class="meter"><u style="width:40%;background:#16a34a"></u></span></div>
+                          <div class="m-cat"><i></i>Eating out<b class="over">1,2 / 1jt</b><span class="meter"><u class="over" style="width:100%"></u></span></div>
+                          <div class="m-cat"><i></i>Hobbies<b>0,2 / 0,5jt</b><span class="meter"><u class="ok" style="width:40%"></u></span></div>
                         </div>
                       </div>
                     </div>
@@ -554,20 +545,20 @@
             <div>
               <h3><svg class="icon" aria-hidden="true"><use href="#i-monitor"/></svg><span data-i18n="screens.web.t">Web</span></h3>
               <p data-i18n="screens.web.d">The full experience: budgets, imports, dashboards, family settings and PDF export.</p>
-              <span class="status now" data-i18n="status.now">Available now</span>
+              <ul class="status-list"><li data-i18n="status.now">Available now</li></ul>
             </div>
           </div>
           <!-- TV -->
-          <div class="screen-item reveal" data-delay="2">
-            <div class="device device-tv" role="img" aria-label="Kinkit TV view: this month's spending, budget left and savings in large type, refreshing every minute." data-i18n-aria="screens.tvAlt">
+          <div class="screen-item reveal">
+            <div class="device device-tv" role="img" aria-label="Kinkit TV view: this month's spending, budget left and income in large type, refreshing every minute." data-i18n-aria="screens.tvAlt">
               <div class="bezel">
                 <div class="screen mock" aria-hidden="true">
                   <div class="m-tv">
-                    <div class="m-tv-head"><b>November 2026</b><span>The Wijaya family</span></div>
+                    <div class="m-tv-head"><b><i class="m-logo"></i>November 2026</b><span>The Wijaya family</span></div>
                     <div class="m-tv-nums">
                       <div><small>Spent</small><strong>6,1jt</strong></div>
                       <div><small>Budget left</small><strong class="g">2,9jt</strong></div>
-                      <div><small>Income</small><strong class="y">14,5jt</strong></div>
+                      <div><small>Income</small><strong>14,5jt</strong></div>
                     </div>
                     <div class="m-tv-bar"><span>68% of monthly budget used</span><div class="track"><i></i></div></div>
                     <div class="m-tv-foot"><span class="m-live">Live · refreshes every minute</span><span>kinkit</span></div>
@@ -579,8 +570,10 @@
             <div>
               <h3><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg><span data-i18n="screens.tv.t">TV &amp; car</span></h3>
               <p data-i18n="screens.tv.d">Open a TV link in any TV browser or car head unit, or install the TV app on Android TV / Google TV / Fire TV or LG webOS.</p>
-              <span class="status now" data-i18n="status.tvnow">TV link: available now</span>
-              <span class="status now" data-i18n="status.tvsoon">Smart TV apps: available now</span>
+              <ul class="status-list">
+                <li data-i18n="status.tvnow">TV link: available now</li>
+                <li data-i18n="status.tvsoon">Smart TV apps: available now</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -588,10 +581,9 @@
     </section>
 
     <!-- ================= THEMES ================= -->
-    <section class="section section-alt" id="themes" aria-labelledby="themes-title">
+    <section class="section" id="themes" aria-labelledby="themes-title">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow" data-i18n="themes.eyebrow">Themes for everyone</span>
           <h2 id="themes-title" data-i18n="themes.title">From your youngest to your oldest</h2>
           <p data-i18n="themes.lead">Each person picks the look that works for them, on their own device, under Settings › Display.</p>
         </div>
@@ -604,7 +596,7 @@
             </div>
             <div class="theme-body"><h3 data-i18n="themes.light.t">Light</h3><p data-i18n="themes.light.d">Clean and calm for everyday use.</p></div>
           </article>
-          <article class="theme-card reveal" data-delay="1">
+          <article class="theme-card reveal">
             <div class="theme-preview tp-dark" aria-hidden="true">
               <span class="tp-title">Dark</span>
               <span class="tp-row">Groceries <span class="tp-good">76%</span></span>
@@ -612,7 +604,7 @@
             </div>
             <div class="theme-body"><h3 data-i18n="themes.dark.t">Dark</h3><p data-i18n="themes.dark.d">Easy on the eyes at night.</p></div>
           </article>
-          <article class="theme-card reveal" data-delay="2">
+          <article class="theme-card reveal">
             <div class="theme-preview tp-playful" aria-hidden="true">
               <span class="tp-title">Playful <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></span>
               <span class="tp-row">My allowance <span class="tp-good">60%</span></span>
@@ -620,7 +612,7 @@
             </div>
             <div class="theme-body"><h3 data-i18n="themes.playful.t">Playful (kids)</h3><p data-i18n="themes.playful.d">Warm colours, round corners and a friendly font, with contrast that stays readable.</p></div>
           </article>
-          <article class="theme-card reveal" data-delay="3">
+          <article class="theme-card reveal">
             <div class="theme-preview tp-senior" aria-hidden="true">
               <span class="tp-title">Senior</span>
               <span class="tp-row">Groceries <span class="tp-good">76%</span></span>
@@ -633,49 +625,68 @@
     </section>
 
     <!-- ================= DOWNLOAD ================= -->
-    <section class="section section-alt" id="download" aria-labelledby="download-title">
+    <section class="section" id="download" aria-labelledby="download-title">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow" data-i18n="dl.eyebrow">Download</span>
           <h2 id="download-title" data-i18n="dl.title">Get Kinkit on your phone and TV</h2>
           <p data-i18n="dl.lead">Free to install. Sign in with the same account you use on the web; the TV apps pair with a TV link instead and never ask for a password.</p>
         </div>
-        <div class="cards dl-cards">
-          <article class="card reveal">
-            <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
-            <h4 data-i18n="dl.android.t">Android phone</h4>
-            <p data-i18n="dl.android.d">Android 7 or newer. Open the file on your phone and allow "Install unknown apps" when asked.</p>
-            <a class="btn btn-primary btn-sm dl-btn" href="downloads/kinkit-android.apk" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.apk">Download APK</span></a>
-            <span class="dl-meta" data-dl-size="downloads/kinkit-android.apk"></span>
-          </article>
-          <article class="card reveal" data-delay="1">
-            <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
-            <h4 data-i18n="dl.atv.t">Android TV, Google TV &amp; Fire TV</h4>
-            <p data-i18n="dl.atv.d">Install with the Downloader app (type this page's address, then pick the file) or with <code>adb install</code>. Pair it with a TV link from Settings › Data &amp; devices.</p>
-            <a class="btn btn-primary btn-sm dl-btn" href="downloads/kinkit-tv-android.apk" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.apk">Download APK</span></a>
-            <span class="dl-meta" data-dl-size="downloads/kinkit-tv-android.apk"></span>
-          </article>
-          <article class="card reveal" data-delay="2">
-            <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
-            <h4 data-i18n="dl.webos.t">LG webOS TV</h4>
-            <p data-i18n="dl.webos.d">For TVs in Developer Mode: install with <code>ares-install</code>. Any TV can also just open its TV link in the browser.</p>
-            <a class="btn btn-ghost btn-sm dl-btn" href="downloads/kinkit-tv-webos.ipk" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.ipk">Download IPK</span></a>
-            <span class="dl-meta" data-dl-size="downloads/kinkit-tv-webos.ipk"></span>
-          </article>
-          <article class="card reveal" data-delay="3">
-            <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
-            <h4 data-i18n="dl.tizen.t">Samsung Tizen TV</h4>
-            <p data-i18n="dl.tizen.d">Samsung requires each package to be signed with your own certificate. Open this project in Tizen Studio and run it on a TV in Developer Mode, or use the TV link in the browser.</p>
-            <a class="btn btn-ghost btn-sm dl-btn" href="downloads/kinkit-tv-tizen-webos-source.zip" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.zip">Download project (.zip)</span></a>
-            <span class="dl-meta" data-dl-size="downloads/kinkit-tv-tizen-webos-source.zip"></span>
-          </article>
-          <article class="card reveal">
-            <span class="ficon"><svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg></span>
-            <h4 data-i18n="dl.web.t">iPhone, iPad &amp; computers</h4>
-            <p data-i18n="dl.web.d">Use the web app in Safari or any browser, then choose "Add to Home Screen" to get its own icon. A native iPhone app is coming soon.</p>
-            <a class="btn btn-ghost btn-sm dl-btn" href="/login" data-app-link="login"><span data-i18n="dl.open">Open the web app</span></a>
-          </article>
-        </div>
+        <ul class="dl-list reveal">
+          <li class="dl-row">
+            <span class="dl-icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
+            <div class="dl-text">
+              <h3 data-i18n="dl.android.t">Android phone</h3>
+              <p data-i18n="dl.android.d">Android 7 or newer. Open the file on your phone and allow "Install unknown apps" when asked.</p>
+            </div>
+            <div class="dl-action">
+              <a class="btn btn-primary btn-sm" href="downloads/kinkit-android.apk" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.apk">Download APK</span></a>
+              <span class="dl-meta" data-dl-size="downloads/kinkit-android.apk"></span>
+            </div>
+          </li>
+          <li class="dl-row">
+            <span class="dl-icon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
+            <div class="dl-text">
+              <h3 data-i18n="dl.atv.t">Android TV, Google TV &amp; Fire TV</h3>
+              <p data-i18n="dl.atv.d">Install with the Downloader app (type this page's address, then pick the file) or with <code>adb install</code>. Pair it with a TV link from Settings › Data &amp; devices.</p>
+            </div>
+            <div class="dl-action">
+              <a class="btn btn-secondary btn-sm" href="downloads/kinkit-tv-android.apk" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.apk">Download APK</span></a>
+              <span class="dl-meta" data-dl-size="downloads/kinkit-tv-android.apk"></span>
+            </div>
+          </li>
+          <li class="dl-row">
+            <span class="dl-icon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
+            <div class="dl-text">
+              <h3 data-i18n="dl.webos.t">LG webOS TV</h3>
+              <p data-i18n="dl.webos.d">For TVs in Developer Mode: install with <code>ares-install</code>. Any TV can also just open its TV link in the browser.</p>
+            </div>
+            <div class="dl-action">
+              <a class="btn btn-secondary btn-sm" href="downloads/kinkit-tv-webos.ipk" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.ipk">Download IPK</span></a>
+              <span class="dl-meta" data-dl-size="downloads/kinkit-tv-webos.ipk"></span>
+            </div>
+          </li>
+          <li class="dl-row">
+            <span class="dl-icon"><svg class="icon" aria-hidden="true"><use href="#i-tv"/></svg></span>
+            <div class="dl-text">
+              <h3 data-i18n="dl.tizen.t">Samsung Tizen TV</h3>
+              <p data-i18n="dl.tizen.d">Samsung requires each package to be signed with your own certificate. Open this project in Tizen Studio and run it on a TV in Developer Mode, or use the TV link in the browser.</p>
+            </div>
+            <div class="dl-action">
+              <a class="btn btn-secondary btn-sm" href="downloads/kinkit-tv-tizen-webos-source.zip" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="dl.zip">Download project (.zip)</span></a>
+              <span class="dl-meta" data-dl-size="downloads/kinkit-tv-tizen-webos-source.zip"></span>
+            </div>
+          </li>
+          <li class="dl-row">
+            <span class="dl-icon"><svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg></span>
+            <div class="dl-text">
+              <h3 data-i18n="dl.web.t">iPhone, iPad &amp; computers</h3>
+              <p data-i18n="dl.web.d">Use the web app in Safari or any browser, then choose "Add to Home Screen" to get its own icon. A native iPhone app is coming soon.</p>
+            </div>
+            <div class="dl-action">
+              <a class="link-chev" href="/login" data-app-link="login"><span data-i18n="dl.open">Open the web app</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+            </div>
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -683,7 +694,6 @@
     <section class="section" id="privacy" aria-labelledby="privacy-title">
       <div class="container privacy-grid">
         <div class="reveal">
-          <span class="eyebrow" data-i18n="privacy.eyebrow">Privacy &amp; data ownership</span>
           <h2 id="privacy-title" data-i18n="privacy.title">Your family's data stays yours</h2>
           <p data-i18n="privacy.lead">Kinkit never asks for your bank login. You decide what goes in, and you can take all of it out whenever you like.</p>
           <ul class="check-list">
@@ -693,7 +703,7 @@
             <li><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg><div><strong data-i18n="privacy.4.t">You control sharing</strong><span data-i18n="privacy.4.d">TV display links show only this month's summary, and you can revoke them with one click.</span></div></li>
           </ul>
         </div>
-        <div class="reveal" data-delay="1">
+        <div class="reveal">
           <div class="terminal" role="img" aria-label="Terminal: starting Kinkit with docker compose up -d, which starts Postgres, the app on port 5010 and the Telegram and Discord bots." data-i18n-aria="privacy.termAlt">
             <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i><span>~/kinkit</span></div>
 <pre aria-hidden="true"><span class="c"># your server, your data</span>
@@ -705,11 +715,11 @@
  <span class="ok">[+]</span> kinkit-discord-bot    Started
 <span class="c"># open http://localhost:5010</span></pre>
           </div>
-          <div class="export-chips" aria-label="Export formats">
-            <span><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>spending.csv</span>
-            <span><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>income.csv</span>
-            <span><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>all.json</span>
-          </div>
+          <ul class="export-files" aria-label="Export formats" data-i18n-aria="privacy.formats">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>spending.csv</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>income.csv</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>all.json</li>
+          </ul>
         </div>
       </div>
     </section>
@@ -724,16 +734,16 @@
       ║  Update the Indonesian strings in main.js (keys "price.*") too.  ║
       ╚══════════════════════════════════════════════════════════════════╝
     -->
-    <section class="section section-alt" id="pricing" aria-labelledby="pricing-title">
+    <section class="section" id="pricing" aria-labelledby="pricing-title">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow" data-i18n="price.eyebrow">Pricing</span>
           <h2 id="pricing-title" data-i18n="price.title">Simple plans for every household</h2>
           <p data-i18n="price.lead">Start free. Upgrade when your family wants more, or run it yourself.</p>
         </div>
         <div class="pricing">
           <!-- PLACEHOLDER tier 1 -->
           <article class="plan reveal">
+            <p class="plan-label" aria-hidden="true"></p>
             <h3 data-i18n="price.free.t">Free</h3>
             <p class="plan-desc" data-i18n="price.free.d">For getting started with your household's money.</p>
             <p class="price">Rp0 <small data-i18n="price.perMonth">/ month</small></p>
@@ -743,11 +753,11 @@
               <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.free.3">CSV &amp; JSON export</span></li>
               <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.free.4">Installable web app, offline mode</span></li>
             </ul>
-            <a class="btn btn-ghost btn-block" href="/signup" data-app-link="signup" data-i18n="cta.start">Start free</a>
+            <a class="btn btn-secondary btn-block plan-cta" href="/signup" data-app-link="signup" data-i18n="cta.start">Start free</a>
           </article>
           <!-- PLACEHOLDER tier 2 -->
-          <article class="plan featured reveal" data-delay="1">
-            <span class="ribbon" data-i18n="price.popular">Best for families</span>
+          <article class="plan featured reveal">
+            <p class="plan-label" data-i18n="price.popular">Best for families</p>
             <h3 data-i18n="price.family.t">Family</h3>
             <p class="plan-desc" data-i18n="price.family.d">For the whole household: kids, grandparents and every screen.</p>
             <p class="price">Rp49.000 <small data-i18n="price.perMonth">/ month</small></p>
@@ -758,10 +768,11 @@
               <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.4">Telegram/Discord bots &amp; budget alerts</span></li>
               <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.5">Receipts, bank CSV import, TV links</span></li>
             </ul>
-            <a class="btn btn-primary btn-block" href="/signup" data-app-link="signup" data-i18n="price.family.cta">Start with Family</a>
+            <a class="btn btn-primary btn-block plan-cta" href="/signup" data-app-link="signup" data-i18n="price.family.cta">Start with Family</a>
           </article>
           <!-- PLACEHOLDER tier 3 -->
-          <article class="plan reveal" data-delay="2">
+          <article class="plan reveal">
+            <p class="plan-label" aria-hidden="true"></p>
             <h3 data-i18n="price.self.t">Self-hosted</h3>
             <p class="plan-desc" data-i18n="price.self.d">For tinkerers who want everything on their own server.</p>
             <p class="price"><span data-i18n="price.self.price">Free</span> <small data-i18n="price.self.unit">/ your server</small></p>
@@ -771,7 +782,7 @@
               <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.self.3">Your Postgres database, your backups</span></li>
               <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.self.4">Community support</span></li>
             </ul>
-            <a class="btn btn-ghost btn-block" href="#privacy" data-i18n="price.self.cta">How to self-host</a>
+            <a class="link-chev lg plan-cta" href="#privacy"><span data-i18n="price.self.cta">How to self-host</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
           </article>
         </div>
         <p class="pricing-note" data-i18n="price.note">Plans and prices are a preview and may change before launch.</p>
@@ -780,9 +791,8 @@
 
     <!-- ================= FAQ ================= -->
     <section class="section" id="faq" aria-labelledby="faq-title">
-      <div class="container">
+      <div class="container faq-grid">
         <div class="section-head reveal">
-          <span class="eyebrow" data-i18n="faq.eyebrow">FAQ</span>
           <h2 id="faq-title" data-i18n="faq.title">Questions families ask</h2>
         </div>
         <div class="faq reveal">
@@ -816,7 +826,7 @@
           </details>
           <details>
             <summary><span data-i18n="faq.q8">Is there a phone or TV app?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-            <div class="answer"><p data-i18n="faq.a8">Today you can install the web app on Android, iPhone or desktop, and open a TV display link in any TV or car browser. A native iOS/Android app and a view-only smart TV app for Android TV / Google TV, Samsung Tizen and LG webOS are coming soon.</p></div>
+            <div class="answer"><p data-i18n="faq.a8">Yes. There is an Android phone app, and a view-only TV app for Android TV / Google TV / Fire TV and LG webOS, plus a Samsung Tizen project for TVs in developer mode. On iPhone, iPad and computers, install the web app from the browser; a native iPhone app is coming soon. Any TV or car browser can also open a TV display link.</p></div>
           </details>
         </div>
       </div>
@@ -825,14 +835,14 @@
     <!-- ================= FINAL CTA ================= -->
     <section class="container" aria-labelledby="cta-title">
       <div class="cta-final reveal">
-        <h2 id="cta-title" data-i18n="final.title">Bring your family's money home</h2>
-        <p data-i18n="final.lead">Set up your household in a couple of minutes. Invite everyone, log your first expense and earn your first badge today.</p>
-        <div class="hero-ctas">
-          <a class="btn btn-light" href="/signup" data-app-link="signup">
-            <span data-i18n="cta.start">Start free</span>
-            <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
-          </a>
-          <a class="btn btn-outline-light" href="#how" data-i18n="cta.how">See how it works</a>
+        <div aria-hidden="true"><svg class="mk mk--relax" viewBox="0 0 256 256" width="256" height="256" aria-hidden="true" focusable="false" data-mk-animate><ellipse class="mk-shadow" cx="128" cy="226" rx="64" ry="9" fill="#1E1B4B" opacity="0.28" filter="url(#kk-blur-s)"/><g class="mk-bob"><g class="mk-body"><ellipse cx="98" cy="213" rx="17" ry="9" fill="url(#kk-foot)"/><ellipse cx="158" cy="213" rx="17" ry="9" fill="url(#kk-foot)"/><path d="M128 50C134 50 139 52.5 144 56.5L188 93C196.5 100 201 107.5 201.5 118C204 142 204.5 166 202 188C200 205 189 214 171 214L85 214C67 214 56 205 54 188C51.5 166 52 142 54.5 118C55 107.5 59.5 100 68 93L112 56.5C117 52.5 122 50 128 50Z" fill="url(#kk-body)"/><g clip-path="url(#kk-clip)"><rect x="40" y="40" width="176" height="180" fill="url(#kk-rim)"/><rect x="40" y="40" width="176" height="180" fill="url(#kk-ao)"/><ellipse cx="96" cy="96" rx="22" ry="13" transform="rotate(-38 96 96)" fill="#FFFFFF" opacity="0.38" filter="url(#kk-blur-h)"/></g><path d="M60 104L128 47L196 104" fill="none" stroke="url(#kk-roof)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/><path d="M66 97L126 47.5" fill="none" stroke="#818CF8" stroke-width="3.2" stroke-linecap="round" opacity="0.75"/><path d="M130 47.5L170 81" fill="none" stroke="#A5B4FC" stroke-width="2.4" stroke-linecap="round" opacity="0.45"/><ellipse cx="128" cy="149" rx="55" ry="47" fill="#312E81" opacity="0.18"/><ellipse cx="128" cy="151" rx="53" ry="45" fill="url(#kk-face)"/><ellipse cx="89" cy="157" rx="12" ry="7.5" fill="url(#kk-cheek)"/><ellipse cx="167" cy="157" rx="12" ry="7.5" fill="url(#kk-cheek)"/><g class="mk-eyes" fill="none" stroke="#1E1B4B" stroke-width="5" stroke-linecap="round"><path d="M98 136Q108 145 118 136"/><path d="M138 136Q148 145 158 136"/></g><path class="mk-mouth" d="M120 156Q128 163 136 156" fill="none" stroke="#1E1B4B" stroke-width="4.2" stroke-linecap="round"/></g><g class="mk-arm mk-arm-l"><ellipse cx="96" cy="186" rx="11" ry="17" transform="rotate(-62 96 186)" fill="url(#kk-limb)"/><ellipse cx="93.2" cy="180.1" rx="3.8" ry="5.1" transform="rotate(-62 96 186)" fill="#A5B4FC" opacity="0.55"/></g><g class="mk-arm mk-arm-r"><ellipse cx="160" cy="186" rx="11" ry="17" transform="rotate(62 160 186)" fill="url(#kk-limb)"/><ellipse cx="157.2" cy="180.1" rx="3.8" ry="5.1" transform="rotate(62 160 186)" fill="#A5B4FC" opacity="0.55"/></g><g class="mk-zzz" fill="none" stroke="#818CF8" stroke-linecap="round" stroke-linejoin="round"><path d="M196 62h12l-12 13h12" stroke-width="3.6"/><path d="M218 40h8l-8 9h8" stroke-width="2.8" opacity="0.7"/></g></g></svg></div>
+        <div>
+          <h2 id="cta-title" data-i18n="final.title">Bring your family's money home</h2>
+          <p data-i18n="final.lead">Set up your household in a couple of minutes. Invite everyone, log your first expense and earn your first badge today.</p>
+          <div class="hero-ctas">
+            <a class="btn btn-primary" href="/signup" data-app-link="signup" data-i18n="cta.start">Start free</a>
+            <a class="link-chev lg" href="#how"><span data-i18n="cta.how">See how it works</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+          </div>
         </div>
       </div>
     </section>
@@ -842,7 +852,7 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-about">
-          <a class="brand" href="#top" aria-label="Kinkit, back to top" data-i18n-aria="footer.top">
+          <a class="footer-brand" href="#top" aria-label="Kinkit, back to top" data-i18n-aria="footer.top">
             <svg aria-hidden="true"><use href="#logo"/></svg>
             Kinkit
           </a>
@@ -854,6 +864,7 @@
             <li><a href="#features" data-i18n="nav.features">Features</a></li>
             <li><a href="#screens" data-i18n="nav.screens">Every screen</a></li>
             <li><a href="#themes" data-i18n="footer.themes">Themes</a></li>
+            <li><a href="#download" data-i18n="nav.download">Download</a></li>
             <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
           </ul>
         </nav>
@@ -875,11 +886,11 @@
       </div>
       <div class="footer-bottom">
         <span>© <span id="year">2026</span> Kinkit</span>
-        <a href="#top" data-i18n="footer.back">Back to top ↑</a>
+        <a href="#top" data-i18n="footer.back">Back to top</a>
       </div>
     </div>
   </footer>
 
-  <script src="main.js?v=3" defer></script>
+  <script src="main.js?v=5" defer></script>
 </body>
 </html>

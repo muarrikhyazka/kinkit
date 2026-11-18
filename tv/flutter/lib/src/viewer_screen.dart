@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'api.dart';
 import 'config.dart';
 import 'kinkit_logo.dart';
+import 'mascot.dart';
 import 'models.dart';
 import 'money.dart';
 import 'pages.dart';
@@ -307,8 +308,9 @@ class _ViewerScreenState extends State<ViewerScreen> {
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         if (!_offline) const CircularProgressIndicator(color: TvColors.primary),
         if (_offline) ...[
-          const Icon(Icons.cloud_off, size: 56, color: TvColors.warning),
-          const SizedBox(height: 12),
+          // Kiki "thinks" while there's no data to show.
+          const Mascot(pose: MascotPose.think, size: 120),
+          const SizedBox(height: 8),
           const Text('Cannot reach Kinkit', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
           Text(_offlineReason ?? '', textAlign: TextAlign.center,
@@ -330,7 +332,7 @@ class _ViewerScreenState extends State<ViewerScreen> {
     final int page = _page < pages.length ? _page : 0;
     return Column(children: [
       _header(d),
-      const SizedBox(height: 14),
+      const SizedBox(height: 12),
       Expanded(
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 450),
@@ -351,24 +353,19 @@ class _ViewerScreenState extends State<ViewerScreen> {
 
   Widget _header(TvData d) {
     final name = d.householdName ?? d.displayName;
-    return SizedBox(
-      height: 44,
-      child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        const KinkitLogo(size: 38),
-        const SizedBox(width: 10),
-        ShaderMask(
-          shaderCallback: (r) => const LinearGradient(colors: [TvColors.primary, TvColors.brandEnd]).createShader(r),
-          child: const Text('Kinkit', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white)),
-        ),
+    return TvBrandBar(
+      wordmark: 'Kinkit',
+      logo: const KinkitLogo(size: 34),
+      children: [
         if (name != null) ...[
           const SizedBox(width: 14),
           Flexible(
             child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 20, color: TvColors.muted, fontWeight: FontWeight.w600)),
+                style: const TextStyle(fontSize: 20, color: TvColors.chromeSoft, fontWeight: FontWeight.w600)),
           ),
         ],
         const SizedBox(width: 18),
-        Text('${monthLong[d.month - 1]} ${d.year}', style: const TextStyle(fontSize: 20, color: TvColors.muted)),
+        Text('${monthLong[d.month - 1]} ${d.year}', style: const TextStyle(fontSize: 20, color: TvColors.chromeSoft)),
         const Spacer(),
         if (_offline) ...[
           StatusBadge(
@@ -379,15 +376,15 @@ class _ViewerScreenState extends State<ViewerScreen> {
           const SizedBox(width: 12),
         ],
         if (_paused) ...[
-          const StatusBadge(label: 'PAUSED', color: TvColors.accent, icon: Icons.pause),
+          const StatusBadge(label: 'PAUSED', color: TvColors.onChrome, icon: Icons.pause),
           const SizedBox(width: 12),
         ],
         Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.end, children: [
           Text(DateFormat('HH:mm').format(_now),
-              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w700, height: 1.0)),
-          Text(DateFormat('EEE d MMM').format(_now), style: const TextStyle(fontSize: 12, color: TvColors.muted)),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700, height: 1.0, color: TvColors.onChrome)),
+          Text(DateFormat('EEE d MMM').format(_now), style: const TextStyle(fontSize: 12, color: TvColors.chromeSoft)),
         ]),
-      ]),
+      ],
     );
   }
 

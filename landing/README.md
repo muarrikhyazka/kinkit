@@ -8,10 +8,28 @@ landing/
 ├── styles.css          # layout, light/dark via prefers-color-scheme, reduced motion
 ├── main.js             # app links (APP_URL), menu, scroll reveal, FAQ, EN/ID toggle + Indonesian strings
 └── assets/
-    ├── mockups.css     # CSS-built phone / laptop / TV device mockups of the dashboard
+    ├── mockups.css     # CSS-built phone / laptop / TV mockups of the web app (purple chrome, calm cards)
     ├── favicon.svg     # canonical logo (copy of brand/kinkit-logo.svg); same artwork as the inline favicon and #logo sprite in index.html
     └── og-image.svg    # 1200x630 social card
 ```
+
+## Design
+
+The page follows the web app's design system (`react/DESIGN_AUDIT.md`): spacing 4/8/12/16/24/32
+(plus 48/64/96 for section rhythm), radii 6/10/14, two shadows, type 12/14/16/20/24/32 with a 48px
+hero display size, purple only for primary actions and key accents, no gradients or glows. The top bar
+is purple with the white logo tile and white wordmark, like the app's chrome. Links are never
+underlined; navigation in copy uses a `.link-chev` text button with the `#i-chevron` icon.
+
+**Kiki (mascot)** appears three times, on purpose: waving in the hero (`mascot.svg`), celebrating next
+to "Fun & motivation" (`mascot-celebrate.svg`) and relaxing in the final call to action
+(`mascot-relax.svg`). The SVG bodies are copied verbatim from `brand/`; their shared gradients and
+filters (`kk-*` ids) live once in the inline sprite. The motion CSS at the end of `styles.css` mirrors
+`react/src/mascot.css` and only runs under `prefers-reduced-motion: no-preference`; `main.js` starts
+the celebrate/relax motion when they scroll into view. If the art in `brand/` changes, re-copy it.
+
+Bump the `?v=` query on `styles.css`, `assets/mockups.css` and `main.js` in `index.html` whenever
+they change, because the CDN caches static files.
 
 ## Preview
 

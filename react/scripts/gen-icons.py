@@ -1,71 +1,60 @@
 #!/usr/bin/env python3
-"""Generate Kinkit's PWA icons into react/public (run from anywhere):
+"""Regenerate Kinkit's PWA icons in react/public from brand/ (run from anywhere):
 
     python3 react/scripts/gen-icons.py
 
-Draws a white "K" on the brand indigo, as SVG (favicon/icon.svg) and PNG
-(192, 512, maskable 512, apple-touch 180). Needs Pillow for the PNGs.
+- favicon.svg, icon.svg: copies of brand/kinkit-logo.svg (white tile, purple house).
+- icon-192.png, icon-512.png: renders of the tile.
+- apple-touch-icon.png (180): full-bleed white, purple mark centered (~62%).
+- icon-maskable-512.png: full-bleed white, mark inside the safe zone (~55%).
+
+Needs `rsvg-convert` on PATH (librsvg). Without it, use docker:
+    docker run --rm -v "$PWD":/w -w /w alpine:3.20 sh -c \
+      "apk add --no-cache rsvg-convert python3 >/dev/null && python3 react/scripts/gen-icons.py"
+After changing icons, bump the ?v= cache-busters in react/index.html,
+react/public/manifest.webmanifest and VERSION/SHELL in react/public/sw.js.
 """
 import os
+import re
+import shutil
+import subprocess
+import tempfile
 
-PUBLIC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "public")
-BG_TOP, BG_BOTTOM, FG = (99, 102, 241), (79, 70, 229), (255, 255, 255)
-
-# "K" in a 512x512 design space
-BAR = [(150, 116), (218, 116), (218, 396), (150, 396)]
-UPPER = [(218, 236), (218, 324), (378, 116), (290, 116)]
-LOWER = [(230, 304), (280, 236), (384, 396), (300, 396)]
-SHAPES = [BAR, UPPER, LOWER]
-
-
-def svg(rounded=True):
-    pts = lambda poly: " ".join(f"{x},{y}" for x, y in poly)
-    polys = "\n  ".join(f'<polygon points="{pts(p)}" fill="#fff"/>' for p in SHAPES)
-    rx = ' rx="112"' if rounded else ""
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#4f46e5"/></linearGradient></defs>
-  <rect width="512" height="512"{rx} fill="url(#g)"/>
-  {polys}
-</svg>
-"""
+HERE = os.path.dirname(os.path.abspath(__file__))
+PUBLIC = os.path.normpath(os.path.join(HERE, "..", "public"))
+BRAND = os.path.normpath(os.path.join(HERE, "..", "..", "brand"))
 
 
-def png(size, path, maskable=False, rounded=True):
-    from PIL import Image, ImageDraw
+def mark_inner():
+    svg = open(os.path.join(BRAND, "kinkit-mark.svg")).read()
+    return re.search(r"<svg[^>]*>(.*)</svg>", svg, re.S).group(1)
 
-    ss = 4  # supersample for smooth edges
-    S = size * ss
-    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
-    grad = Image.new("RGBA", (S, S))
-    gd = ImageDraw.Draw(grad)
-    for y in range(S):
-        t = y / (S - 1)
-        gd.line([(0, y), (S, y)], fill=tuple(round(a + (b - a) * t) for a, b in zip(BG_TOP, BG_BOTTOM)) + (255,))
-    mask = Image.new("L", (S, S), 0)
-    md = ImageDraw.Draw(mask)
-    if rounded and not maskable:
-        md.rounded_rectangle([0, 0, S - 1, S - 1], radius=int(S * 112 / 512), fill=255)
-    else:
-        md.rectangle([0, 0, S, S], fill=255)
-    img.paste(grad, (0, 0), mask)
-    d = ImageDraw.Draw(img)
-    scale = 0.72 if maskable else 1.0  # maskable: keep the glyph inside the safe zone
-    off = S * (1 - scale) / 2
-    for poly in SHAPES:
-        d.polygon([(off + x * S / 512 * scale, off + y * S / 512 * scale) for x, y in poly], fill=FG + (255,))
-    img.resize((size, size), Image.LANCZOS).save(path, optimize=True)
+
+def full_bleed(scale):
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+        '<rect width="64" height="64" fill="#FFFFFF"/>'
+        f'<g transform="translate(32 32) scale({scale}) translate(-32 -32)">{mark_inner()}</g></svg>'
+    )
+
+
+def render(src, size, out):
+    subprocess.run(["rsvg-convert", "-w", str(size), "-h", str(size), src, "-o", out], check=True)
 
 
 def main():
-    with open(os.path.join(PUBLIC, "icon.svg"), "w") as f:
-        f.write(svg())
-    with open(os.path.join(PUBLIC, "favicon.svg"), "w") as f:
-        f.write(svg())
-    png(192, os.path.join(PUBLIC, "icon-192.png"))
-    png(512, os.path.join(PUBLIC, "icon-512.png"))
-    png(512, os.path.join(PUBLIC, "icon-maskable-512.png"), maskable=True)
-    png(180, os.path.join(PUBLIC, "apple-touch-icon.png"), rounded=False)
-    print("icons written to", os.path.normpath(PUBLIC))
+    logo = os.path.join(BRAND, "kinkit-logo.svg")
+    for name in ("favicon.svg", "icon.svg"):
+        shutil.copyfile(logo, os.path.join(PUBLIC, name))
+    render(logo, 192, os.path.join(PUBLIC, "icon-192.png"))
+    render(logo, 512, os.path.join(PUBLIC, "icon-512.png"))
+    with tempfile.TemporaryDirectory() as tmp:
+        for scale, size, name in ((0.97, 180, "apple-touch-icon.png"), (0.86, 512, "icon-maskable-512.png")):
+            src = os.path.join(tmp, name + ".svg")
+            with open(src, "w") as f:
+                f.write(full_bleed(scale))
+            render(src, size, os.path.join(PUBLIC, name))
+    print("icons written to", PUBLIC)
 
 
 if __name__ == "__main__":

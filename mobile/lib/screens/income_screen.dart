@@ -118,7 +118,8 @@ class _IncomeScreenState extends ConsumerState<IncomeScreen> {
       ),
       title: Text(e.description.isNotEmpty ? e.description : (e.sourceName ?? 'Income'), overflow: TextOverflow.ellipsis),
       subtitle: Text('${prettyDate(e.txDate)} · ${e.sourceName ?? 'No source'}'),
-      trailing: Text(money.format(e.amount), style: TextStyle(fontWeight: FontWeight.w600, color: p.success)),
+      trailing: Text(money.format(e.amount),
+          style: TextStyle(fontWeight: FontWeight.w600, color: p.success, fontFeatures: kTabular)),
     );
     if (!canManage) return tile;
     return Dismissible(

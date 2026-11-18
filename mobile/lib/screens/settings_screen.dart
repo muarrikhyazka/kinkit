@@ -108,7 +108,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
-          Center(child: Text('kinkit mobile 1.0.0', style: TextStyle(color: p.muted, fontSize: 12))),
+          Center(child: Text('Kinkit mobile 1.0.0', style: TextStyle(color: p.muted, fontSize: 12))),
           const SizedBox(height: 24),
         ],
       ),

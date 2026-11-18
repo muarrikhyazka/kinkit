@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../theme.dart';
+import 'mascot.dart';
 
 /// Renders an [AsyncValue] with consistent loading / error / data states.
 /// Keeps showing previous data while refreshing.
@@ -30,7 +31,8 @@ class LoadingState extends StatelessWidget {
       const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator()));
 }
 
-/// Scrollable so it still works inside a RefreshIndicator.
+/// Scrollable so it still works inside a RefreshIndicator. Kiki "thinks"
+/// next to the message (brand: errors and no-data states).
 class ErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
@@ -42,13 +44,16 @@ class ErrorState extends StatelessWidget {
     final p = context.palette;
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.symmetric(horizontal: KSpace.s6, vertical: KSpace.s6),
       children: [
-        Icon(Icons.cloud_off_outlined, size: 48, color: p.danger),
-        const SizedBox(height: 12),
-        Text(message, textAlign: TextAlign.center, style: TextStyle(color: p.text)),
+        const Center(child: Mascot(pose: MascotPose.think, size: 104)),
+        const SizedBox(height: KSpace.s3),
+        Text("Couldn't load this",
+            textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: p.text)),
+        const SizedBox(height: KSpace.s1),
+        Text(message, textAlign: TextAlign.center, style: TextStyle(color: p.muted)),
         if (onRetry != null) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: KSpace.s4),
           Center(child: OutlinedButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: const Text('Retry'))),
         ],
       ],
@@ -56,30 +61,45 @@ class ErrorState extends StatelessWidget {
   }
 }
 
+/// Empty state: an icon (or Kiki in [mascot] pose for the few "all clear" /
+/// "nothing yet" moments), a bold first line, an optional hint and action.
 class EmptyState extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final MascotPose? mascot;
   final String title;
   final String? message;
   final Widget? action;
 
-  const EmptyState({super.key, required this.icon, required this.title, this.message, this.action});
+  const EmptyState({super.key, this.icon, this.mascot, required this.title, this.message, this.action})
+      : assert(icon != null || mascot != null);
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+      padding: const EdgeInsets.symmetric(horizontal: KSpace.s6, vertical: KSpace.s6),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 48, color: p.muted),
-          const SizedBox(height: 12),
+          if (mascot != null)
+            Mascot(pose: mascot!, size: 104)
+          else
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(color: p.surface2, shape: BoxShape.circle),
+              child: Icon(icon, size: 28, color: p.muted),
+            ),
+          const SizedBox(height: KSpace.s3),
           Text(title, textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: p.text)),
           if (message != null) ...[
-            const SizedBox(height: 6),
-            Text(message!, textAlign: TextAlign.center, style: TextStyle(color: p.muted)),
+            const SizedBox(height: KSpace.s1),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 320),
+              child: Text(message!, textAlign: TextAlign.center, style: TextStyle(color: p.muted)),
+            ),
           ],
-          if (action != null) ...[const SizedBox(height: 16), action!],
+          if (action != null) ...[const SizedBox(height: KSpace.s4), action!],
         ],
       ),
     );
@@ -117,11 +137,11 @@ class SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 18, 16, 6),
+      padding: EdgeInsets.fromLTRB(20, KSpace.s5, trailing != null ? KSpace.s2 : KSpace.s4, KSpace.s2),
       child: Row(
         children: [
           Expanded(
-            child: Text(text, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: context.palette.text)),
+            child: Text(text, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.palette.text)),
           ),
           if (trailing != null) trailing!,
         ],
@@ -150,7 +170,7 @@ Future<bool> confirmDialog(BuildContext context, {required String title, String?
       actions: [
         TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
         FilledButton(
-          style: FilledButton.styleFrom(backgroundColor: ctx.palette.danger),
+          style: FilledButton.styleFrom(backgroundColor: ctx.palette.danger, foregroundColor: ctx.palette.onPrimary),
           onPressed: () => Navigator.pop(ctx, true),
           child: Text(confirm),
         ),

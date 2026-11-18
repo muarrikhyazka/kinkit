@@ -7,6 +7,7 @@ import { useAuth, canManage } from '../AuthContext.jsx'
 import { mealApi } from '../api'
 import { IconClose } from '../icons.jsx'
 import '../mealplan.css'
+import { ChevronLink } from '../ChevronLink.jsx'
 
 /**
  * Home › Meals: the weekly meal plan (one main dish + one side per day, the
@@ -86,7 +87,8 @@ export default function MealPlan() {
                 <div className="meal-dish"><span className="meal-label">Side</span> {d.veggie}</div>
                 {d.promo && (
                   <div className="meal-promo muted">
-                    Promo: <a href={d.promo.link} target="_blank" rel="noreferrer">{d.promo.name}</a> {d.promo.price} ({d.promo.store})
+                    <div>Promo: <strong>{d.promo.name}</strong> {d.promo.price} ({d.promo.store})</div>
+                    {d.promo.link && <ChevronLink href={d.promo.link} external>View promo</ChevronLink>}
                   </div>
                 )}
               </li>

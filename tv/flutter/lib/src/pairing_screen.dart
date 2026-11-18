@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'api.dart';
 import 'config.dart';
 import 'kinkit_logo.dart';
+import 'mascot.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -183,15 +184,10 @@ class _PairingScreenState extends State<PairingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(mainAxisSize: MainAxisSize.min, children: [
-          const KinkitLogo(size: 40),
-          const SizedBox(width: 12),
-          ShaderMask(
-            shaderCallback: (r) => const LinearGradient(colors: [TvColors.primary, TvColors.brandEnd]).createShader(r),
-            child: const Text('Kinkit TV', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white)),
-          ),
-        ]),
-        const SizedBox(height: 6),
+        const IntrinsicWidth(
+          child: TvBrandBar(wordmark: 'Kinkit TV', logo: KinkitLogo(size: 34), children: [SizedBox(width: 6)]),
+        ),
+        const SizedBox(height: 10),
         const Text(
           'In the Kinkit web app open Settings > Data & devices > TV / car display links, '
           'create a link, then enter the server and token here - or paste the whole link into either field.',
@@ -216,7 +212,17 @@ class _PairingScreenState extends State<PairingScreen> {
           Text(_error!, style: const TextStyle(color: TvColors.negative, fontSize: 14, fontWeight: FontWeight.w600)),
         if (_error == null && _info != null)
           Text(_info!, style: const TextStyle(color: TvColors.warning, fontSize: 14, fontWeight: FontWeight.w600)),
-        const Spacer(),
+        // Kiki waves hello in the free space above the footer (hidden if there's no room).
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, c) => c.maxHeight < 56
+                ? const SizedBox.shrink()
+                : Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Mascot(size: c.maxHeight < 104 ? c.maxHeight : 104, wave: true),
+                  ),
+          ),
+        ),
         const Text('View-only: this TV can never change your data.',
             style: TextStyle(fontSize: 12, color: TvColors.muted)),
       ],

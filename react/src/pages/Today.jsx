@@ -6,7 +6,8 @@ import { useAuth, canManage } from '../AuthContext.jsx'
 import { useToast } from '../Toast.jsx'
 import { SkeletonCard, SkeletonStats } from '../Skeleton.jsx'
 import { formatDue } from './Reminders.jsx'
-import { IconBell, IconBroom, IconCart, IconBudget, IconCalendar, IconCheck, IconClock, IconSun } from '../icons.jsx'
+import Mascot from '../Mascot.jsx'
+import { IconBell, IconBroom, IconCart, IconBudget, IconCalendar, IconCheck, IconClock } from '../icons.jsx'
 
 const SECTION_ICONS = { reminders: IconBell, chores: IconBroom, lists: IconCart, budget: IconBudget, coming_up: IconCalendar }
 const SectionIcon = ({ id }) => { const Icon = SECTION_ICONS[id] || IconCalendar; return <Icon width={18} height={18} aria-hidden="true" /> }
@@ -101,9 +102,12 @@ export default function Today() {
   return (
     <div>
       <div className="page-header">
-        <div>
-          <h1>{d?.greeting || 'Today'}</h1>
-          <p className="muted">{dateLabel}</p>
+        <div className="today-hello">
+          <Mascot size={64} />
+          <div>
+            <h1>{d?.greeting || 'Today'}</h1>
+            <p className="muted">{dateLabel}</p>
+          </div>
         </div>
         {canManage(user) && (
           <div className="page-header-controls">
@@ -117,7 +121,7 @@ export default function Today() {
 
       {!d ? <><SkeletonStats count={2} /><SkeletonCard lines={4} /></> : sections.length === 0 ? (
         <div className="card today-empty">
-          <p style={{ margin: 0, color: 'var(--primary)' }} aria-hidden="true"><IconSun width={36} height={36} /></p>
+          <Mascot pose="relax" size={120} />
           <p><strong>All clear for today.</strong></p>
           <p className="muted">Add <Link to="/reminders">reminders</Link>, <Link to="/home/chores">chores</Link> or a <Link to="/home/lists">shopping list</Link> and they will show up here.</p>
         </div>

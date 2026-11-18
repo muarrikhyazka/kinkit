@@ -7,6 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   testWidgets('app boots to the login screen when there is no session', (tester) async {
+    // Reduced motion keeps Kiki still so pumpAndSettle can settle.
+    tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
     SharedPreferences.setMockInitialValues({'kinkit.baseUrl': 'http://localhost:9'});
     final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(ProviderScope(
@@ -20,7 +23,7 @@ void main() {
     // AuthGate settles on the login screen.
     await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 500)));
     await tester.pumpAndSettle();
-    expect(find.text('kinkit'), findsOneWidget);
+    expect(find.text('Kinkit'), findsOneWidget);
     expect(find.text('Log in'), findsWidgets);
     expect(find.text('Server: http://localhost:9'), findsOneWidget);
     // The unreachable server opens the server field automatically.

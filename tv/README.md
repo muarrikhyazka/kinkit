@@ -48,6 +48,20 @@ keyboard (IME).
 When the server can't be reached, the last data stays on screen with an
 **OFFLINE - hh:mm** badge, and the app keeps retrying every minute.
 
+### Look (both apps, kept in sync)
+
+- Header: a purple bar (#4F46E5 to #4338CA, like the web top bar) with the white logo tile, a white
+  "Kinkit" wordmark, and the family name, month and date in #E0E7FF. The pairing screen uses the
+  same bar for "Kinkit TV".
+- Kiki the mascot: idle and waving on the pairing screen; "thinking" in the no-data states
+  ("Cannot reach Kinkit" with no cached data, "No spending yet", "No budget set", "No history yet").
+  The PNGs (`flutter/assets/mascot/`, `web/mascot/`) are `brand/mascot.svg` and `brand/mascot-think.svg`
+  rendered at 512px without the baked-in contact shadow. The apps draw that shadow themselves and
+  animate it with a gentle bob (squash/stretch plus a scaling shadow, as in `react/src/mascot.css`).
+  Motion stops under reduced-motion settings (`MediaQuery.disableAnimations` /
+  `prefers-reduced-motion`).
+- No text links anywhere: everything is a focusable button.
+
 ## 3. Flutter (Android TV / Google TV / Fire TV)
 
 Needs Flutter 3.22+ (Dart 3.3+), the Android SDK and JDK 17.
@@ -73,7 +87,7 @@ Notes:
 - The manifest declares `LEANBACK_LAUNCHER`, `android.software.leanback` / `android.hardware.touchscreen`
   as `required="false"`, `INTERNET`, `usesCleartextTraffic="true"` (LAN servers over plain http), and
   `FLAG_KEEP_SCREEN_ON` so the screen doesn't sleep.
-- `res/drawable/banner.xml` (320x180dp: logo mark + "Kinkit" wordmark on indigo) and the launcher icon
+- `res/drawable/banner.xml` (320x180dp: white logo tile with purple mark + white "Kinkit" wordmark on purple #4F46E5) and the launcher icon
   (`res/drawable/ic_launcher.xml`, adaptive version in `drawable-anydpi-v26/`) are vector art drawn from
   `brand/kinkit-logo.svg`; `lib/src/kinkit_logo.dart` draws the same logo in the header and pairing screen.
   Set up a real release `signingConfig` before store submission (sideload builds use the debug key).

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 /// The Kinkit logo, drawn from the same geometry as brand/kinkit-logo.svg
-/// (64x64 viewBox): an indigo gradient tile (#6366F1 -> #4F46E5) with a white
-/// house outline and dot. Set [tile] to false for the bare mark
-/// (brand/kinkit-mark.svg) in [markColor].
+/// (64x64 viewBox): a white rounded tile with a hairline #E0E7FF border and a
+/// purple (#4F46E5) house outline and dot. A soft shadow keeps the tile visible
+/// on white. Set [tile] to false for the bare mark (brand/kinkit-mark.svg) in
+/// [markColor].
 class KinkitLogo extends StatelessWidget {
   final double size;
   final bool tile;
   final Color markColor;
 
-  const KinkitLogo({super.key, this.size = 56, this.tile = true, this.markColor = Colors.white});
+  const KinkitLogo({super.key, this.size = 56, this.tile = true, this.markColor = KinkitLogoPainter.purple});
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +29,11 @@ class KinkitLogoPainter extends CustomPainter {
   final bool tile;
   final Color markColor;
 
-  const KinkitLogoPainter({this.tile = true, this.markColor = Colors.white});
+  const KinkitLogoPainter({this.tile = true, this.markColor = purple});
 
-  static const gradientTop = Color(0xFF6366F1);
-  static const gradientBottom = Color(0xFF4F46E5);
+  static const purple = Color(0xFF4F46E5);
+  static const tileColor = Color(0xFFFFFFFF);
+  static const hairline = Color(0xFFE0E7FF);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -41,15 +43,22 @@ class KinkitLogoPainter extends CustomPainter {
     canvas.scale(s);
 
     if (tile) {
-      const rect = Rect.fromLTWH(0, 0, 64, 64);
+      final tileRRect = RRect.fromRectAndRadius(const Rect.fromLTWH(0, 0, 64, 64), const Radius.circular(16));
+      // Soft drop shadow so the white tile still reads on white backgrounds.
       canvas.drawRRect(
-        RRect.fromRectAndRadius(rect, const Radius.circular(16)),
+        tileRRect.shift(const Offset(0, 1.5)),
         Paint()
-          ..shader = const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [gradientTop, gradientBottom],
-          ).createShader(rect),
+          ..color = const Color(0x1F1E1B4B)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.5),
+      );
+      canvas.drawRRect(tileRRect, Paint()..color = tileColor);
+      // Hairline border, inset so it stays inside the tile (as in the SVG).
+      canvas.drawRRect(
+        tileRRect.deflate(0.75),
+        Paint()
+          ..color = hairline
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5,
       );
     }
 

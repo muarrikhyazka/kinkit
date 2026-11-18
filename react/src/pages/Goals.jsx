@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { api, formatRupiah } from '../api'
 import { useApi, useSetup } from '../useApi'
 import { useToast, useHiddenIds } from '../Toast.jsx'
@@ -9,6 +8,7 @@ import PageHeader from '../PageHeader.jsx'
 import { SkeletonCard } from '../Skeleton.jsx'
 import { IconClose, IconEdit, IconPlus } from '../icons.jsx'
 import { prettyDate } from './Recurring.jsx'
+import { ChevronLink } from '../ChevronLink.jsx'
 
 const COLORS = ['#4f46e5', '#16a34a', '#d97706', '#db2777', '#0891b2', '#7c3aed']
 
@@ -154,9 +154,14 @@ export function TopGoalsCard({ limit = 3 }) {
   const goals = [...(data || [])].sort((a, b) => (a.remaining <= 0) - (b.remaining <= 0) || b.pct - a.pct).slice(0, limit)
   return (
     <div className="card">
-      <h2 className="card-title-row">Savings goals <Link to="/savings/goals" className="link-btn">All goals</Link></h2>
+      <h2 className="card-title-row">Savings goals <ChevronLink to="/savings/goals">All goals</ChevronLink></h2>
       {!data && <div className="muted">Loading...</div>}
-      {data && goals.length === 0 && <div className="muted">No goals yet. <Link to="/savings/goals">Create one</Link> to track what you're saving for.</div>}
+      {data && goals.length === 0 && (
+        <>
+          <p className="muted">No goals yet. Create one to track what you're saving for.</p>
+          <ChevronLink to="/savings/goals" className="standalone">Create a goal</ChevronLink>
+        </>
+      )}
       <div className="top-goals">
         {goals.map(g => (
           <div className="top-goal" key={g.id}>

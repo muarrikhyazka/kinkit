@@ -1,11 +1,29 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import 'mascot.dart';
 import 'models.dart';
 import 'money.dart';
 import 'theme.dart';
 
 /// The carousel sections of the viewer, mirroring react/src/pages/TVView.jsx.
+
+/// No-data message with Kiki thinking (same on tv/web: .empty with .mk).
+class _Empty extends StatelessWidget {
+  const _Empty(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        const Mascot(pose: MascotPose.think, size: 96),
+        const SizedBox(height: 6),
+        Text(text, textAlign: TextAlign.center, style: const TextStyle(fontSize: 20, color: TvColors.muted)),
+      ]),
+    );
+  }
+}
 
 class _Panel extends StatelessWidget {
   const _Panel({required this.title, required this.child, this.trailing});
@@ -135,7 +153,7 @@ class OverviewPage extends StatelessWidget {
             child: _Panel(
               title: 'Top expenses',
               child: top.isEmpty
-                  ? const Center(child: Text('No spending yet this month', style: TextStyle(fontSize: 18, color: TvColors.muted)))
+                  ? const _Empty('No spending yet this month')
                   : Column(children: [
                       for (final e in top)
                         Expanded(
@@ -211,8 +229,7 @@ class BudgetPage extends StatelessWidget {
           ? Text('${page + 1} / $pages', style: const TextStyle(fontSize: 15, color: TvColors.muted))
           : null,
       child: items.isEmpty
-          ? const Center(
-              child: Text('No budget set for this month', style: TextStyle(fontSize: 20, color: TvColors.muted)))
+          ? const _Empty('No budget set for this month')
           : Column(children: [
               for (var i = 0; i < perPage; i++)
                 Expanded(child: i < items.length ? _row(items[i]) : const SizedBox.shrink()),
@@ -256,7 +273,7 @@ class TrendPage extends StatelessWidget {
     if (t.isEmpty) {
       return const _Panel(
         title: '6-month trend',
-        child: Center(child: Text('No history yet', style: TextStyle(fontSize: 20, color: TvColors.muted))),
+        child: _Empty('No history yet'),
       );
     }
     var maxY = 0;

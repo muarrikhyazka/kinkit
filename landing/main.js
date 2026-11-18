@@ -1,6 +1,6 @@
 /* Kinkit landing page: small, dependency-free enhancements.
  *  - points every "Start free" / "Sign in" link at the app (APP_URL below)
- *  - mobile menu, sticky-header shadow, scroll reveal, one-open-at-a-time FAQ
+ *  - mobile menu, sticky-header shadow, scroll reveal, Kiki in-view motion, one-open-at-a-time FAQ
  *  - English / Bahasa Indonesia toggle (English is the default, matching the app UI)
  * The page works fully without JavaScript; this only adds polish.
  */
@@ -96,6 +96,21 @@
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
+  // ---------- Kiki: start the celebrate / relax motion when it scrolls into view ----------
+  // (CSS only animates under prefers-reduced-motion: no-preference, so this is safe either way)
+  var mascots = document.querySelectorAll('.mk[data-mk-animate]');
+  if (!reduceMotion && 'IntersectionObserver' in window) {
+    var mio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('mk--animate');
+          mio.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    mascots.forEach(function (el) { mio.observe(el); });
+  }
+
   // ---------- FAQ: keep one answer open at a time ----------
   var faqItems = document.querySelectorAll('.faq details');
   faqItems.forEach(function (d) {
@@ -119,7 +134,6 @@
     'nav.pricing': 'Harga',
     'nav.faq': 'Tanya jawab',
     'nav.download': 'Unduh',
-    'dl.eyebrow': 'Unduh',
     'dl.title': 'Pasang Kinkit di HP dan TV',
     'dl.lead': 'Gratis dipasang. Masuk dengan akun yang sama seperti di web; aplikasi TV dipasangkan lewat tautan TV dan tidak pernah meminta kata sandi.',
     'dl.android.t': 'HP Android',
@@ -142,17 +156,11 @@
     'cta.start': 'Mulai gratis',
     'cta.how': 'Lihat cara kerjanya',
 
-    'hero.pillTag': 'Baru',
-    'hero.pill': 'Aplikasi Android untuk HP dan TV sudah tersedia',
-    'hero.title': 'Satu rumah untuk keuangan keluarga <span class="grad">dan semua anggotanya.</span>',
-    'hero.lead': 'Kinkit membantu keluarga mencatat pengeluaran, menyusun anggaran, menabung untuk tujuan, dan menjaga semangat anak-anak, bersama-sama. Pakai di browser, di HP, di TV ruang keluarga, atau langsung dari Telegram dan Discord.',
-    'hero.note1': 'Gratis untuk mulai',
-    'hero.note2': 'Ekspor semua data, kapan saja',
-    'hero.note3': 'Bisa di-host sendiri',
-    'hero.visualAlt': 'Dasbor Kinkit di laptop dan HP, menampilkan pengeluaran bulan ini dibanding anggaran, pemasukan, tabungan, dan grafik pengeluaran per kategori.',
-    'hero.float1': 'Lencana baru: Under Budget',
-    'hero.float1s': 'Kebutuhan + Keinginan sesuai rencana',
-    'hero.float2s': 'Dicatat dari Telegram',
+    'hero.news': 'Aplikasi Android untuk HP dan TV sudah tersedia',
+    'hero.title': 'Satu rumah untuk keuangan keluarga, <span class="soft">dan semua anggotanya.</span>',
+    'hero.lead': 'Catat pengeluaran, susun anggaran, menabung untuk tujuan, dan jaga semangat anak-anak, bersama-sama. Pakai di browser, di HP, di TV ruang keluarga, atau langsung dari Telegram dan Discord.',
+    'hero.note': 'Gratis untuk mulai. Kinkit tidak pernah meminta login bank Anda.',
+    'hero.visualAlt': 'Dasbor Kinkit di laptop, menampilkan pengeluaran bulan ini dibanding anggaran, pemasukan, tabungan, dan pengeluaran per kategori, dengan maskot Kiki yang melambai.',
 
     'trust.label': 'Kenapa keluarga bisa memercayai Kinkit',
     'trust.1': 'Bisa di-host sendiri dengan docker-compose',
@@ -160,9 +168,8 @@
     'trust.3': 'Bisa dipasang, jalan saat offline',
     'trust.4': 'Foto struk hanya untuk keluarga Anda',
 
-    'features.eyebrow': 'Fitur',
-    'features.title': 'Semua yang dibutuhkan keluarga, tanpa yang tidak perlu',
-    'features.lead': 'Dari "25k makan siang" pertama sampai rekap akhir tahun, Kinkit mencakup keuangan, peran keluarga, motivasi, dan semua layar di rumah.',
+    'features.title': 'Keuangan, rumah, dan keluarga dalam satu aplikasi',
+    'features.lead': 'Dari "25k makan siang" pertama sampai rekap akhir tahun. Empat bagian, satu rumah tangga.',
     'g.money': 'Keuangan',
     'g.moneySub': 'Tahu ke mana uang pergi, dan rencanakan ke mana seharusnya.',
     'f.quick.t': 'Catat pengeluaran dalam hitungan detik',
@@ -196,7 +203,6 @@
     'f.allowance.d': 'Beri tiap anak uang saku bulanan dan biarkan mereka melihat berapa yang sudah terpakai bulan ini.',
     'f.undo.t': 'Urungkan, bukan "Yakin?"',
     'f.undo.d': 'Terhapus tanpa sengaja? Setiap penghapusan menampilkan tombol Urungkan selama beberapa detik, jadi tidak ada yang terjebak menjawab dialog konfirmasi.',
-    'tag.soon': 'Segera hadir',
     'f.today.t': 'Hari ini',
     'f.today.d': 'Satu tampilan harian untuk semua yang jatuh tempo di rumah: pengingat, tugas, daftar, dan kondisi anggaran.',
     'f.chores.t': 'Tugas rumah, pengingat &amp; daftar belanja',
@@ -213,10 +219,12 @@
     'f.leader.t': 'Papan peringkat bulanan',
     'f.leader.d': 'Lihat siapa yang paling banyak mengumpulkan poin bulan ini. Persaingan seru yang bikin semua mau mencatat.',
     'f.themes.t': 'Tema untuk segala usia',
-    'f.themes.d': 'Terang, Gelap, tema Ceria untuk anak, dan tema Senior berkontras tinggi dengan teks lebih besar. <a href="#themes">Lihat temanya</a>.',
+    'f.themes.d': 'Terang, Gelap, tema Ceria untuk anak, dan tema Senior berkontras tinggi dengan teks lebih besar.',
+    'f.themes.link': 'Lihat temanya',
 
     'g.every': 'Di mana saja',
     'g.everySub': 'Web, HP, TV, dan aplikasi chat yang sudah Anda pakai.',
+    'g.everyLink': 'Lihat di semua layar',
     'f.web.t': 'Aplikasi web yang bisa dipasang',
     'f.web.d': 'Berjalan di browser modern apa pun. Pasang di Android, iPhone, atau desktop untuk mendapat ikon sendiri dan jendela layar penuh.',
     'f.offline.t': 'Jalan saat offline',
@@ -226,11 +234,12 @@
     'f.bots.t': 'Bot Telegram &amp; Discord',
     'f.bots.d': 'Kirim "50k makan siang" dan langsung tercatat, dengan kategori dipilih dari kata kunci Anda; kata baru muncul dengan tombol kategori dan bot mengingat pilihan Anda. Ketik <kbd>/recent</kbd> atau <kbd>/today</kbd>, buat pengingat dengan <kbd>/remind</kbd>, tambah daftar belanja dengan <kbd>/buy</kbd>, cek tugas dengan <kbd>/chores</kbd>, dan lihat rencana menu mingguan dengan <kbd>/menu</kbd>. Hubungkan bot Anda sendiri di Pengaturan.',
     'f.native.t': 'Aplikasi Android untuk HP',
-    'f.native.d': 'Aplikasi native untuk seluruh keluarga: Hari ini, pengingat, tugas rumah, daftar belanja, pengeluaran, dan anggaran. <a href="#download">Unduh APK-nya</a>. Aplikasi iPhone segera hadir.',
+    'f.native.d': 'Aplikasi native untuk seluruh keluarga: Hari ini, pengingat, tugas rumah, daftar belanja, pengeluaran, dan anggaran. Aplikasi iPhone segera hadir.',
+    'f.native.link': 'Unduh APK-nya',
     'f.smarttv.t': 'Penampil smart TV',
-    'f.smarttv.d': 'Dasbor keluarga khusus tampilan untuk Android TV / Google TV / Fire TV dan LG webOS, plus paket Samsung Tizen untuk mode developer. <a href="#download">Dapatkan</a>.',
+    'f.smarttv.d': 'Dasbor keluarga khusus tampilan untuk Android TV / Google TV / Fire TV dan LG webOS, plus paket Samsung Tizen untuk mode developer.',
+    'f.smarttv.link': 'Dapatkan aplikasi TV',
 
-    'how.eyebrow': 'Cara kerja',
     'how.title': 'Siap dipakai dalam tiga langkah',
     'how.lead': 'Tanpa spreadsheet dan tanpa kata sandi bank. Cukup keluarga Anda, mencatat sambil jalan.',
     'how.s1.t': 'Buat rumah tangga Anda',
@@ -248,7 +257,6 @@
     'how.s3.l2': 'Target dengan jumlah tabungan bulanan yang dibutuhkan',
     'how.s3.l3': 'Poin, lencana, dan tantangan mingguan',
 
-    'screens.eyebrow': 'Semua layar',
     'screens.title': 'Di HP, laptop, dan TV ruang keluarga',
     'screens.lead': 'Keluarga yang sama dan angka yang sama, menyesuaikan di mana pun keluarga Anda berada.',
     'screens.phoneAlt': 'Kinkit di HP: pengeluaran bulan ini dibanding anggaran, pengeluaran terbaru, dan level poin.',
@@ -266,7 +274,6 @@
     'status.tvnow': 'Tautan TV: tersedia sekarang',
     'status.tvsoon': 'Aplikasi smart TV: tersedia sekarang',
 
-    'themes.eyebrow': 'Tema untuk semua',
     'themes.title': 'Dari si kecil sampai kakek-nenek',
     'themes.lead': 'Tiap orang memilih tampilan yang cocok, di perangkatnya sendiri, lewat Pengaturan › Tampilan.',
     'themes.light.t': 'Terang',
@@ -278,7 +285,6 @@
     'themes.senior.t': 'Senior (kontras tinggi)',
     'themes.senior.d': 'Teks lebih besar, tombol lebih besar, dan kontras hitam-putih yang tegas.',
 
-    'privacy.eyebrow': 'Privasi &amp; kepemilikan data',
     'privacy.title': 'Data keluarga Anda tetap milik Anda',
     'privacy.lead': 'Kinkit tidak pernah meminta login bank Anda. Anda yang menentukan apa yang masuk, dan Anda bisa mengambil semuanya kapan saja.',
     'privacy.1.t': 'Ekspor kapan saja',
@@ -289,9 +295,9 @@
     'privacy.3.d': 'Foto struk hanya bisa dilihat keluarga Anda, dan jumlahnya dibaca di perangkat Anda sendiri.',
     'privacy.4.t': 'Anda yang mengatur berbagi',
     'privacy.4.d': 'Tautan tampilan TV hanya menampilkan ringkasan bulan ini, dan bisa Anda cabut dengan sekali klik.',
+    'privacy.formats': 'Format ekspor',
     'privacy.termAlt': 'Terminal: menjalankan Kinkit dengan docker compose up -d, yang menyalakan Postgres, aplikasi di port 5010, serta bot Telegram dan Discord.',
 
-    'price.eyebrow': 'Harga',
     'price.title': 'Paket sederhana untuk setiap keluarga',
     'price.lead': 'Mulai gratis. Tingkatkan saat keluarga butuh lebih, atau jalankan sendiri.',
     'price.perMonth': '/ bulan',
@@ -321,7 +327,6 @@
     'price.self.cta': 'Cara host sendiri',
     'price.note': 'Paket dan harga masih pratinjau dan bisa berubah sebelum peluncuran.',
 
-    'faq.eyebrow': 'Tanya jawab',
     'faq.title': 'Pertanyaan yang sering diajukan keluarga',
     'faq.q1': 'Apakah saya harus menghubungkan rekening bank?',
     'faq.a1': 'Tidak. Kinkit tidak pernah meminta kredensial bank. Catat pengeluaran di aplikasi atau lewat chat, atau impor CSV mutasi yang sudah bisa Anda unduh dari bank (BCA, Mandiri, atau format umum). Anda melihat pratinjau sebelum apa pun disimpan.',
@@ -338,7 +343,7 @@
     'faq.q7': 'Mata uang apa saja yang didukung?',
     'faq.a7': 'Jumlah disimpan dalam rupiah (IDR). Anda bisa menampilkannya dalam IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD, atau INR, dikonversi dengan kurs harian.',
     'faq.q8': 'Apakah ada aplikasi HP atau TV?',
-    'faq.a8': 'Saat ini Anda bisa memasang aplikasi web di Android, iPhone, atau desktop, dan membuka tautan tampilan TV di browser TV atau mobil mana pun. Aplikasi native iOS/Android dan aplikasi smart TV khusus tampilan untuk Android TV / Google TV, Samsung Tizen, dan LG webOS segera hadir.',
+    'faq.a8': 'Ada. Tersedia aplikasi Android untuk HP, dan aplikasi TV khusus tampilan untuk Android TV / Google TV / Fire TV dan LG webOS, plus proyek Samsung Tizen untuk TV dalam mode developer. Di iPhone, iPad, dan komputer, pasang aplikasi webnya dari browser; aplikasi iPhone native segera hadir. Browser TV atau mobil mana pun juga bisa membuka tautan tampilan TV.',
 
     'final.title': 'Satukan keuangan keluarga Anda di rumah',
     'final.lead': 'Siapkan rumah tangga Anda dalam beberapa menit. Undang semua orang, catat pengeluaran pertama, dan raih lencana pertama hari ini.',
@@ -351,7 +356,7 @@
     'footer.export': 'Ekspor &amp; cadangan',
     'footer.selfhost': 'Host sendiri',
     'footer.account': 'Akun',
-    'footer.back': 'Kembali ke atas ↑'
+    'footer.back': 'Kembali ke atas'
   };
 
   var LANG_KEY = 'kinkit_landing_lang';

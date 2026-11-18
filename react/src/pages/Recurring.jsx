@@ -199,7 +199,7 @@ export default function Recurring() {
                       {describeSchedule(r)}
                       {r.end_date && <div className="muted">until {prettyDate(r.end_date)}</div>}
                     </td>
-                    <td data-label="Amount">{formatRupiah(r.amount)}</td>
+                    <td data-label="Amount" className="num">{formatRupiah(r.amount)}</td>
                     <td data-label="Next">{r.active ? (r.next_date ? prettyDate(r.next_date) : <span className="muted">Ended</span>) : <span className="tag">Paused</span>}</td>
                     <td className="row-actions">
                       <button className="icon-btn" onClick={() => toggle(r)} aria-label={r.active ? `Pause "${r.description}"` : `Resume "${r.description}"`} title={r.active ? 'Pause' : 'Resume'}>

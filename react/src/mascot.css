@@ -1,0 +1,99 @@
+/* Kiki mascot (Mascot.jsx). All coordinates are in the 256x256 viewBox. */
+.mk { display: inline-block; flex-shrink: 0; overflow: visible; vertical-align: middle; }
+.mk .mk-bob, .mk .mk-shadow, .mk .mk-arm, .mk .mk-eyes,
+.mk .mk-coin, .mk .mk-shine, .mk .mk-zzz, .mk .mk-dots circle { transform-box: view-box; }
+.mk .mk-bob { transform-origin: 128px 222px; }
+.mk .mk-shadow { transform-origin: 128px 226px; }
+.mk .mk-eyes { transform-origin: 128px 136px; }
+.mk .mk-wave { transform-origin: 194px 158px; }
+.mk .mk-coin { transform-origin: 222px 92px; }
+.mk .mk-shine { transform-origin: 246px 71px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* idle breathe: lift + gentle squash/stretch, shadow shrinks as it rises */
+  .mk--animate .mk-bob { animation: mk-bob 3.4s ease-in-out infinite; }
+  .mk--animate .mk-shadow { animation: mk-shadow 3.4s ease-in-out infinite; }
+
+  /* blink (open-eyed poses only) */
+  .mk--animate.mk--idle .mk-eyes,
+  .mk--animate.mk--think .mk-eyes { animation: mk-blink 5.2s infinite; }
+  .mk--animate.mk--think .mk-eyes { animation-delay: 1.7s; }
+
+  /* wave once on mount, and again on hover */
+  .mk--wave-once .mk-wave { animation: mk-wave 1.4s ease-in-out .35s 1 both; }
+  .mk--animate:hover .mk-wave { animation: mk-wave-h 1.2s ease-in-out 1; }
+
+  /* celebrate: three hops, then settle into the idle breathe */
+  .mk--animate.mk--celebrate .mk-bob { animation: mk-hop .75s cubic-bezier(.3, 0, .4, 1) 3, mk-bob 3.4s ease-in-out 2.25s infinite; }
+  .mk--animate.mk--celebrate .mk-shadow { animation: mk-hop-shadow .75s cubic-bezier(.3, 0, .4, 1) 3, mk-shadow 3.4s ease-in-out 2.25s infinite; }
+  .mk--animate.mk--celebrate .mk-coin { animation: mk-coin 2.6s ease-in-out infinite; }
+  .mk--animate.mk--celebrate .mk-shine { animation: mk-shine 2.6s ease-in-out infinite; }
+
+  /* relax: slower breathing, drifting z */
+  .mk--animate.mk--relax .mk-bob { animation-duration: 4.6s; }
+  .mk--animate.mk--relax .mk-shadow { animation-duration: 4.6s; }
+  .mk--animate.mk--relax .mk-zzz { animation: mk-zzz 4.6s ease-in-out infinite; }
+
+  /* think: thought dots pulse in sequence */
+  .mk--animate.mk--think .mk-dots circle { animation: mk-dot 2.4s ease-in-out infinite; }
+  .mk--animate.mk--think .mk-dots circle:nth-child(2) { animation-delay: .25s; }
+  .mk--animate.mk--think .mk-dots circle:nth-child(3) { animation-delay: .5s; }
+}
+
+@keyframes mk-bob {
+  0%, 100% { transform: translateY(0) scale(1.02, .98); }
+  50% { transform: translateY(-6px) scale(.99, 1.015); }
+}
+@keyframes mk-shadow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(.86); opacity: .7; }
+}
+@keyframes mk-blink {
+  0%, 93%, 100% { transform: scaleY(1); }
+  95.5% { transform: scaleY(.08); }
+}
+@keyframes mk-wave {
+  0%, 100% { transform: rotate(0); }
+  20%, 60% { transform: rotate(16deg); }
+  40%, 80% { transform: rotate(-10deg); }
+}
+@keyframes mk-wave-h {
+  0%, 100% { transform: rotate(0); }
+  20%, 60% { transform: rotate(16deg); }
+  40%, 80% { transform: rotate(-10deg); }
+}
+@keyframes mk-hop {
+  0%, 100% { transform: translateY(0) scale(1.05, .94); }
+  15% { transform: translateY(-2px) scale(.96, 1.05); }
+  50% { transform: translateY(-20px) scale(.98, 1.03); }
+  85% { transform: translateY(-1px) scale(1, 1); }
+}
+@keyframes mk-hop-shadow {
+  0%, 100% { transform: scale(1.04); opacity: 1; }
+  50% { transform: scale(.72); opacity: .5; }
+}
+@keyframes mk-coin {
+  0%, 100% { transform: rotate(-6deg) translateY(0); }
+  50% { transform: rotate(6deg) translateY(-3px); }
+}
+@keyframes mk-shine {
+  0%, 30%, 100% { transform: scale(.4); opacity: 0; }
+  45% { transform: scale(1.15) rotate(20deg); opacity: 1; }
+  65% { transform: scale(.8) rotate(40deg); opacity: .6; }
+}
+@keyframes mk-zzz {
+  0% { transform: translate(-4px, 6px); opacity: 0; }
+  30%, 70% { opacity: 1; }
+  100% { transform: translate(4px, -8px); opacity: 0; }
+}
+@keyframes mk-dot {
+  0%, 100% { opacity: .35; }
+  40% { opacity: 1; }
+}
+
+/* ---- placements ---- */
+.login-mascot { display: flex; justify-content: center; margin: -.25rem 0 -.5rem; }
+.today-hello { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+.today-hello .mk { margin: -6px 0 -10px -4px; }
+.today-empty .mk { display: block; margin: 0 auto .25rem; }
+.celebration-mascot { display: flex; justify-content: center; margin: -.5rem 0 .25rem; }

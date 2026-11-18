@@ -68,7 +68,7 @@ This fills in the missing files and leaves `lib/` alone.
 - Money amounts are integers. Format them with the user's currency (`/api/me`); FX rates come from `/api/fx-rates`.
 - Auth: session cookie for web and phone; `X-Bot-Token` / `X-Service-Token` for bots and internal calls;
   TV share tokens (`/api/tv-tokens`) for the TV viewers.
-- Logo: `brand/kinkit-logo.svg` (purple tile, white house) is the single source. Web favicons/PWA icons,
+- Logo: `brand/kinkit-logo.svg` (white tile with hairline #E0E7FF border, purple #4F46E5 house) is the single source. Web favicons/PWA icons,
   the phone launcher icon, TV launcher/banner and tv/web icons, and the landing favicon/nav logo are all
   renders of it; change it there first and re-export everywhere.
 - Keep visual identity consistent: the palette lives in `react/src/index.css`. Mirror changes in

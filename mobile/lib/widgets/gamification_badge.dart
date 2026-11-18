@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/data_providers.dart';
 import '../theme.dart';
 
-/// Compact "[star] 120  [flame] 3" chip for the app bar (web: GamificationBadge.jsx).
+/// Compact "[star] 120  [flame] 3" chip for the purple app bar (web:
+/// GamificationBadge.jsx): translucent white on the chrome, 40px tap target.
 class GamificationBadge extends ConsumerWidget {
   final VoidCallback? onTap;
   const GamificationBadge({super.key, this.onTap});
@@ -16,26 +17,35 @@ class GamificationBadge extends ConsumerWidget {
     final p = context.palette;
     final tooltip = '${g.myPoints} pts · ${g.myStreak} day streak · ${g.myLevel}'
         '${g.member != null ? ' · household ${g.points} pts' : ''}';
+    const amber = Color(0xFFFBBF24); // reads on the purple chrome in both themes
+    final label = TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: p.onChrome, fontFeatures: kTabular);
     return Tooltip(
       message: tooltip,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(99),
-        onTap: onTap,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(color: p.primaryLight, borderRadius: BorderRadius.circular(99)),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.star_rounded, size: 16, color: p.warning),
-              const SizedBox(width: 3),
-              Text('${g.myPoints}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: p.text)),
-              const SizedBox(width: 8),
-              Icon(Icons.local_fire_department, size: 16, color: p.warning),
-              const SizedBox(width: 3),
-              Text('${g.myStreak}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: p.text)),
-            ],
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(99),
+          onTap: onTap,
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: p.onChrome.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(99),
+              border: Border.all(color: p.onChrome.withValues(alpha: 0.18)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.star_rounded, size: 16, color: amber),
+                const SizedBox(width: 3),
+                Text('${g.myPoints}', style: label),
+                const SizedBox(width: 8),
+                const Icon(Icons.local_fire_department, size: 16, color: amber),
+                const SizedBox(width: 3),
+                Text('${g.myStreak}', style: label),
+              ],
+            ),
           ),
         ),
       ),
@@ -64,11 +74,17 @@ class GamificationCard extends ConsumerWidget {
               children: [
                 Icon(Icons.star_rounded, size: 20, color: p.warning),
                 const SizedBox(width: 4),
-                Text('${g.myPoints} pts', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: p.text)),
+                Text('${g.myPoints} pts',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: p.text, fontFeatures: kTabular)),
                 const Spacer(),
                 Icon(Icons.local_fire_department, size: 18, color: p.warning),
                 const SizedBox(width: 4),
-                Text('${g.myStreak} day streak', style: TextStyle(color: p.warning, fontWeight: FontWeight.w600)),
+                Flexible(
+                  child: Text('${g.myStreak} day streak',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: p.warning, fontWeight: FontWeight.w600)),
+                ),
               ],
             ),
             const SizedBox(height: 6),

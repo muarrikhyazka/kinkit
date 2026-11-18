@@ -143,7 +143,7 @@ class _BudgetBody extends ConsumerWidget {
         StatCard(label: 'Planned income', value: money.format(plannedIncome), accent: p.success,
             sub: 'Received ${money.format(receivedIncome)}'),
         StatCard(label: 'Planned spending', value: money.format(plannedExpense),
-            sub: 'Spent ${money.format(actualExpense)}', accent: actualExpense > plannedExpense ? p.danger : p.primary),
+            sub: 'Spent ${money.format(actualExpense)}', accent: p.primary, negative: actualExpense > plannedExpense),
       ]),
       if (canEdit)
         Padding(

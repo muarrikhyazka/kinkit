@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { dataApi, formatRupiah } from './api'
 import { useToast } from './Toast.jsx'
 import Modal from './Modal.jsx'
+import { ChevronLink } from './ChevronLink.jsx'
 
 // Icons for the data/receipt features (same style as icons.jsx).
 const base = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' }
@@ -104,7 +105,10 @@ export function ReceiptLightbox({ row, onClose, onChanged }) {
       <p className="muted">{row.tx_date} · {row.category_name || 'Other'} · {formatRupiah(row.amount)}</p>
       <div className="receipt-view">
         {failed ? (
-          <p className="muted">This browser can't preview the image (HEIC photos only preview in Safari). <a href={src} download>Download it</a> instead.</p>
+          <div>
+            <p className="muted">This browser can't preview the image (HEIC photos only preview in Safari). Download it instead.</p>
+            <ChevronLink href={src} download className="standalone">Download receipt</ChevronLink>
+          </div>
         ) : (
           <a href={src} target="_blank" rel="noopener" title="Open full size">
             <img src={src} alt={`Receipt for ${row.description}`} onError={() => setFailed(true)} />

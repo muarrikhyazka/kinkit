@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 16:9 Android TV launcher banner (320x180dp): indigo (#4F46E5) background with the
-     white house mark from brand/kinkit-mark.svg and a white "Kinkit" wordmark. -->
+<!-- 16:9 Android TV launcher banner (320x180dp): purple (#4F46E5) background with the
+     white logo tile + purple house mark from brand/kinkit-logo.svg and a white "Kinkit" wordmark. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="320dp"
     android:height="180dp"
     android:viewportWidth="320"
     android:viewportHeight="180">
     <path android:fillColor="#4F46E5" android:pathData="M0,0H320V180H0Z" />
-    <!-- mark (64x64 viewBox scaled 1.7x) -->
-    <group android:scaleX="1.7" android:scaleY="1.7" android:translateX="8.5" android:translateY="34.75">
-        <path android:pathData="M14,31L32,16L50,31" android:strokeColor="#FFFFFF" android:strokeWidth="5"
+    <!-- logo tile (brand/kinkit-logo.svg, 64x64 viewBox scaled 1.4x) -->
+    <group android:scaleX="1.4" android:scaleY="1.4" android:translateX="20" android:translateY="45.2">
+        <path android:fillColor="#FFFFFF" android:strokeColor="#E0E7FF" android:strokeWidth="1.5"
+            android:pathData="M16,0.75H48A15.25,15.25 0,0 1,63.25 16V48A15.25,15.25 0,0 1,48 63.25H16A15.25,15.25 0,0 1,0.75 48V16A15.25,15.25 0,0 1,16 0.75Z" />
+        <path android:pathData="M14,31L32,16L50,31" android:strokeColor="#4F46E5" android:strokeWidth="5"
             android:strokeLineCap="round" android:strokeLineJoin="round" />
-        <path android:pathData="M19,28V46A3,3 0,0 0,22 49H42A3,3 0,0 0,45 46V28" android:strokeColor="#FFFFFF"
+        <path android:pathData="M19,28V46A3,3 0,0 0,22 49H42A3,3 0,0 0,45 46V28" android:strokeColor="#4F46E5"
             android:strokeWidth="5" android:strokeLineJoin="round" />
-        <path android:fillColor="#FFFFFF" android:pathData="M26.5,39A5.5,5.5 0,1 0,37.5 39A5.5,5.5 0,1 0,26.5 39Z" />
+        <path android:fillColor="#4F46E5" android:pathData="M26.5,39A5.5,5.5 0,1 0,37.5 39A5.5,5.5 0,1 0,26.5 39Z" />
     </group>
     <!-- "Kinkit" wordmark, stroked letters -->
-    <group android:translateX="116" android:translateY="6">
+    <group android:translateX="124" android:translateY="6">
         <path android:pathData="M0,56V112M32,56L4,86M14,76L34,112" android:strokeColor="#FFFFFF" android:strokeWidth="9" android:strokeLineCap="round" android:strokeLineJoin="round" />
         <path android:pathData="M48,74V112" android:strokeColor="#FFFFFF" android:strokeWidth="9" android:strokeLineCap="round" android:strokeLineJoin="round" />
         <path android:pathData="M62,74V112M62,90C62,80 68,74 77,74C86,74 92,80 92,90V112" android:strokeColor="#FFFFFF" android:strokeWidth="9" android:strokeLineCap="round" android:strokeLineJoin="round" />

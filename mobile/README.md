@@ -105,7 +105,9 @@ lib/
                          list detail, money (dashboard/spending/income/budget/goals tabs),
                          family, more, settings
   widgets/               async/empty/error states, month picker, stat cards, amount field,
-                         quick-add sheet, gamification badge, app bar
+                         quick-add sheet, gamification badge, app bar, chevron link, Kiki mascot
+assets/mascot/           Kiki PNGs (brand/mascot*.svg rendered at 512px without the baked-in
+                         contact shadow; widgets/mascot.dart draws and animates the shadow)
   util/                  money formatting & amount parsing, dates
 test/                    model parsing, money/date/URL tests, boot + full-shell widget tests
 ```
@@ -123,6 +125,22 @@ More holds profile, settings and logout. Menus are hidden by role the same way t
 does it (kids don't see income/budget/goals; viewers can't add; only
 family admins/parents edit budgets, goals and income). The backend still enforces
 permissions.
+
+### Look and feel
+
+Mirrors the web design system (`react/DESIGN_AUDIT.md`, tokens in `react/src/index.css`):
+purple app bar (#4F46E5, dark theme #312E81) with the white logo tile, white title and the
+family name in #E0E7FF, light status-bar icons; a white bottom bar with purple selection;
+4/8/12/16/24/32 spacing, 6/10/14 radii (`KSpace`, `KRadius` in `theme.dart`); flat bordered
+cards; tabular figures everywhere (`kTabular`); 40px+ touch targets; destructive actions in red.
+Links are never underlined: "go somewhere" actions are rows or `ChevronLink` buttons with a
+trailing chevron.
+
+Kiki (`widgets/mascot.dart`) appears in a few places only: login (idle with a wave; "think" on
+error), the Today header (small idle), "all clear" states (relax), errors and no-data states
+(think) and reached goals (celebrate). Motion matches `react/src/mascot.css` (bob with
+squash/stretch and a scaling shadow, wave wobble, celebrate hops) and stops when the OS asks
+for reduced motion (`MediaQuery.disableAnimations`).
 
 ### Money
 

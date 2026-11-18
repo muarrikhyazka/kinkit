@@ -9,7 +9,9 @@ import '../theme.dart';
 import '../util/dates.dart';
 import '../widgets/async_view.dart';
 import '../widgets/gamification_badge.dart';
+import '../widgets/chevron_link.dart';
 import '../widgets/k_app_bar.dart';
+import '../widgets/mascot.dart';
 import '../widgets/stat_card.dart';
 import 'spending_screen.dart';
 
@@ -54,24 +56,33 @@ class TodayScreen extends ConsumerWidget {
           padding: const EdgeInsets.only(bottom: 96),
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.fromLTRB(KSpace.s3, KSpace.s3, 20, KSpace.s1),
+              child: Row(
                 children: [
-                  Text(serverGreeting.isNotEmpty ? serverGreeting : '${_greeting()}, ${me?.displayName ?? ''}',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: p.text)),
-                  Text(DateFormat('EEEE, d MMMM y').format(DateTime.now()), style: TextStyle(color: p.muted)),
+                  // Small idle Kiki greets, as on the web Today header.
+                  const Mascot(size: 64),
+                  const SizedBox(width: KSpace.s2),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(serverGreeting.isNotEmpty ? serverGreeting : '${_greeting()}, ${me?.displayName ?? ''}',
+                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: p.text)),
+                        Text(DateFormat('EEEE, d MMMM y').format(DateTime.now()), style: TextStyle(color: p.muted)),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: KSpace.s2),
             const GamificationCard(),
             _sectionsView(context, ref, today),
             SectionTitle('Spent today',
-                trailing: TextButton(
+                trailing: ChevronLink(
+                  'All spending',
                   onPressed: () => Navigator.of(context)
                       .push(MaterialPageRoute<void>(builder: (_) => const SpendingScreen(standalone: true))),
-                  child: const Text('All'),
                 )),
             AsyncView<SpendingPage>(
               value: spending,
@@ -93,7 +104,7 @@ class TodayScreen extends ConsumerWidget {
                       ListTile(
                         title: const Text('Total'),
                         trailing: Text(money.format(total),
-                            style: TextStyle(fontWeight: FontWeight.w700, color: p.danger, fontSize: 16)),
+                            style: TextStyle(fontWeight: FontWeight.w700, color: p.text, fontSize: 16, fontFeatures: kTabular)),
                       ),
                       const Divider(),
                       for (final r in rows)
@@ -102,7 +113,7 @@ class TodayScreen extends ConsumerWidget {
                           leading: CircleAvatar(radius: 6, backgroundColor: categoryColor(r.categoryName)),
                           title: Text(r.description.isEmpty ? (r.categoryName ?? 'Spending') : r.description),
                           subtitle: Text([r.categoryName ?? 'Other', if (r.memberName != null) r.memberName!].join(' · ')),
-                          trailing: Text(money.format(r.amount)),
+                          trailing: Text(money.format(r.amount), style: const TextStyle(fontFeatures: kTabular)),
                         ),
                     ],
                   ),
@@ -114,11 +125,12 @@ class TodayScreen extends ConsumerWidget {
               value: report,
               onRetry: () => ref.invalidate(reportProvider(now)),
               builder: (r) => StatGrid(children: [
-                StatCard(label: 'Spent ${now.shortLabel}', value: money.format(r.expenseActual), accent: p.danger),
+                StatCard(label: 'Spent ${now.shortLabel}', value: money.format(r.expenseActual), accent: p.warning),
                 StatCard(
                   label: 'Budget left',
                   value: money.format(r.budgetRemaining),
-                  accent: r.budgetRemaining >= 0 ? p.success : p.danger,
+                  accent: p.success,
+                  negative: r.budgetRemaining < 0,
                   sub: r.budgetedExpenses > 0 ? 'of ${money.format(r.budgetedExpenses)} budgeted' : 'No budget set',
                 ),
               ]),
@@ -133,7 +145,13 @@ class TodayScreen extends ConsumerWidget {
     final p = context.palette;
     if (value.isLoading && !value.hasValue) return const SizedBox.shrink();
     if (value.hasError && !value.hasValue) {
-      return Card(child: ListTile(leading: Icon(Icons.error_outline, color: p.danger), title: Text('${value.error}')));
+      return Card(
+        child: ListTile(
+          leading: const Mascot(pose: MascotPose.think, size: 44, animate: false),
+          title: const Text("Couldn't load today's list"),
+          subtitle: Text('${value.error}'),
+        ),
+      );
     }
     final data = value.valueOrNull;
     if (data == null) {
@@ -148,10 +166,11 @@ class TodayScreen extends ConsumerWidget {
     }
     final visible = data.sections.where((s) => s.items.isNotEmpty || s.summary.isNotEmpty).toList();
     if (visible.isEmpty) {
-      return Card(
-        child: ListTile(
-          leading: Icon(Icons.check_circle_outline, color: p.success),
-          title: const Text('All clear for today'),
+      return const Card(
+        child: EmptyState(
+          mascot: MascotPose.relax,
+          title: 'All clear for today',
+          message: 'No reminders or chores waiting. Enjoy the calm.',
         ),
       );
     }

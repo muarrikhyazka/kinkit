@@ -9,6 +9,7 @@ import '../util/dates.dart';
 import '../util/money.dart';
 import '../widgets/amount_field.dart';
 import '../widgets/async_view.dart';
+import '../widgets/mascot.dart';
 import '../widgets/stat_card.dart';
 
 /// Savings goals with contribute / withdraw (web: pages/Goals.jsx).
@@ -122,7 +123,7 @@ class GoalsScreen extends ConsumerWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: const [
                   EmptyState(
-                    icon: Icons.flag_outlined,
+                    mascot: MascotPose.think,
                     title: 'No savings goals yet',
                     message: 'Save for a holiday, a new laptop or an emergency fund.',
                   ),
@@ -148,7 +149,11 @@ class GoalsScreen extends ConsumerWidget {
                         children: [
                           Row(
                             children: [
-                              Icon(g.reached ? Icons.emoji_events_rounded : Icons.flag_rounded, size: 26, color: g.reached ? p.success : p.primary),
+                              // Kiki celebrates a reached goal (brand: celebration moments).
+                              if (g.reached)
+                                const Mascot(pose: MascotPose.celebrate, size: 44, semanticLabel: 'Goal reached')
+                              else
+                                Icon(Icons.flag_rounded, size: 26, color: p.primary),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
@@ -165,7 +170,10 @@ class GoalsScreen extends ConsumerWidget {
                                   onSelected: (v) {
                                     if (v == 'delete') _delete(context, ref, g);
                                   },
-                                  itemBuilder: (_) => const [PopupMenuItem(value: 'delete', child: Text('Delete'))],
+                                  tooltip: 'Goal actions',
+                                  itemBuilder: (_) => [
+                                    PopupMenuItem(value: 'delete', child: Text('Delete', style: TextStyle(color: p.danger))),
+                                  ],
                                 ),
                             ],
                           ),
@@ -177,7 +185,7 @@ class GoalsScreen extends ConsumerWidget {
                           const SizedBox(height: 6),
                           Text(
                             '${money.format(g.progress)} of ${money.format(g.targetAmount)} · ${g.pct.toStringAsFixed(0)}%',
-                            style: TextStyle(color: p.text),
+                            style: TextStyle(color: p.text, fontFeatures: kTabular),
                           ),
                           if (g.monthlyNeeded != null && !g.reached)
                             Text('${money.format(g.monthlyNeeded!)}/month needed'

@@ -5,14 +5,14 @@ import { useApi, useDebounced, useSetup } from '../useApi'
 import { useToast, useHiddenIds } from '../Toast.jsx'
 import { categoryColor } from '../categoryColor'
 import MoneyInput from '../MoneyInput.jsx'
-import { IconClose, IconEdit } from '../icons.jsx'
+import { IconClose, IconEdit, IconChevronLeft, IconChevronRight } from '../icons.jsx'
 import CategorySelect from '../CategorySelect.jsx'
 import SpendingForm from '../SpendingForm.jsx'
 import PageHeader from '../PageHeader.jsx'
 import SortableTh from '../SortableTh.jsx'
 import { SkeletonTable } from '../Skeleton.jsx'
 import { ReceiptButton } from '../Receipts.jsx'
-import { Link } from 'react-router-dom'
+import { ChevronLink } from '../ChevronLink.jsx'
 
 const PAGE_SIZES = [10, 20, 50, 100]
 
@@ -98,7 +98,7 @@ export default function Spending() {
         subtitle={`${total} transactions - ${MONTHS[month - 1]} ${year}`}
         period="month"
         valueFilter
-        actions={<Link to="/settings/data" className="link-btn" title="Import a bank CSV or export your data">Import / export</Link>}
+        actions={<ChevronLink to="/settings/data" title="Import a bank CSV or export your data">Import / export</ChevronLink>}
       />
 
       {list.error && <div className="error-box">{list.error}</div>}
@@ -120,7 +120,7 @@ export default function Spending() {
                 <SortableTh col="tx_date" sort={sort} order={order} onSort={toggleSort}>Date</SortableTh>
                 <SortableTh col="description" sort={sort} order={order} onSort={toggleSort}>Description</SortableTh>
                 <SortableTh col="category_name" sort={sort} order={order} onSort={toggleSort}>Category</SortableTh>
-                <SortableTh col="amount" sort={sort} order={order} onSort={toggleSort}>Amount</SortableTh>
+                <SortableTh col="amount" sort={sort} order={order} onSort={toggleSort} className="num">Amount</SortableTh>
                 <th>Checked</th>
                 <th><span className="sr-only">Actions</span></th>
               </tr>
@@ -136,7 +136,7 @@ export default function Spending() {
                   <td data-label="Amount"><MoneyInput aria-label="Amount" value={editRow.amount} onChange={v => setEditRow(row => ({ ...row, amount: v }))} /></td>
                   <td data-label="Checked"><input type="checkbox" aria-label="Checked" checked={!!r.checked} onChange={() => handleCheck(r)} /></td>
                   <td className="row-actions">
-                    <button className="secondary" onClick={() => saveEdit(r.id)}>Save</button>
+                    <button onClick={() => saveEdit(r.id)}>Save</button>
                     <button className="secondary" onClick={cancelEdit}>Cancel</button>
                   </td>
                 </tr>
@@ -148,7 +148,7 @@ export default function Spending() {
                     {showMember && r.member_name && <div className="muted logged-by">by {r.member_name}</div>}
                   </td>
                   <td data-label="Category"><span className="tag" style={{ background: categoryColor(r.category_name) + '22', color: categoryColor(r.category_name) }}>{r.category_name || 'Other'}</span></td>
-                  <td data-label="Amount">{formatRupiah(r.amount)}</td>
+                  <td data-label="Amount" className="num">{formatRupiah(r.amount)}</td>
                   <td data-label="Checked"><input type="checkbox" aria-label={`Mark "${r.description}" as checked`} checked={!!r.checked} onChange={() => handleCheck(r)} /></td>
                   <td className="row-actions">
                     <ReceiptButton row={r} onChanged={reload} />
@@ -157,13 +157,13 @@ export default function Spending() {
                   </td>
                 </tr>
               ))}
-              {rows.length === 0 && <tr><td colSpan={6} className="muted">No transactions.</td></tr>}
+              {rows.length === 0 && <tr><td colSpan={6} className="muted table-empty">{search || categoryFilter ? 'No transactions match this search.' : 'No transactions this month yet. Add one with the form above.'}</td></tr>}
             </tbody>
           </table>
         )}
 
         <div className="table-footer">
-          <label style={{ display: 'flex', alignItems: 'center', gap: '.4rem', fontSize: '.85rem' }}>
+          <label className="field-inline">
             <span className="muted">Rows:</span>
             <select value={perPage} onChange={e => setPerPage(Number(e.target.value))}>
               {PAGE_SIZES.map(n => <option key={n} value={n}>{n}</option>)}
@@ -172,9 +172,9 @@ export default function Spending() {
 
           {totalPages > 1 && (
             <div className="pagination">
-              <button className="secondary" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>‹ Prev</button>
+              <button className="secondary" disabled={page <= 1} onClick={() => setPage(p => p - 1)}><IconChevronLeft width={16} height={16} aria-hidden="true" /> Prev</button>
               <span className="muted">Page {page} / {totalPages}</span>
-              <button className="secondary" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next ›</button>
+              <button className="secondary" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next <IconChevronRight width={16} height={16} aria-hidden="true" /></button>
             </div>
           )}
         </div>

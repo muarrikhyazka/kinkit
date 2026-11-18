@@ -14,12 +14,12 @@
  * Served with Cache-Control: no-cache (spa.go) so updates roll out on the
  * next load. Bump VERSION to force-refresh the shell cache.
  */
-const VERSION = 'v2' // bump when shell files (icons, manifest) change
+const VERSION = 'v3' // bump when shell files (icons, manifest) change
 const SHELL_CACHE = `kinkit-shell-${VERSION}`
 const ASSET_CACHE = 'kinkit-assets'
 const API_CACHE = 'kinkit-api'
 const KEEP = [SHELL_CACHE, ASSET_CACHE, API_CACHE]
-const SHELL = ['/', '/manifest.webmanifest?v=2', '/favicon.svg?v=2', '/icon.svg?v=2', '/icon-192.png?v=2', '/icon-512.png?v=2']
+const SHELL = ['/', '/manifest.webmanifest?v=3', '/favicon.svg?v=3', '/icon.svg?v=3', '/icon-192.png?v=3', '/icon-512.png?v=3']
 const MAX_ASSETS = 80
 
 self.addEventListener('install', event => {

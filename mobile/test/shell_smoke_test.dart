@@ -88,6 +88,9 @@ class _FakeAdapter implements HttpClientAdapter {
 
 void main() {
   testWidgets('signed-in shell renders every tab', (tester) async {
+    // Reduced motion keeps Kiki still so pumpAndSettle can settle.
+    tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final dio = Dio()..httpClientAdapter = _FakeAdapter();
@@ -125,7 +128,7 @@ void main() {
     // Money: every sub-tab
     await tester.tap(find.text('Money').last);
     await settle();
-    expect(find.text('Top expenses'), findsOneWidget);
+    expect(find.text('Top expenses', skipOffstage: false), findsOneWidget);
     for (final tab in ['Spending', 'Income', 'Budget', 'Goals']) {
       await tester.tap(find.widgetWithText(Tab, tab));
       await settle();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../state/providers.dart';
+import '../theme.dart';
 import '../widgets/quick_add_sheet.dart';
 import 'family_screen.dart';
 import 'household_screen.dart';
@@ -54,13 +55,17 @@ class _HomeShellState extends ConsumerState<HomeShell> {
               child: const Icon(Icons.add),
             )
           : null,
-      bottomNavigationBar: NavigationBar(
+      // White bar with a hairline and purple selection (web chrome counterpart).
+      bottomNavigationBar: DecoratedBox(
+        decoration: BoxDecoration(border: Border(top: BorderSide(color: context.palette.border))),
+        child: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: [
           for (final t in _tabs)
             NavigationDestination(icon: Icon(t.icon), selectedIcon: Icon(t.selectedIcon), label: t.label),
         ],
+        ),
       ),
     );
   }

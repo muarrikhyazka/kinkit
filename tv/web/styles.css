@@ -13,12 +13,16 @@ html, body { margin: 0; height: 100%; background: #0b0e1a; color: #f1f3f8; overf
   display: -webkit-box; display: -webkit-flex; display: flex; }
 
 .muted { color: #9ca3af; }
-.brand { font-weight: 800; font-size: 60px; color: #818cf8;
-  background: -webkit-linear-gradient(left, #818cf8, #c084fc); background: linear-gradient(90deg, #818cf8, #c084fc);
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.brand { font-weight: 700; font-size: 52px; color: #fff; line-height: 1; }
+/* Purple chrome bar (web --chrome-*): #4F46E5 -> #4338CA, white wordmark + white logo tile,
+   lavender #E0E7FF secondary text. Same as tv/flutter TvBrandBar. */
+.chrome-bar { background: #4f46e5; background: -webkit-linear-gradient(top, #4f46e5, #4338ca);
+  background: linear-gradient(180deg, #4f46e5, #4338ca); border-radius: 28px; padding: 0 28px; }
+.chrome-bar .muted { color: #e0e7ff; }
 /* Logo: inline copy of brand/kinkit-logo.svg. */
-.brand-row { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
-.logo { width: 88px; height: 88px; margin-right: 26px; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.brand-row { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center;
+  -webkit-align-self: flex-start; align-self: flex-start; height: 104px; padding-right: 40px; }
+.logo { width: 68px; height: 68px; margin-right: 20px; -webkit-flex-shrink: 0; flex-shrink: 0; }
 .logo-sm { width: 68px; height: 68px; margin-right: 20px; }
 .brand-plain { font-weight: 800; font-size: 60px; margin-bottom: 30px; }
 
@@ -41,7 +45,7 @@ html, body { margin: 0; height: 100%; background: #0b0e1a; color: #f1f3f8; overf
 .pair-col { width: 46%; margin-right: 4%; display: -webkit-flex; display: flex;
   -webkit-flex-direction: column; flex-direction: column; }
 .kbd-col { width: 50%; }
-.pair-help { font-size: 26px; line-height: 1.4; margin: 12px 0 26px; }
+.pair-help { font-size: 26px; line-height: 1.4; margin: 20px 0 26px; }
 .field { background: #151a2e; border: 3px solid #262d47; border-radius: 16px; padding: 14px 24px; margin-bottom: 20px; }
 .field.active { border-color: #818cf8; }
 .field.focused { background: #1c2238 !important; -webkit-transform: none; transform: none; }
@@ -56,7 +60,10 @@ html, body { margin: 0; height: 100%; background: #0b0e1a; color: #f1f3f8; overf
 @keyframes blink { 50% { opacity: 0; } }
 .error { color: #f87171; font-size: 26px; font-weight: 600; min-height: 34px; }
 .info { color: #fbbf24; font-size: 26px; font-weight: 600; }
-.pair-foot { margin-top: auto; font-size: 22px; }
+.pair-mascot { -webkit-flex: 1; flex: 1; min-height: 0; display: -webkit-flex; display: flex;
+  -webkit-align-items: flex-end; align-items: flex-end; overflow: hidden; }
+.pair-mascot .mk { width: 200px; height: 200px; }
+.pair-foot { margin-top: 12px; font-size: 22px; }
 .kbd-target { font-size: 26px; color: #c4b5fd; font-weight: 700; margin-bottom: 14px; }
 .kbd-row { white-space: nowrap; }
 .key { display: inline-block; width: 72px; height: 72px; line-height: 68px; margin: 0 10px 10px 0; text-align: center;
@@ -72,18 +79,19 @@ html, body { margin: 0; height: 100%; background: #0b0e1a; color: #f1f3f8; overf
 
 /* ---------- viewer ---------- */
 #screen-viewer { -webkit-flex-direction: column; flex-direction: column; }
-.v-header { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; height: 90px; }
-.v-name { font-size: 40px; color: #9ca3af; font-weight: 600; margin-left: 28px; max-width: 560px;
+.v-header { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; height: 104px; }
+.v-name { font-size: 40px; color: #e0e7ff; font-weight: 600; margin-left: 28px; max-width: 560px;
   overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.v-month { font-size: 40px; color: #9ca3af; margin-left: 36px; }
+.v-month { font-size: 40px; color: #e0e7ff; margin-left: 36px; }
 .v-spacer { -webkit-flex: 1; flex: 1; }
 .v-clock { text-align: right; margin-left: 24px; }
-#clock-time { font-size: 54px; font-weight: 700; line-height: 1; }
+#clock-time { font-size: 48px; font-weight: 700; line-height: 1; color: #fff; }
 #clock-date { font-size: 24px; }
 .badge { font-size: 26px; font-weight: 700; border: 3px solid; border-radius: 40px; padding: 6px 20px; margin-left: 20px; }
 .badge-warn { color: #fbbf24; border-color: #fbbf24; background: rgba(251, 191, 36, .15); }
 .badge-accent { color: #c4b5fd; border-color: #c4b5fd; background: rgba(196, 181, 253, .15); }
-.v-body { -webkit-flex: 1; flex: 1; margin-top: 28px; position: relative; min-height: 0; }
+.chrome-bar .badge-accent { color: #fff; border-color: #fff; background: rgba(255, 255, 255, .14); }
+.v-body { -webkit-flex: 1; flex: 1; margin-top: 24px; position: relative; min-height: 0; }
 .page { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: -webkit-flex; display: flex;
   -webkit-flex-direction: column; flex-direction: column;
   -webkit-animation: pageIn .45s ease-out; animation: pageIn .45s ease-out; }
@@ -115,8 +123,37 @@ html, body { margin: 0; height: 100%; background: #0b0e1a; color: #f1f3f8; overf
 .panel-body { -webkit-flex: 1; flex: 1; min-height: 0; display: -webkit-flex; display: flex;
   -webkit-flex-direction: column; flex-direction: column; }
 .full { -webkit-flex: 1; flex: 1; }
-.empty { -webkit-flex: 1; flex: 1; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center;
-  -webkit-justify-content: center; justify-content: center; font-size: 38px; color: #9ca3af; }
+.empty { -webkit-flex: 1; flex: 1; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column;
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: center; justify-content: center; font-size: 38px; color: #9ca3af; text-align: center; }
+.empty .mk { width: 192px; height: 192px; margin-bottom: 12px; }
+.center-msg .mk { width: 240px; height: 240px; margin-bottom: 16px; }
+
+/* ---------- Kiki the mascot (react/src/mascot.css; tv/flutter lib/src/mascot.dart) ----------
+   PNG = brand/mascot*.svg without the baked-in shadow, so the shadow can scale on its own. */
+.mk { position: relative; display: inline-block; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.mk-img { position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  -webkit-transform-origin: 50% 86.7%; transform-origin: 50% 86.7%;
+  -webkit-animation: mk-bob 3.4s ease-in-out infinite; animation: mk-bob 3.4s ease-in-out infinite; }
+.mk-shadow { position: absolute; left: 25%; width: 50%; top: 84.8%; height: 7%; border-radius: 50%;
+  background: rgba(30, 27, 75, .5); -webkit-filter: blur(6px); filter: blur(6px);
+  -webkit-animation: mk-shadow 3.4s ease-in-out infinite; animation: mk-shadow 3.4s ease-in-out infinite; }
+.mk-wave-once .mk-img { -webkit-animation: mk-wave 1.4s ease-in-out .35s 1, mk-bob 3.4s ease-in-out 1.75s infinite;
+  animation: mk-wave 1.4s ease-in-out .35s 1, mk-bob 3.4s ease-in-out 1.75s infinite; }
+@-webkit-keyframes mk-bob {
+  0%, 100% { -webkit-transform: translateY(0) scale(1.02, .98); }
+  50% { -webkit-transform: translateY(-2.3%) scale(.99, 1.015); } }
+@keyframes mk-bob {
+  0%, 100% { transform: translateY(0) scale(1.02, .98); }
+  50% { transform: translateY(-2.3%) scale(.99, 1.015); } }
+@-webkit-keyframes mk-shadow { 0%, 100% { -webkit-transform: scale(1); opacity: 1; } 50% { -webkit-transform: scale(.86); opacity: .7; } }
+@keyframes mk-shadow { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(.86); opacity: .7; } }
+/* The PNG can't move one arm, so the wave is a small whole-body wobble. */
+@-webkit-keyframes mk-wave { 0%, 100% { -webkit-transform: rotate(0); } 20%, 60% { -webkit-transform: rotate(6deg); } 40%, 80% { -webkit-transform: rotate(-4deg); } }
+@keyframes mk-wave { 0%, 100% { transform: rotate(0); } 20%, 60% { transform: rotate(6deg); } 40%, 80% { transform: rotate(-4deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .mk-img, .mk-shadow, .mk-wave-once .mk-img { -webkit-animation: none; animation: none; }
+}
 
 .kv-big .k { font-size: 28px; color: #9ca3af; }
 .kv-big .v { font-size: 60px; font-weight: 800; margin-bottom: 24px; white-space: nowrap; }

@@ -9,6 +9,7 @@ import '../theme.dart';
 import '../util/dates.dart';
 import '../widgets/async_view.dart';
 import '../widgets/k_app_bar.dart';
+import '../widgets/mascot.dart';
 import 'list_detail_screen.dart';
 import 'meal_plan_screen.dart';
 
@@ -147,7 +148,7 @@ class _UpcomingReminders extends ConsumerWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
                   const EmptyState(
-                    icon: Icons.notifications_none,
+                    mascot: MascotPose.relax,
                     title: 'Nothing due in the next 7 days',
                     message: 'Household routines, bills and birthdays show up here.',
                   ),
@@ -278,6 +279,7 @@ class _AllReminders extends ConsumerWidget {
                             ].join(' · ')),
                             trailing: canManage
                                 ? PopupMenuButton<String>(
+                                    tooltip: 'Reminder actions',
                                     onSelected: (v) async {
                                       if (v == 'toggle') {
                                         await _run(context, ref, () => api.setReminderActive(r.id, !r.active),
@@ -290,7 +292,7 @@ class _AllReminders extends ConsumerWidget {
                                     },
                                     itemBuilder: (_) => [
                                       PopupMenuItem(value: 'toggle', child: Text(r.active ? 'Pause' : 'Resume')),
-                                      const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                                      PopupMenuItem(value: 'delete', child: Text('Delete', style: TextStyle(color: p.danger))),
                                     ],
                                   )
                                 : null,
@@ -576,7 +578,7 @@ class _NewReminderSheetState extends ConsumerState<NewReminderSheet> {
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(color: p.primaryLight, borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(color: p.primaryLight, borderRadius: BorderRadius.circular(KRadius.md)),
           child: Row(children: [
             Icon(Icons.event_repeat, size: 18, color: p.primary),
             const SizedBox(width: 8),
@@ -639,7 +641,7 @@ class ChoresTab extends ConsumerWidget {
         trailing = Row(mainAxisSize: MainAxisSize.min, children: [
           IconButton(
             tooltip: 'Send back',
-            icon: Icon(Icons.undo, color: p.danger),
+            icon: Icon(Icons.undo, color: p.muted),
             onPressed: () => _run(context, ref, () => api.choreAction(c.id, 'reject'), 'Sent back'),
           ),
           IconButton(
@@ -704,7 +706,7 @@ class ChoresTab extends ConsumerWidget {
             ],
             const SectionTitle('Today'),
             if (d.items.isEmpty)
-              const EmptyState(icon: Icons.cleaning_services_outlined, title: 'No chores today')
+              const EmptyState(mascot: MascotPose.relax, title: 'No chores today', message: 'Nothing to do. Nice!')
             else
               Card(child: Column(children: [for (final c in d.items) tile(c)])),
             Padding(

@@ -46,7 +46,7 @@ class MoreScreen extends ConsumerWidget {
                   Text('FAMILY NAME',
                       style: TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: p.muted)),
                   const SizedBox(height: 2),
-                  Text(me.householdName, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: p.text)),
+                  Text(me.householdName, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: p.text)),
                 ],
               ),
             ),

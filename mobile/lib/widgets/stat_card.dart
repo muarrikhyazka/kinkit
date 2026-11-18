@@ -2,25 +2,38 @@ import 'package:flutter/material.dart';
 
 import '../theme.dart';
 
-/// Small KPI tile (like the web's StatCard).
+/// Small KPI tile (like the web's StatCard): an uppercase 12px label with a
+/// small tone square, then a 24px tabular value in the text colour. Only a
+/// [negative] value turns red, so colour carries meaning.
 class StatCard extends StatelessWidget {
   final String label;
   final String value;
   final String? sub;
+
+  /// Tone of the small square next to the label.
   final Color? accent;
   final IconData? icon;
+  final bool negative;
 
-  const StatCard({super.key, required this.label, required this.value, this.sub, this.accent, this.icon});
+  const StatCard({
+    super.key,
+    required this.label,
+    required this.value,
+    this.sub,
+    this.accent,
+    this.icon,
+    this.negative = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final color = accent ?? p.primary;
+    final tone = accent ?? p.primary;
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(KSpace.s4),
       decoration: BoxDecoration(
         color: p.card,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(KRadius.lg),
         border: Border.all(color: p.border),
       ),
       child: Column(
@@ -29,22 +42,38 @@ class StatCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              if (icon != null) ...[Icon(icon, size: 16, color: color), const SizedBox(width: 6)],
+              if (icon != null)
+                Icon(icon, size: 14, color: tone)
+              else
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(color: tone, borderRadius: BorderRadius.circular(2)),
+                ),
+              const SizedBox(width: 6),
               Expanded(
-                child: Text(label,
-                    maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: p.muted)),
+                child: Text(label.toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 0.4, color: p.muted)),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: KSpace.s2),
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
-            child: Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: color)),
+            child: Text(value,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: negative ? p.danger : p.text,
+                  fontFeatures: kTabular,
+                )),
           ),
           if (sub != null) ...[
-            const SizedBox(height: 4),
-            Text(sub!, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: p.muted)),
+            const SizedBox(height: KSpace.s1),
+            Text(sub!, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: p.muted)),
           ],
         ],
       ),
@@ -62,13 +91,13 @@ class StatGrid extends StatelessWidget {
     final rows = <Widget>[];
     for (var i = 0; i < children.length; i += 2) {
       rows.add(Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(bottom: KSpace.s3),
         child: IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(child: children[i]),
-              const SizedBox(width: 10),
+              const SizedBox(width: KSpace.s3),
               Expanded(child: i + 1 < children.length ? children[i + 1] : const SizedBox()),
             ],
           ),
@@ -95,7 +124,7 @@ class KProgressBar extends StatelessWidget {
       child: LinearProgressIndicator(
         value: value.clamp(0.0, 1.0),
         minHeight: 8,
-        backgroundColor: p.border,
+        backgroundColor: p.surface2,
         color: over ? p.danger : (color ?? p.primary),
       ),
     );
