@@ -89,7 +89,7 @@ function AccountSettings() {
         <label style={{ display: 'flex', flexDirection: 'column', gap: '.3rem', flex: '1 1 240px' }}>
           <span>Family name</span>
           <input value={household} onChange={e => setHousehold(e.target.value)} disabled={!isOwner} maxLength={80}
-            placeholder="e.g. The Prasidana Family" title={isOwner ? undefined : 'Only the family admin can change the family name'} />
+            placeholder="e.g. Budi's Family" title={isOwner ? undefined : 'Only the family admin can change the family name'} />
         </label>
         {isOwner && <button type="submit" style={{ alignSelf: 'flex-end' }}>Save</button>}
       </form>

@@ -19,8 +19,10 @@ import Chores from './pages/Chores.jsx'
 import Lists from './pages/Lists.jsx'
 import MealPlan from './pages/MealPlan.jsx'
 import BotKeywords from './pages/BotKeywords.jsx'
+import Calendar from './pages/Calendar.jsx'
+import Widgets from './pages/Widgets.jsx'
 import { IconGoal } from './moneyIcons.jsx'
-import { IconDashboard, IconBudget, IconSpending, IconSetup, IconGuide, IconShield, IconToday, IconHome, IconBell } from './icons.jsx'
+import { IconDashboard, IconBudget, IconSpending, IconSetup, IconGuide, IconShield, IconToday, IconHome, IconBell, IconCalendar, IconWidgets } from './icons.jsx'
 
 /**
  * SINGLE SOURCE OF TRUTH for in-app pages. App.jsx builds the <Route>s from
@@ -50,6 +52,7 @@ const READERS = ['owner', 'parent', 'viewer']
 
 export const APP_ROUTES = [
   { path: '', label: 'Today', Icon: IconToday, Component: Today, area: 'tenant', mobile: 'tab' },
+  { path: 'calendar', label: 'Calendar', Icon: IconCalendar, Component: Calendar, area: 'tenant', mobile: 'more' },
   { path: 'reminders', label: 'Reminders', Icon: IconBell, Component: Reminders, area: 'tenant', mobile: 'tab' },
   {
     path: 'home', label: 'Home', Icon: IconHome, area: 'tenant', mobile: 'tab',
@@ -77,6 +80,7 @@ export const APP_ROUTES = [
     ],
   },
   { path: 'family', label: 'Family', Icon: IconFamily, Component: Family, area: 'tenant', mobile: 'more', group: 'Family' },
+  { path: 'widgets', label: 'Widgets', Icon: IconWidgets, Component: Widgets, area: 'tenant', mobile: 'more', group: 'Family' },
   {
     path: 'settings', label: 'Settings', Icon: IconSetup, area: 'tenant', mobile: 'more', placement: 'bottom',
     tabs: [

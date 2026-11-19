@@ -14,7 +14,7 @@ void main() {
       'currency': 'USD',
       'locale': 'en-US',
       'is_admin': false,
-      'household_name': "Budi's household",
+      'household_name': "Budi's Family",
     });
     expect(me.authenticated, isTrue);
     expect(me.memberId, 7);
@@ -313,5 +313,51 @@ void main() {
     expect(nextDayOfMonth(20, DateTime(2026, 11, 18)), DateTime(2026, 11, 20));
     expect(nextDayOfMonth(18, DateTime(2026, 11, 18, 15)), DateTime(2026, 11, 18));
     expect(nextDayOfMonth(31, DateTime(2027, 2, 3)), DateTime(2027, 2, 28));
+  });
+
+  test('calendar, meal requests and widgets parse', () {
+    final cal = CalendarData.fromJson({
+      'timezone': 'Asia/Jakarta',
+      'today': '2026-11-19',
+      'activities': [
+        {
+          'id': 4, 'title': 'Swim', 'color': 'sky', 'all_day': false, 'start_date': '2026-11-02', 'end_date': '2026-11-02',
+          'start_time': '16:00', 'end_time': '17:30', 'repeat': 'weekly', 'interval': 2, 'weekdays': [2, 4],
+          'attendee_ids': [3], 'attendee_names': ['Naya'], 'occurs_on': '2026-11-17', 'occurs_until': '2026-11-17', 'repeating': true,
+        },
+        {'id': 5, 'title': 'Trip', 'all_day': true, 'start_date': '2026-11-28', 'end_date': '2026-11-29', 'occurs_on': '2026-11-28', 'occurs_until': '2026-11-29'},
+      ],
+      'reminders': [
+        {'id': 9, 'title': 'Pay rent', 'status': 'pending', 'due_at': '2026-11-20T02:00:00Z'},
+      ],
+    });
+    expect(cal.activities.length, 2);
+    expect(cal.activities.first.weekdays, [2, 4]);
+    expect(cal.activities.first.multiDay, isFalse);
+    expect(cal.activities.last.multiDay, isTrue);
+    expect(cal.activities.last.repeat, 'none'); // missing field -> default
+    expect(cal.reminders.single.title, 'Pay rent');
+
+    final p = MealProposal.fromJson({'id': 1, 'dish': 'Nasi goreng', 'status': 'approved', 'meal_date': '2026-11-19', 'can_decide': true});
+    expect(p.pending, isFalse);
+    expect(p.mealDate, '2026-11-19');
+    expect(p.canDecide, isTrue);
+    expect(MealDay.fromJson({'day': 'Monday', 'date': '2026-11-23', 'picks': [{'id': 1, 'dish': 'Soto', 'member_name': 'Rafi'}]}).picks.single.memberName, 'Rafi');
+
+    final board = WidgetBoard.fromJson({
+      'id': 2, 'name': 'TV', 'device': 'tv',
+      'layout': {'widgets': [{'id': 'a', 'type': 'clock', 'w': 99, 'h': 0}, {'id': 'b', 'type': 'note', 'w': 4, 'h': 1, 'text': 'hi'}]},
+    });
+    expect(board.widgets.first.w, 12); // clamped like the server
+    expect(board.widgets.first.h, 1);
+    expect(board.widgets.last.toJson()['text'], 'hi');
+    final data = WidgetData.fromJson({
+      'timezone': 'Asia/Jakarta',
+      'cards': {
+        'budget': {'type': 'budget', 'title': 'Budget', 'big_amount': 2469000, 'rows': [{'title': 'Food', 'amount': 100, 'pct': 42.5, 'alert': true}]},
+      },
+    });
+    expect(data.cards['budget']!.bigAmount, 2469000);
+    expect(data.cards['budget']!.rows.single.pct, 42.5);
   });
 }

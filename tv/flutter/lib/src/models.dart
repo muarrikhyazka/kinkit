@@ -107,6 +107,75 @@ class TvTrendPoint {
   final int expense;
 }
 
+/// One widget of a widget board (web: Widgets page): [w] columns of 12, [h] rows 1-4.
+class TvWidget {
+  const TvWidget({required this.id, required this.type, required this.w, required this.h, this.text = ''});
+
+  factory TvWidget.fromJson(Map<String, dynamic> j) => TvWidget(
+        id: _str(j['id']),
+        type: _str(j['type']),
+        w: _int(j['w']).clamp(1, 12),
+        h: _int(j['h']).clamp(1, 4),
+        text: _str(j['text']),
+      );
+
+  final String id;
+  final String type;
+  final int w;
+  final int h;
+  final String text; // note widget
+}
+
+class TvCardRow {
+  const TvCardRow({required this.title, this.detail = '', this.done = false, this.alert = false, this.amount, this.pct});
+
+  factory TvCardRow.fromJson(Map<String, dynamic> j) => TvCardRow(
+        title: _str(j['title']),
+        detail: _str(j['detail']),
+        done: j['done'] == true,
+        alert: j['alert'] == true,
+        amount: j['amount'] == null ? null : _int(j['amount']),
+        pct: j['pct'] is num ? (j['pct'] as num).toDouble() : null,
+      );
+
+  final String title;
+  final String detail;
+  final bool done;
+  final bool alert;
+  final int? amount; // IDR
+  final double? pct;
+}
+
+/// Generic card rendered by the server for every widget type except clock/note.
+class TvCard {
+  const TvCard({required this.title, this.big = '', this.bigAmount, this.caption = '', this.empty = '', this.rows = const []});
+
+  factory TvCard.fromJson(Map<String, dynamic> j) => TvCard(
+        title: _str(j['title']),
+        big: _str(j['big']),
+        bigAmount: j['big_amount'] == null ? null : _int(j['big_amount']),
+        caption: _str(j['caption']),
+        empty: _str(j['empty']),
+        rows: _list(j['rows']).map(TvCardRow.fromJson).toList(),
+      );
+
+  final String title;
+  final String big;
+  final int? bigAmount; // IDR
+  final String caption;
+  final String empty;
+  final List<TvCardRow> rows;
+}
+
+/// The widget board a TV link shows (null board = the classic month summary).
+class TvBoard {
+  const TvBoard({required this.name, required this.widgets, required this.cards});
+
+  final String name;
+  final List<TvWidget> widgets;
+  final Map<String, TvCard> cards;
+}
+
 class TvData {
   const TvData({
     required this.year,
@@ -116,6 +185,7 @@ class TvData {
     this.householdName,
     required this.report,
     required this.trend,
+    this.board,
   });
 
   factory TvData.fromJson(Map<String, dynamic> j) {
@@ -133,8 +203,15 @@ class TvData {
       householdName: (family is String && family.trim().isNotEmpty) ? family.trim() : null,
       report: TvReport.fromJson(_map(j['report'])),
       trend: _list(j['trend']).map(TvTrendPoint.fromJson).toList(),
+      board: j['board'] is Map ? _parseBoard(_map(j['board']), _map(j['cards'])) : null,
     );
   }
+
+  static TvBoard _parseBoard(Map<String, dynamic> b, Map<String, dynamic> cards) => TvBoard(
+        name: _str(b['name']),
+        widgets: _list(_map(b['layout'])['widgets']).map(TvWidget.fromJson).toList(),
+        cards: {for (final e in cards.entries) e.key: TvCard.fromJson(_map(e.value))},
+      );
 
   final int year;
   final int month;
@@ -143,6 +220,7 @@ class TvData {
   final String? householdName; // family name; the header falls back to displayName
   final TvReport report;
   final List<TvTrendPoint> trend; // oldest first
+  final TvBoard? board; // widget board chosen for this link, if any
 }
 
 const monthShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

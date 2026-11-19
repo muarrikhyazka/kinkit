@@ -1,7 +1,7 @@
 # Kinkit — project guide for Claude
 
 Kinkit is a family money + home app (budgets, spending, income, goals, assets, chores, lists,
-reminders, family roles/allowances, gamification). One Go backend serves several clients.
+reminders, family calendar, meal plan + requests, widget screens, family roles/allowances, gamification). One Go backend serves several clients.
 
 ## Repository layout
 

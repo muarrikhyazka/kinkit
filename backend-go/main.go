@@ -171,6 +171,9 @@ func newRouter(app *App) http.Handler {
 		RegisterChoreRoutes(api, app)        // --- chores ---: chores, instances, approvals, /bot/chores/*
 		RegisterListRoutes(api, app)         // --- lists ---: shopping lists, staples, finish shopping, /bot/lists/*
 		RegisterMealPlanRoutes(api, app)     // --- meal plan ---: meal plan, ingredients, schedule, bot keywords, /bot/meal-plan etc.
+		RegisterCalendarRoutes(api, app)     // --- calendar ---: activities + calendar range (activities.go)
+		RegisterMealProposalRoutes(api, app) // --- meal proposals ---: members propose dishes, parents decide
+		RegisterWidgetRoutes(api, app)       // --- widgets ---: widget boards + data for phone/TV/car/monitor
 	})
 
 	if app.Cfg.StaticDir != "" {

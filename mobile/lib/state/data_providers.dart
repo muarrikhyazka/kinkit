@@ -96,6 +96,7 @@ final listDetailProvider = FutureProvider.autoDispose.family<ListDetail, int>((r
 
 /// After a chore / reminder / list change (they all feed Today).
 void invalidateHome(WidgetRef ref) {
+  ref.invalidate(calendarProvider);
   ref.invalidate(todayProvider);
   ref.invalidate(choresTodayProvider);
   ref.invalidate(remindersProvider);
@@ -122,3 +123,42 @@ void invalidateIncome(WidgetRef ref) {
   ref.invalidate(reportProvider);
   ref.invalidate(budgetActualsProvider);
 }
+
+// ---- calendar / meal requests / widgets (web: Calendar, Home > Meals, Widgets)
+
+/// A calendar window (YYYY-MM-DD, inclusive) + which layers to load. Value type so it works as a family key.
+class CalRange {
+  final String from, to;
+  final String? include; // null = activities + reminders
+  const CalRange(this.from, this.to, [this.include]);
+  @override
+  bool operator ==(Object other) => other is CalRange && other.from == from && other.to == to && other.include == include;
+  @override
+  int get hashCode => Object.hash(from, to, include);
+}
+
+final calendarProvider = FutureProvider.autoDispose.family<CalendarData, CalRange>((ref, r) {
+  _member(ref);
+  return ref.watch(apiProvider).calendar(r.from, r.to, include: r.include);
+});
+
+final mealProposalsProvider = FutureProvider.autoDispose<List<MealProposal>>((ref) {
+  _member(ref);
+  return ref.watch(apiProvider).mealProposals();
+});
+
+final widgetCatalogProvider = FutureProvider.autoDispose<WidgetCatalog>((ref) {
+  _member(ref);
+  return ref.watch(apiProvider).widgetCatalog();
+});
+
+final widgetBoardsProvider = FutureProvider.autoDispose<List<WidgetBoard>>((ref) {
+  _member(ref);
+  return ref.watch(apiProvider).widgetBoards();
+});
+
+/// Keyed by the comma-joined widget types the board uses.
+final widgetDataProvider = FutureProvider.autoDispose.family<WidgetData, String>((ref, types) {
+  _member(ref);
+  return ref.watch(apiProvider).widgetData(types.isEmpty ? <String>[] : types.split(','));
+});

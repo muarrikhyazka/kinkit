@@ -125,7 +125,7 @@
   // element's data-i18n / data-i18n-aria attribute. Values may contain the
   // same inline markup as the English HTML (static, authored here).
   var ID = {
-    'meta.title': 'Kinkit: keuangan, anggaran, dan tabungan keluarga dalam satu tempat',
+    'meta.title': 'Kinkit: kelola, pantau, dan ajari rumah tangga Anda, dalam satu tempat',
     'skip': 'Langsung ke konten',
     'nav.features': 'Fitur',
     'nav.how': 'Cara kerja',
@@ -156,9 +156,9 @@
     'cta.start': 'Mulai gratis',
     'cta.how': 'Lihat cara kerjanya',
 
-    'hero.news': 'Aplikasi Android untuk HP dan TV sudah tersedia',
-    'hero.title': 'Satu rumah untuk keuangan keluarga, <span class="soft">dan semua anggotanya.</span>',
-    'hero.lead': 'Catat pengeluaran, susun anggaran, menabung untuk tujuan, dan jaga semangat anak-anak, bersama-sama. Pakai di browser, di HP, di TV ruang keluarga, atau langsung dari Telegram dan Discord.',
+    'hero.news': 'Kalender, usulan menu, dan layar widget sudah hadir',
+    'hero.title': 'Kelola seluruh rumah tangga, <span class="soft">bukan hanya anggarannya.</span>',
+    'hero.lead': 'Kinkit membantu keluarga mengelola kehidupan rumah bersama: uang dan anggaran, tugas dan pengingat, kalender bersama, menu makan dan belanja. Pantau semuanya di layar widget buatan sendiri, dan ajari anak lewat praktik langsung dengan uang saku, poin, dan target. Pakai di browser, di HP, di TV ruang keluarga, atau langsung dari Telegram dan Discord.',
     'hero.note': 'Gratis untuk mulai. Kinkit tidak pernah meminta login bank Anda.',
     'hero.visualAlt': 'Dasbor Kinkit di laptop, menampilkan pengeluaran bulan ini dibanding anggaran, pemasukan, tabungan, dan pengeluaran per kategori, dengan maskot Kiki yang melambai.',
 
@@ -194,7 +194,7 @@
     'f.fx.d': 'Lihat jumlah dalam IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD, atau INR, dikonversi dengan kurs harian. Data tersimpan tetap dalam rupiah.',
 
     'g.home': 'Rumah &amp; keluarga',
-    'g.homeSub': 'Satu keluarga, tiap orang dengan akses yang tepat.',
+    'g.homeSub': 'Rencanakan, bagikan, dan jalankan rumah tangga bersama, dengan akses yang pas untuk tiap orang.',
     'f.household.t': 'Satu keluarga, semua bisa masuk',
     'f.household.d': 'Tambahkan anggota keluarga dengan email dan kata sandi masing-masing. Semua orang mengelola keuangan keluarga yang sama.',
     'f.roles.t': 'Peran yang pas untuk keluarga nyata',
@@ -204,12 +204,18 @@
     'f.undo.t': 'Urungkan, bukan "Yakin?"',
     'f.undo.d': 'Terhapus tanpa sengaja? Setiap penghapusan menampilkan tombol Urungkan selama beberapa detik, jadi tidak ada yang terjebak menjawab dialog konfirmasi.',
     'f.today.t': 'Hari ini',
-    'f.today.d': 'Satu tampilan harian untuk semua yang jatuh tempo di rumah: pengingat, tugas, daftar, dan kondisi anggaran.',
+    'f.today.d': 'Satu tampilan harian untuk semua yang jatuh tempo di rumah: pengingat, kegiatan, tugas, daftar, usulan menu, dan kondisi anggaran.',
     'f.chores.t': 'Tugas rumah, pengingat &amp; daftar belanja',
     'f.chores.d': 'Tugas rumah dengan poin, persetujuan orang tua, dan bukti foto yang dihitung ke uang saku anak. Pengingat rumah tangga untuk cucian, bersih-bersih, tandon air, tagihan, obat, dan ulang tahun, berulang setiap hari, tiap 2 minggu, atau tiap 3 bulan, yang mengingatkan orang yang tepat lewat Telegram atau Discord. Daftar belanja bersama: ketik "telur, 2 susu, roti x3", lalu jadikan belanjaan satu catatan pengeluaran.',
 
     'g.fun': 'Seru &amp; memotivasi',
-    'g.funSub': 'Kebiasaan keuangan yang baik, jadi permainan keluarga.',
+    'g.funSub': 'Ajari anak lewat praktik: tugas rumah, uang saku, target, poin, dan lencana.',
+    'f.cal.t': 'Kalender keluarga',
+    'f.cal.d': 'Rencanakan les renang, latihan sepak bola, libur sekolah, atau liburan akhir pekan di kalender yang bekerja seperti Google Calendar: tampilan bulan, minggu, hari, dan agenda, kegiatan yang berulang, dan jadwal tiap orang. Pengingat muncul di atasnya, dan halaman Pengingat juga punya tampilan kalender.',
+    'f.meals.t': 'Menu makan yang bisa diusulkan siapa saja',
+    'f.meals.d': 'Menu mingguan yang mengikuti bahan wajib pakai dan promo toko. Siapa saja, termasuk anak, bisa mengusulkan hidangan; orang tua dan admin keluarga menyetujuinya untuk suatu hari atau menolaknya.',
+    'f.widgets.t': 'Layar widget yang Anda atur sendiri',
+    'f.widgets.d': 'Pilih apa yang ingin dilihat (jam, agenda, pengingat, tugas, daftar, menu, anggaran, target, poin keluarga, catatan) dan seret ke tempatnya. Tampilkan layar penuh di HP, monitor, TV ruang keluarga, atau layar mobil, dengan templat siap pakai untuk masing-masing.',
     'f.points.t': 'Poin dan level',
     'f.points.d': 'Dapatkan 10 poin per hari untuk mencatat, plus bonus streak. Naik dari Getting Started ke Tracker, Budget Buddy, Money Master, sampai Finance Wizard.',
     'f.badges.t': 'Streak dan lencana',
@@ -219,7 +225,7 @@
     'f.leader.t': 'Papan peringkat bulanan',
     'f.leader.d': 'Lihat siapa yang paling banyak mengumpulkan poin bulan ini. Persaingan seru yang bikin semua mau mencatat.',
     'f.themes.t': 'Tema untuk segala usia',
-    'f.themes.d': 'Terang, Gelap, tema Ceria untuk anak, dan tema Senior berkontras tinggi dengan teks lebih besar.',
+    'f.themes.d': 'Terang dan Gelap (desain yang sama, putih diganti hitam), tema Ceria untuk anak, dan tema Senior berkontras tinggi dengan teks lebih besar.',
     'f.themes.link': 'Lihat temanya',
 
     'g.every': 'Di mana saja',
@@ -230,14 +236,14 @@
     'f.offline.t': 'Jalan saat offline',
     'f.offline.d': 'Tidak ada sinyal di pasar? Pengeluaran yang dicatat saat offline tersimpan di perangkat dan disinkronkan begitu Anda online lagi, dan tidak ada yang hilang diam-diam.',
     'f.tv.t': 'Tautan tampilan TV &amp; mobil',
-    'f.tv.d': 'Buka tautan berbagi di browser TV, tablet dinding, atau head unit mobil untuk menampilkan angka bulan ini dengan huruf besar. Tidak perlu login, diperbarui tiap menit, dan bisa dicabut seketika.',
+    'f.tv.d': 'Buka tautan berbagi di browser TV, tablet dinding, atau head unit mobil untuk menampilkan angka bulan ini, atau salah satu papan widget Anda, dengan huruf besar. Tanpa login, menyegarkan setiap menit, dan bisa dicabut seketika.',
     'f.bots.t': 'Bot Telegram &amp; Discord',
     'f.bots.d': 'Kirim "50k makan siang" dan langsung tercatat, dengan kategori dipilih dari kata kunci Anda; kata baru muncul dengan tombol kategori dan bot mengingat pilihan Anda. Ketik <kbd>/recent</kbd> atau <kbd>/today</kbd>, buat pengingat dengan <kbd>/remind</kbd>, tambah daftar belanja dengan <kbd>/buy</kbd>, cek tugas dengan <kbd>/chores</kbd>, dan lihat rencana menu mingguan dengan <kbd>/menu</kbd>. Hubungkan bot Anda sendiri di Pengaturan.',
     'f.native.t': 'Aplikasi Android untuk HP',
-    'f.native.d': 'Aplikasi native untuk seluruh keluarga: Hari ini, pengingat, tugas rumah, daftar belanja, pengeluaran, dan anggaran. Aplikasi iPhone segera hadir.',
+    'f.native.d': 'Aplikasi native untuk seluruh keluarga: Hari ini, pengingat, kalender, tugas, daftar, menu makan, widget, pengeluaran, dan anggaran. Aplikasi iPhone segera hadir.',
     'f.native.link': 'Unduh APK-nya',
     'f.smarttv.t': 'Penampil smart TV',
-    'f.smarttv.d': 'Dasbor keluarga khusus tampilan untuk Android TV / Google TV / Fire TV dan LG webOS, plus paket Samsung Tizen untuk mode developer.',
+    'f.smarttv.d': 'Layar keluarga khusus tampilan untuk Android TV / Google TV / Fire TV dan LG webOS, menampilkan ringkasan bulan atau papan widget Anda, dengan paket Samsung Tizen untuk mode pengembang.',
     'f.smarttv.link': 'Dapatkan aplikasi TV',
 
     'how.title': 'Siap dipakai dalam tiga langkah',

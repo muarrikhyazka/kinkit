@@ -59,6 +59,12 @@ func alwaysAllowed(method, path string) bool {
 		return true
 	case method == http.MethodPost && path == "/api/me/password":
 		return true
+	// Everyone may propose a meal and withdraw their own request; deciding
+	// (approve/decline) stays owner/parent only and the handlers re-check.
+	case method == http.MethodPost && path == "/api/meal-plan/proposals":
+		return true
+	case method == http.MethodDelete && strings.HasPrefix(path, "/api/meal-plan/proposals/"):
+		return true
 	}
 	return false
 }
@@ -241,9 +247,9 @@ func householdName(stored, ownerName *string) string {
 		return *stored
 	}
 	if ownerName != nil && *ownerName != "" {
-		return *ownerName + "'s household"
+		return *ownerName + "'s Family"
 	}
-	return "My household"
+	return "My Family"
 }
 
 func (app *App) loadHouseholdName(ctx context.Context, aid int64) string {

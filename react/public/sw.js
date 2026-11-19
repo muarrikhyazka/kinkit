@@ -14,7 +14,7 @@
  * Served with Cache-Control: no-cache (spa.go) so updates roll out on the
  * next load. Bump VERSION to force-refresh the shell cache.
  */
-const VERSION = 'v3' // bump when shell files (icons, manifest) change
+const VERSION = 'v4' // bump when shell files (icons, manifest) change
 const SHELL_CACHE = `kinkit-shell-${VERSION}`
 const ASSET_CACHE = 'kinkit-assets'
 const API_CACHE = 'kinkit-api'

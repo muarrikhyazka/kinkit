@@ -63,22 +63,25 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
     chrome: Color(0xFF4F46E5),
   );
 
+  // Same design as light with white swapped for black: only surfaces, borders
+  // and text change; brand purple, status colors and the chrome stay the same
+  // (mirrors [data-theme="dark"] in react/src/index.css).
   static const dark = KinkitPalette(
-    bg: Color(0xFF0F1220),
-    card: Color(0xFF171B2D),
-    border: Color(0xFF2A3049),
-    text: Color(0xFFE7E9F0),
-    muted: Color(0xFFA0A7B8),
-    primary: Color(0xFF818CF8),
-    primaryLight: Color(0xFF262B47),
-    success: Color(0xFF22C55E),
-    danger: Color(0xFFF87171),
-    warning: Color(0xFFFBBF24),
-    borderStrong: Color(0xFF3A4161),
-    surface2: Color(0xFF1F2439),
-    onPrimary: Color(0xFF0F1220),
-    dangerLight: Color(0xFF3A1D24),
-    chrome: Color(0xFF312E81),
+    bg: Color(0xFF0B0B0D),
+    card: Color(0xFF151517),
+    border: Color(0xFF2A2A2F),
+    text: Color(0xFFF4F4F5),
+    muted: Color(0xFFA1A1AA),
+    primary: Color(0xFF4F46E5),
+    primaryLight: Color(0xFF1F1D3D),
+    success: Color(0xFF15803D),
+    danger: Color(0xFFDC2626),
+    warning: Color(0xFFB45309),
+    borderStrong: Color(0xFF3B3B42),
+    surface2: Color(0xFF1E1E22),
+    onPrimary: Color(0xFFFFFFFF),
+    dangerLight: Color(0xFF3A1D1D),
+    chrome: Color(0xFF4F46E5),
   );
 
   @override

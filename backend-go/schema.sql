@@ -681,3 +681,76 @@ CREATE TABLE IF NOT EXISTS bot_feedback (
 );
 CREATE INDEX IF NOT EXISTS bot_feedback_account_idx ON bot_feedback(account_id, created_at);
 -- === end meal plan + chat bot extras ===
+
+-- === calendar activities ===
+-- Family calendar events (Google-Calendar style). Dates/times are household-local
+-- wall-clock values (no UTC conversion): start_date + start_time .. end_date +
+-- end_time, or whole days when all_day. Repeating activities store one rule row;
+-- occurrences are expanded on read. activity_skips removes single occurrences
+-- ("delete this one only").
+CREATE TABLE IF NOT EXISTS activities (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    notes TEXT NOT NULL DEFAULT '',
+    location TEXT NOT NULL DEFAULT '',
+    color TEXT NOT NULL DEFAULT 'indigo',
+    all_day BOOLEAN NOT NULL DEFAULT FALSE,
+    start_date DATE NOT NULL,
+    start_time TEXT NOT NULL DEFAULT '09:00',
+    end_date DATE NOT NULL,
+    end_time TEXT NOT NULL DEFAULT '10:00',
+    repeat_kind TEXT NOT NULL DEFAULT 'none' CHECK (repeat_kind IN ('none','daily','weekly','monthly','yearly')),
+    repeat_interval INTEGER NOT NULL DEFAULT 1,
+    weekdays INTEGER[] NOT NULL DEFAULT '{}',          -- weekly: 0=Sunday .. 6=Saturday
+    until_date DATE,
+    attendee_ids BIGINT[] NOT NULL DEFAULT '{}',        -- members; empty = whole family
+    created_by BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS activities_account_start_idx ON activities(account_id, start_date);
+CREATE TABLE IF NOT EXISTS activity_skips (
+    activity_id BIGINT NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+    skip_date DATE NOT NULL,
+    PRIMARY KEY (activity_id, skip_date)
+);
+-- === end calendar activities ===
+
+-- === meal proposals ===
+-- Any member may propose a dish; owners/parents approve (optionally on a day)
+-- or decline. Approved dishes with a day show up in that day of the meal plan.
+CREATE TABLE IF NOT EXISTS meal_proposals (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    member_id BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    dish TEXT NOT NULL,
+    note TEXT NOT NULL DEFAULT '',
+    wanted_date DATE,                       -- the day the proposer would like it
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','declined')),
+    meal_date DATE,                         -- approved: the day it is on the menu (NULL = "sometime")
+    decided_by BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    decided_at TIMESTAMPTZ,
+    decision_note TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS meal_proposals_account_idx ON meal_proposals(account_id, status, created_at);
+-- === end meal proposals ===
+
+-- === widget boards ===
+-- Named widget boards (phone / TV / car / monitor). layout is JSON owned by the
+-- clients: {"widgets":[{"id","type","w","h",...}]} in a 12-column flow grid.
+CREATE TABLE IF NOT EXISTS widget_boards (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    device TEXT NOT NULL DEFAULT 'any',
+    layout JSONB NOT NULL DEFAULT '{"widgets":[]}',
+    created_by BIGINT REFERENCES members(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS widget_boards_account_idx ON widget_boards(account_id);
+-- A TV/car share link can show one board (NULL = the classic month summary).
+ALTER TABLE tv_tokens ADD COLUMN IF NOT EXISTS board_id BIGINT REFERENCES widget_boards(id) ON DELETE SET NULL;
+-- === end widget boards ===

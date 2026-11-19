@@ -5,6 +5,8 @@ import BarChart from '../BarChart.jsx'
 import { Skeleton } from '../Skeleton.jsx'
 import { useAuth } from '../AuthContext.jsx'
 import { KinkitLogo } from '../icons.jsx'
+import WidgetBoard from '../WidgetBoard.jsx'
+import '../widgets.css'
 
 const REFRESH_MS = 60_000 // auto-refresh for an always-on screen (TV/car head unit)
 
@@ -21,6 +23,7 @@ export default function TVView({ token }) {
   const [trend, setTrend] = useState([])
   const [error, setError] = useState('')
   const [family, setFamily] = useState('')
+  const [board, setBoard] = useState(null) // widget board this link shows: {name, layout:{widgets}, cards, timezone}
   const auth = useAuth()
   // UTC "current month", re-evaluated on every refresh so an always-on screen
   // rolls over to the new month by itself.
@@ -35,6 +38,7 @@ export default function TVView({ token }) {
             if (d.currency) setCurrency(d.currency)
             setFamily((d.household_name || d.display_name || '').trim())
             setReport(d.report); setTrend(d.trend); setPeriod({ year: d.year, month: d.month }); setError('')
+            setBoard(d.board ? { name: d.board.name, widgets: d.board.layout?.widgets || [], cards: d.cards || {}, timezone: d.timezone } : null)
           })
           .catch(e => {
             setError(e.status === 401 ? 'This TV link is invalid or was revoked. Create a new one under Data & devices.' : e.message)
@@ -66,6 +70,23 @@ export default function TVView({ token }) {
 
   // Share-token mode: from /api/tv/data. Logged-in mode: from /api/me.
   const familyName = token ? family : (auth?.user?.household_name || auth?.user?.display_name || '').trim()
+  if (board) {
+    return (
+      <div className="tv-view tv-board">
+        <div className="tv-header">
+          <div className="tv-brand-row">
+            <KinkitLogo className="tv-logo" aria-hidden="true" />
+            <div className="tv-brand-block">
+              <div className="tv-brand">Kinkit</div>
+              {familyName && <div className="tv-family">{familyName}</div>}
+            </div>
+          </div>
+          <div className="tv-date">{board.name}</div>
+        </div>
+        <WidgetBoard widgets={board.widgets} cards={board.cards} tz={board.timezone} display />
+      </div>
+    )
+  }
   const netFlow = report.total_income - report.budgeted_expenses
   const topExpenses = [...report.expenses_list]
     .filter(r => r.realization > 0)

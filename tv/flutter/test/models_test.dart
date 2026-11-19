@@ -85,4 +85,22 @@ void main() {
       expect(m.format(1000), 'Rp1.000');
     });
   });
+
+  test('TvData parses a widget board and its cards', () {
+    final d = TvData.fromJson({
+      'year': 2026, 'month': 11, 'currency': 'IDR', 'report': {}, 'trend': [],
+      'board': {'id': 1, 'name': 'Living-room TV', 'layout': {'widgets': [
+        {'id': 'a', 'type': 'clock', 'w': 4, 'h': 1},
+        {'id': 'b', 'type': 'agenda', 'w': 99, 'h': 3},
+      ]}},
+      'cards': {'agenda': {'type': 'agenda', 'title': 'Next 7 days', 'rows': [{'title': 'Swim', 'detail': 'Today', 'pct': 50}], 'big_amount': 1000}},
+    });
+    expect(d.board, isNotNull);
+    expect(d.board!.name, 'Living-room TV');
+    expect(d.board!.widgets.length, 2);
+    expect(d.board!.widgets.last.w, 12); // clamped
+    expect(d.board!.cards['agenda']!.rows.single.pct, 50);
+    expect(d.board!.cards['agenda']!.bigAmount, 1000);
+    expect(TvData.fromJson({'report': {}, 'trend': []}).board, isNull); // classic month summary
+  });
 }

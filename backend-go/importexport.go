@@ -38,6 +38,7 @@ func RegisterDataRoutes(r chi.Router, app *App) {
 
 	r.Get("/tv-tokens", app.handleListTVTokens)
 	r.Post("/tv-tokens", app.handleCreateTVToken)
+	r.Patch("/tv-tokens/{id}", app.handleUpdateTVToken)
 	r.Delete("/tv-tokens/{id}", app.handleRevokeTVToken)
 	r.With(publicCORS).Get("/tv/data", app.handleTVData) // ?k=<token>, no session; CORS for tv/web
 }

@@ -40,6 +40,19 @@ func TestDecideRole(t *testing.T) {
 		{"kid", "DELETE", "/api/spending/abc", roleDeny, 0},
 		{"kid", "POST", "/api/family/members", roleDeny, 0},
 		{"kid", "GET", "/api/family", roleAllow, 0},
+		// everyone proposes meals; only managers decide
+		{"kid", "POST", "/api/meal-plan/proposals", roleAllow, 0},
+		{"viewer", "POST", "/api/meal-plan/proposals", roleAllow, 0},
+		{"viewer", "DELETE", "/api/meal-plan/proposals/7", roleAllow, 0},
+		{"kid", "POST", "/api/meal-plan/proposals/7/approve", roleDeny, 0},
+		{"viewer", "POST", "/api/meal-plan/proposals/7/decline", roleDeny, 0},
+		{"parent", "POST", "/api/meal-plan/proposals/7/approve", roleAllow, 0},
+		// calendar + widgets are manager-only to change
+		{"kid", "POST", "/api/activities", roleDeny, 0},
+		{"viewer", "PATCH", "/api/activities/3", roleDeny, 0},
+		{"kid", "POST", "/api/widgets/boards", roleDeny, 0},
+		{"kid", "GET", "/api/widgets/data", roleAllow, 0},
+		{"parent", "POST", "/api/activities", roleAllow, 0},
 	}
 	for _, c := range cases {
 		got, id := decideRole(c.role, c.method, c.path)
@@ -558,6 +571,24 @@ func TestBadgeAndChallengeEvaluation(t *testing.T) {
 	for _, b := range g3.Badges {
 		if b.Key == "streak_7" && !b.Earned {
 			t.Fatalf("streak_7 not earned with best_streak 7")
+		}
+	}
+}
+
+func TestHouseholdNameDefault(t *testing.T) {
+	s := func(v string) *string { return &v }
+	cases := []struct {
+		stored, owner *string
+		want          string
+	}{
+		{nil, s("Budi"), "Budi's Family"},
+		{s("  "), s("Budi"), "Budi's Family"},
+		{nil, nil, "My Family"},
+		{s("The Testers"), s("Budi"), "The Testers"},
+	}
+	for _, c := range cases {
+		if got := householdName(c.stored, c.owner); got != c.want {
+			t.Errorf("householdName=%q want %q", got, c.want)
 		}
 	}
 }

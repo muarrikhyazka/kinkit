@@ -10,11 +10,12 @@ import '../util/dates.dart';
 import '../widgets/async_view.dart';
 import '../widgets/k_app_bar.dart';
 import '../widgets/mascot.dart';
+import 'calendar_screen.dart';
 import 'list_detail_screen.dart';
 import 'meal_plan_screen.dart';
 
-/// Home section: Reminders / Chores / Lists / Meals (web: /reminders,
-/// /home/chores, /home/lists, /home/meals; the phone keeps reminders as a
+/// Home section: Reminders / Calendar / Chores / Lists / Meals (web: /reminders,
+/// /calendar, /home/chores, /home/lists, /home/meals; the phone keeps reminders as a
 /// Home tab), backed by backend-go/reminders.go, chores.go, lists.go and
 /// meal_plan.go.
 class HouseholdScreen extends StatelessWidget {
@@ -23,7 +24,7 @@ class HouseholdScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         appBar: kAppBar(
           context,
@@ -31,10 +32,10 @@ class HouseholdScreen extends StatelessWidget {
           bottom: const TabBar(
             isScrollable: true,
             tabAlignment: TabAlignment.start,
-            tabs: [Tab(text: 'Reminders'), Tab(text: 'Chores'), Tab(text: 'Lists'), Tab(text: 'Meals')],
+            tabs: [Tab(text: 'Reminders'), Tab(text: 'Calendar'), Tab(text: 'Chores'), Tab(text: 'Lists'), Tab(text: 'Meals')],
           ),
         ),
-        body: const TabBarView(children: [RemindersTab(), ChoresTab(), ListsTab(), MealsTab()]),
+        body: const TabBarView(children: [RemindersTab(), CalendarTab(), ChoresTab(), ListsTab(), MealsTab()]),
       ),
     );
   }
@@ -91,7 +92,7 @@ class RemindersTab extends ConsumerStatefulWidget {
 }
 
 class _RemindersTabState extends ConsumerState<RemindersTab> {
-  bool _all = false;
+  int _view = 0; // 0 = next 7 days, 1 = all reminders, 2 = calendar
 
   @override
   Widget build(BuildContext context) {
@@ -109,16 +110,23 @@ class _RemindersTabState extends ConsumerState<RemindersTab> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
-            child: SegmentedButton<bool>(
+            child: SegmentedButton<int>(
               segments: const [
-                ButtonSegment(value: false, label: Text('Next 7 days')),
-                ButtonSegment(value: true, label: Text('All reminders')),
+                ButtonSegment(value: 0, label: Text('Next 7 days')),
+                ButtonSegment(value: 1, label: Text('All')),
+                ButtonSegment(value: 2, label: Text('Calendar'), icon: Icon(Icons.calendar_month_outlined)),
               ],
-              selected: {_all},
-              onSelectionChanged: (v) => setState(() => _all = v.first),
+              selected: {_view},
+              onSelectionChanged: (v) => setState(() => _view = v.first),
             ),
           ),
-          Expanded(child: _all ? const _AllReminders() : const _UpcomingReminders()),
+          Expanded(
+            child: switch (_view) {
+              1 => const _AllReminders(),
+              2 => const CalendarPanel(activities: false, reminders: true),
+              _ => const _UpcomingReminders(),
+            },
+          ),
         ],
       ),
     );

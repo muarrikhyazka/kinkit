@@ -10,6 +10,7 @@ import 'kinkit_logo.dart';
 import 'mascot.dart';
 import 'models.dart';
 import 'money.dart';
+import 'board_page.dart';
 import 'pages.dart';
 import 'settings_screen.dart';
 import 'store.dart';
@@ -158,6 +159,8 @@ class _ViewerScreenState extends State<ViewerScreen> {
   // ---------- carousel ----------
 
   List<Widget> _pages(TvData d, Money money) {
+    // A link tied to a widget board shows just that board (web Widgets page).
+    if (d.board != null) return [BoardPage(board: d.board!, money: money)];
     final cats = d.report.activeCategories;
     final chunks = <List<TvExpense>>[];
     for (var i = 0; i < cats.length; i += BudgetPage.perPage) {

@@ -6,6 +6,7 @@ import { useApi } from '../useApi'
 import { useAuth, canManage } from '../AuthContext.jsx'
 import { mealApi } from '../api'
 import { IconClose } from '../icons.jsx'
+import MealRequests from '../MealRequests.jsx'
 import '../mealplan.css'
 import { ChevronLink } from '../ChevronLink.jsx'
 
@@ -83,6 +84,9 @@ export default function MealPlan() {
                   <strong>{d.day}</strong>
                   <span className="muted">{fmtDate(d.date, { day: 'numeric', month: 'short' })}</span>
                 </div>
+                {(d.picks || []).map(k => (
+                  <div key={k.id} className="meal-pick"><span className="meal-label">Asked</span> {k.dish}{k.member_name && <span className="muted"> · {k.member_name}</span>}</div>
+                ))}
                 <div className="meal-dish"><span className="meal-label">Main</span> {d.protein}{d.fried && <span className="badge meal-fried">fried</span>}</div>
                 <div className="meal-dish"><span className="meal-label">Side</span> {d.veggie}</div>
                 {d.promo && (
@@ -97,6 +101,8 @@ export default function MealPlan() {
         )}
         {p?.missing?.length > 0 && <p className="muted meal-note">No dish in the menu catalog uses: {p.missing.join(', ')}.</p>}
       </section>
+
+      <MealRequests days={p?.days || []} manager={manager} onChanged={plan.reload} />
 
       <section className="card" aria-labelledby="meal-ing-h">
         <h2 id="meal-ing-h">Must-use ingredients</h2>

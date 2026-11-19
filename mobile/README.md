@@ -119,8 +119,8 @@ State management: **Riverpod** (`flutter_riverpod`). Feature data uses
 `notifySpendingChanged()`).
 
 Navigation mirrors the web nav (`react/src/routes.jsx`): bottom bar
-**Today / Home / Money / Family / More**. Home has Reminders, Chores,
-Lists and Meals tabs; Money has Dashboard, Spending, Income, Budget and Goals tabs;
+**Today / Home / Money / Family / More**. Home has Reminders, Calendar, Chores,
+Lists and Meals tabs; More opens Widgets; Money has Dashboard, Spending, Income, Budget and Goals tabs;
 More holds profile, settings and logout. Menus are hidden by role the same way the web
 does it (kids don't see income/budget/goals; viewers can't add; only
 family admins/parents edit budgets, goals and income). The backend still enforces
@@ -173,6 +173,10 @@ Amount inputs are entered in IDR (with web-style shorthand: `25k`, `2rb`,
 | Chores | Home > Chores | `GET /api/chores/today`, `POST /api/chores/{instanceId}/complete` / `approve` / `reject` / `undo` `{note}` |
 | Shopping lists | Home > Lists | `GET /api/lists`, `POST /api/lists` `{name}` (emoji sent empty), `GET /api/lists/{id}`, `POST /api/lists/{id}/items` `{text}`, `PATCH /api/lists/{id}/items/{itemId}` `{checked}`, `DELETE /api/lists/{id}/items/{itemId}`, `POST /api/lists/{id}/clear-checked`, `POST /api/lists/{id}/finish` `{client_id, total_amount}` (finish shopping -> spending) |
 | Meal plan + must-use ingredients | Home > Meals (web: `/home/meals`) | `GET /api/meal-plan` (`?week=this` for this week), `GET /api/meal-plan/ingredients`, `POST /api/meal-plan/ingredients` `{name}`, `DELETE /api/meal-plan/ingredients/{id}` |
+| Calendar (activities + reminders overlay): month grid, selected-day list, 30-day agenda; owner/parent add, edit, delete (this one / series) | Home > Calendar (web: `/calendar`; the web also has week and day hour grids) | `GET /api/calendar?from&to[&include=activities\|reminders]`, `POST /api/activities` `{title, start_date, end_date, all_day, start_time, end_time, repeat, interval, weekdays, until_date, attendee_ids, location, notes, color}`, `PATCH /api/activities/{id}`, `DELETE /api/activities/{id}[?on=YYYY-MM-DD]`, `GET /api/family` (who-is-it-for picker) |
+| Reminders as a month calendar | Home > Reminders > Calendar | `GET /api/calendar?include=reminders`, then the reminder done/snooze endpoints above |
+| Meal requests (anyone asks, owner/parent approve on a day or decline) | Home > Meals | `GET /api/meal-plan/proposals`, `POST /api/meal-plan/proposals` `{dish, note, wanted_date}`, `POST /api/meal-plan/proposals/{id}/approve` `{meal_date}`, `POST .../decline`, `DELETE /api/meal-plan/proposals/{id}`; approved dishes come back as `picks` on `GET /api/meal-plan` days |
+| Widget boards (view, full screen, edit: reorder by long-press drag, resize, add, remove) | More > Widgets (web: `/widgets`) | `GET /api/widgets/catalog`, `GET /api/widgets/boards`, `POST /api/widgets/boards` `{preset}` or `{name, layout}`, `PATCH /api/widgets/boards/{id}` `{name?, layout?}`, `DELETE /api/widgets/boards/{id}`, `GET /api/widgets/data?types=` |
 
 ### Web-only for now (intentionally not on the phone yet)
 

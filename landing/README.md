@@ -123,6 +123,9 @@ The page should only claim what the code does. When a feature changes, find its 
 | Starter categories / income sources on signup | `seedDefaults` in `backend-go/auth.go` |
 | Today page (what's due for the household) | `react/src/pages/Today.jsx`, `backend-go/today.go` (`GET /api/today`) |
 | Chores with points, approval, photo proof, allowance earnings | `react/src/pages/Chores.jsx`, `backend-go/chores*.go`, allowance in `backend-go/family.go` |
+| Family calendar: month/week/day/agenda, repeating activities, per-person schedules, reminders overlay; Reminders calendar view | `react/src/pages/Calendar.jsx`, `react/src/RemindersCalendar.jsx`, `backend-go/activities.go` (`GET /api/calendar`, `/api/activities`) |
+| Meal requests: anyone proposes, parents/admin approve on a day or decline | `react/src/MealRequests.jsx`, `backend-go/meal_proposals.go` |
+| Widget screens: pick widgets, drag to arrange, full screen for phone/TV/car/monitor, templates; TV links can show a board | `react/src/pages/Widgets.jsx`, `react/src/WidgetBoard.jsx`, `backend-go/widgets.go`, `backend-go/tvshare.go` (`board_id`) |
 | Household reminders (cleaning/laundry/kitchen/groceries/home maintenance/vehicle/self-care plus bill/medicine/school/birthday), every N weeks/months, household templates, chat nudges | `react/src/pages/Reminders.jsx` (`REMINDER_TEMPLATES`), `backend-go/reminders*.go` (`reminderCategoryIDs`, `repeat_interval`) |
 | Shared shopping lists, bulk add, "finish trip" → spending | `react/src/pages/Lists.jsx`, `backend-go/lists*.go` |
 | Bot commands `/today` `/remind` `/buy` `/chores` `/menu` | `bots/telegram_bot.py`, `bots/discord_bot.py`, `bots/kinkit_common.py`, `backend-go/*_bot.go`, `backend-go/meal_plan.go` |
@@ -132,7 +135,7 @@ The page should only claim what the code does. When a feature changes, find its 
 | Weekly family challenges (log every day, no-spend weekend, Wants under a week's share) | `backend-go/achievements.go` |
 | Monthly leaderboard | `react/src/pages/Family.jsx`, `backend-go/achievements.go` |
 | Confetti celebration on new badges / level-ups (skipped with reduced motion) | `react/src/Celebration.jsx` |
-| Themes: Light, Dark, Playful (kids), Senior (high-contrast) | `react/src/ThemeContext.jsx`, `[data-theme=…]` blocks in `react/src/index.css`, `react/src/pages/DisplaySettings.jsx` |
+| Themes: Light, Dark (same design, white swapped for black; sidebar toggle flips only light/dark), Playful (kids), Senior (high-contrast) | `react/src/ThemeContext.jsx`, `[data-theme=…]` blocks in `react/src/index.css`, `react/src/pages/DisplaySettings.jsx` |
 | Installable web app (PWA) | `react/index.html` (manifest), service worker registration in `react/src/main.jsx` |
 | Works offline: queue, sync, rejected entries listed | `react/src/OfflineContext.jsx` |
 | TV / car display links: no login, refresh every minute, revocable | `react/src/pages/TVView.jsx` (`REFRESH_MS = 60_000`), `react/src/TVTokens.jsx`, `backend-go/tvshare.go` |

@@ -45,28 +45,22 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Dark mode is the same design with white swapped for black: only surfaces,
+   borders and text change. Fonts, brand purple, status colors and the purple
+   chrome are shared with the light theme on purpose. */
 [data-theme="dark"] {
-  --bg: #0f1220;
-  --card: #171b2d;
-  --surface-2: #1f2439;
-  --border: #2a3049;
-  --border-strong: #3a4161;
-  --text: #e7e9f0;
-  --muted: #a0a7b8;
-  --primary: #818cf8;
-  --primary-hover: #a5b4fc;
-  --primary-light: #262b47;
-  --on-primary: #0f1220;
-  --success: #22c55e;
-  --danger: #f87171;
-  --danger-light: #3a1d24;
-  --warning: #fbbf24;
-  --chrome-bg: linear-gradient(180deg, #312e81 0%, #1e1b4b 100%);
-  --chrome-bg-flat: #312e81;
-  --chrome-active-bg: rgba(255,255,255,.16);
-  --chrome-active-text: #fff;
-  --shadow-1: 0 1px 2px rgba(0,0,0,.3);
-  --shadow-2: 0 12px 32px rgba(0,0,0,.5);
+  color-scheme: dark;
+  --bg: #0b0b0d;
+  --card: #151517;
+  --surface-2: #1e1e22;
+  --border: #2a2a2f;
+  --border-strong: #3b3b42;
+  --text: #f4f4f5;
+  --muted: #a1a1aa;
+  --primary-light: #1f1d3d;
+  --danger-light: #3a1d1d;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.5);
+  --shadow-2: 0 12px 32px rgba(0,0,0,.6);
 }
 [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background: var(--card); color: var(--text); border-color: var(--border-strong); }
 
@@ -183,7 +177,6 @@ input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--mute
   padding: 16px;
   background: linear-gradient(180deg, #4F46E5 0%, #4338CA 100%); /* same purple as the sidebar/top bar */
 }
-[data-theme="dark"] .login-page { background: linear-gradient(180deg, #312E81 0%, #1E1B4B 100%); }
 .login-card {
   width: min(360px, 100%);
   display: flex;
@@ -204,7 +197,6 @@ input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--mute
   font-size: var(--fs-sm);
   margin-bottom: var(--s-4);
 }
-[data-theme="dark"] .error-box { color: #fecaca; }
 .notice-box {
   background: #fffbeb;
   color: #92400e;
@@ -214,7 +206,6 @@ input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--mute
   font-size: var(--fs-sm);
   margin-bottom: var(--s-4);
 }
-[data-theme="dark"] .notice-box { background: #3a2a10; color: #fde68a; border-color: #5c4413; }
 
 /* Compact text button (in-place actions: Undo, Pause, Remove...). With .link-chevron it
    navigates and gets a trailing chevron. Never underlined; hover is a soft tint. */
@@ -356,7 +347,6 @@ p .link-chevron, .muted .link-chevron { margin-top: 0; margin-bottom: 0; }
   overflow: hidden;
   box-shadow: 0 1px 2px rgba(20,16,80,.2);
 }
-[data-theme="dark"] .nav-cta { background: #e0e7ff; color: #312e81; }
 [data-theme="senior"] .nav-cta { color: #1e1b4b; }
 .sidebar.collapsed .nav-cta { justify-content: center; padding: var(--s-2); }
 .sidebar-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--s-1); font-size: var(--fs-sm); border-top: 1px solid var(--chrome-line); padding-top: var(--s-3); width: 100%; color: var(--chrome-soft); }
@@ -800,11 +790,6 @@ a.gami-badge, a.gami-badge-collapsed { text-decoration: none; display: block; co
 }
 @media (prefers-reduced-motion: reduce) { .confetti { display: none; } }
 @media (max-width: 600px) { .family-form { grid-template-columns: 1fr; } }
-[data-theme="dark"] .role-owner { background: #3b2a6b; color: #ddd6fe; }
-[data-theme="dark"] .role-parent { background: #1e3a8a; color: #dbeafe; }
-[data-theme="dark"] .role-kid { background: #78350f; color: #fef3c7; }
-[data-theme="dark"] .role-viewer { background: #374151; color: #e5e7eb; }
-[data-theme="dark"] .challenge.done .chip { background: #14532d; color: #dcfce7; }
 /* === end family === */
 
 /* --- money --- (recurring / income / goals / budget vs actual / alerts) */
@@ -1210,11 +1195,19 @@ td.table-empty { text-align: center; padding: var(--s-6) var(--s-4); }
 .field-gap { margin-bottom: var(--s-3); }
 
 /* Dark theme: semantic tints that were hard-coded for light surfaces */
-[data-theme="dark"] button.danger { color: #1b0b0b; }
-[data-theme="dark"] .badge-needs { background: #1e3a8a; color: #dbeafe; }
-[data-theme="dark"] .badge-wants { background: #5c3d0e; color: #fef3c7; }
-[data-theme="dark"] .badge-savings, [data-theme="dark"] .badge.import-ok, [data-theme="dark"] .chore-approved { background: #14532d; color: #dcfce7; }
-[data-theme="dark"] .badge.import-skip, [data-theme="dark"] .chore-missed { background: #2a3049; color: #cbd5e1; }
-[data-theme="dark"] .badge.import-duplicate, [data-theme="dark"] .chore-submitted, [data-theme="dark"] .chore-count { background: #5c3d0e; color: #fef3c7; }
-[data-theme="dark"] .badge.import-error, [data-theme="dark"] .chore-rejected { background: #4c1d1d; color: #fecaca; }
-[data-theme="dark"] .chore-todo { background: #262b47; color: #c7d2fe; }
+.tv-token-board { display: flex; align-items: center; gap: .5rem; margin-bottom: .4rem; font-size: var(--fs-sm); }
+.tv-token-board select { max-width: 16rem; }
+
+/* sidebar: collapsible nav groups (Layout.jsx) */
+.sidebar .nav-group-btn { all: unset; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; cursor: pointer; font: inherit; font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .06em; color: var(--chrome-soft); padding: var(--s-4) var(--s-3) var(--s-1); font-weight: 600; }
+.sidebar .nav-group-btn:hover { color: var(--chrome-text); }
+.sidebar .nav-group-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 4px; }
+.sidebar .nav-group-btn svg { transition: transform .15s; }
+.sidebar .nav-group-btn[aria-expanded="false"] svg { transform: rotate(-90deg); }
+.sidebar li.nav-group { padding: 0; }
+
+/* in-app guide screenshots (pages/Guide.jsx) */
+.guide-shot { margin: var(--s-4) 0 0; border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; background: var(--surface-2); }
+.guide-shot img { display: block; width: 100%; height: auto; }
+.guide-shot figcaption { padding: var(--s-2) var(--s-3); font-size: var(--fs-xs); }
+.guide-shot.phone { max-width: 320px; }

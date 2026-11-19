@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
@@ -24,6 +25,8 @@ type tvTokenRow struct {
 	CreatedAt  string  `json:"created_at"`
 	LastUsedAt *string `json:"last_used_at"`
 	Revoked    bool    `json:"revoked"`
+	BoardID    *int64  `json:"board_id"` // widget board this link shows (nil = classic month summary)
+	BoardName  *string `json:"board_name"`
 }
 
 // GET /api/tv-tokens -> [tvTokenRow] (newest first)
@@ -33,7 +36,8 @@ func (app *App) handleListTVTokens(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rows, err := app.DB.Query(r.Context(),
-		"SELECT id, name, token, created_at, last_used_at, revoked FROM tv_tokens WHERE account_id=$1 ORDER BY revoked, id DESC", aid)
+		`SELECT t.id, t.name, t.token, t.created_at, t.last_used_at, t.revoked, t.board_id, b.name
+		 FROM tv_tokens t LEFT JOIN widget_boards b ON b.id=t.board_id WHERE t.account_id=$1 ORDER BY t.revoked, t.id DESC`, aid)
 	if err != nil {
 		dbError(w, err)
 		return
@@ -44,7 +48,7 @@ func (app *App) handleListTVTokens(w http.ResponseWriter, r *http.Request) {
 		var t tvTokenRow
 		var created time.Time
 		var used *time.Time
-		if err := rows.Scan(&t.ID, &t.Name, &t.Token, &created, &used, &t.Revoked); err != nil {
+		if err := rows.Scan(&t.ID, &t.Name, &t.Token, &created, &used, &t.Revoked, &t.BoardID, &t.BoardName); err != nil {
 			dbError(w, err)
 			return
 		}
@@ -65,7 +69,8 @@ func (app *App) handleCreateTVToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var d struct {
-		Name string `json:"name"`
+		Name    string `json:"name"`
+		BoardID *int64 `json:"board_id"`
 	}
 	_ = decodeJSON(r, &d)
 	d.Name = strings.TrimSpace(d.Name)
@@ -85,16 +90,80 @@ func (app *App) handleCreateTVToken(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, http.StatusBadRequest, "too many active TV links - revoke one first")
 		return
 	}
-	t := tvTokenRow{Name: d.Name, Token: randomToken()}
+	if d.BoardID != nil {
+		if err := app.checkBoard(ctx, aid, *d.BoardID); err != nil {
+			jsonError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+	t := tvTokenRow{Name: d.Name, Token: randomToken(), BoardID: d.BoardID}
 	var created time.Time
 	if err := app.DB.QueryRow(ctx,
-		"INSERT INTO tv_tokens (account_id, token, name) VALUES ($1,$2,$3) RETURNING id, created_at",
-		aid, t.Token, t.Name).Scan(&t.ID, &created); err != nil {
+		"INSERT INTO tv_tokens (account_id, token, name, board_id) VALUES ($1,$2,$3,$4) RETURNING id, created_at",
+		aid, t.Token, t.Name, d.BoardID).Scan(&t.ID, &created); err != nil {
 		dbError(w, err)
 		return
 	}
 	t.CreatedAt = created.UTC().Format(time.RFC3339)
 	writeJSON(w, http.StatusOK, t)
+}
+
+// checkBoard: the board must belong to the household.
+func (app *App) checkBoard(ctx context.Context, aid, boardID int64) error {
+	var one int
+	if err := app.DB.QueryRow(ctx, "SELECT 1 FROM widget_boards WHERE id=$1 AND account_id=$2", boardID, aid).Scan(&one); err != nil {
+		return errors.New("unknown widget board")
+	}
+	return nil
+}
+
+// PATCH /api/tv-tokens/{id} {"board_id": 3 | null, "name"?: "..."} - choose
+// which widget board this link shows (null = the classic month summary).
+func (app *App) handleUpdateTVToken(w http.ResponseWriter, r *http.Request) {
+	aid, ok := app.requireAccount(w, r)
+	if !ok {
+		return
+	}
+	id, err := urlInt64(r, "id")
+	if err != nil {
+		jsonError(w, http.StatusBadRequest, "invalid id")
+		return
+	}
+	var d struct {
+		Name    *string `json:"name"`
+		BoardID *int64  `json:"board_id"`
+	}
+	raw := map[string]json.RawMessage{}
+	if err := decodeJSON(r, &raw); err != nil {
+		jsonError(w, http.StatusBadRequest, "invalid json")
+		return
+	}
+	if v, ok := raw["name"]; ok {
+		_ = json.Unmarshal(v, &d.Name)
+	}
+	_, hasBoard := raw["board_id"]
+	if hasBoard {
+		_ = json.Unmarshal(raw["board_id"], &d.BoardID)
+		if d.BoardID != nil {
+			if err := app.checkBoard(r.Context(), aid, *d.BoardID); err != nil {
+				jsonError(w, http.StatusBadRequest, err.Error())
+				return
+			}
+		}
+	}
+	tag, err := app.DB.Exec(r.Context(), `UPDATE tv_tokens SET
+	    board_id = CASE WHEN $3 THEN $4 ELSE board_id END,
+	    name = COALESCE(NULLIF(left($5, 60), ''), name)
+	  WHERE id=$1 AND account_id=$2 AND NOT revoked`, id, aid, hasBoard, d.BoardID, d.Name)
+	if err != nil {
+		dbError(w, err)
+		return
+	}
+	if tag.RowsAffected() == 0 {
+		jsonError(w, http.StatusNotFound, "not found")
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
 // DELETE /api/tv-tokens/{id} - revokes (kept for the audit trail).
@@ -122,7 +191,9 @@ func (app *App) handleRevokeTVToken(w http.ResponseWriter, r *http.Request) {
 
 // GET /api/tv/data?k=<token> - no session. Returns
 //
-//	{year, month, currency, display_name, household_name (family name, "" when unset),
+//	{year, month, currency, display_name, household_name (family name, default "<Name>'s Family"),
+//	 board: widget board for this link or null, cards: {widgetType: card} for that board (see widgets.go),
+//	 timezone/now: only with a board,
 //	 report: {total_income, budgeted_expenses, savings, left_for_budgeting, expenses_list:[...]},
 //	 trend: [{year, month, income, expense}] (6 months ending this UTC month)}
 func (app *App) handleTVData(w http.ResponseWriter, r *http.Request) {
@@ -136,11 +207,12 @@ func (app *App) handleTVData(w http.ResponseWriter, r *http.Request) {
 	var currency string
 	var display *string
 	var family string
+	var boardID *int64
 	err := app.DB.QueryRow(ctx,
 		`UPDATE tv_tokens t SET last_used_at=now() FROM users u
 		 WHERE t.token=$1 AND NOT t.revoked AND u.id=t.account_id AND NOT u.is_disabled
-		 RETURNING t.account_id, u.currency, u.display_name, COALESCE(u.household_name, '')`, token).
-		Scan(&aid, &currency, &display, &family)
+		 RETURNING t.account_id, u.currency, u.display_name, COALESCE(u.household_name, ''), t.board_id`, token).
+		Scan(&aid, &currency, &display, &family, &boardID)
 	if errors.Is(err, pgx.ErrNoRows) {
 		jsonError(w, http.StatusUnauthorized, "invalid or revoked TV link")
 		return
@@ -161,11 +233,28 @@ func (app *App) handleTVData(w http.ResponseWriter, r *http.Request) {
 		dbError(w, err)
 		return
 	}
-	w.Header().Set("Cache-Control", "no-store")
-	writeJSON(w, http.StatusOK, map[string]any{
+	out := map[string]any{
 		"year": year, "month": month, "currency": currency, "display_name": display,
 		"household_name": strings.TrimSpace(family), "report": report, "trend": trend,
-	})
+		"board": nil, "cards": map[string]widgetCard{},
+	}
+	if family == "" {
+		out["household_name"] = app.loadHouseholdName(ctx, aid)
+	}
+	// A link tied to a widget board also gets that board and its widget data.
+	if boardID != nil {
+		if boards, err := app.loadBoards(ctx, aid, "AND id=$2", *boardID); err == nil && len(boards) > 0 {
+			now := time.Now().UTC()
+			viewer := memberInfo{AccountID: aid, Role: roleParent} // read-only link: sees what the family sees
+			if cards, err := app.buildWidgetCards(ctx, viewer, boardTypes(boards[0].Layout), now); err == nil {
+				out["board"], out["cards"] = boards[0], cards
+			}
+			loc := householdLocation(ctx, app, aid)
+			out["timezone"], out["now"] = loc.String(), now.In(loc).Format(time.RFC3339)
+		}
+	}
+	w.Header().Set("Cache-Control", "no-store")
+	writeJSON(w, http.StatusOK, out)
 }
 
 type tvExpense struct {

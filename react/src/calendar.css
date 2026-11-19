@@ -1,0 +1,95 @@
+/* Calendar page + the reminders calendar view. Palette comes from index.css. */
+:root {
+  --cal-indigo: #4f46e5; --cal-rose: #e11d48; --cal-amber: #d97706; --cal-emerald: #059669;
+  --cal-sky: #0284c7; --cal-violet: #7c3aed; --cal-slate: #64748b; --cal-reminder: #b45309;
+}
+.cal-page .card { margin-bottom: var(--s-4); }
+.cal-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-3); margin-bottom: var(--s-3); }
+.cal-title { font-size: var(--fs-lg); font-weight: 700; margin: 0; flex: 1 1 auto; min-width: 8rem; }
+.cal-nav { display: inline-flex; gap: var(--s-1); align-items: center; }
+.cal-seg { display: inline-flex; background: var(--surface-2); border-radius: var(--r-md); padding: 2px; }
+.cal-seg button { background: transparent; color: var(--muted); border: 0; padding: .3rem .7rem; border-radius: var(--r-sm); font-size: var(--fs-sm); font-weight: 600; min-height: 32px; }
+.cal-seg button[aria-pressed="true"] { background: var(--card); color: var(--text); box-shadow: var(--shadow-1); }
+.cal-layers { display: flex; gap: var(--s-3); flex-wrap: wrap; font-size: var(--fs-sm); margin-bottom: var(--s-3); }
+.cal-layers label { display: inline-flex; align-items: center; gap: .35rem; cursor: pointer; }
+
+.cal-chip {
+  --c: var(--cal-indigo);
+  display: flex; align-items: center; gap: .3rem; width: 100%; text-align: left; min-height: 0;
+  background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--text);
+  border: 0; border-left: 3px solid var(--c); border-radius: 4px; padding: 1px 5px;
+  font-size: var(--fs-xs); font-weight: 500; line-height: 1.35; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.cal-chip:hover:not(:disabled) { filter: none; background: color-mix(in srgb, var(--c) 28%, transparent); }
+.cal-chip.reminder { --c: var(--cal-reminder); border-left-style: dotted; }
+.cal-chip.done { text-decoration: line-through; opacity: .6; }
+.cal-chip .t { color: var(--muted); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.cal-chip .ttl { overflow: hidden; text-overflow: ellipsis; }
+
+/* month */
+.cal-month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; background: var(--card); }
+.cal-dow { padding: var(--s-1) var(--s-2); font-size: var(--fs-xs); font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+.cal-cell { min-height: 104px; padding: 2px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px; cursor: pointer; background: var(--card); text-align: left; }
+.cal-cell:nth-child(7n) { border-right: 0; }
+.cal-cell.out { background: var(--surface-2); }
+.cal-cell.out .cal-num { color: var(--muted); }
+.cal-cell.sel { box-shadow: inset 0 0 0 2px var(--primary); }
+.cal-num { align-self: flex-start; font-size: var(--fs-xs); font-weight: 600; width: 22px; height: 22px; line-height: 22px; text-align: center; border-radius: 50%; margin: 2px; }
+.cal-cell.today .cal-num { background: var(--primary); color: var(--on-primary); }
+.cal-more { font-size: var(--fs-xs); color: var(--muted); padding: 0 5px; }
+.cal-dots { display: none; gap: 3px; padding: 0 4px; flex-wrap: wrap; }
+.cal-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c, var(--cal-indigo)); }
+
+/* week / day time grid */
+.cal-time { border: 1px solid var(--border); border-radius: var(--r-md); background: var(--card); overflow: hidden; }
+.cal-time-head, .cal-time-allday { display: grid; grid-template-columns: 48px repeat(var(--days), minmax(0, 1fr)); border-bottom: 1px solid var(--border); }
+.cal-time-head > div { padding: var(--s-1); text-align: center; font-size: var(--fs-xs); color: var(--muted); border-left: 1px solid var(--border); }
+.cal-time-head button { background: transparent; color: inherit; border: 0; min-height: 0; padding: 0; flex-direction: column; gap: 0; font-weight: 600; width: 100%; }
+.cal-time-head .dn { font-size: var(--fs-md); color: var(--text); width: 28px; height: 28px; line-height: 28px; border-radius: 50%; display: inline-block; }
+.cal-time-head .today .dn { background: var(--primary); color: var(--on-primary); }
+.cal-time-allday > div { padding: 2px; border-left: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px; min-height: 24px; }
+.cal-time-allday > div:first-child { border-left: 0; font-size: var(--fs-xs); color: var(--muted); padding: 4px; }
+.cal-time-body { position: relative; display: grid; grid-template-columns: 48px repeat(var(--days), minmax(0, 1fr)); max-height: 620px; overflow-y: auto; }
+.cal-hours > div { height: var(--hh); font-size: 10px; color: var(--muted); text-align: right; padding-right: 6px; transform: translateY(-6px); }
+.cal-col { position: relative; border-left: 1px solid var(--border); background-image: linear-gradient(var(--border) 1px, transparent 1px); background-size: 100% var(--hh); }
+.cal-col .cal-chip { position: absolute; height: auto; flex-direction: column; align-items: flex-start; gap: 0; padding: 2px 4px; white-space: normal; z-index: 1; }
+/* reminders inside the hour grid are short: keep them on one line */
+.cal-col .cal-chip.reminder { flex-direction: row; align-items: center; white-space: nowrap; overflow: hidden; }
+.cal-now { position: absolute; left: 0; right: 0; height: 2px; background: var(--danger); z-index: 2; pointer-events: none; }
+
+/* agenda + selected-day list */
+.cal-agenda h3 { margin: var(--s-4) 0 var(--s-2); font-size: var(--fs-sm); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.cal-agenda h3.today { color: var(--primary); }
+.cal-agenda ul, .cal-daylist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s-1); }
+.cal-row { --c: var(--cal-indigo); display: flex; gap: var(--s-3); align-items: flex-start; width: 100%; text-align: left; background: var(--card); color: var(--text); border: 1px solid var(--border); border-left: 4px solid var(--c); border-radius: var(--r-md); padding: var(--s-2) var(--s-3); min-height: 0; }
+.cal-row:hover:not(:disabled) { filter: none; background: var(--surface-2); }
+.cal-row.reminder { --c: var(--cal-reminder); }
+.cal-row .when { width: 6.5rem; flex-shrink: 0; font-size: var(--fs-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
+.cal-row .what { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
+.cal-row .what small { color: var(--muted); font-size: var(--fs-xs); }
+.cal-row.done .what strong { text-decoration: line-through; opacity: .6; }
+.cal-empty { color: var(--muted); font-size: var(--fs-sm); padding: var(--s-3) 0; }
+
+/* swatches + weekday chips in the form */
+.cal-swatches { display: flex; gap: var(--s-2); flex-wrap: wrap; }
+.cal-swatch { width: 28px; height: 28px; min-height: 0; padding: 0; border-radius: 50%; background: var(--c); border: 2px solid transparent; }
+.cal-swatch[aria-pressed="true"] { border-color: var(--text); box-shadow: 0 0 0 2px var(--card) inset; }
+.cal-form { display: flex; flex-direction: column; gap: var(--s-3); }
+.cal-form label { display: flex; flex-direction: column; gap: .25rem; font-size: var(--fs-sm); }
+.cal-form .row { display: flex; gap: var(--s-3); flex-wrap: wrap; }
+.cal-form .row > label { flex: 1 1 140px; }
+.cal-form .check { flex-direction: row; align-items: center; gap: .5rem; }
+.cal-form fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.cal-detail dl { display: grid; grid-template-columns: auto 1fr; gap: var(--s-1) var(--s-3); margin: var(--s-3) 0; }
+.cal-detail dt { color: var(--muted); font-size: var(--fs-sm); }
+.cal-detail dd { margin: 0; }
+.cal-detail .actions { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
+
+@media (max-width: 640px) {
+  .cal-cell { min-height: 56px; }
+  .cal-cell .cal-chip { display: none; }
+  .cal-dots { display: flex; }
+  .cal-more { display: none; }
+  .cal-time-head, .cal-time-allday, .cal-time-body { grid-template-columns: 34px repeat(var(--days), minmax(0, 1fr)); }
+  .cal-row .when { width: 4.8rem; }
+}

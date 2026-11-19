@@ -11,6 +11,8 @@ import {
   IconEdit, IconClose, IconPlus, IconCopy, IconCheck, IconClock, IconCalendar, IconRepeat, IconPause, IconPlay,
   IconUser, IconChat, IconBell, CategoryIcon,
 } from '../icons.jsx'
+import RemindersCalendar from '../RemindersCalendar.jsx'
+import '../calendar.css'
 import '../reminders.css'
 import { ChevronLink } from '../ChevronLink.jsx'
 
@@ -331,6 +333,7 @@ export default function Reminders() {
   const [hidden, hide, unhide] = useHiddenIds()
   const [editing, setEditing] = useState(null) // null | {row} | {template} | {}
   const [catFilter, setCatFilter] = useState('all')
+  const [mode, setMode] = useState(() => { try { return localStorage.getItem('kinkit_reminders_view') || 'list' } catch { return 'list' } })
   const [params, setParams] = useSearchParams()
   const members = family.data?.members || []
   const tz = upcoming.data?.timezone || rules.data?.timezone
@@ -344,7 +347,9 @@ export default function Reminders() {
     }
   }, [params, setParams, manager])
 
-  const reloadAll = () => { upcoming.reload(); rules.reload() }
+  const reloadAll = () => { upcoming.reload(); rules.reload(); setCalKey(k => k + 1) }
+  const [calKey, setCalKey] = useState(0)
+  const chooseMode = m => { setMode(m); try { localStorage.setItem('kinkit_reminders_view', m) } catch { /* ignore */ } }
   useEffect(() => {
     const id = setInterval(upcoming.reload, 60000) // keep "due" state fresh
     return () => clearInterval(id)
@@ -439,7 +444,16 @@ export default function Reminders() {
       </div>
       {(upcoming.error || rules.error) && <div className="error-box">{upcoming.error || rules.error}</div>}
 
-      <section className="card" aria-labelledby="rem-upcoming-h">
+      <div className="cal-seg" role="group" aria-label="Reminders view" style={{ marginBottom: 'var(--s-3)' }}>
+        <button type="button" aria-pressed={mode === 'list'} onClick={() => chooseMode('list')}>List</button>
+        <button type="button" aria-pressed={mode === 'calendar'} onClick={() => chooseMode('calendar')}>Calendar</button>
+      </div>
+      {mode === 'calendar' && (
+        <RemindersCalendar reloadKey={calKey}
+          renderActions={(o, done) => <OccurrenceActions occurrenceId={o.id} title={o.title} onChanged={() => { reloadAll(); done() }} />} />
+      )}
+
+      {mode === 'list' && <section className="card" aria-labelledby="rem-upcoming-h">
         <h2 id="rem-upcoming-h">Upcoming <span className="muted rem-h-note">next 7 days</span></h2>
         {!upcoming.data ? <SkeletonCard lines={3} /> : (
           <>
@@ -450,7 +464,7 @@ export default function Reminders() {
             {occList(groups.later, 'Nothing else coming up this week.')}
           </>
         )}
-      </section>
+      </section>}
 
       {manager && (
         <section className="card" aria-labelledby="rem-quick-h">

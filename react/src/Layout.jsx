@@ -9,9 +9,10 @@ import QuickAddSpending from './QuickAddSpending.jsx'
 import GamificationBadge from './GamificationBadge.jsx'
 import Modal from './Modal.jsx'
 import OnboardingChecklist from './OnboardingChecklist.jsx'
-import { IconLogout, IconCollapse, IconExpand, IconSun, IconMoon, IconPlus, IconMore, IconClose, IconGuide, IconChevronRight, KinkitLogo } from './icons.jsx'
+import { IconLogout, IconCollapse, IconExpand, IconSun, IconMoon, IconPlus, IconMore, IconClose, IconGuide, IconChevronRight, IconChevronDown, KinkitLogo } from './icons.jsx'
 
 const COLLAPSE_KEY = 'kinkit_sidebar_collapsed'
+const GROUPS_KEY = 'kinkit_sidebar_groups_closed'
 
 function ConnStatus({ serverOnline, queueSize, compact }) {
   const text = serverOnline ? 'Online' : `Offline${queueSize ? ` (${queueSize})` : ''}`
@@ -51,9 +52,11 @@ function FailedSyncBanner({ items, onDismiss }) {
 export default function Layout() {
   const { logout, user } = useAuth()
   const { serverOnline, queueSize, failedItems, dismissFailed } = useOffline()
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, toggle: toggleTheme } = useTheme()
   const location = useLocation()
   const [collapsed, setCollapsed] = useState(() => { try { return localStorage.getItem(COLLAPSE_KEY) === '1' } catch { return false } })
+  // nav groups ("Money", "Family") the user folded away
+  const [closedGroups, setClosedGroups] = useState(() => { try { return JSON.parse(localStorage.getItem(GROUPS_KEY) || '[]') } catch { return [] } })
   const [quickAddOpen, setQuickAddOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
   const [gamiRefresh, setGamiRefresh] = useState(0)
@@ -84,9 +87,10 @@ export default function Layout() {
   }, [familyName])
   useEffect(() => onSpendingChanged(() => setGamiRefresh(k => k + 1)), [])
   useEffect(() => { setMoreOpen(false) }, [location.pathname])
+  useEffect(() => { try { localStorage.setItem(GROUPS_KEY, JSON.stringify(closedGroups)) } catch { /* ignore */ } }, [closedGroups])
   useEffect(() => { try { localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0') } catch { /* ignore */ } }, [collapsed])
 
-  const nextTheme = THEMES[(THEMES.findIndex(t => t.id === theme) + 1) % THEMES.length]
+  const darkMode = theme === 'dark'
 
   return (
     <div className="app-shell">
@@ -122,16 +126,23 @@ export default function Layout() {
           {!isAdmin && (
             <li><GamificationBadge collapsed={collapsed} refreshKey={gamiRefresh} /></li>
           )}
-          {mainLinks.map((r, i) => (
-            r.group && r.group !== mainLinks[i - 1]?.group && !collapsed
-              ? [<li key={`g-${r.group}`} className="nav-group" aria-hidden="true">{r.group}</li>, navItem(r)]
-              : navItem(r)
-          ))}
+          {mainLinks.map((r, i) => {
+            const closed = !!r.group && !collapsed && closedGroups.includes(r.group) && !inSection(r)
+            const header = r.group && r.group !== mainLinks[i - 1]?.group && !collapsed && (
+              <li key={`g-${r.group}`} className="nav-group">
+                <button type="button" className="nav-group-btn" aria-expanded={!closedGroups.includes(r.group)}
+                  onClick={() => setClosedGroups(g => (g.includes(r.group) ? g.filter(x => x !== r.group) : [...g, r.group]))}>
+                  <span>{r.group}</span><IconChevronDown width={14} height={14} aria-hidden="true" />
+                </button>
+              </li>
+            )
+            return [header, closed ? null : navItem(r)]
+          })}
         </ul>
         {bottomLinks.length > 0 && <ul className="sidebar-bottom-links">{bottomLinks.map(navItem)}</ul>}
         <div className="sidebar-footer">
-          <button className="icon-btn theme-toggle" onClick={() => setTheme(nextTheme.id)} title={`Theme: ${THEMES.find(t => t.id === theme)?.label} (click to switch)`} aria-label={`Switch theme to ${nextTheme.label}`}>
-            {theme === 'dark' ? <IconSun /> : <IconMoon />}
+          <button className="icon-btn theme-toggle" onClick={toggleTheme} title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'} aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}>
+            {darkMode ? <IconSun /> : <IconMoon />}
           </button>
           {!isAdmin && (
             <NavLink to="/help" className="icon-btn help-btn" title="Help & guide" aria-label="Help and guide">

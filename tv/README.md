@@ -149,7 +149,14 @@ No cookies and no custom headers; the token goes in the query string. `401` mean
   "month": 11,                     // int 1-12, current UTC month
   "currency": "IDR",               // account display currency (IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD, INR)
   "display_name": "John Smith",    // string or null - owner's name; header fallback when household_name is ""
-  "household_name": "The Smiths",  // string, family name ("" when unset) - shown next to the logo
+  "household_name": "The Smiths",  // string, family name (default "<Name>'s Family") - shown next to the logo
+  "board": null,                   // widget board this link shows, or null = the classic month summary:
+                                   //   {"id": 3, "name": "Living-room TV", "layout": {"widgets": [{"id","type","w","h","text"?}]}}
+                                   //   w = columns of 12 (1-12), h = rows (1-4); types: clock, agenda, reminders, chores,
+                                   //   lists, meals, meal_requests, budget, goals, family, note (see backend-go/widgets.go)
+  "cards": {},                     // with a board: {widgetType: {title, big?, big_amount? (IDR), caption?, empty?,
+                                   //   rows: [{title, detail?, done?, alert?, amount? (IDR), pct? 0-100}]}}; clock and note
+                                   //   are drawn by the client (clock from the device, note from layout.text)
   "report": {
     "total_income": 25000000,      // int, IDR      -> "Income" card
     "budgeted_expenses": 15000000, // int, IDR      -> "Budget" card, % of budget
@@ -169,6 +176,8 @@ No cookies and no custom headers; the token goes in the query string. `401` mean
   ]
 }
 ```
+
+**Widget board mode:** when `board` is not null both TV apps show only that board (greedy lines of up to 12 columns, scaled so the whole board fits the screen: `tv/flutter/lib/src/board_page.dart`, `pageBoard` in `tv/web/app.js`) instead of the month pages. The link picks its board under Settings › Data & devices (`PATCH /api/tv-tokens/{id}` `{board_id}`). Still read-only.
 
 Derived on the client: **Spent** = sum of `realization` across categories; **Budget remaining** = `budgeted_expenses - Spent`; the budget pages show categories with `allocation > 0 || realization > 0`, most-used-of-budget first; the top-5 expenses are sorted by `realization`.
 

@@ -1197,11 +1197,28 @@ class MealPromo {
       );
 }
 
+/// An approved member request placed on a day of the plan (`picks`).
+class MealPick {
+  final int id;
+  final String dish, memberName;
+  const MealPick({required this.id, required this.dish, this.memberName = ''});
+  factory MealPick.fromJson(Json j) =>
+      MealPick(id: asInt(j['id']), dish: asString(j['dish']), memberName: asString(j['member_name']));
+}
+
 class MealDay {
   final String day, date, protein, veggie;
   final bool fried;
   final MealPromo? promo;
-  const MealDay({required this.day, required this.date, required this.protein, required this.veggie, required this.fried, this.promo});
+  final List<MealPick> picks;
+  const MealDay(
+      {required this.day,
+      required this.date,
+      required this.protein,
+      required this.veggie,
+      required this.fried,
+      this.promo,
+      this.picks = const []});
   factory MealDay.fromJson(Json j) => MealDay(
         day: asString(j['day']),
         date: asString(j['date']),
@@ -1209,6 +1226,7 @@ class MealDay {
         veggie: asString(j['veggie']),
         fried: asBool(j['fried']),
         promo: j['promo'] is Map ? MealPromo.fromJson(asJson(j['promo'])) : null,
+        picks: asList(j['picks'], MealPick.fromJson),
       );
 }
 
@@ -1241,4 +1259,236 @@ class MealIngredient {
   final String name;
   const MealIngredient({required this.id, required this.name});
   factory MealIngredient.fromJson(Json j) => MealIngredient(id: asInt(j['id']), name: asString(j['name']));
+}
+
+
+// ---------------------------------------------------------------- meal requests
+
+/// GET /api/meal-plan/proposals - anyone proposes, owner/parent decide.
+class MealProposal {
+  final int id;
+  final String dish, note, memberName, status, decisionNote, decidedByName;
+  final String? wantedDate, mealDate; // YYYY-MM-DD
+  final bool canDecide, canDelete;
+  const MealProposal({
+    required this.id,
+    required this.dish,
+    this.note = '',
+    this.memberName = '',
+    this.status = 'pending',
+    this.decisionNote = '',
+    this.decidedByName = '',
+    this.wantedDate,
+    this.mealDate,
+    this.canDecide = false,
+    this.canDelete = false,
+  });
+  bool get pending => status == 'pending';
+  factory MealProposal.fromJson(Json j) => MealProposal(
+        id: asInt(j['id']),
+        dish: asString(j['dish']),
+        note: asString(j['note']),
+        memberName: asString(j['member_name']),
+        status: asString(j['status'], 'pending'),
+        decisionNote: asString(j['decision_note']),
+        decidedByName: asString(j['decided_by_name']),
+        wantedDate: asStringOrNull(j['wanted_date']),
+        mealDate: asStringOrNull(j['meal_date']),
+        canDecide: asBool(j['can_decide']),
+        canDelete: asBool(j['can_delete']),
+      );
+}
+
+// ---------------------------------------------------------------- calendar
+
+const activityColorNames = ['indigo', 'rose', 'amber', 'emerald', 'sky', 'violet', 'slate'];
+
+/// An expanded occurrence from GET /api/calendar (`activities`). The rule
+/// fields (`start_date`, `repeat`, ...) describe the whole series.
+class ActivityOccurrence {
+  final int id;
+  final String title, notes, location, color;
+  final bool allDay;
+  final String startDate, endDate, startTime, endTime; // series
+  final String repeat;
+  final int interval;
+  final List<int> weekdays; // 0 = Sunday
+  final String? untilDate;
+  final List<int> attendeeIds;
+  final List<String> attendeeNames;
+  final String occursOn, occursUntil; // this occurrence
+  final bool repeating;
+
+  const ActivityOccurrence({
+    required this.id,
+    required this.title,
+    this.notes = '',
+    this.location = '',
+    this.color = 'indigo',
+    this.allDay = false,
+    required this.startDate,
+    required this.endDate,
+    this.startTime = '09:00',
+    this.endTime = '10:00',
+    this.repeat = 'none',
+    this.interval = 1,
+    this.weekdays = const [],
+    this.untilDate,
+    this.attendeeIds = const [],
+    this.attendeeNames = const [],
+    required this.occursOn,
+    required this.occursUntil,
+    this.repeating = false,
+  });
+
+  bool get multiDay => occursOn != occursUntil;
+
+  factory ActivityOccurrence.fromJson(Json j) => ActivityOccurrence(
+        id: asInt(j['id']),
+        title: asString(j['title']),
+        notes: asString(j['notes']),
+        location: asString(j['location']),
+        color: asString(j['color'], 'indigo'),
+        allDay: asBool(j['all_day']),
+        startDate: asString(j['start_date']),
+        endDate: asString(j['end_date']),
+        startTime: asString(j['start_time'], '09:00'),
+        endTime: asString(j['end_time'], '10:00'),
+        repeat: asString(j['repeat'], 'none'),
+        interval: asInt(j['interval'], 1),
+        weekdays: (j['weekdays'] is List) ? (j['weekdays'] as List).map((e) => asInt(e)).toList() : <int>[],
+        untilDate: asStringOrNull(j['until_date']),
+        attendeeIds: (j['attendee_ids'] is List) ? (j['attendee_ids'] as List).map((e) => asInt(e)).toList() : <int>[],
+        attendeeNames: (j['attendee_names'] is List) ? (j['attendee_names'] as List).map((e) => e.toString()).toList() : <String>[],
+        occursOn: asString(j['occurs_on']),
+        occursUntil: asString(j['occurs_until']),
+        repeating: asBool(j['repeating']),
+      );
+}
+
+/// GET /api/calendar?from=&to=
+class CalendarData {
+  final String timezone, today;
+  final List<ActivityOccurrence> activities;
+  final List<ReminderOccurrence> reminders;
+  const CalendarData({required this.timezone, required this.today, required this.activities, required this.reminders});
+  factory CalendarData.fromJson(Json j) => CalendarData(
+        timezone: asString(j['timezone']),
+        today: asString(j['today']),
+        activities: asList(j['activities'], ActivityOccurrence.fromJson),
+        reminders: asList(j['reminders'], ReminderOccurrence.fromJson),
+      );
+}
+
+// ---------------------------------------------------------------- widgets
+
+/// One widget on a board: `w` = columns of 12, `h` = rows 1-4.
+class WidgetItem {
+  final String id, type, text;
+  final int w, h;
+  const WidgetItem({required this.id, required this.type, required this.w, required this.h, this.text = ''});
+  WidgetItem copyWith({int? w, int? h, String? text}) =>
+      WidgetItem(id: id, type: type, w: w ?? this.w, h: h ?? this.h, text: text ?? this.text);
+  factory WidgetItem.fromJson(Json j) => WidgetItem(
+        id: asString(j['id']),
+        type: asString(j['type']),
+        w: asInt(j['w'], 4).clamp(1, 12),
+        h: asInt(j['h'], 2).clamp(1, 4),
+        text: asString(j['text']),
+      );
+  Json toJson() => {'id': id, 'type': type, 'w': w, 'h': h, if (text.isNotEmpty) 'text': text};
+}
+
+class WidgetBoard {
+  final int id;
+  final String name, device;
+  final List<WidgetItem> widgets;
+  const WidgetBoard({required this.id, required this.name, this.device = 'any', this.widgets = const []});
+  factory WidgetBoard.fromJson(Json j) => WidgetBoard(
+        id: asInt(j['id']),
+        name: asString(j['name']),
+        device: asString(j['device'], 'any'),
+        widgets: asList(asJson(j['layout'])['widgets'], WidgetItem.fromJson),
+      );
+}
+
+class WidgetTypeInfo {
+  final String type, label, description;
+  final int w, h;
+  const WidgetTypeInfo({required this.type, required this.label, this.description = '', this.w = 4, this.h = 2});
+  factory WidgetTypeInfo.fromJson(Json j) => WidgetTypeInfo(
+        type: asString(j['type']),
+        label: asString(j['label']),
+        description: asString(j['description']),
+        w: asInt(j['w'], 4),
+        h: asInt(j['h'], 2),
+      );
+}
+
+class WidgetPreset {
+  final String id, name;
+  final int count;
+  const WidgetPreset({required this.id, required this.name, this.count = 0});
+  factory WidgetPreset.fromJson(Json j) =>
+      WidgetPreset(id: asString(j['id']), name: asString(j['name']), count: (j['widgets'] is List) ? (j['widgets'] as List).length : 0);
+}
+
+class WidgetCatalog {
+  final List<WidgetTypeInfo> widgets;
+  final List<WidgetPreset> presets;
+  const WidgetCatalog({required this.widgets, required this.presets});
+  factory WidgetCatalog.fromJson(Json j) => WidgetCatalog(
+        widgets: asList(j['widgets'], WidgetTypeInfo.fromJson),
+        presets: asList(j['presets'], WidgetPreset.fromJson),
+      );
+  String labelOf(String type) => widgets.where((w) => w.type == type).map((w) => w.label).firstOrNull ?? type;
+}
+
+class WidgetRow {
+  final String title, detail;
+  final bool done, alert;
+  final int? amount; // IDR
+  final double? pct;
+  const WidgetRow({required this.title, this.detail = '', this.done = false, this.alert = false, this.amount, this.pct});
+  factory WidgetRow.fromJson(Json j) => WidgetRow(
+        title: asString(j['title']),
+        detail: asString(j['detail']),
+        done: asBool(j['done']),
+        alert: asBool(j['alert']),
+        amount: j['amount'] == null ? null : asInt(j['amount']),
+        pct: j['pct'] == null ? null : asDouble(j['pct']),
+      );
+}
+
+/// Generic card the server renders for every widget type except clock/note.
+class WidgetCard {
+  final String type, title, big, caption, empty;
+  final int? bigAmount; // IDR
+  final List<WidgetRow> rows;
+  const WidgetCard(
+      {required this.type, required this.title, this.big = '', this.bigAmount, this.caption = '', this.empty = '', this.rows = const []});
+  factory WidgetCard.fromJson(Json j) => WidgetCard(
+        type: asString(j['type']),
+        title: asString(j['title']),
+        big: asString(j['big']),
+        bigAmount: j['big_amount'] == null ? null : asInt(j['big_amount']),
+        caption: asString(j['caption']),
+        empty: asString(j['empty']),
+        rows: asList(j['rows'], WidgetRow.fromJson),
+      );
+}
+
+/// GET /api/widgets/data
+class WidgetData {
+  final String timezone, householdName;
+  final Map<String, WidgetCard> cards;
+  const WidgetData({this.timezone = '', this.householdName = '', this.cards = const {}});
+  factory WidgetData.fromJson(Json j) {
+    final raw = asJson(j['cards']);
+    return WidgetData(
+      timezone: asString(j['timezone']),
+      householdName: asString(j['household_name']),
+      cards: {for (final e in raw.entries) e.key: WidgetCard.fromJson(asJson(e.value))},
+    );
+  }
 }

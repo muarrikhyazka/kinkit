@@ -148,8 +148,22 @@
         savings: toInt(r.savings), leftForBudgeting: toInt(r.left_for_budgeting),
         expenses: []
       },
-      trend: []
+      trend: [],
+      board: null
     };
+    // A link tied to a widget board also carries that board + its widget cards.
+    if (json.board && typeof json.board === 'object') {
+      var lay = json.board.layout && json.board.layout.widgets;
+      var ws = [];
+      for (var wi = 0; lay && wi < lay.length; wi++) {
+        var wx = lay[wi] || {};
+        ws.push({ id: String(wx.id || wi), type: String(wx.type || ''),
+          w: Math.max(1, Math.min(12, toInt(wx.w) || 4)), h: Math.max(1, Math.min(4, toInt(wx.h) || 2)),
+          text: typeof wx.text === 'string' ? wx.text : '' });
+      }
+      d.board = { name: String(json.board.name || ''), widgets: ws,
+        cards: (json.cards && typeof json.cards === 'object') ? json.cards : {} };
+    }
     for (var i = 0; i < list.length; i++) {
       var e = list[i] || {};
       d.report.expenses.push({
@@ -523,6 +537,10 @@
     var d = new Date();
     $('clock-time').textContent = hhmm(d);
     $('clock-date').textContent = DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()];
+    var els = document.querySelectorAll ? document.querySelectorAll('[data-clock]') : [];
+    for (var i = 0; i < els.length; i++) {
+      els[i].textContent = els[i].getAttribute('data-clock') === 'time' ? hhmm(d) : DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + MONTHS_LONG[d.getMonth()];
+    }
   }
 
   // Kiki "thinking" for no-data states (styles.css .mk; same as tv/flutter _Empty).
@@ -558,6 +576,11 @@
       (function (idx) { pages.push(function () { return pageBudget(chunks[idx], idx, chunks.length); }); })(c);
     }
     pages.push(function () { return pageTrend(d); });
+    // A link tied to a widget board shows just that board (web Widgets page).
+    if (d.board) {
+      pages = [function () { return pageBoard(d); }];
+      $('v-month').textContent = d.board.name;
+    }
     state.pageCount = pages.length;
     if (state.page >= pages.length) state.page = 0;
 
@@ -574,6 +597,7 @@
     } else {
       body.firstChild.innerHTML = html;
     }
+    if (d.board) updateClock();
   }
 
   function card(label, value, color, sub) {
@@ -584,6 +608,66 @@
   function bar(ratio, color, thick) {
     var w = ratio === null || isNaN(ratio) ? 0 : Math.max(0, Math.min(1, ratio));
     return '<div class="bar' + (thick ? ' thick' : '') + '"><div style="width:' + (w * 100).toFixed(1) + '%;background:' + color + '"></div></div>';
+  }
+  // ---- widget board: 12-column flow grid scaled to fit the screen (same rules as
+  // react/src/WidgetBoard.jsx and tv/flutter lib/src/board_page.dart) ----
+  function boardMoney(idr) { return fmt(idr); }
+  function boardCard(c) {
+    var big = c.big_amount !== undefined && c.big_amount !== null ? boardMoney(toInt(c.big_amount)) : (c.big || '');
+    var html = '<div class="bw-title">' + esc(c.title || '') + '</div>';
+    if (big) html += '<div class="bw-big' + (toInt(c.big_amount) < 0 ? ' c-neg' : '') + '">' + esc(big) + '</div>';
+    if (c.caption) html += '<div class="bw-cap">' + esc(c.caption) + '</div>';
+    var rows = c.rows || [];
+    if (!rows.length) {
+      if (!big) html += '<div class="bw-cap">' + esc(c.empty || 'Nothing to show') + '</div>';
+      return html;
+    }
+    html += '<div class="bw-rows">';
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i] || {};
+      html += '<div class="bw-row' + (r.done ? ' done' : '') + (r.alert ? ' alert' : '') + '"><div class="bw-line"><span class="bw-rt">' + esc(r.title || '') + '</span>' +
+        (r.amount !== undefined && r.amount !== null ? '<span class="bw-amt">' + esc(boardMoney(toInt(r.amount))) + '</span>' : '') + '</div>' +
+        (r.detail ? '<div class="bw-det">' + esc(r.detail) + '</div>' : '') +
+        (typeof r.pct === 'number' ? bar(r.pct / 100, r.alert ? '#f87171' : '#818cf8') : '') + '</div>';
+    }
+    return html + '</div>';
+  }
+  function pageBoard(d) {
+    var b = d.board, W = 1760, GAP = 24;
+    var H = $('v-body').clientHeight || 760;
+    if (!b.widgets.length) return '<div class="empty">' + MASCOT_THINK + 'This board is empty</div>';
+    var lines = [[]], used = 0, i, j;
+    for (i = 0; i < b.widgets.length; i++) {
+      var w = b.widgets[i];
+      if (used + w.w > 12 && lines[lines.length - 1].length) { lines.push([]); used = 0; }
+      lines[lines.length - 1].push(w); used += w.w;
+    }
+    var units = 0, gaps = lines.length - 1, lh = [];
+    for (i = 0; i < lines.length; i++) {
+      var m = 1;
+      for (j = 0; j < lines[i].length; j++) if (lines[i][j].h > m) m = lines[i][j].h;
+      lh.push(m); units += m; gaps += m - 1;
+    }
+    var unit = Math.max(60, Math.min(300, (H - gaps * GAP) / units));
+    var html = '';
+    for (i = 0; i < lines.length; i++) {
+      var sum = 0;
+      for (j = 0; j < lines[i].length; j++) sum += lines[i][j].w;
+      html += '<div class="bw-line-row" style="margin-bottom:' + (i < lines.length - 1 ? GAP : 0) + 'px">';
+      for (j = 0; j < lines[i].length; j++) {
+        var x = lines[i][j];
+        var width = Math.floor((W - GAP * (lines[i].length - 1)) * x.w / sum);
+        var height = Math.round(x.h * unit + (x.h - 1) * GAP);
+        var inner;
+        if (x.type === 'clock') inner = '<div class="bw-clock-time" style="font-size:' + Math.max(40, Math.min(120, Math.round(height * 0.55))) + 'px" data-clock="time">--:--</div><div class="bw-clock-date" data-clock="date"></div>';
+        else if (x.type === 'note') inner = '<div class="bw-note">' + esc(x.text || 'Empty note') + '</div>';
+        else if (b.cards[x.type]) inner = boardCard(b.cards[x.type]);
+        else inner = '<div class="bw-cap">No data</div>';
+        html += '<div class="bw-tile" style="width:' + width + 'px;height:' + height + 'px;margin-right:' + (j < lines[i].length - 1 ? GAP : 0) + 'px">' + inner + '</div>';
+      }
+      html += '</div>';
+    }
+    return html;
   }
   function pageOverview(d) {
     var r = d.report, spent = totalSpent(r), left = r.budgetedExpenses - spent;

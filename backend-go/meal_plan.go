@@ -78,6 +78,7 @@ type mealDay struct {
 	Veggie  string     `json:"veggie"`
 	Fried   bool       `json:"fried"`
 	Promo   *mealPromo `json:"promo"`
+	Picks   []mealPick `json:"picks"` // approved member requests for this day
 }
 
 type mealPlan struct {
@@ -701,6 +702,15 @@ func handleGetMealPlan(w http.ResponseWriter, r *http.Request, app *App, aid int
 	if err != nil {
 		dbError(w, err)
 		return
+	}
+	if len(plan.Days) > 0 {
+		from, _ := parseDay(plan.Days[0].Date)
+		to, _ := parseDay(plan.Days[len(plan.Days)-1].Date)
+		if picks, err := app.loadMealPicks(r.Context(), aid, from, to); err == nil {
+			for i := range plan.Days {
+				plan.Days[i].Picks = picks[plan.Days[i].Date]
+			}
+		}
 	}
 	_, at, _ := app.loadPromos(r.Context())
 	var scraped *string

@@ -6,6 +6,7 @@ import '../theme.dart';
 import '../widgets/async_view.dart';
 import '../widgets/k_app_bar.dart';
 import 'settings_screen.dart';
+import 'widgets_screen.dart';
 
 String _roleLabel(String role) {
   switch (role) {
@@ -21,7 +22,7 @@ String _roleLabel(String role) {
   return role;
 }
 
-/// "More": profile, settings and logout (web nav "Settings").
+/// "More": profile, widgets, settings and logout (web nav "Widgets" / "Settings").
 class MoreScreen extends ConsumerWidget {
   const MoreScreen({super.key});
 
@@ -67,6 +68,13 @@ class MoreScreen extends ConsumerWidget {
           Card(
             child: Column(
               children: [
+                ListTile(
+                  leading: const Icon(Icons.dashboard_customize_outlined),
+                  title: const Text('Widgets'),
+                  subtitle: const Text('Your own screens: clock, agenda, reminders…'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _open(context, const WidgetsScreen()),
+                ),
                 ListTile(
                   leading: const Icon(Icons.settings_outlined),
                   title: const Text('Settings'),

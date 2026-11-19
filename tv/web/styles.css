@@ -196,3 +196,22 @@ html, body { margin: 0; height: 100%; background: #0b0e1a; color: #f1f3f8; overf
 .kv td:first-child { color: #9ca3af; width: 320px; }
 .kv td:last-child { word-break: break-all; }
 .s-foot { margin-top: auto; font-size: 26px; line-height: 1.4; }
+
+/* ---------- widget board (pageBoard in app.js; react/src/widgets.css, tv/flutter board_page.dart) ---------- */
+.bw-line-row { display: -webkit-flex; display: flex; -webkit-align-items: flex-start; align-items: flex-start; }
+.bw-tile { background: #151a2e; border: 2px solid #262d47; border-radius: 28px; padding: 24px 28px; overflow: hidden;
+  -webkit-flex-shrink: 0; flex-shrink: 0; box-sizing: border-box; }
+.bw-title { font-size: 26px; letter-spacing: 3px; text-transform: uppercase; color: #9ca3af; font-weight: 700; }
+.bw-big { font-size: 80px; font-weight: 800; line-height: 1.1; white-space: nowrap; }
+.bw-cap { font-size: 28px; color: #9ca3af; margin-top: 4px; }
+.bw-rows { margin-top: 10px; }
+.bw-row { margin-bottom: 14px; }
+.bw-line { display: -webkit-flex; display: flex; }
+.bw-rt { -webkit-flex: 1; flex: 1; font-size: 38px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bw-amt { font-size: 28px; color: #9ca3af; margin-left: 16px; white-space: nowrap; }
+.bw-det { font-size: 28px; color: #9ca3af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bw-row.done .bw-rt { text-decoration: line-through; opacity: .55; }
+.bw-row.alert .bw-rt { color: #f87171; }
+.bw-clock-time { font-size: 120px; font-weight: 800; line-height: 1; }
+.bw-clock-date { font-size: 38px; color: #9ca3af; margin-top: 8px; }
+.bw-note { font-size: 48px; line-height: 1.25; }

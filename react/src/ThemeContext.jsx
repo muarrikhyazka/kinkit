@@ -19,9 +19,10 @@ export function ThemeProvider({ children }) {
     localStorage.setItem(THEME_KEY, theme)
   }, [theme])
 
+  // The quick toggle only flips light <-> dark (same fonts and colors, white
+  // swapped for black). Playful and Senior are picked in Settings > Display.
   function toggle() {
-    const i = THEMES.findIndex(t => t.id === theme)
-    setTheme(THEMES[(i + 1) % THEMES.length].id)
+    setTheme(theme === 'dark' ? 'light' : 'dark')
   }
 
   return (

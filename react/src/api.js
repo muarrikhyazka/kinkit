@@ -210,7 +210,8 @@ export const dataApi = {
   dashboardLayout: () => req('/dashboard-layout'),
   saveDashboardLayout: (layout) => req('/dashboard-layout', { method: 'PUT', body: JSON.stringify({ layout }) }),
   tvTokens: () => req('/tv-tokens'),
-  createTvToken: (name) => req('/tv-tokens', { method: 'POST', body: JSON.stringify({ name }) }),
+  createTvToken: (name, board_id) => req('/tv-tokens', { method: 'POST', body: JSON.stringify({ name, board_id: board_id || null }) }),
+  updateTvToken: (id, payload) => req(`/tv-tokens/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
   revokeTvToken: (id) => req(`/tv-tokens/${id}`, { method: 'DELETE' }),
   tvData: (k) => req(`/tv/data?k=${encodeURIComponent(k)}`),
   spendingCount: () => req('/spending?per_page=1'),
@@ -307,3 +308,33 @@ export const mealApi = {
   deleteKeyword: (id) => req(`/bot-keywords/${id}`, { method: 'DELETE' }),
 }
 // --- end meal plan ---
+
+// --- calendar --- (activities + calendar range with the reminders overlay)
+export const calendarApi = {
+  range: (from, to, include) => req(`/calendar?from=${from}&to=${to}${include ? `&include=${include}` : ''}`),
+  create: (payload) => req('/activities', { method: 'POST', body: JSON.stringify(payload) }),
+  update: (id, payload) => req(`/activities/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  remove: (id, on) => req(`/activities/${id}${on ? `?on=${on}` : ''}`, { method: 'DELETE' }),
+}
+// --- end calendar ---
+
+// --- meal proposals --- (anyone proposes, owner/parent decide)
+export const mealProposalsApi = {
+  list: (status) => req(`/meal-plan/proposals${status ? `?status=${status}` : ''}`),
+  propose: (payload) => req('/meal-plan/proposals', { method: 'POST', body: JSON.stringify(payload) }),
+  approve: (id, payload) => req(`/meal-plan/proposals/${id}/approve`, { method: 'POST', body: JSON.stringify(payload || {}) }),
+  decline: (id, payload) => req(`/meal-plan/proposals/${id}/decline`, { method: 'POST', body: JSON.stringify(payload || {}) }),
+  remove: (id) => req(`/meal-plan/proposals/${id}`, { method: 'DELETE' }),
+}
+// --- end meal proposals ---
+
+// --- widgets --- (widget boards for phone / TV / car / monitor)
+export const widgetsApi = {
+  catalog: () => req('/widgets/catalog'),
+  boards: () => req('/widgets/boards'),
+  createBoard: (payload) => req('/widgets/boards', { method: 'POST', body: JSON.stringify(payload) }),
+  updateBoard: (id, payload) => req(`/widgets/boards/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  removeBoard: (id) => req(`/widgets/boards/${id}`, { method: 'DELETE' }),
+  data: (types) => req(`/widgets/data${types?.length ? `?types=${types.join(',')}` : ''}`),
+}
+// --- end widgets ---

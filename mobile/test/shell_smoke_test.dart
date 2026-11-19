@@ -11,6 +11,8 @@ import 'package:kinkit_mobile/app.dart';
 import 'package:kinkit_mobile/state/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final String _today = DateTime.now().toIso8601String().substring(0, 10);
+
 /// Serves canned JSON for each endpoint so the whole signed-in UI renders.
 class _FakeAdapter implements HttpClientAdapter {
   static final Map<String, Object> routes = {
@@ -56,6 +58,17 @@ class _FakeAdapter implements HttpClientAdapter {
       'items': [{'id': 4, 'title': 'Pay electricity', 'category': 'bill', 'due_at': '2026-11-18T02:00:00Z', 'status': 'pending', 'can_act': true}],
     },
     '/api/reminders': {'reminders': [{'id': 2, 'title': 'Pay electricity', 'kind': 'monthly', 'category': 'bill', 'active': true}]},
+    '/api/calendar': {
+      'timezone': 'UTC', 'today': '2026-11-18', 'reminders': [],
+      'activities': [
+        {'id': 3, 'title': 'Swim class', 'color': 'sky', 'start_date': _today, 'end_date': _today, 'start_time': '16:00', 'end_time': '17:00', 'occurs_on': _today, 'occurs_until': _today},
+      ],
+    },
+    '/api/meal-plan/proposals': {
+      'items': [{'id': 1, 'dish': 'Soto ayam', 'member_name': 'Ayu', 'status': 'pending', 'can_decide': true}],
+    },
+    '/api/widgets/boards': {'boards': []},
+    '/api/widgets/catalog': {'widgets': [], 'presets': [{'id': 'phone', 'name': 'Phone', 'widgets': []}]},
     '/api/lists': {'lists': [{'id': 1, 'name': 'Groceries', 'open_count': 2, 'checked_count': 0}]},
   };
 
@@ -116,14 +129,22 @@ void main() {
     await tester.tap(find.text('Home').last);
     await settle();
     expect(find.text('Pay electricity'), findsWidgets);
-    await tester.tap(find.text('All reminders'));
+    await tester.tap(find.text('All'));
     await settle();
+    await tester.tap(find.widgetWithText(Tab, 'Calendar'));
+    await settle();
+    await tester.tap(find.text('Agenda'));
+    await settle();
+    expect(find.text('Swim class'), findsWidgets);
     await tester.tap(find.text('Chores'));
     await settle();
     expect(find.text('Dishes'), findsOneWidget);
     await tester.tap(find.text('Lists'));
     await settle();
     expect(find.text('Groceries'), findsOneWidget);
+    await tester.tap(find.text('Meals'));
+    await settle();
+    expect(find.text('Soto ayam'), findsOneWidget);
 
     // Money: every sub-tab
     await tester.tap(find.text('Money').last);
@@ -142,6 +163,11 @@ void main() {
     await tester.tap(find.text('More').last);
     await settle();
     expect(find.text('Log out'), findsOneWidget);
+    await tester.tap(find.text('Widgets'));
+    await settle();
+    expect(find.text('Start from a template'), findsOneWidget);
+    await tester.pageBack();
+    await settle();
 
     // Quick add opens from Today
     await tester.tap(find.text('Today').last);

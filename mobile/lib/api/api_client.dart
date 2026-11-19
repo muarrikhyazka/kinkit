@@ -358,4 +358,52 @@ class KinkitApi {
   Future<void> addMealIngredient(String name) => _post('/meal-plan/ingredients', {'name': name.trim()});
 
   Future<void> deleteMealIngredient(int id) => _delete('/meal-plan/ingredients/$id');
+
+  // ------------------------------------------------------------ calendar (activities + reminders overlay)
+
+  /// Dates are YYYY-MM-DD; [include] is "activities", "reminders" or null (both).
+  Future<CalendarData> calendar(String from, String to, {String? include}) async =>
+      CalendarData.fromJson(asJson(await _get('/calendar', {'from': from, 'to': to, if (include != null) 'include': include})));
+
+  Future<void> createActivity(Map<String, dynamic> body) => _post('/activities', body);
+
+  Future<void> updateActivity(int id, Map<String, dynamic> body) => _patch('/activities/$id', body);
+
+  /// With [on] (YYYY-MM-DD) only that occurrence of a repeating activity is removed.
+  Future<void> deleteActivity(int id, {String? on}) => _send('DELETE', '/activities/$id', query: on != null ? {'on': on} : null);
+
+  // ------------------------------------------------------------ meal requests
+
+  Future<List<MealProposal>> mealProposals() async => asList(asJson(await _get('/meal-plan/proposals'))['items'], MealProposal.fromJson);
+
+  Future<void> proposeMeal(String dish, {String note = '', String? wantedDate}) =>
+      _post('/meal-plan/proposals', {'dish': dish.trim(), 'note': note.trim(), 'wanted_date': wantedDate});
+
+  Future<void> approveMeal(int id, {String? mealDate}) => _post('/meal-plan/proposals/$id/approve', {'meal_date': mealDate});
+
+  Future<void> declineMeal(int id, {String note = ''}) => _post('/meal-plan/proposals/$id/decline', {'note': note});
+
+  Future<void> deleteMealProposal(int id) => _delete('/meal-plan/proposals/$id');
+
+  // ------------------------------------------------------------ widget boards
+
+  Future<WidgetCatalog> widgetCatalog() async => WidgetCatalog.fromJson(asJson(await _get('/widgets/catalog')));
+
+  Future<List<WidgetBoard>> widgetBoards() async => asList(asJson(await _get('/widgets/boards'))['boards'], WidgetBoard.fromJson);
+
+  Future<void> createWidgetBoard({String? preset, String? name, List<WidgetItem> widgets = const []}) => _post('/widgets/boards', {
+        if (preset != null) 'preset': preset,
+        if (name != null) 'name': name,
+        if (preset == null) 'layout': {'widgets': widgets.map((w) => w.toJson()).toList()},
+      });
+
+  Future<void> updateWidgetBoard(int id, {String? name, List<WidgetItem>? widgets}) => _patch('/widgets/boards/$id', {
+        if (name != null) 'name': name,
+        if (widgets != null) 'layout': {'widgets': widgets.map((w) => w.toJson()).toList()},
+      });
+
+  Future<void> deleteWidgetBoard(int id) => _delete('/widgets/boards/$id');
+
+  Future<WidgetData> widgetData(List<String> types) async =>
+      WidgetData.fromJson(asJson(await _get('/widgets/data', types.isEmpty ? null : {'types': types.join(',')})));
 }

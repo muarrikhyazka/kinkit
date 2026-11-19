@@ -33,3 +33,13 @@
 }
 .kw-row:last-child { border-bottom: none; }
 .kw-word { overflow-wrap: anywhere; }
+
+/* meal requests (MealRequests.jsx) */
+.meal-req-h { margin: var(--s-4) 0 var(--s-2); font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.meal-req-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s-2); }
+.meal-req { display: flex; gap: var(--s-3); align-items: center; flex-wrap: wrap; border: 1px solid var(--border); border-radius: var(--r-md); padding: var(--s-2) var(--s-3); background: var(--card); }
+.meal-req-main { flex: 1 1 14rem; min-width: 0; display: flex; flex-direction: column; }
+.meal-req-actions { display: flex; gap: var(--s-2); align-items: center; flex-wrap: wrap; }
+.meal-req-actions select { max-width: 11rem; }
+.meal-pick { margin: .15rem 0; line-height: 1.35; font-weight: 600; }
+.meal-pick .meal-label { font-weight: 400; color: var(--primary); }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { dataApi } from './api'
+import { dataApi, widgetsApi } from './api'
 import { useApi } from './useApi'
 import { useToast } from './Toast.jsx'
 import { IconCopy, IconCheck, IconTv } from './icons.jsx'
@@ -31,7 +31,10 @@ async function copyText(text) {
 export default function TVTokens() {
   const toast = useToast()
   const tokens = useApi(() => dataApi.tvTokens(), [])
+  const boards = useApi(() => widgetsApi.boards(), [])
+  const boardList = boards.data?.boards || []
   const [name, setName] = useState('')
+  const [newBoard, setNewBoard] = useState('')
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(null)
 
@@ -39,7 +42,7 @@ export default function TVTokens() {
     e.preventDefault()
     setBusy(true)
     try {
-      const t = await dataApi.createTvToken(name.trim() || 'TV display')
+      const t = await dataApi.createTvToken(name.trim() || 'TV display', newBoard ? Number(newBoard) : null)
       setName('')
       tokens.reload()
       if (await copyText(tvUrl(t.token))) { setCopied(t.id); toast.success('Link created and copied') } else toast.success('Link created')
@@ -51,6 +54,14 @@ export default function TVTokens() {
       setCopied(t.id)
       setTimeout(() => setCopied(c => (c === t.id ? null : c)), 2000)
     } else toast.error('Could not copy - select the link and copy it manually.')
+  }
+
+  async function setBoard(t, value) {
+    try {
+      await dataApi.updateTvToken(t.id, { board_id: value ? Number(value) : null })
+      toast.success(value ? 'Link now shows that widget board' : 'Link now shows the month summary')
+      tokens.reload()
+    } catch (err) { toast.error(err.message) }
   }
 
   async function revoke(t) {
@@ -70,12 +81,16 @@ export default function TVTokens() {
     <div className="card">
       <h2 className="card-title-icon"><IconTv width={18} height={18} aria-hidden="true" /> TV / car display links</h2>
       <p className="muted">
-        A link that opens the big-screen view (this month's income, spending and trend) <strong>without logging in</strong> -
+        A link that opens the big-screen view (the month summary, or one of your widget boards) <strong>without logging in</strong> -
         for a TV browser, tablet on the wall or car head unit. It is read-only and refreshes every minute.
         Anyone with the link can see these numbers, so revoke links you no longer use.
       </p>
       <form className="inline-form" onSubmit={create}>
         <input placeholder="Name, e.g. Living room TV" aria-label="Link name" value={name} maxLength={60} onChange={e => setName(e.target.value)} />
+        <select aria-label="What the link shows" value={newBoard} onChange={e => setNewBoard(e.target.value)}>
+          <option value="">Month summary</option>
+          {boardList.map(b => <option key={b.id} value={b.id}>Board: {b.name}</option>)}
+        </select>
         <button type="submit" disabled={busy}>{busy ? 'Creating...' : 'Create link'}</button>
       </form>
       {tokens.error && <div className="error-box">{tokens.error}</div>}
@@ -87,6 +102,13 @@ export default function TVTokens() {
                 <strong>{t.name}</strong>
                 <span className="muted">created {when(t.created_at)} · last used {when(t.last_used_at)}</span>
               </div>
+              <label className="tv-token-board">
+                <span className="muted">Shows</span>
+                <select value={t.board_id || ''} onChange={e => setBoard(t, e.target.value)} aria-label={`What ${t.name} shows`}>
+                  <option value="">Month summary</option>
+                  {boardList.map(b => <option key={b.id} value={b.id}>Board: {b.name}</option>)}
+                </select>
+              </label>
               <div className="tv-token-url">
                 <input readOnly value={tvUrl(t.token)} aria-label={`Link for ${t.name}`} onFocus={e => e.target.select()} />
                 <button type="button" className="icon-btn" onClick={() => copy(t)} aria-label={`Copy link for ${t.name}`} title="Copy link">
