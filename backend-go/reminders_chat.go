@@ -37,6 +37,9 @@ var sendReminderChat = sendChatMessageWithButtons
 // sendChatMessageWithButtons posts msg to a Telegram chat or Discord channel.
 // The bot token never appears in returned errors.
 func sendChatMessageWithButtons(ctx context.Context, platform, token, chatID string, msg chatMessage) error {
+	if platform == "slack" || platform == "matrix" {
+		return sendSlackOrMatrix(ctx, platform, token, chatID, msg)
+	}
 	var req *http.Request
 	var err error
 	switch platform {
@@ -129,7 +132,7 @@ func reminderButtons(occID int64) [][]chatButton {
 // loadChatChannels lists the household's deliverable chat channels,
 // optionally restricted to one platform ("" or "all" = every platform).
 func (app *App) loadChatChannels(ctx context.Context, aid int64, platform string) ([]alertChannel, error) {
-	rows, err := app.DB.Query(ctx, `SELECT platform, platform_token, chat_id FROM integrations
+	rows, err := app.DB.Query(ctx, `SELECT platform, CASE WHEN platform='matrix' THEN COALESCE(extra,'')||' '||platform_token ELSE platform_token END, chat_id FROM integrations
 	  WHERE account_id=$1 AND enabled AND COALESCE(chat_id,'') <> '' AND COALESCE(platform_token,'') <> '' ORDER BY id`, aid)
 	if err != nil {
 		return nil, err

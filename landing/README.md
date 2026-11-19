@@ -45,11 +45,11 @@ Language: English is the default, matching the app UI. Use the EN/ID toggle, or 
 
 ## Configure
 
-All "Start free" and "Sign in" links get their URL from a single constant at the top of `main.js`:
+All "Start free", "Sign in" and "Docs" links get their URL from a single constant at the top of `main.js`:
 
 ```js
 var APP_URL = '';                                   // '' = same origin; or 'https://app.kinkit.app'
-var APP_PATHS = { signup: '/signup', login: '/login' };
+var APP_PATHS = { signup: '/login', login: '/login', docs: '/docs' };
 ```
 
 > The React app currently shows sign-up as a toggle on `/login`, and there is no `/signup` route (unknown paths redirect to `/`, then to `/login`). Either add a `/signup` route that opens the form in sign-up mode, or set `APP_PATHS.signup = '/login'`.
@@ -107,7 +107,7 @@ The page should only claim what the code does. When a feature changes, find its 
 |---|---|
 | Quick add from any page; amount shorthand `25k`, `2rb`, `1.5jt`; smart category memory; recent chips | `react/src/QuickAddSpending.jsx`, `react/src/SpendingForm.jsx`, `react/src/MoneyInput.jsx`; described in `react/src/pages/Guide.jsx` ("Add Spending") |
 | Budgets per category grouped Needs / Wants / Savings; budget vs actual tint (green, amber ≥80%, red over) | `react/src/pages/Budgeting.jsx`, `backend-go/budgeting.go` |
-| Budget alerts at 80% and >100% via Telegram/Discord | `backend-go/alerts.go`, toggle card in `react/src/pages/Budgeting.jsx` |
+| Budget alerts at 80% and >100% via Telegram/Discord/Slack/Matrix | `backend-go/alerts.go`, toggle card in `react/src/pages/Budgeting.jsx` |
 | Income received vs planned (month / year / across years) | `react/src/pages/Income.jsx`, `backend-go/income.go`, `react/src/pages/Dashboard.jsx` |
 | Recurring payments (monthly / weekly / yearly), auto-added, pause/resume | `react/src/pages/Recurring.jsx`, `backend-go/recurring.go` |
 | Savings goals with progress ring and per-month amount; assets and net-worth target | `react/src/pages/Goals.jsx`, `backend-go/goals.go`, `react/src/pages/Assets.jsx`, `backend-go/assets.go` |
@@ -125,23 +125,24 @@ The page should only claim what the code does. When a feature changes, find its 
 | Chores with points, approval, photo proof, allowance earnings | `react/src/pages/Chores.jsx`, `backend-go/chores*.go`, allowance in `backend-go/family.go` |
 | Family calendar: month/week/day/agenda, repeating activities, per-person schedules, reminders overlay; Reminders calendar view | `react/src/pages/Calendar.jsx`, `react/src/RemindersCalendar.jsx`, `backend-go/activities.go` (`GET /api/calendar`, `/api/activities`) |
 | Meal requests: anyone proposes, parents/admin approve on a day or decline | `react/src/MealRequests.jsx`, `backend-go/meal_proposals.go` |
-| Widget screens: pick widgets, drag to arrange, full screen for phone/TV/car/monitor, templates; TV links can show a board | `react/src/pages/Widgets.jsx`, `react/src/WidgetBoard.jsx`, `backend-go/widgets.go`, `backend-go/tvshare.go` (`board_id`) |
+| Widget screens: pick widgets, colour each widget, drag to arrange, full screen for phone/TV/car/monitor, templates; TV links can show a board | `react/src/pages/Widgets.jsx`, `react/src/WidgetBoard.jsx`, `react/src/widgetColors.js`, `react/src/ColorPicker.jsx`, `backend-go/widgets.go`, `backend-go/tvshare.go` (`board_id`) |
 | Household reminders (cleaning/laundry/kitchen/groceries/home maintenance/vehicle/self-care plus bill/medicine/school/birthday), every N weeks/months, household templates, chat nudges | `react/src/pages/Reminders.jsx` (`REMINDER_TEMPLATES`), `backend-go/reminders*.go` (`reminderCategoryIDs`, `repeat_interval`) |
 | Shared shopping lists, bulk add, "finish trip" → spending | `react/src/pages/Lists.jsx`, `backend-go/lists*.go` |
-| Bot commands `/today` `/remind` `/buy` `/chores` `/menu` | `bots/telegram_bot.py`, `bots/discord_bot.py`, `bots/kinkit_common.py`, `backend-go/*_bot.go`, `backend-go/meal_plan.go` |
+| Bot commands `/today` `/remind` `/buy` `/chores` `/menu` | `bots/telegram_bot.py`, `bots/discord_bot.py`, `bots/slack_bot.py`, `bots/matrix_bot.py`, `bots/kinkit_common.py`, `backend-go/*_bot.go`, `backend-go/meal_plan.go` |
 | Bot category buttons for new words, learned keywords | `bots/kinkit_common.py` (`log_spending`, `spc:` callbacks), `backend-go/bot_extras.go` (`/api/bot/keywords/learn`) |
-| Points (10/day + streak bonus) and levels Getting Started → Tracker → Budget Buddy → Money Master → Finance Wizard | `backend-go/gamification.go` (`badgeThresholds`), `react/src/GamificationBadge.jsx` |
-| Badges: First Log, First Budget Set, Streak 7, Streak 30, Under Budget, Saver | `badgeCatalog` in `backend-go/achievements.go` |
+| Points (10/day + streak bonus) and Levels 1 to 50 with titles from Getting Started to Legend (Budget Buddy, Money Master, Finance Wizard on the way) | `backend-go/gamification.go` (`maxLevel`, `levelThreshold`, `levelTitles`, `levelTitle`), `react/src/GamificationBadge.jsx` |
+| 20+ badges in bronze / silver / gold (Financial Geek, Number Cruncher, Goal Crusher, Streak 30, Chore champion, Chef's Choice, ...) | `badgeRules` / `badgeCatalog` in `backend-go/achievements.go` (count them before changing "20+") |
 | Weekly family challenges (log every day, no-spend weekend, Wants under a week's share) | `backend-go/achievements.go` |
-| Monthly leaderboard | `react/src/pages/Family.jsx`, `backend-go/achievements.go` |
+| Family leaderboard | `react/src/pages/Family.jsx`, `backend-go/achievements.go` |
 | Confetti celebration on new badges / level-ups (skipped with reduced motion) | `react/src/Celebration.jsx` |
 | Themes: Light, Dark (same design, white swapped for black; sidebar toggle flips only light/dark), Playful (kids), Senior (high-contrast) | `react/src/ThemeContext.jsx`, `[data-theme=…]` blocks in `react/src/index.css`, `react/src/pages/DisplaySettings.jsx` |
 | Installable web app (PWA) | `react/index.html` (manifest), service worker registration in `react/src/main.jsx` |
 | Works offline: queue, sync, rejected entries listed | `react/src/OfflineContext.jsx` |
 | TV / car display links: no login, refresh every minute, revocable | `react/src/pages/TVView.jsx` (`REFRESH_MS = 60_000`), `react/src/TVTokens.jsx`, `backend-go/tvshare.go` |
-| Telegram & Discord bots: "50k makan siang", keyword categories, `/recent` (`!recent` on Discord), bring your own bot | `bots/telegram_bot.py`, `bots/discord_bot.py`, `backend-go/bot.go`, `backend-go/integrations.go`, `react/src/pages/Integrations.jsx` |
+| Telegram, Discord, Slack & Matrix bots: "50k makan siang", keyword categories, `/recent` (`!recent` on Discord), bring your own bot (Matrix also needs a homeserver URL); budget alerts and reminders go to all four | `bots/telegram_bot.py`, `bots/discord_bot.py`, `bots/slack_bot.py`, `bots/matrix_bot.py`, `backend-go/bot.go`, `backend-go/integrations.go`, `backend-go/chat_slack_matrix.go`, `react/src/pages/Integrations.jsx` |
 | Export spending CSV (date range), income CSV, full JSON backup | `backend-go/importexport.go` (`/export/all.json` etc.), `react/src/pages/ImportExport.jsx` |
-| Self-host with docker-compose (Postgres, app on :5010, Telegram & Discord bots) | `docker-compose.yml`, `backend-go/Dockerfile`, `bots/Dockerfile`, `.env.example` |
+| Docs link (nav + footer) opens the in-app documentation at `<app-url>/docs` (relative `/docs` when `kinkit-app-url` is empty) | `react/src/docs`, route wired in `react/src/routes.jsx`; link built by `APP_PATHS.docs` in `main.js` |
+| Role-based access (kids edit only their own entries, viewers read-only) shown under "Your data" | `backend-go/family.go`, role gating in `react/src/routes.jsx` |
 | Android phone app (APK download) | `mobile/` (Flutter); built APK served at `downloads/kinkit-android.apk` |
 | Smart TV viewer: Android TV / Google TV / Fire TV APK, LG webOS IPK, Tizen project zip | `tv/flutter/`, `tv/web/`; served at `downloads/kinkit-tv-android.apk`, `kinkit-tv-webos.ipk`, `kinkit-tv-tizen-webos-source.zip` |
 | **Coming soon:** native iPhone app | `mobile/ios` exists but needs a Mac/Xcode to build and sign |

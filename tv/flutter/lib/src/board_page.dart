@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'models.dart';
 import 'money.dart';
 import 'theme.dart';
+import 'widget_colors.dart';
 
 /// A widget board (the web Widgets page) on the TV: a 12-column flow grid,
 /// scaled so the whole board fits the screen. Same layout rules as
@@ -62,6 +63,14 @@ class BoardPage extends StatelessWidget {
   }
 }
 
+/// Tone for a widget filled with [hex]; null/invalid = the default dark TV card.
+WidgetTone toneFor(String? hex) {
+  final c = parseHexColor(hex);
+  if (c != null) return WidgetTone.on(c);
+  return const WidgetTone(
+      bg: TvColors.card, text: TvColors.text, muted: TvColors.muted, track: TvColors.border, accent: TvColors.primary, danger: TvColors.negative, border: TvColors.border);
+}
+
 class _Tile extends StatelessWidget {
   const _Tile({required this.widget, required this.card, required this.money});
   final TvWidget widget;
@@ -70,21 +79,23 @@ class _Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tone = toneFor(widget.color);
     return Container(
       padding: const EdgeInsets.all(14),
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(color: TvColors.card, borderRadius: BorderRadius.circular(14), border: Border.all(color: TvColors.border)),
+      decoration: BoxDecoration(color: tone.bg, borderRadius: BorderRadius.circular(14), border: Border.all(color: tone.border)),
       child: switch (widget.type) {
-        'clock' => const _Clock(),
-        'note' => Text(widget.text.isEmpty ? 'Empty note' : widget.text, style: const TextStyle(fontSize: 26, color: TvColors.text)),
-        _ => card == null ? const Text('No data', style: TextStyle(color: TvColors.muted)) : _CardBody(card: card!, money: money),
+        'clock' => _Clock(tone: tone),
+        'note' => Text(widget.text.isEmpty ? 'Empty note' : widget.text, style: TextStyle(fontSize: 26, color: tone.text)),
+        _ => card == null ? Text('No data', style: TextStyle(color: tone.muted)) : _CardBody(card: card!, money: money, tone: tone),
       },
     );
   }
 }
 
 class _Clock extends StatefulWidget {
-  const _Clock();
+  const _Clock({required this.tone});
+  final WidgetTone tone;
 
   @override
   State<_Clock> createState() => _ClockState();
@@ -114,35 +125,36 @@ class _ClockState extends State<_Clock> {
     return Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
       FittedBox(
         fit: BoxFit.scaleDown,
-        child: Text('$hh:$mm', style: const TextStyle(fontSize: 68, fontWeight: FontWeight.w800, color: TvColors.text)),
+        child: Text('$hh:$mm', style: TextStyle(fontSize: 68, fontWeight: FontWeight.w800, color: widget.tone.text)),
       ),
-      Text('${wd[_now.weekday - 1]}, ${_now.day} ${monthLong[_now.month - 1]}', style: const TextStyle(fontSize: 20, color: TvColors.muted)),
+      Text('${wd[_now.weekday - 1]}, ${_now.day} ${monthLong[_now.month - 1]}', style: TextStyle(fontSize: 20, color: widget.tone.muted)),
     ]);
   }
 }
 
 class _CardBody extends StatelessWidget {
-  const _CardBody({required this.card, required this.money});
+  const _CardBody({required this.card, required this.money, required this.tone});
   final TvCard card;
   final Money money;
+  final WidgetTone tone;
 
   @override
   Widget build(BuildContext context) {
     final big = card.bigAmount != null ? money.format(card.bigAmount!) : card.big;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(card.title.toUpperCase(), style: const TextStyle(fontSize: 14, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: TvColors.muted)),
+      Text(card.title.toUpperCase(), style: TextStyle(fontSize: 14, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: tone.muted)),
       if (big.isNotEmpty)
         FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
           child: Text(big,
-              style: TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: (card.bigAmount ?? 0) < 0 ? TvColors.negative : TvColors.text)),
+              style: TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: (card.bigAmount ?? 0) < 0 ? tone.danger : tone.text)),
         ),
-      if (card.caption.isNotEmpty) Text(card.caption, style: const TextStyle(fontSize: 15, color: TvColors.muted)),
+      if (card.caption.isNotEmpty) Text(card.caption, style: TextStyle(fontSize: 15, color: tone.muted)),
       const SizedBox(height: 4),
       Expanded(
         child: card.rows.isEmpty
-            ? (big.isEmpty ? Text(card.empty.isEmpty ? 'Nothing to show' : card.empty, style: const TextStyle(fontSize: 18, color: TvColors.muted)) : const SizedBox.shrink())
+            ? (big.isEmpty ? Text(card.empty.isEmpty ? 'Nothing to show' : card.empty, style: TextStyle(fontSize: 18, color: tone.muted)) : const SizedBox.shrink())
             : ClipRect(
                 child: SingleChildScrollView(
                   physics: const NeverScrollableScrollPhysics(),
@@ -159,14 +171,14 @@ class _CardBody extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700,
-                                    color: r.alert ? TvColors.negative : TvColors.text,
+                                    color: r.alert ? tone.danger : tone.text,
                                     decoration: r.done ? TextDecoration.lineThrough : null,
                                   )),
                             ),
-                            if (r.amount != null) Text(money.format(r.amount!), style: const TextStyle(fontSize: 15, color: TvColors.muted)),
+                            if (r.amount != null) Text(money.format(r.amount!), style: TextStyle(fontSize: 15, color: tone.muted)),
                           ]),
                           if (r.detail.isNotEmpty)
-                            Text(r.detail, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, color: TvColors.muted)),
+                            Text(r.detail, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 15, color: tone.muted)),
                           if (r.pct != null)
                             Padding(
                               padding: const EdgeInsets.only(top: 3),
@@ -175,8 +187,8 @@ class _CardBody extends StatelessWidget {
                                 child: LinearProgressIndicator(
                                   minHeight: 6,
                                   value: (r.pct!.clamp(0, 100)) / 100,
-                                  color: r.alert ? TvColors.negative : TvColors.primary,
-                                  backgroundColor: TvColors.border,
+                                  color: r.alert ? tone.danger : tone.accent,
+                                  backgroundColor: tone.track,
                                 ),
                               ),
                             ),

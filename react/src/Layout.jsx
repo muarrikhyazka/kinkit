@@ -9,9 +9,10 @@ import QuickAddSpending from './QuickAddSpending.jsx'
 import GamificationBadge from './GamificationBadge.jsx'
 import Modal from './Modal.jsx'
 import OnboardingChecklist from './OnboardingChecklist.jsx'
-import { IconLogout, IconCollapse, IconExpand, IconSun, IconMoon, IconPlus, IconMore, IconClose, IconGuide, IconChevronRight, IconChevronDown, KinkitLogo } from './icons.jsx'
+import { IconLogout, IconCollapse, IconExpand, IconMenu, IconSun, IconMoon, IconPlus, IconMore, IconClose, IconGuide, IconChevronRight, IconChevronDown, KinkitLogo } from './icons.jsx'
 
 const COLLAPSE_KEY = 'kinkit_sidebar_collapsed'
+const HIDDEN_KEY = 'kinkit_sidebar_hidden'
 const GROUPS_KEY = 'kinkit_sidebar_groups_closed'
 
 function ConnStatus({ serverOnline, queueSize, compact }) {
@@ -55,6 +56,8 @@ export default function Layout() {
   const { theme, setTheme, toggle: toggleTheme } = useTheme()
   const location = useLocation()
   const [collapsed, setCollapsed] = useState(() => { try { return localStorage.getItem(COLLAPSE_KEY) === '1' } catch { return false } })
+  // sidebar fully hidden (desktop only); takes priority over the icons-only collapse
+  const [hidden, setHidden] = useState(() => { try { return localStorage.getItem(HIDDEN_KEY) === '1' } catch { return false } })
   // nav groups ("Money", "Family") the user folded away
   const [closedGroups, setClosedGroups] = useState(() => { try { return JSON.parse(localStorage.getItem(GROUPS_KEY) || '[]') } catch { return [] } })
   const [quickAddOpen, setQuickAddOpen] = useState(false)
@@ -71,7 +74,7 @@ export default function Layout() {
   const mobileTabs = links.filter(r => r.mobile === 'tab')
   const moreLinks = links.filter(r => r.mobile === 'more')
   const inSection = r => location.pathname === routeTo(r) || location.pathname.startsWith(routeTo(r) + '/')
-  const moreActive = location.pathname === '/help' || moreLinks.some(inSection)
+  const moreActive = moreLinks.some(inSection)
   const navItem = r => (
     <li key={r.path}>
       <NavLink to={routeTo(r)} end={routeEnd(r)} title={r.label} aria-label={collapsed ? r.label : undefined}>
@@ -88,15 +91,29 @@ export default function Layout() {
   useEffect(() => onSpendingChanged(() => setGamiRefresh(k => k + 1)), [])
   useEffect(() => { setMoreOpen(false) }, [location.pathname])
   useEffect(() => { try { localStorage.setItem(GROUPS_KEY, JSON.stringify(closedGroups)) } catch { /* ignore */ } }, [closedGroups])
+  useEffect(() => { try { localStorage.setItem(HIDDEN_KEY, hidden ? '1' : '0') } catch { /* ignore */ } }, [hidden])
+  // Ctrl/Cmd+B hides/shows the sidebar on desktop (ignored while typing, where it means "bold")
+  useEffect(() => {
+    const onKey = e => {
+      if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey || e.key.toLowerCase() !== 'b') return
+      const t = e.target
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return
+      if (!window.matchMedia('(min-width: 641px)').matches) return
+      e.preventDefault()
+      setHidden(h => !h)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [])
   useEffect(() => { try { localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0') } catch { /* ignore */ } }, [collapsed])
 
   const darkMode = theme === 'dark'
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${hidden ? 'sidebar-hidden' : collapsed ? 'sidebar-collapsed' : ''}`}>
       <a href="#main" className="skip-link">Skip to content</a>
 
-      <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+      <aside id="sidebar" className={`sidebar ${collapsed ? 'collapsed' : ''}`} aria-hidden={hidden || undefined} inert={hidden ? '' : undefined}>
         <div className="sidebar-top">
           {!collapsed && (
             <div className="brand-row">
@@ -145,9 +162,9 @@ export default function Layout() {
             {darkMode ? <IconSun /> : <IconMoon />}
           </button>
           {!isAdmin && (
-            <NavLink to="/help" className="icon-btn help-btn" title="Help & guide" aria-label="Help and guide">
+            <a href="/docs" className="icon-btn help-btn" title="Help & guide" aria-label="Help and guide">
               <IconGuide />
-            </NavLink>
+            </a>
           )}
           {!collapsed && <span className="sidebar-user">{user?.display_name}</span>}
           <button className="icon-btn logout-btn" onClick={logout} title="Logout" aria-label="Logout"><IconLogout /></button>
@@ -165,11 +182,18 @@ export default function Layout() {
         </div>
         <ConnStatus serverOnline={serverOnline} queueSize={queueSize} />
         {!isAdmin && (
-          <NavLink to="/help" className="icon-btn help-btn" aria-label="Help and guide"><IconGuide width={20} height={20} /></NavLink>
+          <a href="/docs" className="icon-btn help-btn" aria-label="Help and guide"><IconGuide width={20} height={20} /></a>
         )}
       </header>
 
+      <button type="button" className="sidebar-hide-toggle" onClick={() => setHidden(h => !h)}
+        title={hidden ? 'Show sidebar (Ctrl+B)' : 'Hide sidebar (Ctrl+B)'} aria-label={hidden ? 'Show sidebar' : 'Hide sidebar'}
+        aria-expanded={!hidden} aria-controls="sidebar" aria-keyshortcuts="Control+B Meta+B">
+        <IconMenu width={18} height={18} aria-hidden="true" />
+      </button>
+
       <main className="content" id="main" tabIndex={-1}>
+        <div className="content-strip" aria-hidden="true" />
         <FailedSyncBanner items={failedItems} onDismiss={dismissFailed} />
         {canAddIncome && location.pathname === '/' && <OnboardingChecklist />}
         <Outlet />
@@ -207,7 +231,7 @@ export default function Layout() {
             ))}
             {!isAdmin && (
               <li>
-                <NavLink to="/help"><IconGuide aria-hidden="true" /><span>Help</span><IconChevronRight className="chev" width={16} height={16} aria-hidden="true" /></NavLink>
+                <a href="/docs"><IconGuide aria-hidden="true" /><span>Help</span><IconChevronRight className="chev" width={16} height={16} aria-hidden="true" /></a>
               </li>
             )}
           </ul>

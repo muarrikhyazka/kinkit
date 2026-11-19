@@ -8,7 +8,9 @@ import PageHeader from '../PageHeader.jsx'
 import StatCard from '../StatCard.jsx'
 import MoneyInput from '../MoneyInput.jsx'
 import { SkeletonCard, SkeletonStats } from '../Skeleton.jsx'
-import { BadgeIcon, IconClose, IconEdit, IconPlus } from '../icons.jsx'
+import { BadgeIcon, LevelBadge, IconClose, IconEdit, IconPlus } from '../icons.jsx'
+import { levelInfo, groupBadges, TIER_LABELS } from '../gamification.js'
+import '../gamification.css'
 
 // nav icon for routes.jsx (two people)
 export const IconFamily = (p) => (
@@ -164,6 +166,32 @@ function ChangePassword() {
   )
 }
 
+function LevelCard({ g }) {
+  const li = levelInfo(g)
+  if (!li || !li.number) return null
+  return (
+    <div className="card level-card" id="level">
+      <LevelBadge level={li.number} size={84} />
+      <div className="level-card-main">
+        <div className="level-card-head">
+          <h2>{li.title}</h2>
+          <span className="level-card-no">Level {li.number}</span>
+        </div>
+        <div className="level-xp">
+          <div className="progress-bar" role="progressbar" aria-label="Progress to next level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(li.fraction * 100)}>
+            <div className="progress-fill" style={{ width: `${li.fraction * 100}%` }} />
+          </div>
+          <div className="level-xp-labels">
+            {li.hasNext
+              ? <><span><strong>{li.points}</strong> / {li.nextAt} pts</span><span><strong>{li.toNext} pts</strong> to Level {li.nextNumber}{li.next ? ` · ${li.next}` : ''}</span></>
+              : <span><strong>{li.points} pts</strong> · max level reached</span>}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Achievements({ g }) {
   if (!g) return <SkeletonCard lines={4} />
   const earned = g.badges.filter(b => b.earned).length
@@ -199,7 +227,7 @@ function Achievements({ g }) {
                     </>
                   ) : (
                     <div className="muted">{c.key === 'all_chores'
-                      ? 'Add some chores on the Home › Chores page to unlock.'
+                      ? 'Add some chores on the Chores page to unlock.'
                       : 'Set a Wants budget for this month on the Budgeting page to unlock.'}</div>
                   )}
                 </div>
@@ -209,18 +237,37 @@ function Achievements({ g }) {
         </ul>
       </div>
 
-      <div className="card" id="badges">
+      <div className="card badge-groups" id="badges">
         <h2>Your badges <span className="muted">({earned}/{g.badges.length})</span></h2>
-        <ul className="badge-grid">
-          {g.badges.map(b => (
-            <li key={b.key} className={`badge-tile ${b.earned ? 'earned' : ''}`} title={b.description}>
-              <span className="badge-tile-icon" aria-hidden="true"><BadgeIcon id={b.key} width={28} height={28} /></span>
-              <strong>{b.name}</strong>
-              <span className="muted">{b.earned ? `Earned ${b.earned_at?.slice(0, 10)}` : b.description}</span>
-              <span className="sr-only">{b.earned ? 'earned' : 'not earned yet'}</span>
-            </li>
-          ))}
-        </ul>
+        {groupBadges(g.badges).map(grp => (
+          <section key={grp.key} className="badge-group" aria-label={`${grp.label} badges`}>
+            <h3 className="badge-group-title">{grp.label} <span className="muted">{grp.badges.filter(b => b.earned).length}/{grp.badges.length}</span></h3>
+            <ul className="badge-grid">
+              {grp.badges.map(b => {
+                const tier = TIER_LABELS[b.tier] ? b.tier : 'bronze'
+                const target = Number(b.target) || 0
+                const progress = Math.min(Number(b.progress) || 0, target)
+                return (
+                  <li key={b.key} className={`badge-tile tier-${tier} ${b.earned ? 'earned' : ''}`} title={b.description}>
+                    <span className="badge-tile-icon" aria-hidden="true"><BadgeIcon id={b.key} width={28} height={28} /></span>
+                    <strong>{b.name}</strong>
+                    {b.tier && <span className="badge-tier">{TIER_LABELS[tier]}</span>}
+                    <span className="badge-desc">{b.description}</span>
+                    {b.earned ? (
+                      <span className="badge-earned-on">Earned{b.earned_at ? ` ${b.earned_at.slice(0, 10)}` : ''}</span>
+                    ) : target > 0 && (
+                      <div className="badge-progress">
+                        <div className="progress-bar" aria-hidden="true"><div className="progress-fill" style={{ width: `${(progress / target) * 100}%` }} /></div>
+                        <span className="badge-progress-num">{progress}/{target}</span>
+                      </div>
+                    )}
+                    <span className="sr-only">{b.earned ? 'earned' : `not earned yet${target > 0 ? `, ${progress} of ${target}` : ''}`}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        ))}
       </div>
     </>
   )
@@ -268,9 +315,10 @@ export default function Family() {
       />
       {fam.error && <div className="error-box" role="alert">{fam.error}</div>}
 
+      {g && <LevelCard g={g} />}
       {!g ? <SkeletonStats count={3} /> : (
         <div className="cards-row">
-          <StatCard label="Your points" value={`${g.member?.points ?? 0} pts`} sub={`${g.member?.points_month ?? 0} this month · ${g.member?.level || ''}`} />
+          <StatCard label="Your points" value={`${g.member?.points ?? 0} pts`} sub={`${g.member?.points_month ?? 0} this month`} />
           <StatCard label="Your streak" value={`${g.member?.streak_days ?? 0} days`} tone="positive" sub={`Best: ${g.member?.best_streak ?? 0} days`} />
           <StatCard label="Household total" value={`${g.points} pts`} tone="savings" sub={`${g.streak_days}-day household streak`} />
         </div>

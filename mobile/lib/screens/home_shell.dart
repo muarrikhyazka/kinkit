@@ -4,14 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/providers.dart';
 import '../theme.dart';
 import '../widgets/quick_add_sheet.dart';
-import 'family_screen.dart';
-import 'household_screen.dart';
+import 'chores_screen.dart';
 import 'money_screen.dart';
 import 'more_screen.dart';
+import 'reminders_screen.dart';
 import 'today_screen.dart';
 
 /// Bottom navigation mirroring the web nav (routes.jsx):
-/// Today · Home (reminders/chores/lists) · Money · Family · More (settings).
+/// Today · Reminders · Chores · Money · More. Family, Lists, Meals, Widgets,
+/// Calendar and Settings live under More (web sidebar "Family" group).
 class HomeShell extends ConsumerStatefulWidget {
   const HomeShell({super.key});
 
@@ -24,9 +25,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
   static const _tabs = <_Tab>[
     _Tab('Today', Icons.wb_sunny_outlined, Icons.wb_sunny),
-    _Tab('Home', Icons.home_outlined, Icons.home),
+    _Tab('Reminders', Icons.notifications_none, Icons.notifications),
+    _Tab('Chores', Icons.checklist_outlined, Icons.checklist),
     _Tab('Money', Icons.account_balance_wallet_outlined, Icons.account_balance_wallet),
-    _Tab('Family', Icons.family_restroom_outlined, Icons.family_restroom),
     _Tab('More', Icons.menu, Icons.menu),
   ];
 
@@ -34,16 +35,16 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   Widget build(BuildContext context) {
     final me = ref.watch(meProvider);
     final canAdd = me?.canAddSpending ?? false;
-    // Quick add on Today and Money (Home/Family have their own actions).
-    final showFab = canAdd && (_index == 0 || _index == 2);
+    // Quick add on Today and Money (Reminders/Chores have their own actions).
+    final showFab = canAdd && (_index == 0 || _index == 3);
     return Scaffold(
       body: IndexedStack(
         index: _index,
         children: const [
           TodayScreen(),
-          HouseholdScreen(),
+          RemindersScreen(),
+          ChoresScreen(),
           MoneyScreen(),
-          FamilyScreen(),
           MoreScreen(),
         ],
       ),

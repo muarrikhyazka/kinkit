@@ -41,8 +41,8 @@ func (app *App) handleChatLinkStatus(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	var tg, dc *string
-	_ = app.DB.QueryRow(r.Context(), "SELECT telegram_user_id, discord_user_id FROM members WHERE id=$1 AND account_id=$2", m.ID, m.AccountID).Scan(&tg, &dc)
+	var tg, dc, sl, mx *string
+	_ = app.DB.QueryRow(r.Context(), "SELECT telegram_user_id, discord_user_id, slack_user_id, matrix_user_id FROM members WHERE id=$1 AND account_id=$2", m.ID, m.AccountID).Scan(&tg, &dc, &sl, &mx)
 	platforms := []string{}
 	rows, err := app.DB.Query(r.Context(), "SELECT platform FROM integrations WHERE account_id=$1 AND enabled AND COALESCE(platform_token,'')<>'' ORDER BY id", m.AccountID)
 	if err == nil {
@@ -56,6 +56,7 @@ func (app *App) handleChatLinkStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, map[string]any{
 		"telegram_linked": tg != nil && *tg != "", "discord_linked": dc != nil && *dc != "",
+		"slack_linked": sl != nil && *sl != "", "matrix_linked": mx != nil && *mx != "",
 		"bots": platforms, "can_link": m.ID != 0 && m.Role != roleViewer,
 	})
 }
@@ -96,10 +97,6 @@ func (app *App) handleCreateLinkCode(w http.ResponseWriter, r *http.Request) {
 	jsonError(w, http.StatusInternalServerError, "could not create code")
 }
 
-func linkColumn(platform string) string {
-	return map[string]string{"telegram": "telegram_user_id", "discord": "discord_user_id"}[platform]
-}
-
 func (app *App) handleUnlinkChat(w http.ResponseWriter, r *http.Request) {
 	m, ok := requireMember(w, r)
 	if !ok {
@@ -107,7 +104,7 @@ func (app *App) handleUnlinkChat(w http.ResponseWriter, r *http.Request) {
 	}
 	col := linkColumn(chi.URLParam(r, "platform"))
 	if col == "" {
-		jsonError(w, http.StatusBadRequest, "platform must be telegram or discord")
+		jsonError(w, http.StatusBadRequest, "platform must be one of telegram, discord, slack, matrix")
 		return
 	}
 	if _, err := app.DB.Exec(r.Context(), "UPDATE members SET "+col+"=NULL WHERE id=$1 AND account_id=$2", m.ID, m.AccountID); err != nil {

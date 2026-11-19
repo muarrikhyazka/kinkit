@@ -1,13 +1,14 @@
-"""Shared helpers for the Kinkit Telegram and Discord bots.
+"""Shared helpers for the Kinkit Telegram, Discord, Slack and Matrix bots.
 
-Both bots talk to the Go backend the same way:
+All four bots talk to the Go backend the same way:
   * /api/internal/* with X-Service-Token (which tenants/integrations exist)
   * /api/bot/*      with X-Bot-Token (the tenant) + X-Bot-User
                     "<platform>:<chat user id>" (which household member)
 
 Commands are platform-neutral here: run_command() returns (text, buttons)
 where buttons is a list of rows of (label, callback_data); each bot renders
-them as a Telegram inline keyboard / Discord components. Callback data
+them as a Telegram inline keyboard / Discord components / Slack Block Kit
+buttons / a numbered list on Matrix (see chat_helpers.py). Callback data
 (<= 64 bytes, Telegram's limit):
   rem:<occurrence id>:done|snooze60|snooze_tomorrow   (reminders, sent by the backend)
   chore:<chore id>:done                               (chores)

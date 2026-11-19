@@ -130,8 +130,8 @@ func (app *App) handleSetDigest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.TimeOfDay = fmtHHMM(hh, mm)
-	if s.Channel != "all" && s.Channel != "telegram" && s.Channel != "discord" {
-		jsonError(w, http.StatusBadRequest, "channel must be all, telegram or discord")
+	if s.Channel != "all" && !isChatPlatform(s.Channel) {
+		jsonError(w, http.StatusBadRequest, "channel must be all, telegram, discord, slack or matrix")
 		return
 	}
 	if _, err := app.DB.Exec(r.Context(), `INSERT INTO digest_settings (account_id, enabled, time_of_day, channel) VALUES ($1,$2,$3,$4)

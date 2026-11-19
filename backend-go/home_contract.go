@@ -96,7 +96,7 @@ func botActor(ctx context.Context, app *App, r *http.Request, aid int64) (member
 	if !ok {
 		return memberInfo{}, false
 	}
-	col := map[string]string{"telegram": "telegram_user_id", "discord": "discord_user_id"}[platform]
+	col := linkColumn(platform)
 	if col == "" {
 		return memberInfo{}, false
 	}
@@ -108,6 +108,27 @@ func botActor(ctx context.Context, app *App, r *http.Request, aid int64) (member
 		return memberInfo{}, false
 	}
 	return m, true
+}
+
+// chatPlatforms are the chat apps a household can connect a bot for. Each
+// has a members.<platform>_user_id column used for linking and @-mentions.
+var chatPlatforms = []string{"telegram", "discord", "slack", "matrix"}
+
+func isChatPlatform(p string) bool {
+	for _, c := range chatPlatforms {
+		if c == p {
+			return true
+		}
+	}
+	return false
+}
+
+// linkColumn is the members column holding a member's chat id ("" = unknown platform).
+func linkColumn(platform string) string {
+	if !isChatPlatform(platform) {
+		return ""
+	}
+	return platform + "_user_id"
 }
 
 func splitBotUser(v string) (platform, uid string, ok bool) {

@@ -1,7 +1,9 @@
+import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kinkit_tv/src/api.dart';
 import 'package:kinkit_tv/src/models.dart';
 import 'package:kinkit_tv/src/money.dart';
+import 'package:kinkit_tv/src/widget_colors.dart';
 
 const sample = '''
 {
@@ -102,5 +104,30 @@ void main() {
     expect(d.board!.cards['agenda']!.rows.single.pct, 50);
     expect(d.board!.cards['agenda']!.bigAmount, 1000);
     expect(TvData.fromJson({'report': {}, 'trend': []}).board, isNull); // classic month summary
+  });
+
+  test('widget colours and board background parse; unset stays null', () {
+    final d = TvData.fromJson({
+      'year': 2026, 'month': 11, 'currency': 'IDR', 'report': {}, 'trend': [],
+      'board': {'id': 1, 'name': 'B', 'layout': {'background': '#1e293b', 'widgets': [
+        {'id': 'a', 'type': 'clock', 'w': 4, 'h': 1, 'color': '#fde68a'},
+        {'id': 'b', 'type': 'note', 'w': 4, 'h': 1},
+      ]}},
+      'cards': {},
+    });
+    expect(d.board!.background, '#1e293b');
+    expect(d.board!.widgets[0].color, '#fde68a');
+    expect(d.board!.widgets[1].color, isNull);
+    expect(TvData.fromJson({'report': {}, 'trend': [], 'board': {'name': 'x', 'layout': {'widgets': []}}}).board!.background, isNull);
+  });
+
+  test('colour helpers: parse hex and pick readable text', () {
+    expect(parseHexColor('#4F46E5'), const Color(0xFF4F46E5));
+    expect(parseHexColor('#abc'), const Color(0xFFAABBCC));
+    expect(parseHexColor(''), isNull);
+    expect(parseHexColor('nope'), isNull);
+    expect(readableOn(const Color(0xFF1E293B)), const Color(0xFFFFFFFF));
+    expect(readableOn(const Color(0xFFFDE68A)), const Color(0xFF1B1F2B));
+    expect(readableOn(const Color(0xFF4F46E5)), const Color(0xFFFFFFFF));
   });
 }

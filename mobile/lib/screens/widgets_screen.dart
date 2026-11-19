@@ -10,13 +10,16 @@ import '../state/data_providers.dart';
 import '../state/providers.dart';
 import '../theme.dart';
 import '../widgets/async_view.dart';
+import '../widgets/color_picker_sheet.dart';
+import '../widgets/widget_colors.dart';
 
 /// Widgets (web: /widgets, backend-go/widgets.go): boards of widgets (clock,
 /// agenda, reminders, chores, lists, meals, budget, goals, family points, a
 /// note) for a phone, TV, car screen or monitor. Family admins and parents
 /// edit (reorder, resize, add, remove); everyone can view, also full screen.
 /// The web arranges by drag and drop on a grid; here the list is reordered by
-/// long-press dragging.
+/// long-press dragging. Each widget and the board background can be coloured
+/// (preset swatches or a hex code); text colour follows the fill's brightness.
 
 class WidgetsScreen extends ConsumerStatefulWidget {
   const WidgetsScreen({super.key});
@@ -28,6 +31,7 @@ class WidgetsScreen extends ConsumerStatefulWidget {
 class _WidgetsScreenState extends ConsumerState<WidgetsScreen> {
   int? _activeId;
   List<WidgetItem>? _draft; // non-null while editing
+  String? _draftBg; // board background while editing (null = default)
   bool _busy = false;
   Timer? _refresh;
 
@@ -92,6 +96,7 @@ class _WidgetsScreenState extends ConsumerState<WidgetsScreen> {
                       onSelected: (_) => setState(() {
                         _activeId = b.id;
                         _draft = null;
+                        _draftBg = null;
                       }),
                     ),
                 ]),
@@ -107,7 +112,10 @@ class _WidgetsScreenState extends ConsumerState<WidgetsScreen> {
                       OutlinedButton.icon(
                         icon: const Icon(Icons.edit_outlined),
                         label: const Text('Edit'),
-                        onPressed: () => setState(() => _draft = List.of(board.widgets)),
+                        onPressed: () => setState(() {
+                          _draft = List.of(board.widgets);
+                          _draftBg = board.background;
+                        }),
                       ),
                     if (canManage)
                       OutlinedButton.icon(
@@ -121,7 +129,7 @@ class _WidgetsScreenState extends ConsumerState<WidgetsScreen> {
                           ? null
                           : () async {
                               final d = _draft!;
-                              await _run(() => api.updateWidgetBoard(board.id, widgets: d), ok: 'Layout saved');
+                              await _run(() => api.updateWidgetBoard(board.id, widgets: d, background: _draftBg, layoutExtra: board.layoutExtra), ok: 'Layout saved');
                               if (mounted) setState(() => _draft = null);
                             },
                       child: const Text('Save layout'),
@@ -130,7 +138,10 @@ class _WidgetsScreenState extends ConsumerState<WidgetsScreen> {
                   ],
                 ]),
                 const SizedBox(height: 12),
-                if (_draft != null) _editor(context, catalog) else WidgetBoardView(widgets: widgets, data: data, catalog: catalog),
+                if (_draft != null)
+                  _editor(context, catalog)
+                else
+                  BoardBackdrop(color: board.background, child: WidgetBoardView(widgets: widgets, data: data, catalog: catalog)),
                 if (canManage && _draft == null)
                   Padding(
                     padding: const EdgeInsets.only(top: 16),
@@ -221,7 +232,17 @@ class _WidgetsScreenState extends ConsumerState<WidgetsScreen> {
           child: const Chip(avatar: Icon(Icons.add, size: 18), label: Text('Add a widget')),
         ),
         const SizedBox(height: 8),
-        Text('Long-press and drag a row to reorder. Width is in columns of 12.', style: TextStyle(color: p.muted, fontSize: 12)),
+        ActionChip(
+          avatar: _swatch(_draftBg, 18, p),
+          label: const Text('Board background'),
+          tooltip: 'Board background colour',
+          onPressed: () async {
+            final c = await showColorPickerSheet(context, title: 'Board background', current: _draftBg);
+            if (c != null) setState(() => _draftBg = c.isEmpty ? null : c);
+          },
+        ),
+        const SizedBox(height: 8),
+        Text('Long-press and drag a row to reorder. Width is in columns of 12. Tap the dot to colour a widget.', style: TextStyle(color: p.muted, fontSize: 12)),
         ReorderableListView(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -240,6 +261,14 @@ class _WidgetsScreenState extends ConsumerState<WidgetsScreen> {
                     children: [
                       Row(children: [
                         Expanded(child: Text(catalog?.labelOf(draft[i].type) ?? draft[i].type, style: const TextStyle(fontWeight: FontWeight.w700))),
+                        IconButton(
+                          tooltip: '${catalog?.labelOf(draft[i].type) ?? draft[i].type} colour',
+                          icon: _swatch(draft[i].color, 22, p),
+                          onPressed: () async {
+                            final c = await showColorPickerSheet(context, title: '${catalog?.labelOf(draft[i].type) ?? draft[i].type} colour', current: draft[i].color);
+                            if (c != null) setState(() => draft[i] = c.isEmpty ? draft[i].copyWith(clearColor: true) : draft[i].copyWith(color: c));
+                          },
+                        ),
                         IconButton(tooltip: 'Remove', icon: Icon(Icons.close, color: p.danger), onPressed: () => setState(() => draft.removeAt(i))),
                       ]),
                       Wrap(spacing: 16, children: [
@@ -264,6 +293,16 @@ class _WidgetsScreenState extends ConsumerState<WidgetsScreen> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _swatch(String? hex, double size, KinkitPalette p) {
+    final c = parseHexColor(hex);
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: c ?? p.card, border: Border.all(color: p.borderStrong)),
+      child: c == null ? Icon(Icons.block, size: size * 0.7, color: p.muted) : null,
     );
   }
 
@@ -310,15 +349,17 @@ class _WidgetsFullScreenState extends ConsumerState<WidgetsFullScreen> {
     final data = ref.watch(widgetDataProvider(types)).valueOrNull;
     final catalog = ref.watch(widgetCatalogProvider).valueOrNull;
     final p = context.palette;
+    final bgColor = parseHexColor(b.background);
+    final barText = bgColor == null ? p.muted : Color.lerp(readableOn(bgColor), bgColor, 0.32)!;
     return Scaffold(
-      backgroundColor: p.bg,
+      backgroundColor: bgColor ?? p.bg,
       body: SafeArea(
         child: Column(children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
             child: Row(children: [
-              Expanded(child: Text('${data?.householdName ?? ''}  ·  ${b.name}', style: TextStyle(color: p.muted))),
-              IconButton(tooltip: 'Exit full screen', icon: const Icon(Icons.fullscreen_exit), onPressed: () => Navigator.pop(context)),
+              Expanded(child: Text('${data?.householdName ?? ''}  ·  ${b.name}', style: TextStyle(color: barText))),
+              IconButton(tooltip: 'Exit full screen', color: bgColor == null ? null : readableOn(bgColor), icon: const Icon(Icons.fullscreen_exit), onPressed: () => Navigator.pop(context)),
             ]),
           ),
           Expanded(
@@ -367,6 +408,33 @@ class WidgetBoardView extends ConsumerWidget {
   }
 }
 
+/// Colours for a widget filled with [hex]; null/invalid keeps the theme card look.
+WidgetTone _toneFor(BuildContext context, String? hex) {
+  final c = parseHexColor(hex);
+  if (c != null) return WidgetTone.on(c);
+  final p = context.palette;
+  return WidgetTone(bg: p.card, text: p.text, muted: p.muted, track: p.surface2, accent: p.primary, danger: p.danger, border: p.border);
+}
+
+/// Whole-board backdrop behind the widgets (padded only when a colour is set).
+class BoardBackdrop extends StatelessWidget {
+  final String? color;
+  final Widget child;
+  const BoardBackdrop({super.key, required this.color, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = parseHexColor(color);
+    if (c == null) return child;
+    return Container(
+      key: const ValueKey('board-backdrop'),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(16)),
+      child: child,
+    );
+  }
+}
+
 class _WidgetTile extends StatelessWidget {
   final WidgetItem item;
   final WidgetCard? card;
@@ -376,15 +444,15 @@ class _WidgetTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
+    final tone = _toneFor(context, item.color);
     return Container(
-      decoration: BoxDecoration(color: p.card, borderRadius: BorderRadius.circular(14), border: Border.all(color: p.border)),
+      decoration: BoxDecoration(color: tone.bg, borderRadius: BorderRadius.circular(14), border: Border.all(color: tone.border)),
       padding: const EdgeInsets.all(12),
       clipBehavior: Clip.antiAlias,
       child: switch (item.type) {
-        'clock' => _Clock(display: display),
-        'note' => Text(item.text.isEmpty ? 'Empty note' : item.text, style: TextStyle(fontSize: display ? 24 : 18, color: p.text)),
-        _ => card == null ? Text('No data', style: TextStyle(color: p.muted)) : _CardBody(card: card!, money: money, display: display),
+        'clock' => _Clock(display: display, tone: tone),
+        'note' => Text(item.text.isEmpty ? 'Empty note' : item.text, style: TextStyle(fontSize: display ? 24 : 18, color: tone.text)),
+        _ => card == null ? Text('No data', style: TextStyle(color: tone.muted)) : _CardBody(card: card!, money: money, display: display, tone: tone),
       },
     );
   }
@@ -392,7 +460,8 @@ class _WidgetTile extends StatelessWidget {
 
 class _Clock extends StatefulWidget {
   final bool display;
-  const _Clock({required this.display});
+  final WidgetTone tone;
+  const _Clock({required this.display, required this.tone});
 
   @override
   State<_Clock> createState() => _ClockState();
@@ -416,7 +485,7 @@ class _ClockState extends State<_Clock> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
+    final tone = widget.tone;
     const wd = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const mo = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     final hh = _now.hour.toString().padLeft(2, '0');
@@ -427,9 +496,9 @@ class _ClockState extends State<_Clock> {
       children: [
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text('$hh:$mm', style: TextStyle(fontSize: widget.display ? 64 : 44, fontWeight: FontWeight.w700, color: p.text, fontFeatures: const [FontFeature.tabularFigures()])),
+          child: Text('$hh:$mm', style: TextStyle(fontSize: widget.display ? 64 : 44, fontWeight: FontWeight.w700, color: tone.text, fontFeatures: const [FontFeature.tabularFigures()])),
         ),
-        Text('${wd[_now.weekday - 1]}, ${_now.day} ${mo[_now.month - 1]}', style: TextStyle(color: p.muted, fontSize: widget.display ? 20 : 14)),
+        Text('${wd[_now.weekday - 1]}, ${_now.day} ${mo[_now.month - 1]}', style: TextStyle(color: tone.muted, fontSize: widget.display ? 20 : 14)),
       ],
     );
   }
@@ -439,11 +508,12 @@ class _CardBody extends StatelessWidget {
   final WidgetCard card;
   final String Function(num) money;
   final bool display;
-  const _CardBody({required this.card, required this.money, required this.display});
+  final WidgetTone tone;
+  const _CardBody({required this.card, required this.money, required this.display, required this.tone});
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
+    final p = tone;
     final big = card.bigAmount != null ? money(card.bigAmount!) : card.big;
     final scale = display ? 1.25 : 1.0;
     return Column(
@@ -496,8 +566,8 @@ class _CardBody extends StatelessWidget {
                                       child: LinearProgressIndicator(
                                         minHeight: 5,
                                         value: (r.pct!.clamp(0, 100)) / 100,
-                                        color: r.alert ? p.danger : p.primary,
-                                        backgroundColor: p.surface2,
+                                        color: r.alert ? p.danger : p.accent,
+                                        backgroundColor: p.track,
                                       ),
                                     ),
                                   ),

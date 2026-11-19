@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { formatRupiah } from './api'
+import ColorPicker from './ColorPicker.jsx'
+import { cardVars } from './widgetColors.js'
 import './widgets.css'
 
 /**
@@ -7,7 +9,7 @@ import './widgets.css'
  * Widgets page (view + edit), full-screen display mode and the TV link view.
  * Data comes from GET /api/widgets/data (or /api/tv/data) as generic "cards".
  *
- *   widgets: [{id, type, w, h, text?}]   cards: {type: {title, big, big_amount, caption, rows[], empty}}
+ *   widgets: [{id, type, w, h, text?, color?}]   cards: {type: {title, big, big_amount, caption, rows[], empty}}
  *   editing: show drag handles + controls; onChange(newWidgets) on every edit
  */
 export default function WidgetBoard({ widgets, cards, tz, catalog, editing = false, display = false, onChange }) {
@@ -34,8 +36,8 @@ export default function WidgetBoard({ widgets, cards, tz, catalog, editing = fal
       {widgets.map((w, i) => (
         <div
           key={w.id}
-          className={`wb-item ${dragId === w.id ? 'dragging' : ''} ${overId === w.id && dragId !== w.id ? 'over' : ''}`}
-          style={{ '--w': w.w, '--h': w.h }}
+          className={`wb-item ${w.color ? 'colored' : ''} ${dragId === w.id ? 'dragging' : ''} ${overId === w.id && dragId !== w.id ? 'over' : ''}`}
+          style={{ '--w': w.w, '--h': w.h, ...cardVars(w.color) }}
           draggable={editing}
           onDragStart={e => { setDragId(w.id); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', w.id) } catch { /* ignore */ } }}
           onDragOver={e => { if (editing && dragId) { e.preventDefault(); setOverId(w.id) } }}
@@ -53,6 +55,7 @@ export default function WidgetBoard({ widgets, cards, tz, catalog, editing = fal
               <button type="button" className="icon-btn" onClick={() => patch(w.id, { w: Math.min(12, w.w + 1) })} aria-label="Wider" title="Wider">+</button>
               <button type="button" className="icon-btn" onClick={() => patch(w.id, { h: Math.max(1, w.h - 1) })} aria-label="Shorter" title="Shorter">▁</button>
               <button type="button" className="icon-btn" onClick={() => patch(w.id, { h: Math.min(4, w.h + 1) })} aria-label="Taller" title="Taller">█</button>
+              <ColorPicker value={w.color || ''} onChange={color => patch(w.id, { color })} label={`${label(w.type)} colour`} />
               <button type="button" className="icon-btn danger" onClick={() => remove(w.id)} aria-label={`Remove ${label(w.type)}`} title="Remove">✕</button>
             </div>
           )}

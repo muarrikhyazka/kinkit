@@ -24,6 +24,27 @@ func TestNormalizeLayout(t *testing.T) {
 	}
 }
 
+func TestNormalizeLayoutColors(t *testing.T) {
+	out, err := normalizeLayout([]byte(`{"background":"#112233","widgets":[{"id":"a","type":"clock","w":3,"h":1,"color":"#FF8800"},{"id":"b","type":"note","w":3,"h":1,"color":"red"}]}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var l struct {
+		Background string             `json:"background"`
+		Widgets    []widgetLayoutItem `json:"widgets"`
+	}
+	if err := json.Unmarshal(out, &l); err != nil {
+		t.Fatal(err)
+	}
+	if l.Background != "#112233" || l.Widgets[0].Color != "#ff8800" || l.Widgets[1].Color != "" {
+		t.Fatalf("colors not normalized: %+v", l)
+	}
+	out, _ = normalizeLayout([]byte(`{"background":"javascript:x","widgets":[]}`))
+	if string(out) != `{"widgets":[]}` {
+		t.Fatalf("bad background kept: %s", out)
+	}
+}
+
 func TestWidgetBoardsAndTV(t *testing.T) {
 	_, srv := newTestServer(t)
 	owner := newClient(t, srv)

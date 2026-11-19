@@ -11,44 +11,16 @@ import '../widgets/async_view.dart';
 import '../widgets/k_app_bar.dart';
 import '../widgets/mascot.dart';
 import 'calendar_screen.dart';
-import 'list_detail_screen.dart';
-import 'meal_plan_screen.dart';
+import 'home_actions.dart';
 
-/// Home section: Reminders / Calendar / Chores / Lists / Meals (web: /reminders,
-/// /calendar, /home/chores, /home/lists, /home/meals; the phone keeps reminders as a
-/// Home tab), backed by backend-go/reminders.go, chores.go, lists.go and
-/// meal_plan.go.
-class HouseholdScreen extends StatelessWidget {
-  const HouseholdScreen({super.key});
+/// Reminders destination (web: /reminders): next 7 days / all / calendar
+/// segments, backed by backend-go/reminders.go.
+class RemindersScreen extends StatelessWidget {
+  const RemindersScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 5,
-      child: Scaffold(
-        appBar: kAppBar(
-          context,
-          'Home',
-          bottom: const TabBar(
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            tabs: [Tab(text: 'Reminders'), Tab(text: 'Calendar'), Tab(text: 'Chores'), Tab(text: 'Lists'), Tab(text: 'Meals')],
-          ),
-        ),
-        body: const TabBarView(children: [RemindersTab(), CalendarTab(), ChoresTab(), ListsTab(), MealsTab()]),
-      ),
-    );
-  }
-}
-
-Future<void> _run(BuildContext context, WidgetRef ref, Future<void> Function() call, String ok) async {
-  try {
-    await call();
-    invalidateHome(ref);
-    if (context.mounted && ok.isNotEmpty) showSnack(context, ok);
-  } catch (e) {
-    if (context.mounted) showSnack(context, '$e', error: true);
-  }
+  Widget build(BuildContext context) =>
+      Scaffold(appBar: kAppBar(context, 'Reminders'), body: const RemindersTab());
 }
 
 // ============================================================ reminders
@@ -207,7 +179,7 @@ class _UpcomingReminders extends ConsumerWidget {
                                       PopupMenuButton<String>(
                                         tooltip: 'Snooze',
                                         icon: const Icon(Icons.snooze),
-                                        onSelected: (v) => _run(
+                                        onSelected: (v) => runHomeAction(
                                             context,
                                             ref,
                                             () => v == 'tomorrow' ? api.reminderSnoozeTomorrow(o.id) : api.reminderSnooze(o.id),
@@ -220,7 +192,7 @@ class _UpcomingReminders extends ConsumerWidget {
                                       IconButton(
                                         tooltip: 'Done',
                                         icon: const Icon(Icons.check),
-                                        onPressed: () => _run(context, ref, () => api.reminderDone(o.id), 'Done'),
+                                        onPressed: () => runHomeAction(context, ref, () => api.reminderDone(o.id), 'Done'),
                                       ),
                                     ],
                                   )
@@ -290,11 +262,11 @@ class _AllReminders extends ConsumerWidget {
                                     tooltip: 'Reminder actions',
                                     onSelected: (v) async {
                                       if (v == 'toggle') {
-                                        await _run(context, ref, () => api.setReminderActive(r.id, !r.active),
+                                        await runHomeAction(context, ref, () => api.setReminderActive(r.id, !r.active),
                                             r.active ? 'Paused' : 'Resumed');
                                       } else if (v == 'delete') {
                                         if (await confirmDialog(context, title: 'Delete "${r.title}"?') && context.mounted) {
-                                          await _run(context, ref, () => api.deleteReminder(r.id), 'Deleted');
+                                          await runHomeAction(context, ref, () => api.deleteReminder(r.id), 'Deleted');
                                         }
                                       }
                                     },
@@ -602,7 +574,7 @@ class _NewReminderSheetState extends ConsumerState<NewReminderSheet> {
         const SizedBox(height: 12),
         TextField(controller: _notes, decoration: const InputDecoration(labelText: 'Notes (optional)')),
         const SizedBox(height: 8),
-        Text("Also sent to your family's Telegram/Discord chat when a bot is connected.",
+        Text("Also sent to your family's family chat (Telegram, Discord, Slack or Matrix) when a bot is connected.",
             style: TextStyle(color: p.muted, fontSize: 12)),
         if (_error != null) ...[
           const SizedBox(height: 12),
@@ -625,193 +597,6 @@ class _NewReminderSheetState extends ConsumerState<NewReminderSheet> {
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
       child: SingleChildScrollView(child: _picking ? _gallery(context) : _form(context)),
-    );
-  }
-}
-
-// ============================================================ chores
-
-class ChoresTab extends ConsumerWidget {
-  const ChoresTab({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final value = ref.watch(choresTodayProvider);
-    final me = ref.watch(meProvider);
-    final api = ref.read(apiProvider);
-    final p = context.palette;
-
-    Widget tile(ChoreInstance c, {bool approval = false}) {
-      final mine = c.memberId == null || c.memberId == me?.memberId;
-      final canAct = c.id != 0 && !c.projected;
-      Widget? trailing;
-      if (canAct && approval) {
-        trailing = Row(mainAxisSize: MainAxisSize.min, children: [
-          IconButton(
-            tooltip: 'Send back',
-            icon: Icon(Icons.undo, color: p.muted),
-            onPressed: () => _run(context, ref, () => api.choreAction(c.id, 'reject'), 'Sent back'),
-          ),
-          IconButton(
-            tooltip: 'Approve',
-            icon: Icon(Icons.thumb_up_alt_outlined, color: p.success),
-            onPressed: () => _run(context, ref, () => api.choreAction(c.id, 'approve'), 'Approved'),
-          ),
-        ]);
-      } else if (canAct && !c.done && !c.submitted && (mine || (me?.canManage ?? false))) {
-        trailing = c.requiresPhoto
-            ? Tooltip(message: 'Needs a photo - finish it on the web', child: Icon(Icons.photo_camera_outlined, color: p.muted))
-            : FilledButton.tonal(
-                onPressed: () => _run(context, ref, () => api.choreAction(c.id, 'complete'), 'Nice work!'),
-                child: const Text('Done'),
-              );
-      } else if (canAct && (c.done || c.submitted)) {
-        trailing = IconButton(
-          tooltip: 'Undo',
-          icon: const Icon(Icons.undo),
-          onPressed: () => _run(context, ref, () => api.choreAction(c.id, 'undo'), 'Undone'),
-        );
-      }
-      return ListTile(
-        leading: Icon(
-          c.done ? Icons.check_circle : (c.submitted ? Icons.hourglass_top : Icons.radio_button_unchecked),
-          color: c.done ? p.success : (c.overdue ? p.danger : (c.submitted ? p.warning : p.muted)),
-        ),
-        title: Text(c.label, style: TextStyle(decoration: c.done ? TextDecoration.lineThrough : null)),
-        subtitle: Text([
-          if (c.memberName.isNotEmpty) c.memberName else 'Anyone',
-          if (c.points > 0) '+${c.points} pts',
-          if (c.submitted) 'waiting for approval',
-          if (c.overdue) 'overdue',
-          if (c.dueTime != null) 'by ${c.dueTime}',
-        ].join(' · ')),
-        trailing: trailing,
-      );
-    }
-
-    return PullToRefresh(
-      onRefresh: () async {
-        ref.invalidate(choresTodayProvider);
-        await ref.read(choresTodayProvider.future);
-      },
-      child: AsyncView<ChoresToday>(
-        value: value,
-        onRetry: () => ref.invalidate(choresTodayProvider),
-        builder: (d) => ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 32),
-          children: [
-            Card(
-              child: ListTile(
-                leading: Icon(Icons.cleaning_services_rounded, size: 28, color: p.primary),
-                title: Text('This week: ${d.week.done}/${d.week.total} done'),
-                subtitle: Text('+${d.week.points} chore points'),
-              ),
-            ),
-            if (d.waiting.isNotEmpty) ...[
-              SectionTitle('Waiting for approval (${d.waiting.length})'),
-              Card(child: Column(children: [for (final c in d.waiting) tile(c, approval: true)])),
-            ],
-            const SectionTitle('Today'),
-            if (d.items.isEmpty)
-              const EmptyState(mascot: MascotPose.relax, title: 'No chores today', message: 'Nothing to do. Nice!')
-            else
-              Card(child: Column(children: [for (final c in d.items) tile(c)])),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-              child: Text('Create and schedule chores on the web.', style: TextStyle(color: p.muted, fontSize: 12)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ============================================================ lists
-
-class ListsTab extends ConsumerWidget {
-  const ListsTab({super.key});
-
-  Future<void> _newList(BuildContext context, WidgetRef ref) async {
-    final ctrl = TextEditingController();
-    final name = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('New list'),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          textCapitalization: TextCapitalization.sentences,
-          decoration: const InputDecoration(hintText: 'Groceries'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, ctrl.text.trim()), child: const Text('Create')),
-        ],
-      ),
-    );
-    if (name == null || name.isEmpty || !context.mounted) return;
-    await _run(context, ref, () => ref.read(apiProvider).createList(name), 'List created');
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final value = ref.watch(listsProvider);
-    final canCreate = ref.watch(meProvider)?.canManage ?? false;
-    final p = context.palette;
-    return Scaffold(
-      floatingActionButton: canCreate
-          ? FloatingActionButton.extended(
-              heroTag: 'add-list',
-              onPressed: () => _newList(context, ref),
-              icon: const Icon(Icons.playlist_add),
-              label: const Text('List'),
-            )
-          : null,
-      body: PullToRefresh(
-        onRefresh: () async {
-          ref.invalidate(listsProvider);
-          await ref.read(listsProvider.future);
-        },
-        child: AsyncView<List<ShoppingList>>(
-          value: value,
-          onRetry: () => ref.invalidate(listsProvider),
-          builder: (lists) {
-            final active = lists.where((l) => !l.archived).toList();
-            if (active.isEmpty) {
-              return ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: const [EmptyState(icon: Icons.checklist_outlined, title: 'No lists yet')],
-              );
-            }
-            return ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(top: 8, bottom: 96),
-              children: [
-                for (final l in active)
-                  Card(
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: p.primaryLight,
-                        child: Icon(Icons.shopping_cart_outlined, color: p.primary),
-                      ),
-                      title: Text(l.name),
-                      subtitle: Text([
-                        '${l.openCount} to get',
-                        if (l.checkedCount > 0) '${l.checkedCount} in cart',
-                        if (l.store.isNotEmpty) l.store,
-                      ].join(' · ')),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => Navigator.of(context)
-                          .push(MaterialPageRoute<void>(builder: (_) => ListDetailScreen(listId: l.id, title: l.label))),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
-      ),
     );
   }
 }

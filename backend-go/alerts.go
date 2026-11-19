@@ -38,6 +38,9 @@ var (
 // sendChatMessage posts text to a Telegram chat or Discord channel using the
 // integration's own bot token. The token never appears in returned errors.
 func sendChatMessage(ctx context.Context, platform, token, chatID, text string) error {
+	if platform == "slack" || platform == "matrix" {
+		return sendSlackOrMatrix(ctx, platform, token, chatID, chatMessage{Text: text})
+	}
 	var req *http.Request
 	var err error
 	switch platform {
@@ -181,7 +184,7 @@ func (app *App) checkAccountAlerts(ctx context.Context, aid int64, currency stri
 	year, month := now.Year(), int(now.Month())
 	from, to := monthRange(year, month)
 
-	chRows, err := app.DB.Query(ctx, `SELECT platform, platform_token, chat_id FROM integrations
+	chRows, err := app.DB.Query(ctx, `SELECT platform, CASE WHEN platform='matrix' THEN COALESCE(extra,'')||' '||platform_token ELSE platform_token END, chat_id FROM integrations
 	  WHERE account_id=$1 AND enabled AND COALESCE(chat_id,'') <> '' AND COALESCE(platform_token,'') <> '' ORDER BY id`, aid)
 	if err != nil {
 		return 0, err

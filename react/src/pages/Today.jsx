@@ -123,7 +123,7 @@ export default function Today() {
         <div className="card today-empty">
           <Mascot pose="relax" size={120} />
           <p><strong>All clear for today.</strong></p>
-          <p className="muted">Add <Link to="/reminders">reminders</Link>, <Link to="/home/chores">chores</Link> or a <Link to="/home/lists">shopping list</Link> and they will show up here.</p>
+          <p className="muted">Add <Link to="/reminders">reminders</Link>, <Link to="/chores">chores</Link> or a <Link to="/lists">shopping list</Link> and they will show up here.</p>
         </div>
       ) : (
         <div className="today-grid">

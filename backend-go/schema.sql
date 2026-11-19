@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS savings_list (
 CREATE TABLE IF NOT EXISTS integrations (
     id BIGSERIAL PRIMARY KEY,
     account_id BIGINT NOT NULL REFERENCES users(id),
-    platform TEXT NOT NULL CHECK(platform IN ('telegram','discord')),
+    platform TEXT NOT NULL,
     bot_token TEXT NOT NULL UNIQUE,
     platform_token TEXT,
     chat_id TEXT,
@@ -384,6 +384,14 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS timezone TEXT NOT NULL DEFAULT 'UTC';
 -- Chat accounts linked to members (bot actor, see home_contract.go).
 ALTER TABLE members ADD COLUMN IF NOT EXISTS telegram_user_id TEXT;
 ALTER TABLE members ADD COLUMN IF NOT EXISTS discord_user_id TEXT;
+ALTER TABLE members ADD COLUMN IF NOT EXISTS slack_user_id TEXT;
+ALTER TABLE members ADD COLUMN IF NOT EXISTS matrix_user_id TEXT;
+-- Slack needs a second secret (app-level token), Matrix needs the homeserver URL.
+ALTER TABLE integrations ADD COLUMN IF NOT EXISTS extra TEXT;
+-- the platform list grew past telegram/discord: swap the old CHECKs
+ALTER TABLE integrations DROP CONSTRAINT IF EXISTS integrations_platform_check;
+ALTER TABLE integrations DROP CONSTRAINT IF EXISTS integrations_platform_ok;
+ALTER TABLE integrations ADD CONSTRAINT integrations_platform_ok CHECK (platform IN ('telegram','discord','slack','matrix'));
 -- === end home (shared) ===
 
 -- === reminders ===
@@ -459,6 +467,9 @@ CREATE TABLE IF NOT EXISTS digest_settings (
     time_of_day TEXT NOT NULL DEFAULT '07:00',
     channel TEXT NOT NULL DEFAULT 'all' CHECK (channel IN ('all','telegram','discord'))
 );
+ALTER TABLE digest_settings DROP CONSTRAINT IF EXISTS digest_settings_channel_check;
+ALTER TABLE digest_settings DROP CONSTRAINT IF EXISTS digest_settings_channel_ok;
+ALTER TABLE digest_settings ADD CONSTRAINT digest_settings_channel_ok CHECK (channel IN ('all','telegram','discord','slack','matrix'));
 -- one digest per household per local day (claimed before sending)
 CREATE TABLE IF NOT EXISTS digest_sends (
     account_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,

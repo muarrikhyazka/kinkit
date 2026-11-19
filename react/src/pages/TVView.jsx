@@ -6,6 +6,7 @@ import { Skeleton } from '../Skeleton.jsx'
 import { useAuth } from '../AuthContext.jsx'
 import { KinkitLogo } from '../icons.jsx'
 import WidgetBoard from '../WidgetBoard.jsx'
+import { backdropStyle, normalizeHex } from '../widgetColors.js'
 import '../widgets.css'
 
 const REFRESH_MS = 60_000 // auto-refresh for an always-on screen (TV/car head unit)
@@ -38,7 +39,7 @@ export default function TVView({ token }) {
             if (d.currency) setCurrency(d.currency)
             setFamily((d.household_name || d.display_name || '').trim())
             setReport(d.report); setTrend(d.trend); setPeriod({ year: d.year, month: d.month }); setError('')
-            setBoard(d.board ? { name: d.board.name, widgets: d.board.layout?.widgets || [], cards: d.cards || {}, timezone: d.timezone } : null)
+            setBoard(d.board ? { name: d.board.name, widgets: d.board.layout?.widgets || [], background: normalizeHex(d.board.layout?.background), cards: d.cards || {}, timezone: d.timezone } : null)
           })
           .catch(e => {
             setError(e.status === 401 ? 'This TV link is invalid or was revoked. Create a new one under Data & devices.' : e.message)
@@ -72,7 +73,7 @@ export default function TVView({ token }) {
   const familyName = token ? family : (auth?.user?.household_name || auth?.user?.display_name || '').trim()
   if (board) {
     return (
-      <div className="tv-view tv-board">
+      <div className={`tv-view tv-board ${board.background ? 'has-bg' : ''}`} style={backdropStyle(board.background)}>
         <div className="tv-header">
           <div className="tv-brand-row">
             <KinkitLogo className="tv-logo" aria-hidden="true" />

@@ -279,7 +279,7 @@ function ReminderModal({ initial, template, members, chatHint, onClose, onSaved 
   )
 }
 
-/** Link this member's Telegram/Discord account so reminders can mention them. */
+/** Link this member's Telegram/Discord/Slack/Matrix account so reminders can mention them. */
 function ChatLinkCard({ status }) {
   const toast = useToast()
   const [code, setCode] = useState(null)
@@ -292,7 +292,7 @@ function ChatLinkCard({ status }) {
   async function unlink(platform) {
     try { await remindersApi.unlinkChat(platform); toast.success('Unlinked'); status.reload() } catch (err) { toast.error(err.message) }
   }
-  const linked = [s.telegram_linked && 'telegram', s.discord_linked && 'discord'].filter(Boolean)
+  const linked = ['telegram', 'discord', 'slack', 'matrix'].filter(p => s[`${p}_linked`])
 
   return (
     <div className="card">
@@ -312,6 +312,9 @@ function ChatLinkCard({ status }) {
             <code>{code.command}</code>
             <button className="icon-btn" onClick={() => { navigator.clipboard?.writeText(code.command); toast.success('Copied') }} aria-label="Copy command"><IconCopy width={13} height={13} /></button>
           </div>
+          {(s.bots.includes('slack') || s.bots.includes('matrix')) && (
+            <p className="muted">In Slack and Matrix, send <code>{code.command.replace(/^\//, '!')}</code> instead (those apps reserve <code>/</code>).</p>
+          )}
         </div>
       ) : (
         <button className="secondary" onClick={makeCode}>Link my chat account</button>
@@ -320,7 +323,7 @@ function ChatLinkCard({ status }) {
   )
 }
 
-const platformName = p => (p === 'telegram' ? 'Telegram' : p === 'discord' ? 'Discord' : p)
+const platformName = p => ({ telegram: 'Telegram', discord: 'Discord', slack: 'Slack', matrix: 'Matrix' }[p] || p)
 
 export default function Reminders() {
   const { user } = useAuth()
@@ -357,8 +360,8 @@ export default function Reminders() {
 
   const bots = chat.data?.bots || []
   const chatHint = bots.length > 0
-    ? `Sent to your family's ${bots.map(platformName).join(' and ')} chat with Done and Snooze buttons, and shown on Today.`
-    : 'Shown here and on Today. Connect Telegram or Discord to get them in your family chat too.'
+    ? `Sent to your family's ${bots.map(platformName).join(', ')} chat with Done and Snooze buttons (Matrix: reply with !rem <id> done), and shown on Today.`
+    : 'Shown here and on Today. Connect Telegram, Discord, Slack or Matrix to get them in your family chat too.'
 
   const items = upcoming.data?.items || []
   const todayKey = upcoming.data?.today

@@ -11,6 +11,7 @@ import 'mascot.dart';
 import 'models.dart';
 import 'money.dart';
 import 'board_page.dart';
+import 'widget_colors.dart';
 import 'pages.dart';
 import 'settings_screen.dart';
 import 'store.dart';
@@ -300,7 +301,7 @@ class _ViewerScreenState extends State<ViewerScreen> {
               return null;
             }),
           },
-          child: TvCanvas(child: d == null ? _emptyState() : _dashboard(d)),
+          child: TvCanvas(background: parseHexColor(d?.board?.background), child: d == null ? _emptyState() : _dashboard(d)),
         ),
       ),
     );
@@ -350,7 +351,7 @@ class _ViewerScreenState extends State<ViewerScreen> {
         ),
       ),
       const SizedBox(height: 10),
-      _footer(pages.length, page),
+      _footer(pages.length, page, parseHexColor(d.board?.background)),
     ]);
   }
 
@@ -391,7 +392,8 @@ class _ViewerScreenState extends State<ViewerScreen> {
     );
   }
 
-  Widget _footer(int count, int current) {
+  Widget _footer(int count, int current, Color? backdrop) {
+    final tone = backdrop == null ? null : WidgetTone.on(backdrop);
     final updated = _updatedAt == null ? '' : 'Updated ${DateFormat('HH:mm').format(_updatedAt!)}';
     return SizedBox(
       height: 18,
@@ -403,15 +405,15 @@ class _ViewerScreenState extends State<ViewerScreen> {
             width: i == current ? 22 : 8,
             height: 8,
             decoration: BoxDecoration(
-              color: i == current ? TvColors.primary : TvColors.border,
+              color: i == current ? (tone?.text ?? TvColors.primary) : (tone?.track ?? TvColors.border),
               borderRadius: BorderRadius.circular(4),
             ),
           ),
         const SizedBox(width: 10),
-        Text(updated, style: const TextStyle(fontSize: 12, color: TvColors.muted)),
+        Text(updated, style: TextStyle(fontSize: 12, color: tone?.muted ?? TvColors.muted)),
         const Spacer(),
-        const Text('Left/Right: page   OK: pause   Hold BACK / MENU: settings',
-            style: TextStyle(fontSize: 12, color: TvColors.muted)),
+        Text('Left/Right: page   OK: pause   Hold BACK / MENU: settings',
+            style: TextStyle(fontSize: 12, color: tone?.muted ?? TvColors.muted)),
       ]),
     );
   }

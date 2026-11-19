@@ -5,6 +5,11 @@ import '../state/providers.dart';
 import '../theme.dart';
 import '../widgets/async_view.dart';
 import '../widgets/k_app_bar.dart';
+import 'calendar_page.dart';
+import 'chores_screen.dart';
+import 'family_screen.dart';
+import 'lists_screen.dart';
+import 'meals_screen.dart';
 import 'settings_screen.dart';
 import 'widgets_screen.dart';
 
@@ -22,7 +27,8 @@ String _roleLabel(String role) {
   return role;
 }
 
-/// "More": profile, widgets, settings and logout (web nav "Widgets" / "Settings").
+/// "More": profile, the Family group (Family, Chores, Lists, Meals, Widgets,
+/// Calendar), settings and logout (web sidebar "Family" group / "Settings").
 class MoreScreen extends ConsumerWidget {
   const MoreScreen({super.key});
 
@@ -64,10 +70,35 @@ class MoreScreen extends ConsumerWidget {
                 isThreeLine: true,
               ),
             ),
-          const SectionTitle('App'),
+          const SectionTitle('Family'),
           Card(
             child: Column(
               children: [
+                ListTile(
+                  leading: const Icon(Icons.family_restroom_outlined),
+                  title: const Text('Family'),
+                  subtitle: const Text('Members, points and achievements'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _open(context, const FamilyScreen()),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.checklist_outlined),
+                  title: const Text('Chores'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _open(context, const ChoresScreen()),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.list_alt_outlined),
+                  title: const Text('Lists'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _open(context, const ListsScreen()),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.restaurant_outlined),
+                  title: const Text('Meals'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _open(context, const MealsScreen()),
+                ),
                 ListTile(
                   leading: const Icon(Icons.dashboard_customize_outlined),
                   title: const Text('Widgets'),
@@ -75,6 +106,20 @@ class MoreScreen extends ConsumerWidget {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _open(context, const WidgetsScreen()),
                 ),
+                ListTile(
+                  leading: const Icon(Icons.calendar_month_outlined),
+                  title: const Text('Calendar'),
+                  subtitle: const Text('Activities and reminders'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _open(context, const CalendarScreen()),
+                ),
+              ],
+            ),
+          ),
+          const SectionTitle('App'),
+          Card(
+            child: Column(
+              children: [
                 ListTile(
                   leading: const Icon(Icons.settings_outlined),
                   title: const Text('Settings'),

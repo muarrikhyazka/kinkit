@@ -60,6 +60,8 @@ function HouseholdTimeCard() {
             <option value="all">All connected chats</option>
             <option value="telegram">Telegram</option>
             <option value="discord">Discord</option>
+            <option value="slack">Slack</option>
+            <option value="matrix">Matrix</option>
           </select>
         </label>
       </div>

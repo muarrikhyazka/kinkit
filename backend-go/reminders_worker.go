@@ -186,23 +186,28 @@ func (app *App) markMissed(ctx context.Context, now time.Time) (int, error) {
 }
 
 type dueOcc struct {
-	id, aid       int64
-	status        string
-	prevSentAt    *time.Time
-	dueAt         time.Time
-	title, notes  string
-	assignee      *int64
-	escalateTo    *int64
-	channels      []string
-	tz            string
-	tgUser, dcUsr *string // assignee's linked chat ids (or escalate_to's, for escalation)
-	who           string
+	id, aid                     int64
+	status                      string
+	prevSentAt                  *time.Time
+	dueAt                       time.Time
+	title, notes                string
+	assignee                    *int64
+	escalateTo                  *int64
+	channels                    []string
+	tz                          string
+	tgUser, dcUsr, slUsr, mxUsr *string // assignee's linked chat ids (or escalate_to's, for escalation)
+	who                         string
 }
 
 func (d dueOcc) mention(platform string) string {
 	p := d.tgUser
-	if platform == "discord" {
+	switch platform {
+	case "discord":
 		p = d.dcUsr
+	case "slack":
+		p = d.slUsr
+	case "matrix":
+		p = d.mxUsr
 	}
 	if p == nil {
 		return ""
@@ -239,7 +244,7 @@ func (app *App) deliver(ctx context.Context, channels []alertChannel, mk func(pl
 // ended). Returns how many were marked sent.
 func (app *App) sendDueReminders(ctx context.Context, now time.Time) (int, error) {
 	rows, err := app.DB.Query(ctx, `SELECT o.id, o.account_id, o.status, o.sent_at, o.due_at, r.title, r.notes, r.assignee_id, r.channels, u.timezone,
-	    m.telegram_user_id, m.discord_user_id, COALESCE(NULLIF(m.display_name,''), split_part(m.email,'@',1), '')
+	    m.telegram_user_id, m.discord_user_id, m.slack_user_id, m.matrix_user_id, COALESCE(NULLIF(m.display_name,''), split_part(m.email,'@',1), '')
 	  FROM reminder_occurrences o JOIN reminders r ON r.id=o.reminder_id JOIN users u ON u.id=o.account_id
 	  LEFT JOIN members m ON m.id=r.assignee_id
 	  WHERE r.active AND ((o.status='pending' AND o.due_at <= $1) OR (o.status='snoozed' AND o.snoozed_until <= $1))
@@ -251,7 +256,7 @@ func (app *App) sendDueReminders(ctx context.Context, now time.Time) (int, error
 	for rows.Next() {
 		var d dueOcc
 		if err := rows.Scan(&d.id, &d.aid, &d.status, &d.prevSentAt, &d.dueAt, &d.title, &d.notes, &d.assignee, &d.channels, &d.tz,
-			&d.tgUser, &d.dcUsr, &d.who); err != nil {
+			&d.tgUser, &d.dcUsr, &d.slUsr, &d.mxUsr, &d.who); err != nil {
 			rows.Close()
 			return 0, err
 		}
@@ -313,7 +318,7 @@ func reminderText(d dueOcc, loc *time.Location) string {
 // stays unacknowledged escalate_after_minutes after it was sent.
 func (app *App) escalateReminders(ctx context.Context, now time.Time) (int, error) {
 	rows, err := app.DB.Query(ctx, `SELECT o.id, o.account_id, o.due_at, r.title, r.assignee_id, r.escalate_to, u.timezone,
-	    e.telegram_user_id, e.discord_user_id, COALESCE(NULLIF(e.display_name,''), split_part(e.email,'@',1)),
+	    e.telegram_user_id, e.discord_user_id, e.slack_user_id, e.matrix_user_id, COALESCE(NULLIF(e.display_name,''), split_part(e.email,'@',1)),
 	    COALESCE(NULLIF(a.display_name,''), split_part(a.email,'@',1), '')
 	  FROM reminder_occurrences o JOIN reminders r ON r.id=o.reminder_id JOIN users u ON u.id=o.account_id
 	  JOIN members e ON e.id=r.escalate_to
@@ -333,7 +338,7 @@ func (app *App) escalateReminders(ctx context.Context, now time.Time) (int, erro
 	for rows.Next() {
 		var e esc
 		if err := rows.Scan(&e.d.id, &e.d.aid, &e.d.dueAt, &e.d.title, &e.d.assignee, &e.d.escalateTo, &e.d.tz,
-			&e.d.tgUser, &e.d.dcUsr, &e.escName, &e.assignee); err != nil {
+			&e.d.tgUser, &e.d.dcUsr, &e.d.slUsr, &e.d.mxUsr, &e.escName, &e.assignee); err != nil {
 			rows.Close()
 			return 0, err
 		}

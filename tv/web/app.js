@@ -159,9 +159,10 @@
         var wx = lay[wi] || {};
         ws.push({ id: String(wx.id || wi), type: String(wx.type || ''),
           w: Math.max(1, Math.min(12, toInt(wx.w) || 4)), h: Math.max(1, Math.min(4, toInt(wx.h) || 2)),
-          text: typeof wx.text === 'string' ? wx.text : '' });
+          text: typeof wx.text === 'string' ? wx.text : '', color: cleanHex(wx.color) });
       }
       d.board = { name: String(json.board.name || ''), widgets: ws,
+        background: cleanHex(json.board.layout && json.board.layout.background),
         cards: (json.cards && typeof json.cards === 'object') ? json.cards : {} };
     }
     for (var i = 0; i < list.length; i++) {
@@ -561,6 +562,7 @@
           '</p><p class="c-acc">Hold BACK or press RED for settings</p></div></div>'
         : '<div class="page"><div class="center-msg"><div class="spinner"></div></div></div>';
       lastPageKey = '';
+      applyBackdrop('');
       return;
     }
     money.code = d.currency;
@@ -584,8 +586,11 @@
     state.pageCount = pages.length;
     if (state.page >= pages.length) state.page = 0;
 
+    var bt = applyBackdrop(d.board ? d.board.background : '');
     var dots = '';
-    for (var p = 0; p < pages.length; p++) dots += '<span' + (p === state.page ? ' class="on"' : '') + '></span>';
+    for (var p = 0; p < pages.length; p++) {
+      dots += '<span' + (p === state.page ? ' class="on"' : '') + (bt ? ' style="background:' + (p === state.page ? bt.fg : bt.track) + '"' : '') + '></span>';
+    }
     $('v-dots').innerHTML = dots;
 
     var html = pages[state.page]();
@@ -605,30 +610,71 @@
       '</div><div class="card-value" style="color:' + color + '">' + esc(value) + '</div>' +
       (sub ? '<div class="card-sub">' + esc(sub) + '</div>' : '') + '</div>';
   }
-  function bar(ratio, color, thick) {
+  function bar(ratio, color, thick, track) {
     var w = ratio === null || isNaN(ratio) ? 0 : Math.max(0, Math.min(1, ratio));
-    return '<div class="bar' + (thick ? ' thick' : '') + '"><div style="width:' + (w * 100).toFixed(1) + '%;background:' + color + '"></div></div>';
+    return '<div class="bar' + (thick ? ' thick' : '') + '"' + (track ? ' style="background:' + track + '"' : '') + '><div style="width:' + (w * 100).toFixed(1) + '%;background:' + color + '"></div></div>';
   }
   // ---- widget board: 12-column flow grid scaled to fit the screen (same rules as
   // react/src/WidgetBoard.jsx and tv/flutter lib/src/board_page.dart) ----
+  // Widget colours (react/src/widgetColors.js): '#rrggbb' fill per widget, '#rrggbb' board backdrop.
+  // Text colour is white or near-black, whichever contrasts better; null tone = default dark look.
+  function cleanHex(v) {
+    return typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v.replace(/^\s+|\s+$/g, '')) ? v.replace(/^\s+|\s+$/g, '').toLowerCase() : '';
+  }
+  function hexRgb(h) { return [parseInt(h.substr(1, 2), 16), parseInt(h.substr(3, 2), 16), parseInt(h.substr(5, 2), 16)]; }
+  function rgbHex(a) {
+    var out = '#';
+    for (var i = 0; i < 3; i++) { var n = Math.max(0, Math.min(255, Math.round(a[i]))); out += (n < 16 ? '0' : '') + n.toString(16); }
+    return out;
+  }
+  function relLum(h) {
+    var c = hexRgb(h), k = [];
+    for (var i = 0; i < 3; i++) { var v = c[i] / 255; k.push(v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)); }
+    return 0.2126 * k[0] + 0.7152 * k[1] + 0.0722 * k[2];
+  }
+  function readableOn(h) {
+    var l = relLum(h);
+    return (l + 0.05) / (relLum('#1b1f2b') + 0.05) >= 1.05 / (l + 0.05) ? '#1b1f2b' : '#ffffff';
+  }
+  function mixHex(a, b, t) {
+    var x = hexRgb(a), y = hexRgb(b);
+    return rgbHex([x[0] + (y[0] - x[0]) * t, x[1] + (y[1] - x[1]) * t, x[2] + (y[2] - x[2]) * t]);
+  }
+  function boardTone(hex) {
+    if (!hex) return null;
+    var fg = readableOn(hex);
+    return { bg: hex, fg: fg, muted: mixHex(fg, hex, 0.32), track: mixHex(hex, fg, 0.16), border: mixHex(hex, fg, 0.14),
+      danger: fg === '#ffffff' ? '#fecaca' : '#b91c1c' };
+  }
+  function fgStyle(color) { return color ? ' style="color:' + color + '"' : ''; }
+  // Page backdrop for a board with a background colour (footer text/dots follow it).
+  function applyBackdrop(hex) {
+    var t = boardTone(hex), i;
+    document.documentElement.style.background = t ? t.bg : '';
+    document.body.style.background = t ? t.bg : '';
+    var foot = document.querySelectorAll ? document.querySelectorAll('.v-footer .muted') : [];
+    for (i = 0; i < foot.length; i++) foot[i].style.color = t ? t.muted : '';
+    return t;
+  }
   function boardMoney(idr) { return fmt(idr); }
-  function boardCard(c) {
+  function boardCard(c, tone) {
+    var mu = fgStyle(tone && tone.muted);
     var big = c.big_amount !== undefined && c.big_amount !== null ? boardMoney(toInt(c.big_amount)) : (c.big || '');
-    var html = '<div class="bw-title">' + esc(c.title || '') + '</div>';
-    if (big) html += '<div class="bw-big' + (toInt(c.big_amount) < 0 ? ' c-neg' : '') + '">' + esc(big) + '</div>';
-    if (c.caption) html += '<div class="bw-cap">' + esc(c.caption) + '</div>';
+    var html = '<div class="bw-title"' + mu + '>' + esc(c.title || '') + '</div>';
+    if (big) html += '<div class="bw-big' + (toInt(c.big_amount) < 0 ? ' c-neg' : '') + '"' + (tone && toInt(c.big_amount) < 0 ? fgStyle(tone.danger) : '') + '>' + esc(big) + '</div>';
+    if (c.caption) html += '<div class="bw-cap"' + mu + '>' + esc(c.caption) + '</div>';
     var rows = c.rows || [];
     if (!rows.length) {
-      if (!big) html += '<div class="bw-cap">' + esc(c.empty || 'Nothing to show') + '</div>';
+      if (!big) html += '<div class="bw-cap"' + mu + '>' + esc(c.empty || 'Nothing to show') + '</div>';
       return html;
     }
     html += '<div class="bw-rows">';
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i] || {};
-      html += '<div class="bw-row' + (r.done ? ' done' : '') + (r.alert ? ' alert' : '') + '"><div class="bw-line"><span class="bw-rt">' + esc(r.title || '') + '</span>' +
-        (r.amount !== undefined && r.amount !== null ? '<span class="bw-amt">' + esc(boardMoney(toInt(r.amount))) + '</span>' : '') + '</div>' +
-        (r.detail ? '<div class="bw-det">' + esc(r.detail) + '</div>' : '') +
-        (typeof r.pct === 'number' ? bar(r.pct / 100, r.alert ? '#f87171' : '#818cf8') : '') + '</div>';
+      html += '<div class="bw-row' + (r.done ? ' done' : '') + (r.alert ? ' alert' : '') + '"><div class="bw-line"><span class="bw-rt"' + (tone && r.alert ? fgStyle(tone.danger) : '') + '>' + esc(r.title || '') + '</span>' +
+        (r.amount !== undefined && r.amount !== null ? '<span class="bw-amt"' + mu + '>' + esc(boardMoney(toInt(r.amount))) + '</span>' : '') + '</div>' +
+        (r.detail ? '<div class="bw-det"' + mu + '>' + esc(r.detail) + '</div>' : '') +
+        (typeof r.pct === 'number' ? bar(r.pct / 100, tone ? (r.alert ? tone.danger : tone.fg) : (r.alert ? '#f87171' : '#818cf8'), false, tone && tone.track) : '') + '</div>';
     }
     return html + '</div>';
   }
@@ -658,12 +704,13 @@
         var x = lines[i][j];
         var width = Math.floor((W - GAP * (lines[i].length - 1)) * x.w / sum);
         var height = Math.round(x.h * unit + (x.h - 1) * GAP);
-        var inner;
-        if (x.type === 'clock') inner = '<div class="bw-clock-time" style="font-size:' + Math.max(40, Math.min(120, Math.round(height * 0.55))) + 'px" data-clock="time">--:--</div><div class="bw-clock-date" data-clock="date"></div>';
+        var inner, tone = boardTone(x.color);
+        if (x.type === 'clock') inner = '<div class="bw-clock-time" style="font-size:' + Math.max(40, Math.min(120, Math.round(height * 0.55))) + 'px" data-clock="time">--:--</div><div class="bw-clock-date"' + fgStyle(tone && tone.muted) + ' data-clock="date"></div>';
         else if (x.type === 'note') inner = '<div class="bw-note">' + esc(x.text || 'Empty note') + '</div>';
-        else if (b.cards[x.type]) inner = boardCard(b.cards[x.type]);
-        else inner = '<div class="bw-cap">No data</div>';
-        html += '<div class="bw-tile" style="width:' + width + 'px;height:' + height + 'px;margin-right:' + (j < lines[i].length - 1 ? GAP : 0) + 'px">' + inner + '</div>';
+        else if (b.cards[x.type]) inner = boardCard(b.cards[x.type], tone);
+        else inner = '<div class="bw-cap"' + fgStyle(tone && tone.muted) + '>No data</div>';
+        html += '<div class="bw-tile" style="width:' + width + 'px;height:' + height + 'px;margin-right:' + (j < lines[i].length - 1 ? GAP : 0) + 'px' +
+          (tone ? ';background:' + tone.bg + ';border-color:' + tone.border + ';color:' + tone.fg : '') + '">' + inner + '</div>';
       }
       html += '</div>';
     }

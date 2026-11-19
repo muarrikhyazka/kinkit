@@ -80,8 +80,9 @@ const tvSafePadding = EdgeInsets.symmetric(horizontal: 48, vertical: 27);
 /// screen, so the 10-foot layout is identical on 720p/1080p/4K boxes
 /// regardless of the density each box reports.
 class TvCanvas extends StatelessWidget {
-  const TvCanvas({super.key, required this.child});
+  const TvCanvas({super.key, required this.child, this.background});
   final Widget child;
+  final Color? background; // widget-board backdrop; null = default
 
   static const width = 960.0;
   static const height = 540.0;
@@ -89,7 +90,7 @@ class TvCanvas extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: TvColors.bg,
+      color: background ?? TvColors.bg,
       child: SizedBox.expand(
         child: FittedBox(
           fit: BoxFit.contain,

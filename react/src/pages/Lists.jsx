@@ -12,7 +12,7 @@ import { listsApi, formatRupiah, isRetryableError, notifySpendingChanged } from 
 import { IconPlus, IconClose, IconEdit, IconCheck } from '../icons.jsx'
 
 /**
- * Home › Lists: shared shopping lists, built for use in the store on a phone.
+ * Lists: shared shopping lists, built for use in the store on a phone.
  * - chips switch lists (?list=<id>, also what Today links to)
  * - one big add box: "eggs, 2 milk, bread x3" or a pasted multi-line list,
  *   with suggestions from what the household bought before

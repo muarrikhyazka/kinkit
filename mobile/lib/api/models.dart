@@ -591,9 +591,11 @@ class MemberGamification {
   final int pointsMonth;
   final int streakDays;
   final int bestStreak;
-  final String level;
+  final String level; // title, e.g. "Budget Buddy"
+  final int levelNumber; // 1..50, 0 when the server is too old to send it
+  final int? levelFloor; // points where this level began
   final String? nextLevel;
-  final int? nextLevelAt;
+  final int? nextLevelAt; // absent at max level
 
   const MemberGamification({
     required this.id,
@@ -603,6 +605,8 @@ class MemberGamification {
     this.streakDays = 0,
     this.bestStreak = 0,
     this.level = '',
+    this.levelNumber = 0,
+    this.levelFloor,
     this.nextLevel,
     this.nextLevelAt,
   });
@@ -615,6 +619,8 @@ class MemberGamification {
         streakDays: asInt(j['streak_days']),
         bestStreak: asInt(j['best_streak']),
         level: asString(j['level']),
+        levelNumber: asInt(j['level_number']),
+        levelFloor: asIntOrNull(j['level_floor']),
         nextLevel: asStringOrNull(j['next_level']),
         nextLevelAt: asIntOrNull(j['next_level_at']),
       );
@@ -625,17 +631,70 @@ class BadgeView {
   final String name;
   final String description;
   final String icon;
+  final String category; // money | habits | home | levels ('' on old servers)
+  final String tier; // bronze | silver | gold ('' on old servers)
+  final int target;
+  final int progress;
   final bool earned;
+  final String? earnedAt;
 
-  const BadgeView({required this.key, required this.name, this.description = '', this.icon = '', this.earned = false});
+  const BadgeView({
+    required this.key,
+    required this.name,
+    this.description = '',
+    this.icon = '',
+    this.category = '',
+    this.tier = '',
+    this.target = 0,
+    this.progress = 0,
+    this.earned = false,
+    this.earnedAt,
+  });
 
   factory BadgeView.fromJson(Json j) => BadgeView(
         key: asString(j['key']),
         name: asString(j['name']),
         description: asString(j['description']),
         icon: asString(j['icon']),
+        category: asString(j['category']),
+        tier: asString(j['tier']),
+        target: asInt(j['target']),
+        progress: asInt(j['progress']),
         earned: asBool(j['earned']),
+        earnedAt: asStringOrNull(j['earned_at']),
       );
+
+  /// 0..1 progress toward the badge target (1 when earned, 0 when there is no target).
+  double get fraction {
+    if (earned) return 1;
+    if (target <= 0) return 0;
+    return (progress / target).clamp(0.0, 1.0);
+  }
+}
+
+/// Points where level [n] begins (backend: 25 * n * (n - 1)).
+int levelFloorFor(int n) => n <= 1 ? 0 : 25 * n * (n - 1);
+
+/// Badge categories in display order with their headings.
+const kBadgeCategories = <(String, String)>[
+  ('money', 'Money'),
+  ('habits', 'Habits'),
+  ('home', 'Home'),
+  ('levels', 'Levels'),
+];
+
+/// Groups badges by category (display order); unknown or missing categories go last as "More"
+/// (or a single "Badges" group when no badge has a known category, e.g. an old server).
+List<(String, List<BadgeView>)> groupBadges(List<BadgeView> badges) {
+  final known = {for (final c in kBadgeCategories) c.$1};
+  final out = <(String, List<BadgeView>)>[];
+  for (final c in kBadgeCategories) {
+    final list = badges.where((b) => b.category == c.$1).toList();
+    if (list.isNotEmpty) out.add((c.$2, list));
+  }
+  final rest = badges.where((b) => !known.contains(b.category)).toList();
+  if (rest.isNotEmpty) out.add((rest.length == badges.length ? 'Badges' : 'More', rest));
+  return out;
 }
 
 class LeaderRow {
@@ -656,7 +715,8 @@ class LeaderRow {
 class Gamification {
   final int points; // household total
   final int streakDays;
-  final String badge;
+  final String badge; // household level title
+  final int level; // household level number (0 on old servers)
   final String? nextBadge;
   final int? nextBadgeAt;
   final MemberGamification? member;
@@ -667,6 +727,7 @@ class Gamification {
     this.points = 0,
     this.streakDays = 0,
     this.badge = '',
+    this.level = 0,
     this.nextBadge,
     this.nextBadgeAt,
     this.member,
@@ -678,6 +739,7 @@ class Gamification {
         points: asInt(j['points']),
         streakDays: asInt(j['streak_days']),
         badge: asString(j['badge']),
+        level: asInt(j['level']),
         nextBadge: asStringOrNull(j['next_badge']),
         nextBadgeAt: asIntOrNull(j['next_badge_at']),
         member: j['member'] is Map ? MemberGamification.fromJson(asJson(j['member'])) : null,
@@ -692,10 +754,22 @@ class Gamification {
   String? get myNextLevel => member != null ? member!.nextLevel : nextBadge;
   int? get myNextLevelAt => member != null ? member!.nextLevelAt : nextBadgeAt;
 
+  /// Level number (1..50); 0 when the server does not send it.
+  int get myLevelNumber => member?.levelNumber ?? level;
+  /// Points where the current level began; computed from the level number when not sent.
+  int get myLevelFloor => member?.levelFloor ?? levelFloorFor(myLevelNumber);
+  int get myPointsToNext {
+    final at = myNextLevelAt;
+    return (at == null || at <= 0) ? 0 : (at - myPoints).clamp(0, at);
+  }
+
+  /// Fraction of the way from this level's floor to the next level (1 at max level).
   double get levelProgress {
     final at = myNextLevelAt;
     if (at == null || at <= 0) return 1;
-    return (myPoints / at).clamp(0.0, 1.0);
+    final floor = myLevelFloor;
+    if (at <= floor) return 1;
+    return ((myPoints - floor) / (at - floor)).clamp(0.0, 1.0);
   }
 }
 
@@ -1382,34 +1456,76 @@ class CalendarData {
 
 // ---------------------------------------------------------------- widgets
 
-/// One widget on a board: `w` = columns of 12, `h` = rows 1-4.
+/// One widget on a board: `w` = columns of 12, `h` = rows 1-4, `color` = own
+/// fill as `#rrggbb` (null = default theme look). `extra` keeps unknown layout
+/// keys so a save round-trips them.
 class WidgetItem {
   final String id, type, text;
   final int w, h;
-  const WidgetItem({required this.id, required this.type, required this.w, required this.h, this.text = ''});
-  WidgetItem copyWith({int? w, int? h, String? text}) =>
-      WidgetItem(id: id, type: type, w: w ?? this.w, h: h ?? this.h, text: text ?? this.text);
-  factory WidgetItem.fromJson(Json j) => WidgetItem(
-        id: asString(j['id']),
-        type: asString(j['type']),
-        w: asInt(j['w'], 4).clamp(1, 12),
-        h: asInt(j['h'], 2).clamp(1, 4),
-        text: asString(j['text']),
-      );
-  Json toJson() => {'id': id, 'type': type, 'w': w, 'h': h, if (text.isNotEmpty) 'text': text};
+  final String? color;
+  final Json extra;
+  const WidgetItem({required this.id, required this.type, required this.w, required this.h, this.text = '', this.color, this.extra = const {}});
+  WidgetItem copyWith({int? w, int? h, String? text, String? color, bool clearColor = false}) => WidgetItem(
+      id: id,
+      type: type,
+      w: w ?? this.w,
+      h: h ?? this.h,
+      text: text ?? this.text,
+      color: clearColor ? null : (color ?? this.color),
+      extra: extra);
+  factory WidgetItem.fromJson(Json j) {
+    const known = {'id', 'type', 'w', 'h', 'text', 'color'};
+    final c = asString(j['color']);
+    return WidgetItem(
+      id: asString(j['id']),
+      type: asString(j['type']),
+      w: asInt(j['w'], 4).clamp(1, 12),
+      h: asInt(j['h'], 2).clamp(1, 4),
+      text: asString(j['text']),
+      color: c.isEmpty ? null : c,
+      extra: {for (final e in j.entries) if (!known.contains(e.key)) e.key: e.value},
+    );
+  }
+  Json toJson() => {
+        ...extra,
+        'id': id,
+        'type': type,
+        'w': w,
+        'h': h,
+        if (text.isNotEmpty) 'text': text,
+        if (color != null && color!.isNotEmpty) 'color': color,
+      };
 }
 
+/// A board's layout: `{background?, widgets: [...]}`; `layoutExtra` holds any
+/// other top-level layout keys so they survive a save.
 class WidgetBoard {
   final int id;
   final String name, device;
   final List<WidgetItem> widgets;
-  const WidgetBoard({required this.id, required this.name, this.device = 'any', this.widgets = const []});
-  factory WidgetBoard.fromJson(Json j) => WidgetBoard(
-        id: asInt(j['id']),
-        name: asString(j['name']),
-        device: asString(j['device'], 'any'),
-        widgets: asList(asJson(j['layout'])['widgets'], WidgetItem.fromJson),
-      );
+  final String? background;
+  final Json layoutExtra;
+  const WidgetBoard({required this.id, required this.name, this.device = 'any', this.widgets = const [], this.background, this.layoutExtra = const {}});
+  factory WidgetBoard.fromJson(Json j) {
+    final layout = asJson(j['layout']);
+    final bg = asString(layout['background']);
+    return WidgetBoard(
+      id: asInt(j['id']),
+      name: asString(j['name']),
+      device: asString(j['device'], 'any'),
+      widgets: asList(layout['widgets'], WidgetItem.fromJson),
+      background: bg.isEmpty ? null : bg,
+      layoutExtra: {for (final e in layout.entries) if (e.key != 'widgets' && e.key != 'background') e.key: e.value},
+    );
+  }
+
+  /// Layout JSON for a save (full replace on the backend): unknown keys kept,
+  /// empty background omitted.
+  static Json layoutJson(List<WidgetItem> widgets, {String? background, Json extra = const {}}) => {
+        ...extra,
+        if (background != null && background.isNotEmpty) 'background': background,
+        'widgets': widgets.map((w) => w.toJson()).toList(),
+      };
 }
 
 class WidgetTypeInfo {

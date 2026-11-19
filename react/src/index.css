@@ -169,14 +169,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
 input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--muted) 75%, transparent); }
 
 /* ---- login ---- */
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: linear-gradient(180deg, #4F46E5 0%, #4338CA 100%); /* same purple as the sidebar/top bar */
-}
 .login-card {
   width: min(360px, 100%);
   display: flex;
@@ -354,6 +346,28 @@ p .link-chevron, .muted .link-chevron { margin-top: 0; margin-bottom: 0; }
 .logout-btn { color: var(--chrome-icon); background: transparent; }
 .logout-btn:hover:not(:disabled) { background: var(--chrome-hover); color: var(--chrome-text); }
 .content { flex: 1; padding: var(--s-6); overflow-x: auto; min-width: 0; max-width: 1360px; }
+
+/* ---- hide / show the whole sidebar (desktop; the mobile layout has no sidebar) ---- */
+.app-shell { --sb-w: 232px; }
+.app-shell.sidebar-collapsed { --sb-w: 68px; }
+.app-shell.sidebar-hidden { --sb-w: 0px; }
+.sidebar { transition: width .2s ease, padding .2s ease, opacity .15s ease, visibility 0s linear 0s; }
+.sidebar-hidden .sidebar { width: 0; padding-left: 0; padding-right: 0; overflow: hidden; opacity: 0; visibility: hidden; transition: width .2s ease, padding .2s ease, opacity .15s ease, visibility 0s linear .2s; }
+.sidebar-hidden .content { max-width: 1680px; }
+.content-strip { height: 12px; }
+.sidebar-hide-toggle {
+  position: fixed; top: 8px; left: calc(var(--sb-w) + 8px); z-index: 20;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; padding: 0; border-radius: var(--r-md);
+  background: var(--card); color: var(--muted); border: 1px solid var(--border); box-shadow: var(--shadow-1);
+  transition: left .2s ease, color .15s, background-color .15s;
+}
+.sidebar-hide-toggle:hover:not(:disabled) { color: var(--primary); background: var(--primary-light); filter: none; }
+.sidebar-hide-toggle:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+@media (max-width: 640px) { .sidebar-hide-toggle, .content-strip { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .sidebar, .sidebar-hidden .sidebar, .sidebar-hide-toggle { transition: none; }
+}
 
 /* ---- page header: title + one muted line, controls right-aligned ---- */
 .page-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: var(--s-4); margin-bottom: var(--s-5); }
@@ -538,7 +552,7 @@ tbody tr:hover { background: var(--surface-2); }
 /* ---- print / PDF export ---- */
 @media print {
   .sidebar, .page-header button, .export-pdf-btn, .tabs, .pagination, .quick-add-row button,
-  .collapse-toggle, .theme-select, .theme-toggle, .logout-btn, .conn-status,
+  .collapse-toggle, .sidebar-hide-toggle, .content-strip, .theme-select, .theme-toggle, .logout-btn, .conn-status,
   .page-header-controls, .mobile-topbar, .mobile-tabbar, .fab, .toast-region, .collapsible-toggle, .skip-link { display: none !important; }
   .app-shell { display: block; }
   .content { padding: 0; overflow: visible; }

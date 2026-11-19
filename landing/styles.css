@@ -157,7 +157,7 @@ kbd, code {
 .brand:hover { color: #fff; }
 .brand svg { width: 32px; height: 32px; border-radius: 9px; box-shadow: 0 0 0 1px rgba(255,255,255,.35), 0 2px 6px rgba(20,16,80,.25); }
 .nav-links { display: flex; align-items: center; gap: var(--s-1); margin: 0 0 0 auto; padding: 0; list-style: none; }
-.nav-links a { display: block; padding: var(--s-2) var(--s-3); border-radius: var(--r-md); color: rgba(255,255,255,.88); font-weight: 500; font-size: var(--fs-sm); }
+.nav-links a { display: block; white-space: nowrap; padding: var(--s-2) var(--s-2); border-radius: var(--r-md); color: rgba(255,255,255,.88); font-weight: 500; font-size: var(--fs-sm); }
 .nav-links a:hover { color: #fff; background: var(--chrome-hover); }
 .nav-actions { display: flex; align-items: center; gap: var(--s-2); }
 .lang-toggle { display: inline-flex; padding: 2px; border-radius: var(--r-md); background: rgba(255,255,255,.12); }
@@ -181,7 +181,7 @@ kbd, code {
 .menu-btn[aria-expanded="true"] .i-close { display: block; }
 .nav-links .mobile-only { display: none; }
 
-@media (max-width: 1080px) {
+@media (max-width: 1200px) {
   .menu-btn { display: inline-flex; }
   .nav-actions .btn-signin { display: none; }
   .nav-links {
@@ -344,23 +344,17 @@ kbd, code {
 .check-list .icon { color: var(--primary); margin-top: 2px; }
 .check-list strong { display: block; font-weight: 600; }
 .check-list span { color: var(--muted); font-size: var(--fs-sm); }
-.terminal {
-  background: #0f1220; color: #e7e9f0; border-radius: var(--r-lg); overflow: hidden;
-  border: 1px solid #2a3049; box-shadow: var(--shadow-2);
-  font-family: var(--mono); font-size: var(--fs-sm);
-}
-.terminal-bar { display: flex; gap: 6px; padding: var(--s-3) var(--s-4); border-bottom: 1px solid #2a3049; align-items: center; }
-.terminal-bar i { width: 10px; height: 10px; border-radius: 50%; background: #3a4161; }
-.terminal-bar span { margin-left: var(--s-2); color: #a0a7b8; font-size: var(--fs-xs); }
-.terminal pre { margin: 0; padding: var(--s-4) var(--s-5) var(--s-5); overflow-x: auto; line-height: 1.7; white-space: pre; }
-.terminal .c { color: #7c8499; } .terminal .p { color: #a5b4fc; } .terminal .ok { color: #4ade80; }
-.export-files { list-style: none; display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); margin: var(--s-4) 0 0; padding: 0; font-family: var(--mono); font-size: var(--fs-sm); color: var(--muted); }
-.export-files li { display: inline-flex; align-items: center; gap: var(--s-2); }
-.export-files .icon { width: 16px; height: 16px; }
+.export-card { list-style: none; margin: 0; padding: var(--s-2) 0; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); }
+.export-card li { display: grid; grid-template-columns: 20px auto 1fr; gap: var(--s-3); align-items: center; padding: var(--s-4) var(--s-5); }
+.export-card li + li { border-top: 1px solid var(--border); }
+.export-card .icon { color: var(--primary); width: 20px; height: 20px; }
+.export-card code { justify-self: start; font-family: var(--mono); font-size: var(--fs-sm); font-weight: 600; }
+.export-card span { color: var(--muted); font-size: var(--fs-sm); text-align: right; }
+@media (max-width: 480px) { .export-card li { grid-template-columns: 20px 1fr; } .export-card span { grid-column: 2; text-align: left; } }
 
 /* ---------- pricing ---------- */
 .pricing { display: grid; grid-template-columns: 1fr; gap: var(--s-4); max-width: 480px; }
-@media (min-width: 960px) { .pricing { grid-template-columns: repeat(3, 1fr); max-width: none; align-items: stretch; } }
+@media (min-width: 720px) { .pricing { grid-template-columns: repeat(2, 1fr); max-width: none; align-items: stretch; } }
 .plan { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--s-6) var(--s-5); display: flex; flex-direction: column; box-shadow: var(--shadow-1); }
 .plan.featured { border: 2px solid var(--primary); padding: calc(var(--s-6) - 1px) calc(var(--s-5) - 1px); }
 .plan-label { font-size: var(--fs-xs); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--primary); margin-bottom: var(--s-2); min-height: 1.6em; }

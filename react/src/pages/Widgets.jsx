@@ -8,6 +8,8 @@ import PageHeader from '../PageHeader.jsx'
 import { SkeletonCard } from '../Skeleton.jsx'
 import { IconPlus } from '../icons.jsx'
 import WidgetBoard from '../WidgetBoard.jsx'
+import ColorPicker from '../ColorPicker.jsx'
+import { backdropStyle, normalizeHex } from '../widgetColors.js'
 import '../widgets.css'
 
 const REFRESH_MS = 60_000
@@ -26,12 +28,14 @@ export default function Widgets() {
   const boards = useApi(() => widgetsApi.boards(), [])
   const [activeId, setActiveId] = useState(null)
   const [draft, setDraft] = useState(null)   // widgets being edited (null = not editing)
+  const [draftBg, setDraftBg] = useState('')  // board background being edited
   const [display, setDisplay] = useState(false)
   const [busy, setBusy] = useState(false)
 
   const list = boards.data?.boards || []
   const board = list.find(b => b.id === activeId) || list[0]
   const widgets = draft || board?.layout?.widgets || []
+  const background = draft ? draftBg : normalizeHex(board?.layout?.background)
   const types = [...new Set(widgets.map(w => w.type))]
   const typesKey = types.join(',')
 
@@ -55,7 +59,7 @@ export default function Widgets() {
   async function saveLayout() {
     setBusy(true)
     try {
-      await widgetsApi.updateBoard(board.id, { layout: { widgets: draft } })
+      await widgetsApi.updateBoard(board.id, { layout: { ...(board.layout || {}), widgets: draft, background: draftBg } })
       setDraft(null)
       boards.reload()
       toast.success('Layout saved')
@@ -68,6 +72,7 @@ export default function Widgets() {
     if (!window.confirm(`Delete the board "${board.name}"? TV links using it go back to the month summary.`)) return
     try { await widgetsApi.removeBoard(board.id); setActiveId(null); setDraft(null); boards.reload() } catch (e) { toast.error(e.message) }
   }
+  function startEdit() { setDraftBg(normalizeHex(board.layout?.background)); setDraft(board.layout.widgets) }
   function addWidget(type) {
     const t = catalog.data?.widgets.find(w => w.type === type)
     if (!t) return
@@ -103,13 +108,15 @@ export default function Widgets() {
   }
 
   const body = (
-    <WidgetBoard widgets={widgets} cards={data.data?.cards} tz={data.data?.timezone} catalog={catalog.data?.widgets}
-      editing={!!draft} display={display} onChange={setDraft} />
+    <div className={`wb-stage ${background ? 'has-bg' : ''}`} style={backdropStyle(background)}>
+      <WidgetBoard widgets={widgets} cards={data.data?.cards} tz={data.data?.timezone} catalog={catalog.data?.widgets}
+        editing={!!draft} display={display} onChange={setDraft} />
+    </div>
   )
 
   if (display) {
     return (
-      <FullScreen name={board.name} family={data.data?.household_name} onExit={() => setDisplay(false)}>{body}</FullScreen>
+      <FullScreen name={board.name} family={data.data?.household_name} background={background} onExit={() => setDisplay(false)}>{body}</FullScreen>
     )
   }
 
@@ -126,13 +133,14 @@ export default function Widgets() {
 
       <div className="wd-toolbar">
         {!draft && <button onClick={() => setDisplay(true)}>Show full screen</button>}
-        {manager && !draft && <button className="secondary" onClick={() => setDraft(board.layout.widgets)}>Edit layout</button>}
+        {manager && !draft && <button className="secondary" onClick={startEdit}>Edit layout</button>}
         {draft && (
           <>
             <select aria-label="Add a widget" value="" onChange={e => { if (e.target.value) addWidget(e.target.value) }}>
               <option value="">+ Add a widget…</option>
               {(catalog.data?.widgets || []).map(w => <option key={w.type} value={w.type}>{w.label}</option>)}
             </select>
+            <ColorPicker value={draftBg} onChange={setDraftBg} label="Board background" buttonText="Background" className="secondary" />
             <button onClick={saveLayout} disabled={busy}>Save layout</button>
             <button className="secondary" onClick={() => setDraft(null)}>Cancel</button>
           </>
@@ -148,7 +156,7 @@ export default function Widgets() {
           </>
         )}
       </div>
-      {draft && <p className="muted" style={{ marginBottom: 'var(--s-3)' }}>Drag a widget onto another to move it, or use the arrows. − / + change the width, ▁ / █ the height.</p>}
+      {draft && <p className="muted" style={{ marginBottom: 'var(--s-3)' }}>Drag a widget onto another to move it, or use the arrows. − / + change the width, ▁ / █ the height, the dot sets a widget's colour.</p>}
       {data.error && <div className="error-box">{data.error}</div>}
       {body}
       <p className="muted" style={{ marginTop: 'var(--s-4)' }}>
@@ -170,7 +178,7 @@ function RenameInline({ board, onSave }) {
 }
 
 /** Overlay that fills the screen (and asks the browser for real full screen). */
-function FullScreen({ name, family, onExit, children }) {
+function FullScreen({ name, family, background, onExit, children }) {
   const ref = useRef(null)
   const exit = useCallback(() => { try { if (document.fullscreenElement) document.exitFullscreen() } catch { /* ignore */ } onExit() }, [onExit])
   useEffect(() => {
@@ -182,7 +190,7 @@ function FullScreen({ name, family, onExit, children }) {
     return () => { document.removeEventListener('fullscreenchange', onFs); window.removeEventListener('keydown', onKey) }
   }, [exit, onExit])
   return (
-    <div className="wb-fullscreen" ref={ref}>
+    <div className="wb-fullscreen" ref={ref} style={backdropStyle(background)}>
       <div className="wb-fullscreen-bar">
         <strong>{family || 'Kinkit'}</strong><span>· {name}</span><span className="spacer" />
         <button className="secondary small" onClick={exit}>Exit full screen</button>

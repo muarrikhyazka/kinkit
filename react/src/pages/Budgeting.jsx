@@ -64,7 +64,7 @@ function ActualNote({ kind, actual, planned }) {
   )
 }
 
-/** Small card: budget alerts via Telegram/Discord on/off + recent alerts. */
+/** Small card: budget alerts via chat on/off + recent alerts. */
 function AlertsCard() {
   const toast = useToast()
   const res = useApi(() => api.alertSettings(), [])
@@ -100,8 +100,8 @@ function AlertsCard() {
       </div>
       {ready.length === 0 ? (
         <>
-          <p className="muted">No chat connected yet. Connect Telegram or Discord (bot token + chat id) to receive alerts.</p>
-          <ChevronLink to="/settings/bots" className="standalone">Connect Telegram or Discord</ChevronLink>
+          <p className="muted">No chat connected yet. Connect a chat bot (Telegram, Discord, Slack or Matrix) to receive alerts.</p>
+          <ChevronLink to="/settings/bots" className="standalone">Connect a chat bot</ChevronLink>
         </>
       ) : (
         <p className="muted">Sending to: {ready.map(c => c.platform[0].toUpperCase() + c.platform.slice(1)).join(', ')}</p>

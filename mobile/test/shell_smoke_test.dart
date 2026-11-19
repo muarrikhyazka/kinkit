@@ -125,26 +125,21 @@ void main() {
     expect(find.text('Good morning, Budi'), findsOneWidget);
     expect(find.text('Pay electricity'), findsOneWidget);
 
-    // Home: reminders, chores, lists
-    await tester.tap(find.text('Home').last);
+    // Reminders (next 7 days / all / calendar segment)
+    await tester.tap(find.text('Reminders').last);
     await settle();
     expect(find.text('Pay electricity'), findsWidgets);
     await tester.tap(find.text('All'));
     await settle();
-    await tester.tap(find.widgetWithText(Tab, 'Calendar'));
+    await tester.tap(find.text('Calendar'));
     await settle();
     await tester.tap(find.text('Agenda'));
     await settle();
-    expect(find.text('Swim class'), findsWidgets);
-    await tester.tap(find.text('Chores'));
+
+    // Chores is its own bottom-bar destination
+    await tester.tap(find.text('Chores').last);
     await settle();
     expect(find.text('Dishes'), findsOneWidget);
-    await tester.tap(find.text('Lists'));
-    await settle();
-    expect(find.text('Groceries'), findsOneWidget);
-    await tester.tap(find.text('Meals'));
-    await settle();
-    expect(find.text('Soto ayam'), findsOneWidget);
 
     // Money: every sub-tab
     await tester.tap(find.text('Money').last);
@@ -156,18 +151,42 @@ void main() {
     }
     expect(find.text('Holiday'), findsOneWidget);
 
-    // Family and More
-    await tester.tap(find.text('Family').last);
-    await settle();
-    expect(find.text('Santoso'), findsWidgets);
+    // More > Family group: Family, Chores, Lists, Meals, Widgets, Calendar
     await tester.tap(find.text('More').last);
     await settle();
-    expect(find.text('Log out'), findsOneWidget);
-    await tester.tap(find.text('Widgets'));
+    expect(find.widgetWithText(ListTile, 'Meals'), findsOneWidget);
+    Future<void> openFromMore(String title) async {
+      final tile = find.widgetWithText(ListTile, title);
+      await tester.ensureVisible(tile);
+      await tester.tap(tile);
+      await settle();
+    }
+
+    Future<void> back() async {
+      await tester.pageBack();
+      await settle();
+    }
+
+    await openFromMore('Family');
+    expect(find.text('Santoso'), findsWidgets);
+    await back();
+    await openFromMore('Chores');
+    expect(find.text('Dishes'), findsWidgets);
+    await back();
+    await openFromMore('Lists');
+    expect(find.text('Groceries'), findsOneWidget);
+    await back();
+    await openFromMore('Meals');
+    expect(find.text('Soto ayam'), findsOneWidget);
+    await back();
+    await openFromMore('Calendar');
+    await tester.tap(find.text('Agenda'));
     await settle();
+    expect(find.text('Swim class'), findsWidgets);
+    await back();
+    await openFromMore('Widgets');
     expect(find.text('Start from a template'), findsOneWidget);
-    await tester.pageBack();
-    await settle();
+    await back();
 
     // Quick add opens from Today
     await tester.tap(find.text('Today').last);

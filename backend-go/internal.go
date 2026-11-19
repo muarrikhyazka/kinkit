@@ -33,7 +33,7 @@ func serviceAuth(app *App, h func(http.ResponseWriter, *http.Request, *App)) htt
 // {account_id, platform, bot_token, platform_token, chat_id} - this is the
 // contract bots/telegram_bot.py and bots/discord_bot.py parse directly.
 func internalListIntegrations(w http.ResponseWriter, r *http.Request, app *App) {
-	q := "SELECT account_id, platform, bot_token, platform_token, chat_id FROM integrations " +
+	q := "SELECT account_id, platform, bot_token, platform_token, chat_id, extra FROM integrations " +
 		"WHERE enabled=TRUE AND platform_token IS NOT NULL AND platform_token != ''"
 	var args []any
 	if platform := r.URL.Query().Get("platform"); platform != "" {
@@ -50,14 +50,14 @@ func internalListIntegrations(w http.ResponseWriter, r *http.Request, app *App) 
 	for rows.Next() {
 		var accountID int64
 		var platform, botToken string
-		var platformToken, chatID *string
-		if err := rows.Scan(&accountID, &platform, &botToken, &platformToken, &chatID); err != nil {
+		var platformToken, chatID, extra *string
+		if err := rows.Scan(&accountID, &platform, &botToken, &platformToken, &chatID, &extra); err != nil {
 			jsonError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 		out = append(out, map[string]any{
 			"account_id": accountID, "platform": platform, "bot_token": botToken,
-			"platform_token": platformToken, "chat_id": chatID,
+			"platform_token": platformToken, "chat_id": chatID, "extra": extra,
 		})
 	}
 	writeJSON(w, http.StatusOK, out)

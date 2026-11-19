@@ -19,16 +19,39 @@ const pointsPerLog = 10
 const streakBonusPerDay = 5 // extra points per consecutive day, capped at streakBonusCap days
 const streakBonusCap = 10
 
-// badge thresholds, ordered low to high - first one not met is "next badge"
-var badgeThresholds = []struct {
-	Points int64
-	Name   string
-}{
-	{0, "Getting Started"},
-	{50, "Tracker"},
-	{200, "Budget Buddy"},
-	{500, "Money Master"},
-	{1500, "Finance Wizard"},
+// Levels: level n starts at levelThreshold(n) points (1 -> 0, 2 -> 50,
+// 3 -> 150, 4 -> 300, 5 -> 500 ...), capped at maxLevel. Each level has a
+// title (levelTitle); the title is what older clients show as the "badge".
+const maxLevel = 50
+
+func levelThreshold(n int) int64 { return int64(25 * n * (n - 1)) }
+
+// levelFor returns the level a point total is at.
+func levelFor(points int64) int {
+	n := 1
+	for n < maxLevel && points >= levelThreshold(n+1) {
+		n++
+	}
+	return n
+}
+
+var levelTitles = []string{
+	"Getting Started", "Tracker", "Budget Rookie", "Budget Buddy", "Money Master",
+	"Savings Scout", "Wealth Builder", "Cash Commander", "Finance Pro", "Finance Wizard",
+}
+
+func levelTitle(n int) string {
+	switch {
+	case n <= len(levelTitles):
+		return levelTitles[n-1]
+	case n < 15:
+		return "Finance Wizard"
+	case n < 20:
+		return "Money Sage"
+	case n < 30:
+		return "Wealth Guru"
+	}
+	return "Legend"
 }
 
 type gamificationState struct {
@@ -36,6 +59,7 @@ type gamificationState struct {
 	StreakDays  int     `json:"streak_days"`
 	LastLogDate *string `json:"last_log_date"` // YYYY-MM-DD (UTC), null if never logged
 	Badge       string  `json:"badge"`
+	Level       int     `json:"level"`
 	NextBadge   string  `json:"next_badge,omitempty"`
 	NextBadgeAt int64   `json:"next_badge_at,omitempty"`
 }
@@ -89,17 +113,13 @@ func nextStreak(lastLog *time.Time, stored int, today time.Time) (streak int, fi
 	}
 }
 
+// currentBadge is the title of the current level plus the next level's title
+// and the points needed for it (next is "" at the top level).
 func currentBadge(points int64) (badge, next string, nextAt int64) {
-	badge = badgeThresholds[0].Name
-	for i, b := range badgeThresholds {
-		if points >= b.Points {
-			badge = b.Name
-		}
-		if points < b.Points && next == "" {
-			next = b.Name
-			nextAt = b.Points
-		}
-		_ = i
+	n := levelFor(points)
+	badge = levelTitle(n)
+	if n < maxLevel {
+		next, nextAt = levelTitle(n+1), levelThreshold(n+1)
 	}
 	return
 }
@@ -146,6 +166,7 @@ func (app *App) loadGamificationState(ctx context.Context, aid int64) gamificati
 		StreakDays:  effectiveStreak(lastLog, streak, todayUTC()),
 		LastLogDate: lastLogStr,
 		Badge:       badge,
+		Level:       levelFor(points),
 		NextBadge:   next,
 		NextBadgeAt: nextAt,
 	}

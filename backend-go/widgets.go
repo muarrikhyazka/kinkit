@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -15,7 +16,7 @@ import (
 
 // Widget boards: a named set of widgets arranged by drag and drop, shown on a
 // phone, a TV, a car screen or a monitor. A board's layout is a 12-column
-// flow grid: {"widgets":[{"id","type","w","h","text"?}]} where w is the width
+// flow grid: {"background"?,"widgets":[{"id","type","w","h","text"?,"color"?}]} where w is the width
 // in columns (1-12) and h the height in rows (1-4).
 //
 // The catalog (widget types + device presets) lives here so web, phone and TV
@@ -73,6 +74,20 @@ type widgetLayoutItem struct {
 	W    int    `json:"w"`
 	H    int    `json:"h"`
 	Text string `json:"text,omitempty"`
+	// Color is the widget's own fill as #rrggbb ("" = theme default). Clients
+	// pick a readable text colour from its brightness.
+	Color string `json:"color,omitempty"`
+}
+
+var hexColorRe = regexp.MustCompile(`^#[0-9a-fA-F]{6}$`)
+
+// cleanColor returns c lower-cased when it is #rrggbb, else "" (default).
+func cleanColor(c string) string {
+	c = strings.TrimSpace(c)
+	if !hexColorRe.MatchString(c) {
+		return ""
+	}
+	return strings.ToLower(c)
 }
 
 func presetWidgets(types ...string) []widgetLayoutItem {
@@ -156,7 +171,8 @@ func normalizeLayout(raw json.RawMessage) (json.RawMessage, error) {
 		return nil, errors.New("layout is too large")
 	}
 	var l struct {
-		Widgets []widgetLayoutItem `json:"widgets"`
+		Widgets    []widgetLayoutItem `json:"widgets"`
+		Background string             `json:"background"`
 	}
 	if err := json.Unmarshal(raw, &l); err != nil {
 		return nil, errors.New("layout must be {\"widgets\": [...]}")
@@ -176,13 +192,18 @@ func normalizeLayout(raw json.RawMessage) (json.RawMessage, error) {
 		}
 		x.W, x.H = min(max(x.W, 1), 12), min(max(x.H, 1), 4)
 		x.Text = clip(x.Text, 400)
+		x.Color = cleanColor(x.Color)
 		if x.ID == "" || seen[x.ID] || len(x.ID) > 40 {
 			x.ID = fmt.Sprintf("w%d-%d", i+1, time.Now().UnixNano()%100000)
 		}
 		seen[x.ID] = true
 		out = append(out, x)
 	}
-	return json.Marshal(map[string]any{"widgets": out})
+	res := map[string]any{"widgets": out}
+	if bg := cleanColor(l.Background); bg != "" {
+		res["background"] = bg // whole-board backdrop
+	}
+	return json.Marshal(res)
 }
 
 func (app *App) handleCreateWidgetBoard(w http.ResponseWriter, r *http.Request) {

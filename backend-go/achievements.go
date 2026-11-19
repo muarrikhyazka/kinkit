@@ -27,10 +27,12 @@ type memberGamification struct {
 	PointsMonth int64  `json:"points_month"`
 	StreakDays  int    `json:"streak_days"`
 	BestStreak  int    `json:"best_streak"`
-	Level       string `json:"level"` // points-threshold badge name (badgeThresholds)
+	Level       string `json:"level"` // title of the current level (levelTitle)
 	LevelIndex  int    `json:"level_index"`
+	LevelNumber int    `json:"level_number"` // 1..maxLevel
+	LevelFloor  int64  `json:"level_floor"`  // points where this level began
 	NextLevel   string `json:"next_level,omitempty"`
-	NextLevelAt int64  `json:"next_level_at,omitempty"`
+	NextLevelAt int64  `json:"next_level_at,omitempty"` // points where the next level begins
 }
 
 type leaderRow struct {
@@ -40,15 +42,7 @@ type leaderRow struct {
 	PointsMonth int64  `json:"points_month"`
 }
 
-func levelIndex(points int64) int {
-	idx := 0
-	for i, b := range badgeThresholds {
-		if points >= b.Points {
-			idx = i
-		}
-	}
-	return idx
-}
+func levelIndex(points int64) int { return levelFor(points) - 1 }
 
 func (app *App) loadMemberGamification(ctx context.Context, aid, mid int64, now time.Time) *memberGamification {
 	mg := &memberGamification{ID: mid}
@@ -70,6 +64,8 @@ func (app *App) loadMemberGamification(ctx context.Context, aid, mid int64, now 
 	_ = app.DB.QueryRow(ctx, "SELECT COALESCE(SUM(points),0)::bigint FROM point_events WHERE member_id=$1 AND created_at >= $2", mid, start).Scan(&mg.PointsMonth)
 	mg.Level, mg.NextLevel, mg.NextLevelAt = currentBadge(mg.Points)
 	mg.LevelIndex = levelIndex(mg.Points)
+	mg.LevelNumber = mg.LevelIndex + 1
+	mg.LevelFloor = levelThreshold(mg.LevelNumber)
 	return mg
 }
 
@@ -93,36 +89,19 @@ func (app *App) loadLeaderboard(ctx context.Context, aid int64, now time.Time) [
 	return out
 }
 
-// ---------- habit badges ----------
+// ---------- badges ----------
 
+// badgeDef describes one badge. Category groups them in the UI (money, habits,
+// home, levels); Tier (bronze/silver/gold) sets the medal colour; Target is
+// the value of the badge's metric needed to earn it (1 for one-off badges).
 type badgeDef struct {
 	Key         string `json:"key"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Icon        string `json:"icon"`
-}
-
-var badgeCatalog = []badgeDef{
-	{"first_log", "First Log", "Logged your first spending", ""},
-	{"first_budget", "First Budget Set", "The household set a monthly budget", ""},
-	{"streak_7", "Streak 7", "Logged spending 7 days in a row", ""},
-	{"streak_30", "Streak 30", "Logged spending 30 days in a row", ""},
-	{"under_budget", "Under Budget", "Closed a month with Needs + Wants spending at or below budget", ""},
-	{"saver", "Saver", "Closed a month with Savings at or above the savings budget", ""},
-	// --- chores ---
-	{"chores_10", "Helping hand", "Finished 10 chores", ""},
-	{"chores_50", "Chore champion", "Finished 50 chores", ""},
-}
-
-const (
-	choresBadgeHelping  = 10
-	choresBadgeChampion = 50
-)
-
-type badgeView struct {
-	badgeDef
-	Earned   bool       `json:"earned"`
-	EarnedAt *time.Time `json:"earned_at"`
+	Category    string `json:"category"`
+	Tier        string `json:"tier"`
+	Target      int64  `json:"target"`
 }
 
 // badgeFacts are the inputs to the pure badge rules (unit tested). The
@@ -136,36 +115,91 @@ type badgeFacts struct {
 	PrevTxCount        int64
 	PrevSavingsBudget  int64
 	PrevSavingsRealize int64
-	ChoresDone         int64 // --- chores --- approved chore instances credited to the member
+	ChoresDone         int64 // approved chore instances credited to the member
+	SpendingCount      int64 // expenses the member logged
+	Points             int64 // member's points (for level badges)
+	GoalsCreated       int64 // household savings goals
+	GoalsReached       int64 // ... that hit their target
+	AssetsCount        int64
+	IncomeCount        int64
+	RemindersDone      int64 // reminders the member marked done
+	ProposalsMade      int64 // dishes the member requested
+	ProposalsApproved  int64
+	ActivitiesCreated  int64
+}
+
+type badgeRule struct {
+	badgeDef
+	metric func(f badgeFacts) int64 // progress toward Target
+}
+
+func flag(b bool) int64 {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+var badgeRules = []badgeRule{
+	// --- money ---
+	{badgeDef{"first_log", "First Log", "Logged your first spending", "", "money", "bronze", 1}, func(f badgeFacts) int64 { return flag(f.HasLogged || f.SpendingCount > 0) }},
+	{badgeDef{"financial_geek", "Financial Geek", "Logged 100 expenses", "", "money", "silver", 100}, func(f badgeFacts) int64 { return f.SpendingCount }},
+	{badgeDef{"number_cruncher", "Number Cruncher", "Logged 500 expenses", "", "money", "gold", 500}, func(f badgeFacts) int64 { return f.SpendingCount }},
+	{badgeDef{"first_budget", "First Budget Set", "The household set a monthly budget", "", "money", "bronze", 1}, func(f badgeFacts) int64 { return flag(f.HasBudget) }},
+	{badgeDef{"under_budget", "Under Budget", "Closed a month with Needs + Wants spending at or below budget", "", "money", "silver", 1}, func(f badgeFacts) int64 {
+		// a month with no logging at all doesn't count as "under budget"
+		return flag(f.PrevExpenseBudget > 0 && f.PrevTxCount > 0 && f.PrevExpenseSpent <= f.PrevExpenseBudget)
+	}},
+	{badgeDef{"saver", "Saver", "Closed a month with Savings at or above the savings budget", "", "money", "silver", 1}, func(f badgeFacts) int64 {
+		return flag(f.PrevSavingsBudget > 0 && f.PrevSavingsRealize >= f.PrevSavingsBudget)
+	}},
+	{badgeDef{"goal_setter", "Goal Setter", "The household created a savings goal", "", "money", "bronze", 1}, func(f badgeFacts) int64 { return f.GoalsCreated }},
+	{badgeDef{"goal_crusher", "Goal Crusher", "A savings goal reached its target", "", "money", "gold", 1}, func(f badgeFacts) int64 { return f.GoalsReached }},
+	{badgeDef{"asset_tracker", "Asset Tracker", "Added an asset to your net worth", "", "money", "bronze", 1}, func(f badgeFacts) int64 { return f.AssetsCount }},
+	{badgeDef{"income_insider", "Income Insider", "Recorded income", "", "money", "bronze", 1}, func(f badgeFacts) int64 { return f.IncomeCount }},
+	// --- habits ---
+	{badgeDef{"streak_3", "Warming Up", "Logged spending 3 days in a row", "", "habits", "bronze", 3}, func(f badgeFacts) int64 { return int64(f.BestStreak) }},
+	{badgeDef{"streak_7", "Streak 7", "Logged spending 7 days in a row", "", "habits", "silver", 7}, func(f badgeFacts) int64 { return int64(f.BestStreak) }},
+	{badgeDef{"streak_30", "Streak 30", "Logged spending 30 days in a row", "", "habits", "gold", 30}, func(f badgeFacts) int64 { return int64(f.BestStreak) }},
+	{badgeDef{"never_forget", "Never Forget", "Marked 10 reminders done", "", "habits", "silver", 10}, func(f badgeFacts) int64 { return f.RemindersDone }},
+	{badgeDef{"planner", "Planner", "Added an activity to the family calendar", "", "habits", "bronze", 1}, func(f badgeFacts) int64 { return f.ActivitiesCreated }},
+	// --- home ---
+	{badgeDef{"chores_10", "Helping hand", "Finished 10 chores", "", "home", "bronze", choresBadgeHelping}, func(f badgeFacts) int64 { return f.ChoresDone }},
+	{badgeDef{"chores_50", "Chore champion", "Finished 50 chores", "", "home", "gold", choresBadgeChampion}, func(f badgeFacts) int64 { return f.ChoresDone }},
+	{badgeDef{"menu_maker", "Menu Maker", "Requested a dish for the family menu", "", "home", "bronze", 1}, func(f badgeFacts) int64 { return f.ProposalsMade }},
+	{badgeDef{"chefs_choice", "Chef's Choice", "A dish you requested made the menu", "", "home", "silver", 1}, func(f badgeFacts) int64 { return f.ProposalsApproved }},
+	// --- levels ---
+	{badgeDef{"level_5", "Money Master", "Reached level 5", "", "levels", "silver", 5}, func(f badgeFacts) int64 { return int64(levelFor(f.Points)) }},
+	{badgeDef{"level_10", "Finance Wizard", "Reached level 10", "", "levels", "gold", 10}, func(f badgeFacts) int64 { return int64(levelFor(f.Points)) }},
+}
+
+const (
+	choresBadgeHelping  = 10
+	choresBadgeChampion = 50
+)
+
+var badgeCatalog = func() []badgeDef {
+	out := make([]badgeDef, len(badgeRules))
+	for i, r := range badgeRules {
+		out[i] = r.badgeDef
+	}
+	return out
+}()
+
+type badgeView struct {
+	badgeDef
+	Earned   bool       `json:"earned"`
+	EarnedAt *time.Time `json:"earned_at"`
+	Progress int64      `json:"progress"` // metric so far, capped at Target
 }
 
 // earnedBadges returns the badge keys whose conditions hold.
 func earnedBadges(f badgeFacts) []string {
 	var out []string
-	if f.HasLogged {
-		out = append(out, "first_log")
-	}
-	if f.HasBudget {
-		out = append(out, "first_budget")
-	}
-	if f.BestStreak >= 7 {
-		out = append(out, "streak_7")
-	}
-	if f.BestStreak >= 30 {
-		out = append(out, "streak_30")
-	}
-	// a month with no logging at all doesn't count as "under budget"
-	if f.PrevExpenseBudget > 0 && f.PrevTxCount > 0 && f.PrevExpenseSpent <= f.PrevExpenseBudget {
-		out = append(out, "under_budget")
-	}
-	if f.PrevSavingsBudget > 0 && f.PrevSavingsRealize >= f.PrevSavingsBudget {
-		out = append(out, "saver")
-	}
-	if f.ChoresDone >= choresBadgeHelping {
-		out = append(out, "chores_10")
-	}
-	if f.ChoresDone >= choresBadgeChampion {
-		out = append(out, "chores_50")
+	for _, r := range badgeRules {
+		if r.metric(f) >= r.Target {
+			out = append(out, r.Key)
+		}
 	}
 	return out
 }
@@ -182,6 +216,14 @@ func (app *App) loadBadgeFacts(ctx context.Context, aid, mid int64, now time.Tim
 	}
 	_ = app.DB.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM budget_expense WHERE account_id=$1 AND amount > 0)", aid).Scan(&f.HasBudget)
 	_ = app.DB.QueryRow(ctx, "SELECT COUNT(*) FROM chore_instances WHERE account_id=$1 AND member_id=$2 AND status='approved'", aid, mid).Scan(&f.ChoresDone)
+	_ = app.DB.QueryRow(ctx, "SELECT COUNT(*) FROM spending WHERE account_id=$1 AND member_id=$2", aid, mid).Scan(&f.SpendingCount)
+	_ = app.DB.QueryRow(ctx, "SELECT COALESCE(points,0) FROM member_points WHERE member_id=$1", mid).Scan(&f.Points)
+	_ = app.DB.QueryRow(ctx, "SELECT COUNT(*), COUNT(*) FILTER (WHERE saved_amount >= target_amount AND target_amount > 0) FROM savings_goals WHERE account_id=$1", aid).Scan(&f.GoalsCreated, &f.GoalsReached)
+	_ = app.DB.QueryRow(ctx, "SELECT COUNT(*) FROM assets WHERE account_id=$1", aid).Scan(&f.AssetsCount)
+	_ = app.DB.QueryRow(ctx, "SELECT COUNT(*) FROM income_entries WHERE account_id=$1", aid).Scan(&f.IncomeCount)
+	_ = app.DB.QueryRow(ctx, "SELECT COUNT(*) FROM reminder_occurrences WHERE account_id=$1 AND done_by=$2", aid, mid).Scan(&f.RemindersDone)
+	_ = app.DB.QueryRow(ctx, "SELECT COUNT(*), COUNT(*) FILTER (WHERE status='approved') FROM meal_proposals WHERE account_id=$1 AND member_id=$2", aid, mid).Scan(&f.ProposalsMade, &f.ProposalsApproved)
+	_ = app.DB.QueryRow(ctx, "SELECT COUNT(*) FROM activities WHERE account_id=$1 AND created_by=$2", aid, mid).Scan(&f.ActivitiesCreated)
 
 	thisMonth, _ := utcMonthBounds(now)
 	prevStart := thisMonth.AddDate(0, -1, 0)
@@ -206,7 +248,8 @@ func (app *App) loadBadgeFacts(ctx context.Context, aid, mid int64, now time.Tim
 // evaluateBadges stores newly earned badges (once, with earned_at) and
 // returns the full catalog with earned state for this member.
 func (app *App) evaluateBadges(ctx context.Context, aid, mid int64, now time.Time) []badgeView {
-	for _, key := range earnedBadges(app.loadBadgeFacts(ctx, aid, mid, now)) {
+	facts := app.loadBadgeFacts(ctx, aid, mid, now)
+	for _, key := range earnedBadges(facts) {
 		_, _ = app.DB.Exec(ctx, "INSERT INTO member_badges (member_id, badge_key, earned_at) VALUES ($1,$2,$3) ON CONFLICT (member_id, badge_key) DO NOTHING", mid, key, now)
 	}
 	earned := map[string]time.Time{}
@@ -220,11 +263,12 @@ func (app *App) evaluateBadges(ctx context.Context, aid, mid int64, now time.Tim
 		}
 		rows.Close()
 	}
-	out := make([]badgeView, 0, len(badgeCatalog))
-	for _, b := range badgeCatalog {
-		v := badgeView{badgeDef: b}
-		if t, ok := earned[b.Key]; ok {
+	out := make([]badgeView, 0, len(badgeRules))
+	for _, r := range badgeRules {
+		v := badgeView{badgeDef: r.badgeDef, Progress: min(r.metric(facts), r.Target)}
+		if t, ok := earned[r.Key]; ok {
 			v.Earned, v.EarnedAt = true, &t
+			v.Progress = r.Target
 		}
 		out = append(out, v)
 	}

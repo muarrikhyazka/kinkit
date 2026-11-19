@@ -44,7 +44,15 @@ type integrationRow struct {
 	BotToken            string    `json:"bot_token"`
 	HasPlatformToken    bool      `json:"has_platform_token"`
 	PlatformTokenMasked *string   `json:"platform_token_masked"`
+	HasExtra            bool      `json:"has_extra"` // Slack app token / Matrix homeserver set
+	Extra               *string   `json:"extra"`     // only the (non-secret) Matrix homeserver URL
 	CreatedAt           time.Time `json:"created_at"`
+}
+
+// validHomeserver: a Matrix homeserver is addressed by an http(s) URL.
+func validHomeserver(s string) bool {
+	s = strings.TrimSpace(s)
+	return strings.HasPrefix(s, "https://") || strings.HasPrefix(s, "http://")
 }
 
 // maskSecret renders a secret as "••••" + its last 4 characters (or just
@@ -59,7 +67,7 @@ func maskSecret(s string) string {
 
 func listIntegrations(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 	rows, err := app.DB.Query(context.Background(),
-		"SELECT id, platform, chat_id, enabled, bot_token, platform_token, created_at FROM integrations WHERE account_id=$1 ORDER BY id", aid)
+		"SELECT id, platform, chat_id, enabled, bot_token, platform_token, extra, created_at FROM integrations WHERE account_id=$1 ORDER BY id", aid)
 	if err != nil {
 		jsonError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -68,8 +76,8 @@ func listIntegrations(w http.ResponseWriter, r *http.Request, app *App, aid int6
 	out := []integrationRow{}
 	for rows.Next() {
 		var ir integrationRow
-		var platformToken *string
-		if err := rows.Scan(&ir.ID, &ir.Platform, &ir.ChatID, &ir.Enabled, &ir.BotToken, &platformToken, &ir.CreatedAt); err != nil {
+		var platformToken, extra *string
+		if err := rows.Scan(&ir.ID, &ir.Platform, &ir.ChatID, &ir.Enabled, &ir.BotToken, &platformToken, &extra, &ir.CreatedAt); err != nil {
 			jsonError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -77,6 +85,12 @@ func listIntegrations(w http.ResponseWriter, r *http.Request, app *App, aid int6
 			ir.HasPlatformToken = true
 			m := maskSecret(*platformToken)
 			ir.PlatformTokenMasked = &m
+		}
+		if extra != nil && *extra != "" {
+			ir.HasExtra = true
+			if ir.Platform == "matrix" {
+				ir.Extra = extra
+			}
 		}
 		out = append(out, ir)
 	}
@@ -96,13 +110,18 @@ func addIntegration(w http.ResponseWriter, r *http.Request, app *App, aid int64)
 		Platform      string  `json:"platform"`
 		PlatformToken *string `json:"platform_token"`
 		ChatID        *string `json:"chat_id"`
+		Extra         *string `json:"extra"`
 	}
 	if err := decodeJSON(r, &d); err != nil {
 		jsonError(w, http.StatusBadRequest, "invalid json")
 		return
 	}
-	if d.Platform != "telegram" && d.Platform != "discord" {
-		jsonError(w, http.StatusBadRequest, "platform must be telegram or discord")
+	if !isChatPlatform(d.Platform) {
+		jsonError(w, http.StatusBadRequest, "platform must be one of telegram, discord, slack, matrix")
+		return
+	}
+	if d.Platform == "matrix" && (d.Extra == nil || !validHomeserver(*d.Extra)) {
+		jsonError(w, http.StatusBadRequest, "matrix needs the homeserver URL (https://...)")
 		return
 	}
 	botToken, err := genBotToken()
@@ -112,8 +131,8 @@ func addIntegration(w http.ResponseWriter, r *http.Request, app *App, aid int64)
 	}
 	var newID int64
 	err = app.DB.QueryRow(context.Background(),
-		"INSERT INTO integrations (account_id, platform, bot_token, platform_token, chat_id) VALUES ($1,$2,$3,$4,$5) RETURNING id",
-		aid, d.Platform, botToken, d.PlatformToken, d.ChatID).Scan(&newID)
+		"INSERT INTO integrations (account_id, platform, bot_token, platform_token, chat_id, extra) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id",
+		aid, d.Platform, botToken, d.PlatformToken, d.ChatID, d.Extra).Scan(&newID)
 	if err != nil {
 		// unique violation (account_id,platform) or bot_token collision
 		jsonError(w, http.StatusConflict, "integration for this platform already exists")
@@ -144,6 +163,11 @@ func updateIntegration(w http.ResponseWriter, r *http.Request, app *App, aid int
 	// sent, so the UI can PATCH other fields without knowing the secret.
 	if v, ok := d["platform_token"].(string); ok && strings.TrimSpace(v) != "" {
 		sets = append(sets, "platform_token=$"+strconv.Itoa(n))
+		params = append(params, strings.TrimSpace(v))
+		n++
+	}
+	if v, ok := d["extra"].(string); ok && strings.TrimSpace(v) != "" {
+		sets = append(sets, "extra=$"+strconv.Itoa(n))
 		params = append(params, strings.TrimSpace(v))
 		n++
 	}

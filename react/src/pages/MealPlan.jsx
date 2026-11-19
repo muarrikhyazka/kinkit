@@ -11,7 +11,7 @@ import '../mealplan.css'
 import { ChevronLink } from '../ChevronLink.jsx'
 
 /**
- * Home › Meals: the weekly meal plan (one main dish + one side per day, the
+ * Meals: the weekly meal plan (one main dish + one side per day, the
  * same all week), the household's must-use ingredients, and when the plan
  * is posted to the family chat. Backed by backend-go/meal_plan.go; the chat
  * bot has the same data (/menu, /ingredients, /schedule).
@@ -162,7 +162,7 @@ function ChatSchedule() {
       <h2 id="meal-sched-h">Post to the family chat</h2>
       <label className="meal-switch">
         <input type="checkbox" checked={s.enabled} disabled={saving} onChange={e => save({ enabled: e.target.checked })} />
-        Post next week's menu to the connected Telegram/Discord chat
+        Post next week's menu to the connected family chat
       </label>
       <div className="weekday-picker meal-days-pick" role="group" aria-label="Days to post">
         {DAYS.map((label, d) => (

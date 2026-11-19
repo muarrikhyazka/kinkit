@@ -13,7 +13,7 @@ reminders, family calendar, meal plan + requests, widget screens, family roles/a
 | `tv/flutter/` | Smart-TV viewer for Android TV / Google TV / Fire TV, **view only** | Flutter / Dart |
 | `tv/web/` | Same TV viewer for Samsung Tizen / LG webOS / TV browsers, **view only** | Plain ES5 HTML/CSS/JS |
 | `landing/` | Marketing landing page (sells + explains the product) | Static HTML/CSS/JS, EN/ID |
-| `bots/` | Telegram + Discord bots (rumahbot was merged in: spending log, keyword learning, meal plan, must-use ingredients) | Python |
+| `bots/` | Telegram, Discord, Slack and Matrix bots (rumahbot was merged in: spending log, keyword learning, meal plan, must-use ingredients) | Python |
 | `docker-compose.yml` | postgres + app + bots | |
 
 ## ⚠️ Cross-surface rule (most important)

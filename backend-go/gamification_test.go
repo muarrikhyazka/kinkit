@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"slices"
 	"testing"
 	"time"
 )
@@ -142,5 +143,54 @@ func TestGamificationStreakIntegration(t *testing.T) {
 	c.do("GET", "/api/gamification", nil, &g)
 	if g.StreakDays != 1 {
 		t.Fatalf("log after gap should restart at 1: %+v", g)
+	}
+}
+
+func TestLevels(t *testing.T) {
+	cases := []struct {
+		points int64
+		level  int
+		title  string
+	}{
+		{0, 1, "Getting Started"}, {49, 1, "Getting Started"}, {50, 2, "Tracker"},
+		{149, 2, "Tracker"}, {150, 3, "Budget Rookie"}, {500, 5, "Money Master"},
+		{2250, 10, "Finance Wizard"}, {1 << 40, maxLevel, "Legend"},
+	}
+	for _, c := range cases {
+		if got := levelFor(c.points); got != c.level {
+			t.Errorf("levelFor(%d) = %d, want %d", c.points, got, c.level)
+		}
+		if title, _, _ := currentBadge(c.points); title != c.title {
+			t.Errorf("title at %d = %q, want %q", c.points, title, c.title)
+		}
+	}
+	if _, next, at := currentBadge(0); next != "Tracker" || at != 50 {
+		t.Errorf("next level from 0: %q at %d", next, at)
+	}
+	if _, next, _ := currentBadge(1 << 40); next != "" {
+		t.Errorf("top level has no next, got %q", next)
+	}
+}
+
+func TestMoreBadges(t *testing.T) {
+	got := earnedBadges(badgeFacts{SpendingCount: 120, GoalsCreated: 1, GoalsReached: 1, AssetsCount: 2,
+		IncomeCount: 1, RemindersDone: 10, ProposalsMade: 2, ProposalsApproved: 1, ActivitiesCreated: 1, Points: 600})
+	for _, k := range []string{"first_log", "financial_geek", "goal_setter", "goal_crusher", "asset_tracker", "income_insider",
+		"never_forget", "menu_maker", "chefs_choice", "planner", "level_5"} {
+		if !slices.Contains(got, k) {
+			t.Errorf("missing %s in %v", k, got)
+		}
+	}
+	for _, k := range []string{"number_cruncher", "level_10", "streak_3"} {
+		if slices.Contains(got, k) {
+			t.Errorf("unexpected %s in %v", k, got)
+		}
+	}
+	seen := map[string]bool{}
+	for _, b := range badgeCatalog {
+		if seen[b.Key] || b.Target < 1 || b.Category == "" || b.Tier == "" {
+			t.Errorf("bad catalog entry %+v", b)
+		}
+		seen[b.Key] = true
 	}
 }

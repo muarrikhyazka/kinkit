@@ -109,7 +109,7 @@ class TvTrendPoint {
 
 /// One widget of a widget board (web: Widgets page): [w] columns of 12, [h] rows 1-4.
 class TvWidget {
-  const TvWidget({required this.id, required this.type, required this.w, required this.h, this.text = ''});
+  const TvWidget({required this.id, required this.type, required this.w, required this.h, this.text = '', this.color});
 
   factory TvWidget.fromJson(Map<String, dynamic> j) => TvWidget(
         id: _str(j['id']),
@@ -117,6 +117,7 @@ class TvWidget {
         w: _int(j['w']).clamp(1, 12),
         h: _int(j['h']).clamp(1, 4),
         text: _str(j['text']),
+        color: _str(j['color']).isEmpty ? null : _str(j['color']),
       );
 
   final String id;
@@ -124,6 +125,7 @@ class TvWidget {
   final int w;
   final int h;
   final String text; // note widget
+  final String? color; // own fill as #rrggbb; null = default look
 }
 
 class TvCardRow {
@@ -169,11 +171,12 @@ class TvCard {
 
 /// The widget board a TV link shows (null board = the classic month summary).
 class TvBoard {
-  const TvBoard({required this.name, required this.widgets, required this.cards});
+  const TvBoard({required this.name, required this.widgets, required this.cards, this.background});
 
   final String name;
   final List<TvWidget> widgets;
   final Map<String, TvCard> cards;
+  final String? background; // whole-board backdrop as #rrggbb; null = default
 }
 
 class TvData {
@@ -211,6 +214,7 @@ class TvData {
         name: _str(b['name']),
         widgets: _list(_map(b['layout'])['widgets']).map(TvWidget.fromJson).toList(),
         cards: {for (final e in cards.entries) e.key: TvCard.fromJson(_map(e.value))},
+        background: _str(_map(b['layout'])['background']).isEmpty ? null : _str(_map(b['layout'])['background']),
       );
 
   final int year;

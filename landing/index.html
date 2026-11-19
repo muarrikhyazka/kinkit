@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kinkit: manage, monitor and teach your household, in one place</title>
-  <meta name="description" content="Kinkit is more than a money app. Manage your household together: budgets and goals, chores and reminders, a shared family calendar, meals and shopping lists. Monitor it on custom widget screens for phone, TV and car, and teach kids by doing with allowances, points and badges. Self-hostable, and your data is always exportable.">
+  <meta name="description" content="Kinkit is more than a money app. Manage your household together: budgets and goals, chores and reminders, a shared family calendar, meals and shopping lists. Monitor it on custom widget screens for phone, TV and car, and teach kids by doing with allowances, points and badges. Slack, Matrix, Telegram and Discord chat bots, and your data is always exportable.">
   <meta name="theme-color" content="#4f46e5" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b0e1a" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark">
@@ -16,7 +16,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Kinkit">
   <meta property="og:title" content="Kinkit: manage, monitor and teach your household">
-  <meta property="og:description" content="Money, chores, calendar, meals and reminders in one family app. Widget screens for phone, TV and car, and a game that teaches kids. Self-hostable, with open data export.">
+  <meta property="og:description" content="Money, chores, calendar, meals and reminders in one family app. Widget screens for phone, TV and car, and a game that teaches kids with levels and badges. Chat bots for Telegram, Discord, Slack and Matrix, and open data export.">
   <meta property="og:url" content="https://kinkit.app/">
   <meta property="og:image" content="https://kinkit.app/assets/og-image.svg">
   <meta property="og:image:width" content="1200">
@@ -33,8 +33,8 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='0.75' y='0.75' width='62.5' height='62.5' rx='15.25' fill='%23FFFFFF' stroke='%23E0E7FF' stroke-width='1.5'/%3E%3Cpath d='M14 31 32 16l18 15' fill='none' stroke='%234F46E5' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28' fill='none' stroke='%234F46E5' stroke-width='5' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='39' r='5.5' fill='%234F46E5'/%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="assets/favicon.svg?v=3">
 
-  <link rel="stylesheet" href="styles.css?v=6">
-  <link rel="stylesheet" href="assets/mockups.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="assets/mockups.css?v=7">
 
   <script type="application/ld+json">
   {
@@ -43,7 +43,7 @@
     "name": "Kinkit",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Web",
-    "description": "Family money app: spending, budgets, savings goals, kid allowances, points and badges. Self-hostable with open data export."
+    "description": "Family money app: spending, budgets, savings goals, kid allowances, levels and badges. Chat bots for Telegram, Discord, Slack and Matrix, and open data export."
   }
   </script>
   <script>document.documentElement.classList.add('js')</script>
@@ -84,7 +84,6 @@
     <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.6a10 10 0 0 1 14 0M8.5 16.4a5 5 0 0 1 7 0M2 8.8a15 15 0 0 1 20 0"/><path d="M12 20h.01"/></symbol>
     <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 17h-.5A1.5 1.5 0 0 1 3 15.5V13l2-5a2 2 0 0 1 1.9-1.3h10.2A2 2 0 0 1 19 8l2 5v2.5a1.5 1.5 0 0 1-1.5 1.5H19M9 17h6M3 13h18"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></symbol>
     <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></symbol>
-    <symbol id="i-server" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="8" rx="2"/><rect x="2" y="13" width="20" height="8" rx="2"/><path d="M6 7h.01M6 17h.01"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
@@ -111,6 +110,7 @@
         <li><a href="#privacy" data-i18n="nav.privacy">Your data</a></li>
         <li><a href="#pricing" data-i18n="nav.pricing">Pricing</a></li>
         <li><a href="#faq" data-i18n="nav.faq">FAQ</a></li>
+        <li><a href="/docs" data-app-link="docs" data-i18n="nav.docs">Docs</a></li>
         <li class="mobile-only"><a href="/login" data-app-link="login" data-i18n="nav.signin">Sign in</a></li>
       </ul>
       <div class="nav-actions">
@@ -133,9 +133,9 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <a class="link-chev hero-news" href="#download"><span data-i18n="hero.news">Calendar, meal requests and widget screens are here</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+          <a class="link-chev hero-news" href="#features"><span data-i18n="hero.news">Levels 1 to 50, 20+ badges and Slack &amp; Matrix bots are here</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
           <h1 id="hero-title" data-i18n="hero.title">Run your whole household, <span class="soft">not just its budget.</span></h1>
-          <p class="hero-lead" data-i18n="hero.lead">Kinkit helps your family manage home life together: money and budgets, chores and reminders, a shared calendar, meals and shopping. Monitor it all on your own widget screens, and teach kids by doing with allowances, points and goals. Use it in the browser, on your phone, on the living-room TV or straight from Telegram and Discord.</p>
+          <p class="hero-lead" data-i18n="hero.lead">Kinkit helps your family manage home life together: money and budgets, chores and reminders, a shared calendar, meals and shopping. Monitor it all on your own widget screens, and teach kids by doing with allowances, points and goals. Use it in the browser, on your phone, on the living-room TV or straight from Telegram, Discord, Slack or Matrix.</p>
           <div class="hero-ctas">
             <a class="btn btn-primary" href="/signup" data-app-link="signup" data-i18n="cta.start">Start free</a>
             <a class="link-chev lg" href="#how"><span data-i18n="cta.how">See how it works</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
@@ -153,10 +153,10 @@
                     <div class="m-brand"><i class="m-logo"></i><span>Kinkit<small>The Wijaya family</small></span></div>
                     <div class="m-add">+ Add</div>
                     <div class="m-nav">
-                      <span>Today</span><span>Home</span>
+                      <span>Today</span><span>Calendar</span>
                       <span class="m-group">Money</span>
                       <span class="on">Dashboard</span><span>Transactions</span><span>Budget</span><span>Savings</span>
-                      <span class="m-group">Family</span><span>Family</span>
+                      <span class="m-group">Family</span><span>Family</span><span>Chores</span><span>Lists</span><span>Meals</span>
                     </div>
                   </div>
                   <div class="m-main">
@@ -199,7 +199,7 @@
     <section class="facts" aria-label="Why families can trust Kinkit" data-i18n-aria="trust.label">
       <div class="container">
         <ul>
-          <li><svg class="icon" aria-hidden="true"><use href="#i-server"/></svg><span data-i18n="trust.1">Self-hostable with docker-compose</span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg><span data-i18n="trust.1">Never asks for your bank login</span></li>
           <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="trust.2">Open data export: CSV &amp; JSON</span></li>
           <li><svg class="icon" aria-hidden="true"><use href="#i-wifi"/></svg><span data-i18n="trust.3">Installable, works offline</span></li>
           <li><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><span data-i18n="trust.4">Receipts private to your household</span></li>
@@ -246,7 +246,7 @@
               <article class="feat reveal">
                 <svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg>
                 <h4 data-i18n="f.alerts.t">Budget alerts in your chat</h4>
-                <p data-i18n="f.alerts.d">Get a Telegram or Discord message when a category reaches 80% of its monthly budget, and again if it goes over.</p>
+                <p data-i18n="f.alerts.d">Get a message in Telegram, Discord, Slack or Matrix when a category reaches 80% of its monthly budget, and again if it goes over.</p>
               </article>
               <article class="feat reveal">
                 <svg class="icon" aria-hidden="true"><use href="#i-trend"/></svg>
@@ -331,7 +331,7 @@
               <article class="feat reveal">
                 <svg class="icon" aria-hidden="true"><use href="#i-check-square"/></svg>
                 <h4 data-i18n="f.chores.t">Chores, reminders &amp; shopping lists</h4>
-                <p data-i18n="f.chores.d">Chores with points, parent approval and photo proof that count toward kids' allowances. Household reminders for laundry, cleaning, the water tank, bills, medicine and birthdays, repeating daily or every 2 weeks or every 3 months, that nudge the right person on Telegram or Discord. Shared shopping lists where you type "eggs, 2 milk, bread x3", then turn the trip into one spending entry.</p>
+                <p data-i18n="f.chores.d">Chores with points, parent approval and photo proof that count toward kids' allowances. Household reminders for laundry, cleaning, the water tank, bills, medicine and birthdays, repeating daily or every 2 weeks or every 3 months, that nudge the right person in your Telegram, Discord, Slack or Matrix chat. Shared shopping lists where you type "eggs, 2 milk, bread x3", then turn the trip into one spending entry.</p>
               </article>
               <article class="feat reveal">
                 <svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>
@@ -346,7 +346,7 @@
               <article class="feat reveal">
                 <svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg>
                 <h4 data-i18n="f.widgets.t">Widget screens you arrange yourself</h4>
-                <p data-i18n="f.widgets.d">Pick what you want to see (clock, agenda, reminders, chores, lists, meals, budget, goals, family points, a note) and drag it into place. Show it full screen on a phone, a monitor, the living-room TV or the car display, with ready-made templates for each.</p>
+                <p data-i18n="f.widgets.d">Pick what you want to see (clock, agenda, reminders, chores, lists, meals, budget, goals, family points, a note) and drag it into place. Show it full screen on a phone, a monitor, the living-room TV or the car display, with ready-made templates for each. Colour-code your screens by giving each widget its own colour.</p>
               </article>
             </div>
           </div>
@@ -360,7 +360,7 @@
                 <svg class="mk mk--celebrate" viewBox="0 0 256 256" width="256" height="256" aria-hidden="true" focusable="false" data-mk-animate><ellipse class="mk-shadow" cx="128" cy="226" rx="64" ry="9" fill="#1E1B4B" opacity="0.28" filter="url(#kk-blur-s)"/><g class="mk-bob"><g class="mk-arm mk-arm-l"><ellipse cx="49.0" cy="130.0" rx="11.5" ry="30.2" transform="rotate(-33.0 49.0 130.0)" fill="url(#kk-limb)"/><ellipse cx="46.1" cy="119.4" rx="4.0" ry="9.1" transform="rotate(-33.0 49.0 130.0)" fill="#A5B4FC" opacity="0.55"/></g><g class="mk-arm mk-arm-r"><ellipse cx="207.0" cy="130.0" rx="11.5" ry="30.2" transform="rotate(33.0 207.0 130.0)" fill="url(#kk-limb)"/><ellipse cx="204.1" cy="119.4" rx="4.0" ry="9.1" transform="rotate(33.0 207.0 130.0)" fill="#A5B4FC" opacity="0.55"/></g><g class="mk-body"><ellipse cx="98" cy="213" rx="17" ry="9" fill="url(#kk-foot)"/><ellipse cx="158" cy="213" rx="17" ry="9" fill="url(#kk-foot)"/><path d="M128 50C134 50 139 52.5 144 56.5L188 93C196.5 100 201 107.5 201.5 118C204 142 204.5 166 202 188C200 205 189 214 171 214L85 214C67 214 56 205 54 188C51.5 166 52 142 54.5 118C55 107.5 59.5 100 68 93L112 56.5C117 52.5 122 50 128 50Z" fill="url(#kk-body)"/><g clip-path="url(#kk-clip)"><rect x="40" y="40" width="176" height="180" fill="url(#kk-rim)"/><rect x="40" y="40" width="176" height="180" fill="url(#kk-ao)"/><ellipse cx="96" cy="96" rx="22" ry="13" transform="rotate(-38 96 96)" fill="#FFFFFF" opacity="0.38" filter="url(#kk-blur-h)"/></g><path d="M60 104L128 47L196 104" fill="none" stroke="url(#kk-roof)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/><path d="M66 97L126 47.5" fill="none" stroke="#818CF8" stroke-width="3.2" stroke-linecap="round" opacity="0.75"/><path d="M130 47.5L170 81" fill="none" stroke="#A5B4FC" stroke-width="2.4" stroke-linecap="round" opacity="0.45"/><ellipse cx="128" cy="149" rx="55" ry="47" fill="#312E81" opacity="0.18"/><ellipse cx="128" cy="151" rx="53" ry="45" fill="url(#kk-face)"/><ellipse cx="89" cy="157" rx="12" ry="7.5" fill="url(#kk-cheek)"/><ellipse cx="167" cy="157" rx="12" ry="7.5" fill="url(#kk-cheek)"/><g class="mk-eyes" fill="none" stroke="#1E1B4B" stroke-width="5.5" stroke-linecap="round"><path d="M97 140Q108 125 119 140"/><path d="M137 140Q148 125 159 140"/></g><g class="mk-mouth"><path d="M116 154Q128 154 140 154Q139 170 128 170Q117 170 116 154Z" fill="#1E1B4B"/><path d="M121.5 164.5Q128 160.5 134.5 164.5Q131.5 168 128 168Q124.5 168 121.5 164.5Z" fill="#F472B6"/></g></g><g class="mk-coin"><circle cx="222" cy="93.8" r="20" fill="#92400E" opacity="0.35"/><circle cx="222" cy="92" r="20" fill="url(#kk-coin)"/><circle cx="222" cy="92" r="14.8" fill="url(#kk-coinface)" opacity="0.9"/><path d="M214.4 92.6L222.0 85.5L229.6 92.6M216.7 90.8V99.1H227.3V90.8" fill="none" stroke="#B45309" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="214.4" cy="83.0" rx="5.6" ry="3.2" transform="rotate(-35 214.4 83.0)" fill="#FFFFFF" opacity="0.8"/></g><g class="mk-shine" fill="#FBBF24"><path d="M246 64l2.2 5 5 2.2-5 2.2-2.2 5-2.2-5-5-2.2 5-2.2z" opacity="0.9"/></g></g></svg>
                 <div class="mock m-loose">
                   <div class="m-card">
-                    <div class="m-level"><span class="coin"></span>Budget Buddy<em>240 pts</em></div>
+                    <div class="m-level"><span class="coin"></span>Budget Buddy<em>Level 4</em></div>
                     <div class="m-progress" style="margin-top:10px"><i style="width:60%"></i></div>
                     <div class="m-tags"><span>First Log</span><span>Streak 7</span><span>Under Budget</span></div>
                   </div>
@@ -370,13 +370,13 @@
             <div class="feat-list">
               <article class="feat reveal">
                 <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>
-                <h4 data-i18n="f.points.t">Points and levels</h4>
-                <p data-i18n="f.points.d">Earn 10 points a day for logging, plus a streak bonus. Climb from Getting Started to Tracker, Budget Buddy, Money Master and Finance Wizard.</p>
+                <h4 data-i18n="f.points.t">Levels 1 to 50</h4>
+                <p data-i18n="f.points.d">Earn 10 points a day for logging, plus a streak bonus, and climb 50 levels from Getting Started through Budget Buddy, Money Master and Finance Wizard all the way to Legend.</p>
               </article>
               <article class="feat reveal">
                 <svg class="icon" aria-hidden="true"><use href="#i-flame"/></svg>
-                <h4 data-i18n="f.badges.t">Streaks and badges</h4>
-                <p data-i18n="f.badges.d">Unlock First Log, Streak 7, Streak 30, First Budget Set, Under Budget and Saver, each with a confetti celebration.</p>
+                <h4 data-i18n="f.badges.t">20+ badges in bronze, silver and gold</h4>
+                <p data-i18n="f.badges.d">Unlock Financial Geek, Number Cruncher, Goal Crusher, Streak 30, Chore champion, Chef's Choice and more, each with a confetti celebration.</p>
               </article>
               <article class="feat reveal">
                 <svg class="icon" aria-hidden="true"><use href="#i-flag"/></svg>
@@ -385,7 +385,7 @@
               </article>
               <article class="feat reveal">
                 <svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg>
-                <h4 data-i18n="f.leader.t">Monthly leaderboard</h4>
+                <h4 data-i18n="f.leader.t">Family leaderboard</h4>
                 <p data-i18n="f.leader.d">See who earned the most points this month. A friendly race that makes everyone want to log.</p>
               </article>
               <article class="feat wide reveal">
@@ -434,7 +434,7 @@
               </article>
               <article class="feat reveal">
                 <svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg>
-                <h4 data-i18n="f.bots.t">Telegram &amp; Discord bots</h4>
+                <h4 data-i18n="f.bots.t">Telegram, Discord, Slack &amp; Matrix bots</h4>
                 <p data-i18n="f.bots.d">Send "50k makan siang" and it's logged, with the category picked from your keywords; new words get category buttons and the bot remembers your pick. Ask for <kbd>/recent</kbd> or <kbd>/today</kbd>, set reminders with <kbd>/remind</kbd>, add to the shopping list with <kbd>/buy</kbd>, check chores with <kbd>/chores</kbd> and get the weekly meal plan with <kbd>/menu</kbd>. Connect your own bot in Settings.</p>
               </article>
             </div>
@@ -466,7 +466,7 @@
             <p data-i18n="how.s2.d">Use whatever is closest to hand. Every entry lands in the same place.</p>
             <ul>
               <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s2.l1">Quick add in the app, even offline</span></li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s2.l2">A chat message to your Telegram or Discord bot</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s2.l2">A chat message to your Telegram, Discord, Slack or Matrix bot</span></li>
               <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="how.s2.l3">A receipt photo, a bank CSV or a recurring rule</span></li>
             </ul>
           </li>
@@ -512,9 +512,9 @@
                       <div><span>Netflix</span><b>54rb</b></div>
                       <div><span>Listrik</span><b>350rb</b></div>
                     </div>
-                    <div class="m-card m-level"><span class="coin"></span>Budget Buddy<em>240 pts</em></div>
+                    <div class="m-card m-level"><span class="coin"></span>Budget Buddy<em>Level 4</em></div>
                   </div>
-                  <div class="m-tabbar"><span>Today</span><span>Home</span><span class="fab"></span><span class="on">Spending</span><span>More</span></div>
+                  <div class="m-tabbar"><span>Today</span><span>Chores</span><span class="fab"></span><span class="on">Spending</span><span>More</span></div>
                 </div>
               </div>
             </div>
@@ -716,27 +716,16 @@
           <p data-i18n="privacy.lead">Kinkit never asks for your bank login. You decide what goes in, and you can take all of it out whenever you like.</p>
           <ul class="check-list">
             <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><div><strong data-i18n="privacy.1.t">Export anytime</strong><span data-i18n="privacy.1.d">Download spending (by date range) and income as CSV, or a full backup of everything as JSON.</span></div></li>
-            <li><svg class="icon" aria-hidden="true"><use href="#i-server"/></svg><div><strong data-i18n="privacy.2.t">Self-host it</strong><span data-i18n="privacy.2.d">Run the whole stack (app, Postgres and the chat bots) on your own server with one docker-compose file.</span></div></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg><div><strong data-i18n="privacy.2.t">Roles keep it tidy</strong><span data-i18n="privacy.2.d">Kids only change their own entries, and viewers such as grandparents or an accountant can look but never edit.</span></div></li>
             <li><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><div><strong data-i18n="privacy.3.t">Private receipts</strong><span data-i18n="privacy.3.d">Receipt photos are visible only to your household, and the amount is read on your own device.</span></div></li>
             <li><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg><div><strong data-i18n="privacy.4.t">You control sharing</strong><span data-i18n="privacy.4.d">TV display links show only this month's summary, and you can revoke them with one click.</span></div></li>
           </ul>
         </div>
         <div class="reveal">
-          <div class="terminal" role="img" aria-label="Terminal: starting Kinkit with docker compose up -d, which starts Postgres, the app on port 5010 and the Telegram and Discord bots." data-i18n-aria="privacy.termAlt">
-            <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i><span>~/kinkit</span></div>
-<pre aria-hidden="true"><span class="c"># your server, your data</span>
-<span class="p">$</span> cp .env.example .env   <span class="c"># set passwords</span>
-<span class="p">$</span> docker compose up -d
- <span class="ok">[+]</span> kinkit-postgres       Started
- <span class="ok">[+]</span> kinkit                Started
- <span class="ok">[+]</span> kinkit-telegram-bot   Started
- <span class="ok">[+]</span> kinkit-discord-bot    Started
-<span class="c"># open http://localhost:5010</span></pre>
-          </div>
-          <ul class="export-files" aria-label="Export formats" data-i18n-aria="privacy.formats">
-            <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>spending.csv</li>
-            <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>income.csv</li>
-            <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>all.json</li>
+          <ul class="export-card" aria-label="Export formats" data-i18n-aria="privacy.formats">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><code>spending.csv</code><span data-i18n="privacy.f1">Every expense, for any date range</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><code>income.csv</code><span data-i18n="privacy.f2">All the income you recorded</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><code>all.json</code><span data-i18n="privacy.f3">A full backup of everything</span></li>
           </ul>
         </div>
       </div>
@@ -756,7 +745,7 @@
       <div class="container">
         <div class="section-head reveal">
           <h2 id="pricing-title" data-i18n="price.title">Simple plans for every household</h2>
-          <p data-i18n="price.lead">Start free. Upgrade when your family wants more, or run it yourself.</p>
+          <p data-i18n="price.lead">Start free. Upgrade when your family wants more.</p>
         </div>
         <div class="pricing">
           <!-- PLACEHOLDER tier 1 -->
@@ -782,25 +771,11 @@
             <ul>
               <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.1">Everything in Free</span></li>
               <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.2">Family members, roles &amp; allowances</span></li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.3">Points, badges &amp; weekly challenges</span></li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.4">Telegram/Discord bots &amp; budget alerts</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.3">Levels, badges &amp; weekly challenges</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.4">Chat bots (Telegram, Discord, Slack, Matrix) &amp; budget alerts</span></li>
               <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.family.5">Receipts, bank CSV import, TV links</span></li>
             </ul>
             <a class="btn btn-primary btn-block plan-cta" href="/signup" data-app-link="signup" data-i18n="price.family.cta">Start with Family</a>
-          </article>
-          <!-- PLACEHOLDER tier 3 -->
-          <article class="plan reveal">
-            <p class="plan-label" aria-hidden="true"></p>
-            <h3 data-i18n="price.self.t">Self-hosted</h3>
-            <p class="plan-desc" data-i18n="price.self.d">For tinkerers who want everything on their own server.</p>
-            <p class="price"><span data-i18n="price.self.price">Free</span> <small data-i18n="price.self.unit">/ your server</small></p>
-            <ul>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.self.1">The full app on your hardware</span></li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.self.2">One docker-compose file</span></li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.self.3">Your Postgres database, your backups</span></li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="price.self.4">Community support</span></li>
-            </ul>
-            <a class="link-chev lg plan-cta" href="#privacy"><span data-i18n="price.self.cta">How to self-host</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
           </article>
         </div>
         <p class="pricing-note" data-i18n="price.note">Plans and prices are a preview and may change before launch.</p>
@@ -827,16 +802,12 @@
             <div class="answer"><p data-i18n="faq.a3">Always. Under Settings › Data &amp; devices you can export spending (optionally for a date range) and income as CSV, or download a full JSON backup of everything.</p></div>
           </details>
           <details>
-            <summary><span data-i18n="faq.q4">Can I host Kinkit myself?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-            <div class="answer"><p data-i18n="faq.a4">Yes. The repository includes a docker-compose file that runs the Go app, a Postgres database and the Telegram and Discord bots. Set a couple of secrets in <code>.env</code> and run <code>docker compose up -d</code>.</p></div>
-          </details>
-          <details>
             <summary><span data-i18n="faq.q5">Does it work without internet?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
             <div class="answer"><p data-i18n="faq.a5">The installed app opens offline and shows the data from your last visit. Spending you add offline is saved on the device and synced automatically when you reconnect. If the server rejects an entry, it is listed so nothing gets lost quietly.</p></div>
           </details>
           <details>
-            <summary><span data-i18n="faq.q6">How do the Telegram and Discord bots work?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-            <div class="answer"><p data-i18n="faq.a6">Create your own bot (for example with BotFather on Telegram) and paste its token and chat id under Settings › Bots. Then send messages like "50k makan siang" to log spending, or <code>/recent</code> (<code>!recent</code> on Discord) to see the last entries. The same bot sends your budget alerts.</p></div>
+            <summary><span data-i18n="faq.q6">How do the chat bots work?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer"><p data-i18n="faq.a6">Kinkit works with Telegram, Discord, Slack and Matrix. Create your own bot (for example with BotFather on Telegram) and paste its token and chat id under Settings › Bots; Matrix also needs your homeserver address. Then send messages like "50k makan siang" to log spending, or <code>/recent</code> (<code>!recent</code> on Discord) to see the last entries. The same bot sends your budget alerts.</p></div>
           </details>
           <details>
             <summary><span data-i18n="faq.q7">Which currencies are supported?</span><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
@@ -890,8 +861,8 @@
           <h2 id="f-data" data-i18n="footer.data">Your data</h2>
           <ul>
             <li><a href="#privacy" data-i18n="footer.export">Export &amp; backup</a></li>
-            <li><a href="#privacy" data-i18n="footer.selfhost">Self-hosting</a></li>
             <li><a href="#faq" data-i18n="nav.faq">FAQ</a></li>
+            <li><a href="/docs" data-app-link="docs" data-i18n="nav.docs">Docs</a></li>
           </ul>
         </nav>
         <nav aria-labelledby="f-account">
@@ -909,6 +880,6 @@
     </div>
   </footer>
 
-  <script src="main.js?v=6" defer></script>
+  <script src="main.js?v=7" defer></script>
 </body>
 </html>

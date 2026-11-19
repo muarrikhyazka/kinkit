@@ -101,7 +101,7 @@ lib/
   state/
     providers.dart       Riverpod: prefs, base URL, theme mode, API client, auth, money formatter, selected month
     data_providers.dart  Riverpod FutureProviders per feature + invalidation helpers
-  screens/               login, home shell (bottom nav), today, household (reminders/chores/lists/meals),
+  screens/               login, home shell (bottom nav), today, reminders, chores, lists, meals, calendar (one screen each),
                          list detail, money (dashboard/spending/income/budget/goals tabs),
                          family, more, settings
   widgets/               async/empty/error states, month picker, stat cards, amount field,
@@ -119,8 +119,9 @@ State management: **Riverpod** (`flutter_riverpod`). Feature data uses
 `notifySpendingChanged()`).
 
 Navigation mirrors the web nav (`react/src/routes.jsx`): bottom bar
-**Today / Home / Money / Family / More**. Home has Reminders, Calendar, Chores,
-Lists and Meals tabs; More opens Widgets; Money has Dashboard, Spending, Income, Budget and Goals tabs;
+**Today / Reminders / Chores / Money / More**. Reminders has Next 7 days, All and
+Calendar segments; More has a *Family* group (Family, Chores, Lists, Meals, Widgets, Calendar), each
+its own screen with its own app bar title; Money has Dashboard, Spending, Income, Budget and Goals tabs;
 More holds profile, settings and logout. Menus are hidden by role the same way the web
 does it (kids don't see income/budget/goals; viewers can't add; only
 family admins/parents edit budgets, goals and income). The backend still enforces
@@ -167,16 +168,16 @@ Amount inputs are entered in IDR (with web-style shorthand: `25k`, `2rb`,
 | Income list / add / delete | Money > Income, FAB sheet | `GET /api/income?year&month`, `POST /api/income` `{tx_date, amount, source_id, description, client_id}`, `DELETE /api/income/{id}` |
 | Budget (read + edit) | Money > Budget | `GET /api/budgeting/{year}`, `GET /api/budgeting/{year}/actuals`, `POST /api/budgeting/income` `{year, month, source_id, amount}`, `POST /api/budgeting/expense` `{year, month, category_id, amount}` |
 | Goals + contribute | Money > Goals | `GET /api/goals`, `POST /api/goals`, `POST /api/goals/{id}/contribute` `{amount}` (negative = withdraw), `DELETE /api/goals/{id}` |
-| Family members | Family | `GET /api/family` |
-| Points / streak / badges | App bar chip, Today, Family | `GET /api/gamification` |
-| Reminders (household categories, every N weeks/months, template gallery in the create sheet) | Home > Reminders (web: top-level `/reminders`) | `GET /api/reminders/upcoming?days=7`, `GET /api/reminders` (rows include `interval`), `PATCH /api/reminders/{id}` `{active}`, `DELETE /api/reminders/{id}`, `POST /api/reminders/occurrences/{id}/done`, `POST /api/reminders/occurrences/{id}/snooze` `{minutes}` or `{until: "tomorrow"}`, `POST /api/reminders` `{title, kind, start_date, time_of_day, category, notes, weekdays?, day_of_month?, interval, assignee_id?}`, `GET /api/family` (who-is-it-for picker) |
-| Chores | Home > Chores | `GET /api/chores/today`, `POST /api/chores/{instanceId}/complete` / `approve` / `reject` / `undo` `{note}` |
-| Shopping lists | Home > Lists | `GET /api/lists`, `POST /api/lists` `{name}` (emoji sent empty), `GET /api/lists/{id}`, `POST /api/lists/{id}/items` `{text}`, `PATCH /api/lists/{id}/items/{itemId}` `{checked}`, `DELETE /api/lists/{id}/items/{itemId}`, `POST /api/lists/{id}/clear-checked`, `POST /api/lists/{id}/finish` `{client_id, total_amount}` (finish shopping -> spending) |
-| Meal plan + must-use ingredients | Home > Meals (web: `/home/meals`) | `GET /api/meal-plan` (`?week=this` for this week), `GET /api/meal-plan/ingredients`, `POST /api/meal-plan/ingredients` `{name}`, `DELETE /api/meal-plan/ingredients/{id}` |
-| Calendar (activities + reminders overlay): month grid, selected-day list, 30-day agenda; owner/parent add, edit, delete (this one / series) | Home > Calendar (web: `/calendar`; the web also has week and day hour grids) | `GET /api/calendar?from&to[&include=activities\|reminders]`, `POST /api/activities` `{title, start_date, end_date, all_day, start_time, end_time, repeat, interval, weekdays, until_date, attendee_ids, location, notes, color}`, `PATCH /api/activities/{id}`, `DELETE /api/activities/{id}[?on=YYYY-MM-DD]`, `GET /api/family` (who-is-it-for picker) |
-| Reminders as a month calendar | Home > Reminders > Calendar | `GET /api/calendar?include=reminders`, then the reminder done/snooze endpoints above |
-| Meal requests (anyone asks, owner/parent approve on a day or decline) | Home > Meals | `GET /api/meal-plan/proposals`, `POST /api/meal-plan/proposals` `{dish, note, wanted_date}`, `POST /api/meal-plan/proposals/{id}/approve` `{meal_date}`, `POST .../decline`, `DELETE /api/meal-plan/proposals/{id}`; approved dishes come back as `picks` on `GET /api/meal-plan` days |
-| Widget boards (view, full screen, edit: reorder by long-press drag, resize, add, remove) | More > Widgets (web: `/widgets`) | `GET /api/widgets/catalog`, `GET /api/widgets/boards`, `POST /api/widgets/boards` `{preset}` or `{name, layout}`, `PATCH /api/widgets/boards/{id}` `{name?, layout?}`, `DELETE /api/widgets/boards/{id}`, `GET /api/widgets/data?types=` |
+| Family members | More > Family | `GET /api/family` |
+| Points / streak / level / badges | App bar chip (`Lv N` + points + streak, thin progress to next level), Today + Family level card (hexagon, title, XP bar from `member.level_floor` to `next_level_at`, "N pts to Level X"), Family badges grouped by `category` (money / habits / home / levels) with `tier` medal colours (bronze / silver / gold), locked badges show `progress/target` | `GET /api/gamification` (`member.level_number` 1..50, `level_floor`, `next_level_at`; `badges[]` `{key,name,description,category,tier,target,progress,earned,earned_at}`; all fields optional so older servers still render) |
+| Reminders (household categories, every N weeks/months, template gallery in the create sheet) | Reminders (bottom bar; web: `/reminders`) | `GET /api/reminders/upcoming?days=7`, `GET /api/reminders` (rows include `interval`), `PATCH /api/reminders/{id}` `{active}`, `DELETE /api/reminders/{id}`, `POST /api/reminders/occurrences/{id}/done`, `POST /api/reminders/occurrences/{id}/snooze` `{minutes}` or `{until: "tomorrow"}`, `POST /api/reminders` `{title, kind, start_date, time_of_day, category, notes, weekdays?, day_of_month?, interval, assignee_id?}`, `GET /api/family` (who-is-it-for picker) |
+| Chores | Chores (bottom bar; More > Family > Chores; web: `/chores`) | `GET /api/chores/today`, `POST /api/chores/{instanceId}/complete` / `approve` / `reject` / `undo` `{note}` |
+| Shopping lists | More > Family > Lists (web: `/lists`) | `GET /api/lists`, `POST /api/lists` `{name}` (emoji sent empty), `GET /api/lists/{id}`, `POST /api/lists/{id}/items` `{text}`, `PATCH /api/lists/{id}/items/{itemId}` `{checked}`, `DELETE /api/lists/{id}/items/{itemId}`, `POST /api/lists/{id}/clear-checked`, `POST /api/lists/{id}/finish` `{client_id, total_amount}` (finish shopping -> spending) |
+| Meal plan + must-use ingredients | More > Family > Meals (web: `/meals`) | `GET /api/meal-plan` (`?week=this` for this week), `GET /api/meal-plan/ingredients`, `POST /api/meal-plan/ingredients` `{name}`, `DELETE /api/meal-plan/ingredients/{id}` |
+| Calendar (activities + reminders overlay): month grid, selected-day list, 30-day agenda; owner/parent add, edit, delete (this one / series) | More > Family > Calendar (web: `/calendar`; the web also has week and day hour grids) | `GET /api/calendar?from&to[&include=activities\|reminders]`, `POST /api/activities` `{title, start_date, end_date, all_day, start_time, end_time, repeat, interval, weekdays, until_date, attendee_ids, location, notes, color}`, `PATCH /api/activities/{id}`, `DELETE /api/activities/{id}[?on=YYYY-MM-DD]`, `GET /api/family` (who-is-it-for picker) |
+| Reminders as a month calendar | Reminders > Calendar segment | `GET /api/calendar?include=reminders`, then the reminder done/snooze endpoints above |
+| Meal requests (anyone asks, owner/parent approve on a day or decline) | More > Family > Meals | `GET /api/meal-plan/proposals`, `POST /api/meal-plan/proposals` `{dish, note, wanted_date}`, `POST /api/meal-plan/proposals/{id}/approve` `{meal_date}`, `POST .../decline`, `DELETE /api/meal-plan/proposals/{id}`; approved dishes come back as `picks` on `GET /api/meal-plan` days |
+| Widget boards (view, full screen, edit: reorder by long-press drag, resize, add, remove, colour each widget and the board background) | More > Family > Widgets (web: `/widgets`) | `GET /api/widgets/catalog`, `GET /api/widgets/boards`, `POST /api/widgets/boards` `{preset}` or `{name, layout}`, `PATCH /api/widgets/boards/{id}` `{name?, layout?}` (layout `{background?, widgets:[{..., color?}]}`, colours `#rrggbb`), `DELETE /api/widgets/boards/{id}`, `GET /api/widgets/data?types=` |
 
 ### Web-only for now (intentionally not on the phone yet)
 

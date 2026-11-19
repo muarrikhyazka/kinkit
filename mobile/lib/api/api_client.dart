@@ -394,12 +394,15 @@ class KinkitApi {
   Future<void> createWidgetBoard({String? preset, String? name, List<WidgetItem> widgets = const []}) => _post('/widgets/boards', {
         if (preset != null) 'preset': preset,
         if (name != null) 'name': name,
-        if (preset == null) 'layout': {'widgets': widgets.map((w) => w.toJson()).toList()},
+        if (preset == null) 'layout': WidgetBoard.layoutJson(widgets),
       });
 
-  Future<void> updateWidgetBoard(int id, {String? name, List<WidgetItem>? widgets}) => _patch('/widgets/boards/$id', {
+  /// Saving a layout replaces it: pass the board's `background` (null/'' clears it)
+  /// and `layoutExtra` (its other top-level keys) so nothing is lost.
+  Future<void> updateWidgetBoard(int id, {String? name, List<WidgetItem>? widgets, String? background, Json layoutExtra = const {}}) =>
+      _patch('/widgets/boards/$id', {
         if (name != null) 'name': name,
-        if (widgets != null) 'layout': {'widgets': widgets.map((w) => w.toJson()).toList()},
+        if (widgets != null) 'layout': WidgetBoard.layoutJson(widgets, background: background, extra: layoutExtra),
       });
 
   Future<void> deleteWidgetBoard(int id) => _delete('/widgets/boards/$id');

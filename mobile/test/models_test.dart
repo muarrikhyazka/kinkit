@@ -143,6 +143,83 @@ void main() {
     expect(g.leaderboard.single.pointsMonth, 40);
   });
 
+  test('Gamification levels: progress runs from the level floor to the next level', () {
+    final g = Gamification.fromJson({
+      'points': 900,
+      'streak_days': 2,
+      'badge': 'Penny Pincher',
+      'level': 4,
+      'member': {
+        'id': 7,
+        'points': 400,
+        'level': 'Penny Pincher',
+        'level_index': 3,
+        'level_number': 4,
+        'level_floor': 300,
+        'next_level': 'Budget Boss',
+        'next_level_at': 500,
+      },
+      'badges': [
+        {
+          'key': 'financial_geek',
+          'name': 'Financial Geek',
+          'description': 'Log 100 expenses',
+          'icon': 'x',
+          'category': 'money',
+          'tier': 'silver',
+          'target': 100,
+          'progress': 37,
+          'earned': false,
+          'earned_at': null,
+        },
+        {
+          'key': 'first_log',
+          'name': 'First Log',
+          'category': 'money',
+          'tier': 'bronze',
+          'target': 1,
+          'progress': 1,
+          'earned': true,
+          'earned_at': '2026-11-02T10:00:00Z',
+        },
+        {'key': 'level_5', 'name': 'Level 5', 'category': 'levels', 'tier': 'gold', 'target': 5, 'progress': 4, 'earned': false},
+      ],
+    });
+    expect(g.myLevelNumber, 4);
+    expect(g.myLevelFloor, 300);
+    expect(g.myPointsToNext, 100);
+    expect(g.levelProgress, closeTo(0.5, 1e-9)); // (400-300)/(500-300), not 400/500
+    final geek = g.badges.first;
+    expect(geek.category, 'money');
+    expect(geek.tier, 'silver');
+    expect(geek.fraction, closeTo(0.37, 1e-9));
+    expect(g.badges[1].fraction, 1);
+    expect(g.badges[1].earnedAt, startsWith('2026-11-02'));
+    final groups = groupBadges(g.badges);
+    expect(groups.map((e) => e.$1), ['Money', 'Levels']);
+    expect(groups.first.$2.length, 2);
+  });
+
+  test('Gamification tolerates an old server (no level_number / floor / badge metadata)', () {
+    final g = Gamification.fromJson({
+      'points': 120,
+      'badge': 'Tracker',
+      'badges': [
+        {'key': 'first_log', 'name': 'First Log', 'earned': false},
+      ],
+    });
+    expect(g.myLevelNumber, 0);
+    expect(g.myNextLevelAt, isNull);
+    expect(g.levelProgress, 1);
+    expect(g.badges.single.fraction, 0);
+    expect(groupBadges(g.badges).single.$1, 'Badges');
+    // Household fallback derives the floor from the level number (25*n*(n-1)).
+    final h = Gamification.fromJson({'points': 200, 'level': 3, 'next_badge': 'X', 'next_badge_at': 300});
+    expect(levelFloorFor(3), 150);
+    expect(h.myLevelFloor, 150);
+    expect(h.levelProgress, closeTo(50 / 150, 1e-9));
+  });
+
   test('Budgeting and actuals lookups', () {
     final b = Budgeting.fromJson({
       'income': [

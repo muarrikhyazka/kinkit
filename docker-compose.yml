@@ -57,5 +57,29 @@ services:
     depends_on:
       - app
 
+  slack-bot:
+    build: ./bots
+    image: kinkit-slack-bot:latest
+    container_name: kinkit-slack-bot
+    restart: unless-stopped
+    environment:
+      BACKEND_URL: http://app:5000
+      SERVICE_TOKEN: ${SERVICE_TOKEN}
+    command: python slack_bot.py
+    depends_on:
+      - app
+
+  matrix-bot:
+    build: ./bots
+    image: kinkit-matrix-bot:latest
+    container_name: kinkit-matrix-bot
+    restart: unless-stopped
+    environment:
+      BACKEND_URL: http://app:5000
+      SERVICE_TOKEN: ${SERVICE_TOKEN}
+    command: python matrix_bot.py
+    depends_on:
+      - app
+
 volumes:
   pgdata:

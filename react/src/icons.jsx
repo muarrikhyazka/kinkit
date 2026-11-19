@@ -105,6 +105,18 @@ export const IconHome = (p) => (
 export const IconBell = (p) => (
   <svg {...base} {...p}><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 01-3.4 0" /></svg>
 )
+export const IconChores = (p) => (
+  <svg {...base} {...p}><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 8l1.5 1.5L12 7M8 14l1.5 1.5L12 13M15 8.5h2M15 14.5h2" /></svg>
+)
+export const IconList = (p) => (
+  <svg {...base} {...p}><path d="M9 6h11M9 12h11M9 18h11" /><circle cx="4.5" cy="6" r="1" /><circle cx="4.5" cy="12" r="1" /><circle cx="4.5" cy="18" r="1" /></svg>
+)
+export const IconMeals = (p) => (
+  <svg {...base} {...p}><path d="M7 3v7a2 2 0 002 2v9M7 3v5M11 3v5M11 8a2 2 0 01-2 2" /><path d="M17 21V3c-2.2 1.2-3.5 3.8-3.5 7 0 1.7.9 2.8 2 3.2V21" /></svg>
+)
+export const IconMenu = (p) => (
+  <svg {...base} {...p}><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+)
 // --- end home ---
 export const IconStar = (p) => (
   <svg {...base} {...p}><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3z" /></svg>
@@ -156,15 +168,74 @@ export const IconMedal = (p) => (
 )
 
 // Achievement / challenge icons, keyed by the badge `key` or challenge `id` from /api/gamification.
+// Everything the map references must be defined above it (const arrow fns are not hoisted).
+const IconGlasses = (p) => (
+  <svg {...base} {...p}><circle cx="6.5" cy="14.5" r="3.5" /><circle cx="17.5" cy="14.5" r="3.5" /><path d="M10 14.5h4M3.2 13.5L5 6M20.8 13.5L19 6" /></svg>
+)
+const IconCalculator = (p) => (
+  <svg {...base} {...p}><rect x="5" y="3" width="14" height="18" rx="2" /><rect x="8" y="6" width="8" height="3" rx=".5" /><path d="M8.5 13h.01M12 13h.01M15.5 13h.01M8.5 17h.01M12 17h.01M15.5 17h.01" /></svg>
+)
+const IconFlag = (p) => (
+  <svg {...base} {...p}><path d="M5 21V4" /><path d="M5 4h12l-2.5 4L17 12H5" /></svg>
+)
+const IconBolt = (p) => (
+  <svg {...base} {...p}><path d="M13 2L4.5 13.5H11L10 22l9-12h-6.5L13 2z" /></svg>
+)
+const IconCoinUp = (p) => (
+  <svg {...base} {...p}><circle cx="12" cy="12" r="9" /><path d="M12 16.5V8M8.5 11.5L12 8l3.5 3.5" /></svg>
+)
+const IconSprout = (p) => (
+  <svg {...base} {...p}><path d="M12 21v-9" /><path d="M12 12C12 8 9 6 4.5 6.5 4.5 10.5 7 12.5 12 12z" /><path d="M12 14c0-3.2 2.4-5 6.5-4.5 0 3.4-2.2 5.2-6.5 4.5z" /></svg>
+)
+const IconFlameBig = (p) => (
+  <svg {...base} {...p}><path d="M12 22c-4.4 0-7.5-3-7.5-7.2 0-3.4 2.2-5.8 4-7.8.4 2 1.5 3.3 2.9 4C11.5 8.2 13 5.2 15.3 3c.7 3.4 4.2 6.2 4.2 11.8 0 4.2-3.1 7.2-7.5 7.2z" /><path d="M12 22c-1.9 0-3.3-1.3-3.3-3.2 0-2 1.8-3 3.3-5 1.5 2 3.3 3 3.3 5 0 1.9-1.4 3.2-3.3 3.2z" /><path d="M3 4.5l1 1M21 4.5l-1 1M12 1v1.5" /></svg>
+)
+const IconBellCheck = (p) => (
+  <svg {...base} {...p}><path d="M6 16V11a6 6 0 1112 0v5l1.5 2h-15L6 16z" /><path d="M10 21h4" /><path d="M9.5 11.5l2 2 3-3.5" /></svg>
+)
+const IconCalendarCheck = (p) => (
+  <svg {...base} {...p}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /><path d="M9 15.5l2.2 2.2 3.8-4" /></svg>
+)
+const IconMenuCard = (p) => (
+  <svg {...base} {...p}><path d="M7 3v7a2 2 0 002 2v9" /><path d="M4.5 3v5.5A2.5 2.5 0 007 11M9.5 3v5.5A2.5 2.5 0 017 11" /><path d="M17 3c-2.2 1.2-3 3.8-3 7h3v11" /></svg>
+)
+const IconChefHat = (p) => (
+  <svg {...base} {...p}><path d="M7 14.5V20h10v-5.5" /><path d="M7 14.5A4 4 0 015.8 6.8 5 5 0 0112 4a5 5 0 016.2 2.8A4 4 0 0117 14.5" /><path d="M7 17.5h10" /></svg>
+)
+const IconRank = (p) => (
+  <svg {...base} {...p}><path d="M12 3l8 3v6c0 4.8-3.4 7.8-8 9-4.6-1.2-8-4.2-8-9V6l8-3z" /><path d="M8.5 13l3.5-3.2 3.5 3.2M8.5 16.5l3.5-3.2 3.5 3.2" /></svg>
+)
+const IconCrown = (p) => (
+  <svg {...base} {...p}><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z" /><path d="M5.5 21h13" /></svg>
+)
+
 const BADGE_ICONS = {
+  // money
   first_log: IconSpending,
+  financial_geek: IconGlasses,
+  number_cruncher: IconCalculator,
   first_budget: IconBudget,
-  streak_7: IconFlame,
-  streak_30: IconFlame,
   under_budget: IconTarget,
   saver: IconPiggy,
+  goal_setter: IconFlag,
+  goal_crusher: IconBolt,
+  asset_tracker: IconAssets,
+  income_insider: IconCoinUp,
+  // habits
+  streak_3: IconSprout,
+  streak_7: IconFlame,
+  streak_30: IconFlameBig,
+  never_forget: IconBellCheck,
+  planner: IconCalendarCheck,
+  // home
   chores_10: IconBroom,
   chores_50: IconTrophy,
+  menu_maker: IconMenuCard,
+  chefs_choice: IconChefHat,
+  // levels
+  level_5: IconRank,
+  level_10: IconCrown,
+  // challenges / celebration
   log_every_day: IconCalendar,
   no_spend_weekend: IconPiggy,
   wants_under: IconTarget,
@@ -175,6 +246,21 @@ const BADGE_ICONS = {
 export const BadgeIcon = ({ id, ...p }) => {
   const Icon = BADGE_ICONS[id] || IconMedal
   return <Icon {...p} />
+}
+
+/** Hexagon level emblem with the level number inside. tier colours the rim (bronze < 10, silver < 25, gold). */
+export const levelTier = (n) => (n >= 25 ? 'gold' : n >= 10 ? 'silver' : 'bronze')
+export const LevelBadge = ({ level, size = 40, className = '', ...p }) => {
+  const n = Math.max(1, Number(level) || 1)
+  const digits = String(n).length
+  return (
+    <svg viewBox="0 0 48 48" width={size} height={size} role="img" aria-label={`Level ${n}`}
+      className={`level-badge tier-${levelTier(n)} ${className}`} {...p}>
+      <path className="lb-hex" d="M24 3l18 10.5v21L24 45 6 34.5v-21L24 3z" strokeWidth="3" strokeLinejoin="round" />
+      <text className="lb-num" x="24" y="25" textAnchor="middle" dominantBaseline="central"
+        fontSize={digits > 1 ? 18 : 22} fontWeight="800">{n}</text>
+    </svg>
+  )
 }
 
 // --- household reminder categories ---

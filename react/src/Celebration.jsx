@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import Modal from './Modal.jsx'
-import { BadgeIcon } from './icons.jsx'
+import { BadgeIcon, LevelBadge } from './icons.jsx'
 import Mascot from './Mascot.jsx'
 
 const COLORS = ['#f43f5e', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#facc15']
@@ -36,7 +36,7 @@ function Confetti({ count = 60 }) {
 
 /**
  * Celebration dialog for newly earned badges / level-ups.
- *   <Celebration items={[{ iconKey, title, text }]} onClose={...} />
+ *   <Celebration items={[{ iconKey, title, text, level? }]} onClose={...} />
  * iconKey is a badge/challenge key (see BadgeIcon in icons.jsx).
  * Rendered in a portal so it works even when the opener is in a hidden
  * container (e.g. the desktop sidebar on a phone).
@@ -52,7 +52,7 @@ export default function Celebration({ items, onClose }) {
         <ul className="celebration-list">
           {items.map((it, i) => (
             <li key={i}>
-              <span className="celebration-icon" aria-hidden="true"><BadgeIcon id={it.iconKey} width={28} height={28} /></span>
+              <span className="celebration-icon" aria-hidden="true">{it.level ? <LevelBadge level={it.level} size={40} /> : <BadgeIcon id={it.iconKey} width={28} height={28} />}</span>
               <div>
                 <strong>{it.title}</strong>
                 {it.text && <div className="muted">{it.text}</div>}
@@ -83,14 +83,20 @@ export function diffNewRewards(state) {
   const m = state?.member
   if (!m) return []
   const earned = (state.badges || []).filter(b => b.earned)
-  const current = { level: m.level_index ?? 0, badges: earned.map(b => b.key) }
+  // `lv` = 1-based level number (new schema). Older stored records only had a 0-based `level` index
+  // on a different scale, so they are never compared against `lv`.
+  const lv = Number(m.level_number ?? 0) || 0
+  const current = { lv, badges: earned.map(b => b.key) }
   let prev = null
   try { prev = JSON.parse(localStorage.getItem(seenKey(m.id)) || 'null') } catch { prev = null }
   try { localStorage.setItem(seenKey(m.id), JSON.stringify(current)) } catch { /* storage blocked: no celebrations */ return [] }
   if (!prev) return []
   const items = []
-  if (current.level > (prev.level ?? 0)) {
-    items.push({ iconKey: 'level_up', title: `Level up: ${m.level}`, text: `${m.points} points${m.next_level ? ` - next: ${m.next_level} at ${m.next_level_at}` : ''}` })
+  if (lv > 0 && typeof prev.lv === 'number' && lv > prev.lv) {
+    items.push({
+      iconKey: 'level_up', level: lv, title: `Level up: Level ${lv}${m.level ? ` - ${m.level}` : ''}`,
+      text: `${m.points} points${m.next_level ? ` - next: ${m.next_level} at ${m.next_level_at}` : ''}`,
+    })
   }
   const seen = new Set(prev.badges || [])
   earned.filter(b => !seen.has(b.key)).forEach(b => items.push({ iconKey: b.key, title: `Badge: ${b.name}`, text: b.description }))

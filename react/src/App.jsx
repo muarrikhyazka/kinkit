@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
 import { AuthProvider, useAuth } from './AuthContext.jsx'
 import { YearProvider } from './YearContext.jsx'
@@ -10,6 +11,9 @@ import Login from './pages/Login.jsx'
 import TVView from './pages/TVView.jsx'
 import { APP_ROUTES, LEGACY_REDIRECTS, canSee } from './routes.jsx'
 import TabbedSection from './TabbedSection.jsx'
+
+// Public documentation site (/docs): its own layout, no login, loaded on demand.
+const DocsLayout = lazy(() => import('./docs/DocsLayout.jsx'))
 
 function Private({ children }) {
   const { user } = useAuth()
@@ -46,6 +50,8 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/tv" element={<TVRoute />} />
+      <Route path="/docs" element={<Suspense fallback={null}><DocsLayout /></Suspense>} />
+      <Route path="/docs/:slug" element={<Suspense fallback={null}><DocsLayout /></Suspense>} />
       <Route path="/" element={<Private><Layout /></Private>}>
         {/* pages come from routes.jsx - add new pages there */}
         {APP_ROUTES.map(route => {

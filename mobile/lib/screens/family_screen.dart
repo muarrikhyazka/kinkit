@@ -107,14 +107,27 @@ class FamilyScreen extends ConsumerWidget {
                 ],
                 if (g != null && g.badges.isNotEmpty) ...[
                   SectionTitle('Badges (${g.badges.where((b) => b.earned).length}/${g.badges.length})'),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [for (final b in g.badges) _BadgeChip(b: b)],
+                  for (final (title, list) in groupBadges(g.badges)) ...[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 6),
+                      child: Text('$title  ${list.where((b) => b.earned).length}/${list.length}',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: p.text)),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: LayoutBuilder(
+                        builder: (context, c) {
+                          const gap = 8.0;
+                          final w = (c.maxWidth - gap) / 2;
+                          return Wrap(
+                            spacing: gap,
+                            runSpacing: gap,
+                            children: [for (final b in list) _BadgeTile(b: b, width: w)],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ],
               ],
             );
@@ -142,36 +155,71 @@ class FamilyScreen extends ConsumerWidget {
   }
 }
 
-class _BadgeChip extends StatelessWidget {
+class _BadgeTile extends StatelessWidget {
   final BadgeView b;
-  const _BadgeChip({required this.b});
+  final double width;
+  const _BadgeTile({required this.b, required this.width});
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Tooltip(
-      message: b.description,
-      child: Opacity(
-        opacity: b.earned ? 1 : 0.4,
-        child: Container(
-          width: 104,
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: b.earned ? p.primaryLight : p.card,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: p.border),
-          ),
-          child: Column(
-            children: [
-              Icon(_badgeIcon(b.key), size: 28, color: b.earned ? p.primary : p.muted),
-              const SizedBox(height: 4),
-              Text(b.name,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 12, color: p.text)),
+    final tier = tierColor(b.tier);
+    final earned = b.earned;
+    final ring = earned ? tier : p.borderStrong;
+    return Semantics(
+      label: '${b.name}, ${b.tier.isEmpty ? '' : '${b.tier} '}badge, ${earned ? 'earned' : 'not earned yet, ${b.progress} of ${b.target}'}',
+      child: Container(
+        width: width,
+        padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
+        decoration: BoxDecoration(
+          color: earned ? Color.alphaBlend(tier.withValues(alpha: 0.10), p.card) : p.card,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: earned ? tier.withValues(alpha: 0.6) : p.border),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: earned ? tier.withValues(alpha: 0.16) : p.surface2,
+                border: Border.all(color: ring, width: 3),
+              ),
+              child: Icon(_badgeIcon(b.key), size: 24, color: earned ? tier : p.muted.withValues(alpha: 0.7)),
+            ),
+            const SizedBox(height: 6),
+            Text(b.name,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: earned ? p.text : p.muted)),
+            if (b.tier.isNotEmpty)
+              Text(b.tier.toUpperCase(),
+                  style: TextStyle(
+                      fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.6, color: earned ? tier : p.muted)),
+            const SizedBox(height: 2),
+            Text(b.description,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 11, color: p.muted)),
+            const SizedBox(height: 8),
+            if (earned)
+              Text(
+                b.earnedAt == null || b.earnedAt!.length < 10 ? 'Earned' : 'Earned ${b.earnedAt!.substring(0, 10)}',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.success),
+              )
+            else if (b.target > 0) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(99),
+                child: LinearProgressIndicator(value: b.fraction, minHeight: 6, backgroundColor: p.border, color: tier),
+              ),
+              const SizedBox(height: 3),
+              Text('${b.progress.clamp(0, b.target)}/${b.target}',
+                  style: TextStyle(fontSize: 11, color: p.muted, fontFeatures: kTabular)),
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -183,19 +231,45 @@ IconData _badgeIcon(String key) {
   switch (key) {
     case 'first_log':
       return Icons.edit_note_rounded;
+    case 'financial_geek':
+      return Icons.analytics_rounded;
+    case 'number_cruncher':
+      return Icons.calculate_rounded;
     case 'first_budget':
       return Icons.account_balance_wallet_rounded;
-    case 'streak_7':
-      return Icons.local_fire_department;
-    case 'streak_30':
-      return Icons.whatshot_rounded;
     case 'under_budget':
       return Icons.verified_rounded;
     case 'saver':
       return Icons.savings_rounded;
+    case 'goal_setter':
+      return Icons.flag_rounded;
+    case 'goal_crusher':
+      return Icons.bolt_rounded;
+    case 'asset_tracker':
+      return Icons.layers_rounded;
+    case 'income_insider':
+      return Icons.trending_up_rounded;
+    case 'streak_3':
+      return Icons.eco_rounded;
+    case 'streak_7':
+      return Icons.local_fire_department;
+    case 'streak_30':
+      return Icons.whatshot_rounded;
+    case 'never_forget':
+      return Icons.notifications_active_rounded;
+    case 'planner':
+      return Icons.event_available_rounded;
     case 'chores_10':
       return Icons.cleaning_services_rounded;
     case 'chores_50':
+      return Icons.emoji_events_rounded;
+    case 'menu_maker':
+      return Icons.restaurant_menu_rounded;
+    case 'chefs_choice':
+      return Icons.soup_kitchen_rounded;
+    case 'level_5':
+      return Icons.shield_rounded;
+    case 'level_10':
       return Icons.workspace_premium_rounded;
   }
   return Icons.military_tech_rounded;
