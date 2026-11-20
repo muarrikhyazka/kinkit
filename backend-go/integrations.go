@@ -30,7 +30,7 @@ func bumpIntegrationsVersion(ctx context.Context, app *App) error {
 	return err
 }
 
-// ---------- Integrations CRUD ----------
+// Integrations CRUD
 
 // integrationRow is the user-facing shape of an integration. The upstream
 // platform token (Telegram/Discord bot secret) is never echoed back: only a

@@ -1,6 +1,6 @@
 // Isometric "Kinkit household" scene for the login hero, rendered with three.js.
 //
-//   const scene = createLoginScene(canvas, { reducedMotion })  // -> { dispose } | null (no WebGL)
+//   const scene = createLoginScene(canvas, { reducedMotion })  // -> { dispose, setPaused } | null (no WebGL)
 //
 // Everything is built from simple primitives (boxes, cylinders, spheres, tori)
 // with flat brand colours. All motion is a function of the loop phase
@@ -48,7 +48,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   camera.position.set(20, 20 + TARGET_Y, 20)
   camera.lookAt(0, TARGET_Y, 0)
 
-  // ---- lights ----
+  // lights
   scene.add(new HemisphereLight(0xffffff, 0x8b8ff0, 1.9))
   const sun = new DirectionalLight(0xffffff, 2.2)
   sun.position.set(-5, 12, 6)
@@ -61,7 +61,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   sun.shadow.radius = 4
   scene.add(sun)
 
-  // ---- helpers ----
+  // helpers
   const mats = new Map()
   const mat = (color, o = {}) => {
     const key = `${color}|${o.rough ?? ''}|${o.metal ?? ''}|${o.emissive ?? ''}`
@@ -93,7 +93,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   const tick = [] // per-frame animators: (phase, t) => void
   const bob = (obj, baseY, amp, k = 1, offset = 0) => tick.push(p => { obj.position.y = baseY + Math.sin(p * k + offset) * amp })
 
-  // ---- floating island ----
+  // floating island
   const island = new Group()
   world.add(island)
   const tileTop = mat(C.tile, { rough: 0.85 })
@@ -107,7 +107,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   add(island, box(3.6, 0.04, 1.1), mat(C.white, { rough: 0.9 }), 0.9, 0.02, 3.4, { cast: false })
   bob(island, 0, 0.18, 1)
 
-  // ---- the house ----
+  // the house
   const house = new Group()
   house.position.set(-1.2, 0, -1.2)
   island.add(house)
@@ -142,7 +142,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
     })
   }
 
-  // ---- bushes ----
+  // bushes
   const leaf = mat(C.teal, { rough: 0.8 })
   const leafDark = mat(C.tealDark, { rough: 0.8 })
   const bush = (x, z, r = 0.55) => {
@@ -151,7 +151,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   }
   bush(-3.7, 0.9); bush(-3.6, -2.7, 0.65); bush(0.9, -3.8); bush(3.7, -3.6, 0.5)
 
-  // ---- coin stacks (money) ----
+  // coin stacks (money)
   const coinM = mat(C.amber, { metal: 0.35, rough: 0.35 })
   const coinInner = mat(C.amberDark, { metal: 0.35, rough: 0.4 })
   const coin = (parent, x, y, z, r = 0.55) => {
@@ -174,7 +174,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   flyFace.rotation.x = Math.PI / 2
   tick.push(p => { flyCoin.position.y = 2.7 + Math.sin(p) * 0.3 + island.position.y; flyCoin.rotation.y = p * 2 })
 
-  // ---- piggy bank (savings) ----
+  // piggy bank (savings)
   const pig = new Group()
   pig.position.set(0.5, 0.0, 3.5)
   island.add(pig)
@@ -199,7 +199,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
     drop.scale.setScalar(u > 0.8 ? 0.001 : 1)
   })
 
-  // ---- shopping basket (lists) ----
+  // shopping basket (lists)
   const basket = new Group()
   basket.position.set(3.5, 0, -1.8)
   island.add(basket)
@@ -215,7 +215,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   bob(apple, 1.1, 0.06, 2, 0); bob(orange, 1.1, 0.06, 2, 2); bob(carton, 1.3, 0.05, 2, 4); bob(leek, 1.45, 0.04, 2, 1)
   tick.push(p => { basket.rotation.y = Math.sin(p + 1) * 0.1 })
 
-  // ---- TV / widget screen ----
+  // TV / widget screen
   const tv = new Group()
   tv.position.set(-2.4, 0, 3.7)
   tv.rotation.y = Math.PI / 4
@@ -230,7 +230,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   const sweep = add(tv, new PlaneGeometry(0.5, 1.35), sweepM, 0, 1.5, 0.095, { cast: false, receive: false })
   tick.push(p => { sweep.position.x = Math.sin(p) * 1.0; sweepM.opacity = 0.1 + 0.07 * Math.cos(p) })
 
-  // ---- floating: calendar ----
+  // floating: calendar
   const calendar = new Group()
   calendar.position.set(2.4, 4.6, -3.6)
   world.add(calendar)
@@ -248,7 +248,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   cal.rotation.y = Math.PI / 4
   tick.push(p => { calendar.position.y = 4.6 + Math.sin(p + 0.5) * 0.28; cal.rotation.y = Math.PI / 4 + Math.sin(p) * 0.22; cal.rotation.z = Math.sin(p * 2) * 0.03 })
 
-  // ---- floating: checklist (chores) ----
+  // floating: checklist (chores)
   const check = new Group()
   check.position.set(-4.0, 4.3, 0.4)
   world.add(check)
@@ -264,7 +264,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   sheet.rotation.y = Math.PI / 4
   tick.push(p => { check.position.y = 4.3 + Math.sin(p + 2.2) * 0.3; sheet.rotation.y = Math.PI / 4 + Math.sin(p + 1) * 0.22 })
 
-  // ---- floating: medal (points & badges) ----
+  // floating: medal (points & badges)
   const medal = new Group()
   medal.position.set(-5.4, 3.0, 3.4)
   world.add(medal)
@@ -283,7 +283,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   medal.scale.setScalar(0.9)
   tick.push(p => { medal.position.y = 3.0 + Math.sin(p + 3) * 0.3; spin.rotation.y = Math.PI / 4 + p })
 
-  // ---- floating: clock (reminders) ----
+  // floating: clock (reminders)
   const clock = new Group()
   clock.position.set(-4.7, 1.9, -3.2)
   world.add(clock)
@@ -315,7 +315,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
     secondHand.rotation.z = -(p * 3)
   })
 
-  // ---- sparkles orbiting the island ----
+  // sparkles orbiting the island
   const sparkGeo = new OctahedronGeometry(0.18)
   const sparkCols = [C.pinkLight, C.amber, 0xffffff, C.indigoLight, C.green]
   for (let i = 0; i < 9; i++) {
@@ -332,7 +332,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
     })
   }
 
-  // ---- render loop ----
+  // render loop
   let width = 0
   let height = 0
   const resize = () => {
@@ -369,7 +369,8 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   let last = 0
   let onScreen = true
   let disposed = false
-  const running = () => !reducedMotion && onScreen && !document.hidden && !disposed
+  let paused = false
+  const running = () => !reducedMotion && !paused && onScreen && !document.hidden && !disposed
   const frame = now => {
     raf = 0
     if (!running()) { last = 0; return }
@@ -390,6 +391,7 @@ export function createLoginScene(canvas, { reducedMotion = false } = {}) {
   kick()
 
   return {
+    setPaused(v) { paused = !!v; kick() },
     dispose() {
       disposed = true
       if (raf) cancelAnimationFrame(raf)

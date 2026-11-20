@@ -80,7 +80,7 @@ func listIsDigits(s string) bool {
 	return true
 }
 
-// ---------- types ----------
+// types
 
 type shoppingList struct {
 	ID           int64  `json:"id"`
@@ -188,7 +188,7 @@ func (app *App) loadItem(ctx context.Context, aid, itemID int64) (shoppingItem, 
 	return items[0], nil
 }
 
-// ---------- lists ----------
+// lists
 
 // ensureDefaultList creates "Groceries" for a household that has no list at
 // all (archived lists count, so archiving everything doesn't resurrect it).
@@ -418,7 +418,7 @@ func (app *App) handleDeleteList(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-// ---------- items ----------
+// items
 
 // newListItem is one item to add; CategoryID/EstPrice/Note only come from the
 // single-item web form.
@@ -743,7 +743,7 @@ func (app *App) handleClearChecked(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "removed": tag.RowsAffected()})
 }
 
-// ---------- suggestions ----------
+// suggestions
 
 func (app *App) handleListSuggestions(w http.ResponseWriter, r *http.Request) {
 	aid, ok := app.requireAccount(w, r)
@@ -796,7 +796,7 @@ func (app *App) handleListSuggestions(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"suggestions": out})
 }
 
-// ---------- finish shopping ----------
+// finish shopping
 
 type finishInput struct {
 	ClientID    string  `json:"client_id"`
@@ -991,7 +991,7 @@ func (app *App) handleFinishShopping(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// ---------- staples ----------
+// staples
 
 type stapleRow struct {
 	ID          int64   `json:"id"`
@@ -1262,7 +1262,7 @@ func (app *App) addOneStaple(ctx context.Context, aid, stapleID, listID int64, n
 	return !exists, tx.Commit(ctx)
 }
 
-// ---------- Today provider ----------
+// Today provider
 
 func listsTodayProvider(ctx context.Context, app *App, aid int64, _ memberInfo, day time.Time) (*TodaySection, error) {
 	_, _ = app.addDueStaples(ctx, aid, time.Now())

@@ -41,6 +41,10 @@ same change.** Before finishing a task, walk this checklist:
 If a surface intentionally doesn't get a change (e.g. an admin-only feature isn't put on the phone
 app), say so explicitly in your summary instead of skipping it silently.
 
+## UI work
+
+Read `DESIGN.md` first: it holds the identity, the dials (ENERGY / RHYTHM / MOTION) and the "never" list for every surface. Treat the antislop rules as the filter on top, and keep landing claims in step with `landing/README.md`.
+
 ## Commands
 
 ```sh

@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// ---------- pure unit tests ----------
+// pure unit tests
 
 func mdate(s string) time.Time {
 	t, err := time.Parse(isoDateLayout, s)
@@ -126,7 +126,7 @@ func TestAlertThresholdAndFormat(t *testing.T) {
 	}
 }
 
-// ---------- integration tests ----------
+// integration tests
 
 type setupLists struct {
 	Categories    []categoryRow     `json:"categories"`

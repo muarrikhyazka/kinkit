@@ -36,8 +36,8 @@ Not touched because other people own them: `Login.jsx`, `Today.jsx`, `Celebratio
   - Semantic: `--success`, `--danger`, `--danger-light`, `--warning` (darkened to #b45309 so it works as text).
 - **Chrome:**
   - `--chrome-*` drives the sidebar and the mobile top bar.
-  - Light: #4F46E5 to #4338CA, with a white wordmark and #E0E7FF for secondary text. The active nav item is a white pill with purple text.
-  - Dark: #312E81 to #1E1B4B, with a translucent white active state.
+  - Light: flat #4F46E5, with a white wordmark and #E0E7FF for secondary text. The active nav item is a white pill with purple text.
+  - Dark: flat #312E81, with a translucent white active state.
   - Senior: flat #312E81, white text, and an active item outlined in white.
 - **Numbers:** `td` and every money element use `font-variant-numeric: tabular-nums`. Add `.num` to a th/td to right-align it.
 - **Focus:** inputs get a 3px `--focus-ring`. Buttons and links get a 2px outline on `:focus-visible`, in white inside the purple chrome.
@@ -101,7 +101,7 @@ Not touched because other people own them: `Login.jsx`, `Today.jsx`, `Celebratio
 
 ## Remaining recommendations
 
-1. **Mascot and Login owners:** `.login-page` still uses a 135° indigo-to-violet gradient (`index.css`, "login" section). I left it alone to avoid a conflict. It should become flat `--chrome-bg` or `--bg`.
+1. ~~**Mascot and Login owners:** the login hero still used a gradient.~~ Done on 2026-11-20: the login hero, chrome and TV brand bars are flat, and Kiki's loops end within 5 seconds (see `anti-slop/report-001-2026-11-20.md`).
 2. **Spacing tokens are partial:** they're applied to the shell, cards, tables, buttons, forms, chrome and the shared components. Feature blocks (`.list-*`, `.chore-*`, `.meal-*`, `.rem-*`) still use rem paddings that sit near the scale. Convert those as each feature is next touched.
 3. **Dashboard density:** the Month tab stacks 4 stats, budget progress, a trend chart, 2 cards and a big table. Consider putting "Budget vs Actual by Category" behind the existing `Collapsible`, as Year already does for patterns.
 4. **Charts:** `IncomeExpenseChart` hardcodes `#86efac` for planned income, and `seriesColor` and `categoryColor` aren't checked for contrast in dark mode. Move the chart colours into tokens.

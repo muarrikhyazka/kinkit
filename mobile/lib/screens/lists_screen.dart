@@ -18,7 +18,7 @@ class ListsScreen extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(appBar: kAppBar(context, 'Lists'), body: const ListsTab());
 }
 
-// ============================================================ lists
+// lists
 
 class ListsTab extends ConsumerWidget {
   const ListsTab({super.key});

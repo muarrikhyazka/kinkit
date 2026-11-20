@@ -324,7 +324,7 @@ func mealPlanText(p mealPlan) string {
 	return strings.TrimRight(b.String(), "\n")
 }
 
-// ---------- data access ----------
+// data access
 
 func (app *App) loadIngredients(ctx context.Context, aid int64) ([]map[string]any, []string, error) {
 	rows, err := app.DB.Query(ctx, "SELECT id, name FROM mandatory_ingredients WHERE account_id=$1 ORDER BY name", aid)
@@ -399,7 +399,7 @@ func (app *App) addIngredient(ctx context.Context, aid int64, raw string) (strin
 	return name, tag.RowsAffected() > 0, nil
 }
 
-// ---------- schedule ----------
+// schedule
 
 type mealSchedule struct {
 	Enabled   bool    `json:"enabled"`
@@ -566,7 +566,7 @@ func mealScheduleText(s mealSchedule, tz string) string {
 	return b.String()
 }
 
-// ---------- worker ----------
+// worker
 
 const mealLateWindow = 30 * time.Minute
 
@@ -674,7 +674,7 @@ func (app *App) sendMealPlans(ctx context.Context, now time.Time) (int, error) {
 	return sent, nil
 }
 
-// ---------- routes ----------
+// routes
 
 // RegisterMealPlanRoutes wires the meal plan, must-use ingredients, the
 // chat post schedule, bot keyword management and the extra bot endpoints
@@ -797,7 +797,7 @@ func handlePutMealSchedule(w http.ResponseWriter, r *http.Request, app *App, aid
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "schedule": s, "timezone": householdLocation(r.Context(), app, aid).String()})
 }
 
-// ---------- bot ----------
+// bot
 
 func botMealPlan(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 	plan, err := app.buildMealPlan(r.Context(), aid, r.URL.Query().Get("week") == "this", time.Now().UTC())

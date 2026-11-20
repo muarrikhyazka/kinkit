@@ -52,10 +52,10 @@ class StatCard extends StatelessWidget {
                 ),
               const SizedBox(width: 6),
               Expanded(
-                child: Text(label.toUpperCase(),
+                child: Text(label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 0.4, color: p.muted)),
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.muted)),
               ),
             ],
           ),

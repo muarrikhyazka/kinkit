@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// ---------- pure ----------
+// pure
 
 func day(s string) time.Time {
 	t, err := time.Parse(dateLayout, s)
@@ -211,7 +211,7 @@ func TestChoreRolesAndRewardsRules(t *testing.T) {
 	}
 }
 
-// ---------- integration ----------
+// integration
 
 type choreFixture struct {
 	app                   *App

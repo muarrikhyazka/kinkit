@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// ---------- savings goals ----------
+// savings goals
 //
 // progress = saved_amount (manual contributions)
 //          + spending in the linked category since the goal was created

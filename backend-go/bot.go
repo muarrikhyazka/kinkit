@@ -44,7 +44,7 @@ func botAuth(app *App, h func(http.ResponseWriter, *http.Request, *App, int64)) 
 	}
 }
 
-// ---------- Bot-token authenticated ----------
+// Bot-token authenticated
 
 func botConfig(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 	ctx := context.Background()

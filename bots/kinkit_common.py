@@ -213,7 +213,7 @@ async def abot_api(*args, **kwargs):
     return await asyncio.to_thread(bot_api, *args, **kwargs)
 
 
-# ---------------------------------------------------------------- spending parsing
+# spending parsing
 
 def parse_amount(raw, unit):
     """'50.000' -> 50000, '1,5' + 'jt' -> 1500000 (dot = thousands, comma = decimal)."""
@@ -293,7 +293,7 @@ def format_rp(amount):
     return f"Rp{int(amount):,}".replace(",", ".")
 
 
-# ---------------------------------------------------------------- ephemeral chat state
+# ephemeral chat state
 # Pending "which category?" prompts and /date overrides live in this process
 # only (like rumahbot): a restart drops them, the user just resends.
 PENDING_TTL = 24 * 3600
@@ -368,7 +368,7 @@ async def recent_spending(bot_token, user, n=5):
     return "\n".join(lines)
 
 
-# ---------------------------------------------------------------- corrections
+# corrections
 
 def split_category_suffix(args, categories):
     """'bakso pak kumis home rent' -> ('bakso pak kumis', {id, name: 'Home Rent'}).
@@ -463,7 +463,7 @@ def set_date_override(bot_token, args):
     return f"Next expenses are logged on {d.strftime('%d %b %Y')} until /date reset."
 
 
-# ---------------------------------------------------------------- meal plan schedule
+# meal plan schedule
 
 DAY_INDEX = {
     "minggu": 0, "sun": 0, "sunday": 0, "senin": 1, "mon": 1, "monday": 1,
@@ -537,7 +537,7 @@ def parse_schedule_args(args):
     return body, None
 
 
-# ---------------------------------------------------------------- commands
+# commands
 
 def _not_ready(feature):
     return f"{feature} aren't available on this server yet."
@@ -669,7 +669,7 @@ async def chores_today(bot_token, user):
     return "\n".join(lines), buttons
 
 
-# ---------------------------------------------------------------- buttons
+# buttons
 
 CALLBACK_PREFIXES = ("rem:", "chore:", "spc:", "spx:", "fixcat:", "fixdate:")
 

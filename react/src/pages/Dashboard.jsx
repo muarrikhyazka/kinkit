@@ -118,7 +118,7 @@ function PatternChart({ title, desc, labels, data, label = 'Average' }) {
   )
 }
 
-// ---------- Tab: Across Years ----------
+// Tab: Across Years
 function YearsTab() {
   const { valueMax } = useYearMonth()
   const { data, error } = useApi(
@@ -257,7 +257,7 @@ function YearsInsights({ valueMax, monthly }) {
   )
 }
 
-// ---------- Tab: Year (12-month view of selected year) ----------
+// Tab: Year (12-month view of selected year)
 function YearTab() {
   const { year, valueMax } = useYearMonth()
   const { data, error } = useApi(
@@ -391,7 +391,7 @@ function BudgetProgress({ report, spent }) {
   )
 }
 
-// ---------- Tab: Month ----------
+// Tab: Month
 const pctChange = (curr, base) => (base > 0 ? ((curr - base) / base) * 100 : (curr > 0 ? null : 0))
 function PctText({ pct, label }) {
   if (pct === null) return <span>N/A {label}</span>
@@ -520,7 +520,7 @@ function MonthTab() {
   )
 }
 
-// ---------- Tab: Week (weekly breakdown within selected month) ----------
+// Tab: Week (weekly breakdown within selected month)
 function WeekTab() {
   const { year, month, valueMax } = useYearMonth()
   const { data: weeks, error } = useApi(() => api.weeklyReport(year, month, valueMax), [year, month, valueMax])

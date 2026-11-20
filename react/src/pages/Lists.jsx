@@ -295,7 +295,7 @@ export default function Lists() {
   )
 }
 
-// ---------- add box ----------
+// add box
 
 function AddBox({ listId, onAdd }) {
   const toast = useToast()
@@ -368,7 +368,7 @@ function AddBox({ listId, onAdd }) {
   )
 }
 
-// ---------- item row (tap to check, swipe left to delete) ----------
+// item row (tap to check, swipe left to delete)
 
 function ItemRow({ item, readOnly, manager, onToggle, onDelete, onEdit }) {
   const start = useRef(null)
@@ -416,7 +416,7 @@ function ItemRow({ item, readOnly, manager, onToggle, onDelete, onEdit }) {
   )
 }
 
-// ---------- modals ----------
+// modals
 
 function ListModal({ list, onClose, onSaved, onDeleted }) {
   const toast = useToast()
@@ -545,7 +545,7 @@ function ItemModal({ item, listId, categories, onClose, onSaved }) {
   )
 }
 
-// ---------- staples ----------
+// staples
 
 function Staples({ list, lists, manager, onChanged }) {
   const toast = useToast()

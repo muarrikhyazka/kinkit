@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// ---------- actual income entries ----------
+// actual income entries
 //
 // budget_income is the *plan*; income_entries is what actually came in.
 // Reports expose it as income_actual next to the planned total_income.

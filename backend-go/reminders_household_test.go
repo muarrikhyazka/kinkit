@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// ---------- interval schedules (pure) ----------
+// interval schedules (pure)
 
 func TestOccurrencesEveryTwoWeeks(t *testing.T) {
 	loc := mustLoc(t, "Asia/Jakarta")
@@ -139,7 +139,7 @@ func TestGuessHouseholdCategory(t *testing.T) {
 	}
 }
 
-// ---------- integration ----------
+// integration
 
 func TestRemindersHouseholdCategoriesAndInterval(t *testing.T) {
 	h := newRemHousehold(t, "Asia/Jakarta")

@@ -13,7 +13,7 @@ import (
 	_ "time/tzdata" // embed zone database so household time zones work in any image
 )
 
-// ---------- Today page / daily digest ----------
+// Today page / daily digest
 
 // TodayItem is one line on the Today page and in the morning digest message.
 type TodayItem struct {
@@ -73,7 +73,7 @@ func listTodayProviders() []namedTodayProvider {
 	return append([]namedTodayProvider(nil), todayProviders...)
 }
 
-// ---------- Kid permissions ----------
+// Kid permissions
 
 // KidRule may allow a non-GET request for the kid role. Return ok=false to
 // pass. Decision roleAllow lets the handler run (the handler must then check
@@ -85,7 +85,7 @@ var kidRules []KidRule
 // registerKidRule is called from feature files' init().
 func registerKidRule(rule KidRule) { kidRules = append(kidRules, rule) }
 
-// ---------- Bot actor (which household member is talking to the bot) ----------
+// Bot actor (which household member is talking to the bot)
 
 // Bots forward the chat user as header X-Bot-User: "<platform>:<user id>",
 // e.g. "telegram:123456". Members link their chat account once (reminders
@@ -143,7 +143,7 @@ func splitBotUser(v string) (platform, uid string, ok bool) {
 	return "", "", false
 }
 
-// ---------- Household time zone ----------
+// Household time zone
 
 // householdLocation returns the household's time zone (UTC on any problem).
 func householdLocation(ctx context.Context, app *App, aid int64) *time.Location {

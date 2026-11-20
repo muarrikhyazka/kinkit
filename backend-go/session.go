@@ -98,7 +98,7 @@ func clearSession(w http.ResponseWriter, r *http.Request) error {
 	return s.Save(r, w)
 }
 
-// ---------- JSON helpers ----------
+// JSON helpers
 
 func writeJSON(w http.ResponseWriter, status int, v interface{}) {
 	w.Header().Set("Content-Type", "application/json")

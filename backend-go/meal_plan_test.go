@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// ---------- pure ----------
+// pure
 
 func TestMealWeekStart(t *testing.T) {
 	d := func(s string) time.Time { v, _ := time.Parse("2006-01-02", s); return v }
@@ -129,7 +129,7 @@ func TestParseAltPromos(t *testing.T) {
 	}
 }
 
-// ---------- integration ----------
+// integration
 
 func botCaller(t *testing.T, srvURL, token string) func(method, path, user string, body any, out any) int {
 	return func(method, path, user string, body any, out any) int {

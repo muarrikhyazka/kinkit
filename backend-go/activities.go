@@ -51,7 +51,7 @@ func init() {
 	registerTodayProvider("activities", 15, activitiesTodayProvider)
 }
 
-// ---------- model ----------
+// model
 
 type activityRow struct {
 	ID          int64   `json:"id"`
@@ -108,7 +108,7 @@ func scanActivity(row pgx.Row) (activityRow, error) {
 	return a, nil
 }
 
-// ---------- expansion (pure, unit tested) ----------
+// expansion (pure, unit tested)
 
 func parseDay(s string) (time.Time, error) { return time.Parse("2006-01-02", s) }
 
@@ -235,7 +235,7 @@ func expandActivities(rules []activityRow, skips map[int64]map[string]bool, from
 	return out
 }
 
-// ---------- validation ----------
+// validation
 
 type activityInput struct {
 	Title       *string  `json:"title"`
@@ -404,7 +404,7 @@ func (app *App) checkAttendees(ctx context.Context, aid int64, ids []int64) erro
 	return nil
 }
 
-// ---------- handlers ----------
+// handlers
 
 func (app *App) handleCreateActivity(w http.ResponseWriter, r *http.Request) {
 	m, ok := requireMember(w, r)
@@ -719,7 +719,7 @@ func (app *App) handleCalendar(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, out)
 }
 
-// ---------- Today / widget helpers ----------
+// Today / widget helpers
 
 // activityTimeLabel: "09:00-10:00" or "All day" for one occurrence on `day`.
 func activityTimeLabel(o activityOccurrence, day string) string {

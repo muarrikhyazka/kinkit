@@ -112,7 +112,7 @@ List<_Item> _items(CalendarData d, {required bool activities, required bool remi
 List<_Item> _onDay(List<_Item> all, String day) =>
     all.where((i) => i.date.compareTo(day) <= 0 && day.compareTo(i.endDate) <= 0).toList()..sort((a, b) => a.sortMin.compareTo(b.sortMin));
 
-// ============================================================ Home > Calendar tab
+// Home > Calendar tab
 
 class CalendarTab extends ConsumerWidget {
   const CalendarTab({super.key});
@@ -452,7 +452,7 @@ class _DayRows extends StatelessWidget {
   }
 }
 
-// ============================================================ detail sheet
+// detail sheet
 
 String _repeatText(ActivityOccurrence a) {
   const unit = {'daily': 'day', 'weekly': 'week', 'monthly': 'month', 'yearly': 'year'};
@@ -574,7 +574,7 @@ class _ItemSheet extends ConsumerWidget {
   }
 }
 
-// ============================================================ create / edit
+// create / edit
 
 Future<void> openActivitySheet(BuildContext context, WidgetRef ref, {ActivityOccurrence? initial, String? date}) async {
   final ok = await showModalBottomSheet<bool>(

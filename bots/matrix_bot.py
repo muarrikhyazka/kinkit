@@ -70,7 +70,7 @@ class MatrixTenant:
             await self.session.close()
             self.session = None
 
-    # -- client-server API -------------------------------------------------
+    # -- client-server API
 
     async def call(self, method, path, params=None, body=None, timeout=20):
         url = ch.matrix_url(self.homeserver, path)
@@ -97,7 +97,7 @@ class MatrixTenant:
         except MatrixError as e:
             logger.warning(f"Matrix: could not join the room ({e}); invite the bot user to it")
 
-    # -- main loop ---------------------------------------------------------
+    # -- main loop
 
     async def run(self):
         delay = 5
@@ -145,7 +145,7 @@ class MatrixTenant:
                 await asyncio.sleep(delay)
                 delay = min(delay * 2, 60)
 
-    # -- messages ----------------------------------------------------------
+    # -- messages
 
     async def reply(self, text, buttons=None):
         text = ch.bang_prefix(text)

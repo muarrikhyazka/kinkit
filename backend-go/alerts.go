@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-// ---------- budget alerts via Telegram / Discord ----------
+// budget alerts via Telegram / Discord
 //
 // The money worker (money.go) calls checkBudgetAlerts every few minutes for
 // the current UTC month. When a category's spending reaches >=80% or >100%

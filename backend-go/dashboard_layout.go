@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// ---------- custom dashboard layout (synced across devices) ----------
+// custom dashboard layout (synced across devices)
 // One account-wide layout (member_id NULL). The layout is opaque JSON owned
 // by the frontend (CustomDashboard.jsx), capped in size.
 

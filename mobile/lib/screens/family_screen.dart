@@ -195,9 +195,9 @@ class _BadgeTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: earned ? p.text : p.muted)),
             if (b.tier.isNotEmpty)
-              Text(b.tier.toUpperCase(),
+              Text(b.tier[0].toUpperCase() + b.tier.substring(1),
                   style: TextStyle(
-                      fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.6, color: earned ? tier : p.muted)),
+                      fontSize: 11, fontWeight: FontWeight.w700, color: earned ? tier : p.muted)),
             const SizedBox(height: 2),
             Text(b.description,
                 textAlign: TextAlign.center,

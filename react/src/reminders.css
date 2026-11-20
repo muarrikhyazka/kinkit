@@ -15,7 +15,7 @@
 .rem-delivery.on { border-style: solid; border-color: color-mix(in srgb, var(--warning) 60%, var(--border)); background: color-mix(in srgb, var(--warning) 12%, transparent); color: var(--text); }
 
 .rem-h-note { font-size: var(--fs-xs); font-weight: 500; margin-left: .35rem; }
-.rem-subh { font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: .9rem 0 .35rem; }
+.rem-subh { font-size: var(--fs-sm); color: var(--muted); margin: .9rem 0 .35rem; }
 .rem-subh:first-of-type { margin-top: .25rem; }
 .rem-subh.text-negative { color: var(--danger); }
 

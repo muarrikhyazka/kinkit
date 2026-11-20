@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// ---------- recurring transactions ----------
+// recurring transactions
 //
 // A rule (recurring_transactions row) generates spending rows on its
 // schedule. Generation is idempotent: each occurrence is inserted with

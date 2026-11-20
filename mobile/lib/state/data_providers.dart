@@ -124,7 +124,7 @@ void invalidateIncome(WidgetRef ref) {
   ref.invalidate(budgetActualsProvider);
 }
 
-// ---- calendar / meal requests / widgets (web: Calendar, Home > Meals, Widgets)
+// calendar / meal requests / widgets (web: Calendar, Home > Meals, Widgets)
 
 /// A calendar window (YYYY-MM-DD, inclusive) + which layers to load. Value type so it works as a family key.
 class CalRange {

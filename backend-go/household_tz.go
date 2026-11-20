@@ -87,7 +87,7 @@ func (app *App) handleSetTimezone(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "timezone": loc.String()})
 }
 
-// ---------- digest settings ----------
+// digest settings
 
 type digestSettings struct {
 	Enabled   bool   `json:"enabled"`

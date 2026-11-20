@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// ---------- schedule math (pure) ----------
+// schedule math (pure)
 
 func mustLoc(t *testing.T, name string) *time.Location {
 	t.Helper()
@@ -184,7 +184,7 @@ func TestSnoozeTomorrowAndDayBounds(t *testing.T) {
 	}
 }
 
-// ---------- natural-language parser (pure) ----------
+// natural-language parser (pure)
 
 func TestParseReminderText(t *testing.T) {
 	loc := mustLoc(t, "Asia/Jakarta")
@@ -243,7 +243,7 @@ func TestParseReminderText(t *testing.T) {
 	}
 }
 
-// ---------- digest text (pure) ----------
+// digest text (pure)
 
 func TestBuildDigestText(t *testing.T) {
 	day := rd("2026-11-19")
@@ -296,7 +296,7 @@ func TestDigestDue(t *testing.T) {
 	}
 }
 
-// ---------- chat sender (HTTP stubbed) ----------
+// chat sender (HTTP stubbed)
 
 func TestSendChatMessageWithButtons(t *testing.T) {
 	var got []map[string]any

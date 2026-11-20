@@ -119,7 +119,7 @@ func botFeedback(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "message": "Thanks, feature request saved: " + text})
 }
 
-// ---------- session: keyword management ----------
+// session: keyword management
 
 func handleListKeywords(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 	rows, err := app.DB.Query(r.Context(), "SELECT id, keyword, category FROM category_keywords WHERE account_id=$1 ORDER BY category, keyword", aid)

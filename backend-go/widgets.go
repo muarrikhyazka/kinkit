@@ -122,7 +122,7 @@ func RegisterWidgetRoutes(r chi.Router, app *App) {
 	r.Get("/widgets/data", app.handleWidgetData)
 }
 
-// ---------- boards ----------
+// boards
 
 type widgetBoard struct {
 	ID        int64           `json:"id"`
@@ -364,7 +364,7 @@ func (app *App) handleDeleteWidgetBoard(w http.ResponseWriter, r *http.Request) 
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-// ---------- widget data (generic cards) ----------
+// widget data (generic cards)
 
 type widgetRow struct {
 	Title  string   `json:"title"`

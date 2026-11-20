@@ -33,7 +33,7 @@ List<T> asList<T>(dynamic v, T Function(Json) parse) {
   return v.whereType<Map>().map((e) => parse(Map<String, dynamic>.from(e))).toList();
 }
 
-// ---------------------------------------------------------------- auth
+// auth
 
 /// GET /api/me
 class Me {
@@ -101,7 +101,7 @@ class FxRates {
   }
 }
 
-// ---------------------------------------------------------------- setup
+// setup
 
 class Category {
   final int id;
@@ -156,7 +156,7 @@ class SetupData {
   }
 }
 
-// ---------------------------------------------------------------- spending
+// spending
 
 class SpendingRow {
   final int id;
@@ -222,7 +222,7 @@ class SpendingPage {
   int get sum => rows.fold(0, (a, r) => a + r.amount);
 }
 
-// ---------------------------------------------------------------- income
+// income
 
 class IncomeEntry {
   final int id;
@@ -280,7 +280,7 @@ class IncomeList {
       );
 }
 
-// ---------------------------------------------------------------- reports
+// reports
 
 class CategoryRealization {
   final String categoryName;
@@ -363,7 +363,7 @@ class MonthCompare {
   static double? pctChange(int now, int before) => before == 0 ? null : (now - before) / before * 100;
 }
 
-// ---------------------------------------------------------------- budgeting
+// budgeting
 
 class BudgetIncomeRow {
   final int sourceId;
@@ -464,7 +464,7 @@ class BudgetActuals {
   }
 }
 
-// ---------------------------------------------------------------- goals
+// goals
 
 /// GET /api/goals (top-level array)
 class Goal {
@@ -519,7 +519,7 @@ class Goal {
   bool get reached => targetAmount > 0 && progress >= targetAmount;
 }
 
-// ---------------------------------------------------------------- family
+// family
 
 class FamilyMember {
   final int id;
@@ -582,7 +582,7 @@ class FamilyData {
   }
 }
 
-// ---------------------------------------------------------------- gamification
+// gamification
 
 class MemberGamification {
   final int id;
@@ -773,7 +773,7 @@ class Gamification {
   }
 }
 
-// ---------------------------------------------------------------- today
+// today
 
 /// TodayItem / TodaySection mirror backend-go/home_contract.go.
 class TodayItem {
@@ -838,7 +838,7 @@ List<TodaySection> parseTodaySections(dynamic data) {
   return const [];
 }
 
-// ---------------------------------------------------------------- chores
+// chores
 
 /// One chore occurrence (backend-go/chores.go choreInstanceView).
 /// Actions (complete/approve/reject/undo) take this instance [id].
@@ -939,7 +939,7 @@ class ChoresToday {
       );
 }
 
-// ---------------------------------------------------------------- reminders
+// reminders
 
 /// One reminder occurrence (backend-go/reminders.go occurrenceRow).
 class ReminderOccurrence {
@@ -1106,7 +1106,7 @@ DateTime nextDayOfMonth(int day, DateTime from) {
   return d.isBefore(today) ? clamp(from.year, from.month + 1) : d;
 }
 
-// ---------------------------------------------------------------- shopping lists
+// shopping lists
 
 class ShoppingList {
   final int id;
@@ -1257,7 +1257,7 @@ class Reminder {
   String get categoryLabel => reminderCategoryLabel(category);
 }
 
-// ---------------------------------------------------------------- meal plan
+// meal plan
 
 /// GET /api/meal-plan -> {plan: {...}} (backend-go/meal_plan.go)
 class MealPromo {
@@ -1336,7 +1336,7 @@ class MealIngredient {
 }
 
 
-// ---------------------------------------------------------------- meal requests
+// meal requests
 
 /// GET /api/meal-plan/proposals - anyone proposes, owner/parent decide.
 class MealProposal {
@@ -1373,7 +1373,7 @@ class MealProposal {
       );
 }
 
-// ---------------------------------------------------------------- calendar
+// calendar
 
 const activityColorNames = ['indigo', 'rose', 'amber', 'emerald', 'sky', 'violet', 'slate'];
 
@@ -1454,7 +1454,7 @@ class CalendarData {
       );
 }
 
-// ---------------------------------------------------------------- widgets
+// widgets
 
 /// One widget on a board: `w` = columns of 12, `h` = rows 1-4, `color` = own
 /// fill as `#rrggbb` (null = default theme look). `extra` keeps unknown layout

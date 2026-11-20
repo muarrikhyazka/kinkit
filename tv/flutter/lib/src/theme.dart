@@ -18,7 +18,6 @@ class TvColors {
   /// Purple chrome (web --chrome-*): header bar #4F46E5 -> #4338CA, white
   /// wordmark, lavender secondary text.
   static const chrome = Color(0xFF4F46E5);
-  static const chromeEnd = Color(0xFF4338CA);
   static const onChrome = Color(0xFFFFFFFF);
   static const chromeSoft = Color(0xFFE0E7FF);
 }
@@ -39,11 +38,7 @@ class TvBrandBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [TvColors.chrome, TvColors.chromeEnd],
-        ),
+        color: TvColors.chrome,
       ),
       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
         logo,

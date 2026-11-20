@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// ---------- TV / car display share links ----------
+// TV / car display share links
 // A tv_token lets an always-on screen show the current month's summary at
 // /tv?k=<token> without logging in. Read-only, revocable, and it only ever
 // exposes what TVView renders (month report + 6-month trend).

@@ -45,7 +45,7 @@ export function useDebounced(value, ms = 250) {
   return v
 }
 
-// ---------- shared, cached /api/setup (categories / accounts / income sources) ----------
+// shared, cached /api/setup (categories / accounts / income sources)
 // Fetched once and shared by every component that calls useSetup(). Call
 // invalidateSetup() (or the hook's reload()) after editing master data, and
 // clearSetupCache() on login/logout so another user's data never leaks.

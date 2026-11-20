@@ -43,7 +43,7 @@ func RegisterDataRoutes(r chi.Router, app *App) {
 	r.With(publicCORS).Get("/tv/data", app.handleTVData) // ?k=<token>, no session; CORS for tv/web
 }
 
-// ---------- export ----------
+// export
 
 // csvSafe neutralizes spreadsheet formula injection in text cells.
 func csvSafe(s string) string {
@@ -279,7 +279,7 @@ func (app *App) handleExportAllJSON(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// ---------- import ----------
+// import
 
 const maxImportBytes = 5 << 20
 

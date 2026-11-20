@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-// ---------- shared helpers ----------
+// shared helpers
 
 func (app *App) requireAccount(w http.ResponseWriter, r *http.Request) (int64, bool) {
 	aid, ok := currentAccountID(r)

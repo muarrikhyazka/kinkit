@@ -23,7 +23,7 @@ class RemindersScreen extends StatelessWidget {
       Scaffold(appBar: kAppBar(context, 'Reminders'), body: const RemindersTab());
 }
 
-// ============================================================ reminders
+// reminders
 
 const _categoryIcons = {
   'cleaning': Icons.cleaning_services_outlined,

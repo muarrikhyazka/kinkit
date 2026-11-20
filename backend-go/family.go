@@ -37,7 +37,7 @@ func validRole(r string) bool {
 // canManageFamily: owners and parents run the household.
 func canManageFamily(role string) bool { return role == roleOwner || role == roleParent }
 
-// ---------- role middleware ----------
+// role middleware
 
 type roleDecision int
 
@@ -207,7 +207,7 @@ func requireMember(w http.ResponseWriter, r *http.Request) (memberInfo, bool) {
 	return m, true
 }
 
-// ---------- routes ----------
+// routes
 
 func RegisterFamilyRoutes(r chi.Router, app *App) {
 	r.Get("/family", app.handleGetFamily)

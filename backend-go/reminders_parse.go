@@ -263,7 +263,7 @@ func parseReminderText(text string, now time.Time, loc *time.Location) (parsedRe
 	}
 
 	switch {
-	// ---- in N minutes/hours/days ----
+	// in N minutes/hours/days
 	case first == "in" && len(words) >= 3:
 		nWord := cleanWord(words[1])
 		n, err := strconv.Atoi(nWord)
@@ -289,7 +289,7 @@ func parseReminderText(text string, now time.Time, loc *time.Location) (parsedRe
 		once(now.Add(d).UTC().Truncate(time.Minute))
 		i = 3
 
-	// ---- recurring ----
+	// recurring
 	case first == "every" || first == "tiap" || first == "setiap" || first == "daily" || first == "everyday":
 		s := reminderSchedule{StartDate: today, TimeOfDay: "09:00"}
 		i = 1
@@ -407,7 +407,7 @@ func parseReminderText(text string, now time.Time, loc *time.Location) (parsedRe
 		}
 		out.Schedule = s
 
-	// ---- one-off on a day ----
+	// one-off on a day
 	default:
 		h, m, hasTime := 9, 0, false
 		// time may come first: "8am tomorrow ..."

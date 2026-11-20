@@ -89,7 +89,7 @@ func (app *App) loadLeaderboard(ctx context.Context, aid int64, now time.Time) [
 	return out
 }
 
-// ---------- badges ----------
+// badges
 
 // badgeDef describes one badge. Category groups them in the UI (money, habits,
 // home, levels); Tier (bronze/silver/gold) sets the medal colour; Target is
@@ -275,7 +275,7 @@ func (app *App) evaluateBadges(ctx context.Context, aid, mid int64, now time.Tim
 	return out
 }
 
-// ---------- weekly household challenges ----------
+// weekly household challenges
 
 // weekStartUTC is the Monday (00:00 UTC) of t's ISO week.
 func weekStartUTC(t time.Time) time.Time {

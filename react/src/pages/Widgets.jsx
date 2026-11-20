@@ -81,7 +81,7 @@ export default function Widgets() {
 
   if (boards.loading && !boards.data) return <div><PageHeader title="Widgets" /><SkeletonCard lines={5} /></div>
 
-  // ----- empty state: pick a starting point -----
+  // empty state: pick a starting point
   if (!list.length) {
     return (
       <div>

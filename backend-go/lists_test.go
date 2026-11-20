@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// ---------- pure ----------
+// pure
 
 func TestParseItemsText(t *testing.T) {
 	cases := []struct {
@@ -120,7 +120,7 @@ func TestListsKidRule(t *testing.T) {
 	}
 }
 
-// ---------- integration ----------
+// integration
 
 type listsResp struct {
 	Lists []shoppingList `json:"lists"`

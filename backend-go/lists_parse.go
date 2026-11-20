@@ -137,7 +137,7 @@ func listItemKey(name string) string {
 	return strings.ToLower(strings.TrimSpace(reListSpaces.ReplaceAllString(name, " ")))
 }
 
-// ---------- staples ----------
+// staples
 
 // stapleLocalDay is t's calendar date in loc, as midnight UTC (comparable with
 // householdToday).
@@ -164,7 +164,7 @@ func stapleDue(lastAdded *time.Time, everyDays int, today time.Time, loc *time.L
 	return !today.Before(stapleNextDue(lastAdded, everyDays, today, loc))
 }
 
-// ---------- amounts ----------
+// amounts
 
 var reListAmount = regexp.MustCompile(`^(\d+(?:[.,]\d+)?)(k|rb|ribu|jt|juta|m|mio)?$`)
 

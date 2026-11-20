@@ -37,7 +37,7 @@ def bang_prefix(text):
     return _SLASH_CMD.sub("!", text or "")
 
 
-# ---------------------------------------------------------------- Slack
+# Slack
 
 SLACK_TEXT_LIMIT = 3000  # a section block's text limit
 
@@ -143,7 +143,7 @@ def slack_allowed(channel, chat_id, is_dm, cmd=None):
     return bool(cmd) and cmd in kc.ANYWHERE
 
 
-# ---------------------------------------------------------------- Matrix
+# Matrix
 
 BUTTON_TTL = 24 * 3600
 MATRIX_TEXT_LIMIT = 8000
@@ -292,7 +292,7 @@ def matrix_invited(sync, room):
     return room in ((((sync or {}).get("rooms") or {}).get("invite")) or {})
 
 
-# ---------------------------------------------------------------- multiplexer
+# multiplexer
 
 def integration_signature(integ):
     return tuple(integ.get(k) for k in ("bot_token", "platform_token", "chat_id", "extra"))

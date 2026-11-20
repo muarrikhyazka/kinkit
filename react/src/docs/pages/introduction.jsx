@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { H2, Callout, CardGrid, Roles, ALL_ROLES } from '../components.jsx'
 import Shot from '../Shot.jsx'
-import { DRocket, DWallet, DHome, DScreen, DChat, DStar } from '../DocsIcons.jsx'
+import { DKey, DWallet, DHome, DScreen, DChat, DSteps } from '../DocsIcons.jsx'
 
 export const slug = 'introduction'
 export const title = 'Welcome to Kinkit'
@@ -14,17 +14,17 @@ export function Content() {
       <div className="dx-hero">
         <h2>Money and home, for the whole family.</h2>
         <p>Kinkit keeps budgets, spending, savings, chores, shopping lists, reminders, the family calendar and the weekly menu in one place, for parents and kids alike.</p>
-        <Link to="/docs/login">Get started</Link>
+        <Link to="/docs/login">Create your household</Link>
       </div>
 
       <H2>What you can do</H2>
       <CardGrid items={[
-        { to: 'login', title: 'Getting started', text: 'Create your household, log in and find your way around.', Icon: DRocket },
+        { to: 'login', title: 'Getting started', text: 'Create your household, log in and find your way around.', Icon: DKey },
         { to: 'add-spending', title: 'Money', text: 'Add spending, set budgets, track income, goals and assets.', Icon: DWallet },
         { to: 'today', title: 'Family & home', text: 'Today, calendar, reminders, chores, lists and the meal plan.', Icon: DHome },
         { to: 'widgets', title: 'Screens & devices', text: 'Widget boards for a phone, TV, car or monitor.', Icon: DScreen },
         { to: 'bots-overview', title: 'Chat bots', text: 'Log spending and get reminders in Telegram, Discord, Slack or Matrix.', Icon: DChat },
-        { to: 'points', title: 'Points, levels & badges', text: 'Small rewards that make good habits stick.', Icon: DStar },
+        { to: 'points', title: 'Points, levels & badges', text: 'Small rewards that make good habits stick.', Icon: DSteps },
       ]} />
 
       <H2>Finding your way</H2>

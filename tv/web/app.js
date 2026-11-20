@@ -37,7 +37,7 @@
   function isBack(c) { return c === K.BACK_TIZEN || c === K.BACK_WEBOS || c === K.ESC || c === K.BACKSPACE; }
   function isMenu(c) { return c === K.RED || c === K.INFO || c === K.KEY_M || c === K.KEY_S; }
 
-  // ---------------------------------------------------------------- utils
+  // utils
   function $(id) { return document.getElementById(id); }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -55,7 +55,7 @@
     return 0;
   }
 
-  // ---------------------------------------------------------------- pairing parsing
+  // pairing parsing
   // Same rules as tv/flutter/lib/src/config.dart.
   function looksLocal(host) {
     host = host.toLowerCase();
@@ -127,7 +127,7 @@
   function safeDecode(s) { try { return decodeURIComponent(s); } catch (e) { return s; } }
   function maskToken(t) { return t.length <= 8 ? new Array(t.length + 1).join('*') : t.substring(0, 4) + '...' + t.substring(t.length - 4); }
 
-  // ---------------------------------------------------------------- data model
+  // data model
   function parseData(json) {
     var now = new Date();
     var r = (json && typeof json.report === 'object' && json.report) || {};
@@ -205,7 +205,7 @@
     return '#4ade80';
   }
 
-  // ---------------------------------------------------------------- money (mirrors react/src/api.js formatRupiah)
+  // money (mirrors react/src/api.js formatRupiah)
   var money = { code: 'IDR', rates: { IDR: 1 } };
   function effective() {
     var code = money.code;
@@ -237,7 +237,7 @@
     return sign + ef.meta[0] + Math.round(v);
   }
 
-  // ---------------------------------------------------------------- network
+  // network
   function getJSON(url, cb) {
     var xhr = new XMLHttpRequest();
     var done = false;
@@ -267,7 +267,7 @@
     return v ? v.replace(/\/+$/, '') : '';
   }
 
-  // ---------------------------------------------------------------- app state
+  // app state
   var state = {
     screen: null, cfg: null, data: null, updatedAt: null, offline: false, offlineReason: '',
     page: 0, pageCount: 1, paused: false, fxAt: 0,
@@ -288,7 +288,7 @@
   }
   function clearToken() { lsDel(LS.token); lsDel(LS.cache); lsDel(LS.cacheAt); }
 
-  // ---------------------------------------------------------------- focus / spatial navigation
+  // focus / spatial navigation
   var focused = null;
   function focusables() {
     var root = $('screen-' + state.screen);
@@ -337,7 +337,7 @@
     el.addEventListener('click', function () { setFocus(el); fn(); });
   }
 
-  // ---------------------------------------------------------------- screens
+  // screens
   function show(name) {
     var names = ['pair', 'viewer', 'settings'];
     for (var i = 0; i < names.length; i++) $('screen-' + names[i]).hidden = names[i] !== name;
@@ -345,7 +345,7 @@
     setFocus(null);
   }
 
-  // ----- pairing
+  // pairing
   function buildKeyboard() {
     var rows = ['1234567890', 'qwertyuiop', 'asdfghjkl-', 'zxcvbnm_.:', '/?=&@~'];
     var html = '';
@@ -461,7 +461,7 @@
     sysKbdOpen = false;
   }
 
-  // ----- viewer
+  // viewer
   function startViewer(cfg) {
     state.cfg = cfg;
     state.page = 0;
@@ -614,8 +614,8 @@
     var w = ratio === null || isNaN(ratio) ? 0 : Math.max(0, Math.min(1, ratio));
     return '<div class="bar' + (thick ? ' thick' : '') + '"' + (track ? ' style="background:' + track + '"' : '') + '><div style="width:' + (w * 100).toFixed(1) + '%;background:' + color + '"></div></div>';
   }
-  // ---- widget board: 12-column flow grid scaled to fit the screen (same rules as
-  // react/src/WidgetBoard.jsx and tv/flutter lib/src/board_page.dart) ----
+  // widget board: 12-column flow grid scaled to fit the screen (same rules as
+  // react/src/WidgetBoard.jsx and tv/flutter lib/src/board_page.dart)
   // Widget colours (react/src/widgetColors.js): '#rrggbb' fill per widget, '#rrggbb' board backdrop.
   // Text colour is white or near-black, whichever contrasts better; null tone = default dark look.
   function cleanHex(v) {
@@ -790,7 +790,7 @@
     return svg + '</svg>';
   }
 
-  // ----- settings
+  // settings
   function openSettings() {
     if (state.screen !== 'viewer') return;
     // The key that opened us may still be held: ignore its repeats and keyup.
@@ -813,7 +813,7 @@
     try { window.close(); } catch (e) { /* plain browser: nothing to exit */ }
   }
 
-  // ---------------------------------------------------------------- key handling
+  // key handling
   function longPressStart(code) {
     if (state.held && state.held.code === code) {
       // auto-repeat keydown while held
@@ -891,7 +891,7 @@
     if (text) { typeText(text.replace(/^\s+|\s+$/g, '')); e.preventDefault(); }
   });
 
-  // ---------------------------------------------------------------- boot
+  // boot
   function registerTizenKeys() {
     try {
       var keys = ['MediaPlayPause', 'MediaPlay', 'MediaPause', 'MediaRewind', 'MediaFastForward',

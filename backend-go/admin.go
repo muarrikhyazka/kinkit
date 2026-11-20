@@ -45,7 +45,7 @@ func requireAdmin(app *App, h func(http.ResponseWriter, *http.Request, *App, int
 	}
 }
 
-// ---------- Super-admin ----------
+// Super-admin
 
 func adminStats(w http.ResponseWriter, r *http.Request, app *App, _ int64) {
 	ctx := context.Background()

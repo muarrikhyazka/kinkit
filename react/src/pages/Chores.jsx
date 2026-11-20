@@ -11,7 +11,7 @@ import Celebration, { diffNewRewards } from '../Celebration.jsx'
 import { SkeletonCard, SkeletonStats } from '../Skeleton.jsx'
 import { IconBroom, IconCamera, IconCheck, IconChevronLeft, IconChevronRight, IconClose, IconEdit, IconPlus, IconSparkle } from '../icons.jsx'
 
-// ---------- helpers ----------
+// helpers
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const STATUS_LABEL = { todo: 'To do', submitted: 'Waiting for approval', approved: 'Done', rejected: 'Try again', missed: 'Missed' }
@@ -118,7 +118,7 @@ function PhotoButton({ onPick, label, className = '', disabled }) {
   )
 }
 
-// ---------- kid view ----------
+// kid view
 
 function KidView({ data, actions, memberId }) {
   const { complete, undo, busy } = actions
@@ -180,7 +180,7 @@ function KidView({ data, actions, memberId }) {
   )
 }
 
-// ---------- parent / viewer view ----------
+// parent / viewer view
 
 function RejectModal({ item, onClose, onReject }) {
   const [note, setNote] = useState('')
@@ -346,7 +346,7 @@ function WeekGrid({ today, nonce }) {
   )
 }
 
-// ---------- manage ----------
+// manage
 
 function ChoreModal({ chore, members, today, onClose, onSaved }) {
   const toast = useToast()
@@ -548,7 +548,7 @@ function ManageChores({ today, nonce, onChanged }) {
   )
 }
 
-// ---------- page ----------
+// page
 
 export default function Chores() {
   const { user } = useAuth()

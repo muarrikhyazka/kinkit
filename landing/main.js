@@ -7,12 +7,10 @@
 (function () {
   'use strict';
 
-  // ---------------------------------------------------------------------
   // CONFIG: the only thing you normally need to change.
   // Base URL of the Kinkit web app. '' means "same origin as this page"
   // (e.g. landing served at / and the app on the same host).
   // Examples: 'https://app.kinkit.app'  or  'https://kinkit.example.com'
-  // ---------------------------------------------------------------------
   var APP_URL = '';
   // A deploy can set it without editing this file: <meta name="kinkit-app-url" content="https://...">
   var appMeta = document.querySelector('meta[name="kinkit-app-url"]');
@@ -24,14 +22,14 @@
 
   var root = document.documentElement;
 
-  // ---------- app links ----------
+  // app links
   var base = APP_URL.replace(/\/+$/, '');
   document.querySelectorAll('[data-app-link]').forEach(function (a) {
     var path = APP_PATHS[a.getAttribute('data-app-link')];
     if (path) a.setAttribute('href', base + path);
   });
 
-  // ---------- download sizes (HEAD request; hidden when the file is missing) ----------
+  // download sizes (HEAD request; hidden when the file is missing)
   document.querySelectorAll('[data-dl-size]').forEach(function (el) {
     if (!window.fetch) return;
     fetch(el.getAttribute('data-dl-size'), { method: 'HEAD' }).then(function (r) {
@@ -40,11 +38,11 @@
     }).catch(function () {});
   });
 
-  // ---------- footer year ----------
+  // footer year
   var year = document.getElementById('year');
   if (year) year.textContent = String(new Date().getFullYear());
 
-  // ---------- mobile menu ----------
+  // mobile menu
   var menuBtn = document.querySelector('.menu-btn');
   var navLinks = document.getElementById('nav-links');
   function setMenu(open) {
@@ -71,7 +69,7 @@
     });
   }
 
-  // ---------- header shadow once scrolled ----------
+  // header shadow once scrolled
   var header = document.querySelector('.site-header');
   function onScroll() {
     if (header) header.classList.toggle('scrolled', window.scrollY > 8);
@@ -79,7 +77,7 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // ---------- scroll reveal ----------
+  // scroll reveal
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var revealEls = document.querySelectorAll('.reveal');
   if (reduceMotion || !('IntersectionObserver' in window)) {
@@ -96,7 +94,7 @@
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
-  // ---------- Kiki: start the celebrate / relax motion when it scrolls into view ----------
+  // Kiki: start the celebrate / relax motion when it scrolls into view
   // (CSS only animates under prefers-reduced-motion: no-preference, so this is safe either way)
   var mascots = document.querySelectorAll('.mk[data-mk-animate]');
   if (!reduceMotion && 'IntersectionObserver' in window) {
@@ -111,7 +109,7 @@
     mascots.forEach(function (el) { mio.observe(el); });
   }
 
-  // ---------- FAQ: keep one answer open at a time ----------
+  // FAQ: keep one answer open at a time
   var faqItems = document.querySelectorAll('.faq details');
   faqItems.forEach(function (d) {
     d.addEventListener('toggle', function () {
@@ -120,18 +118,16 @@
     });
   });
 
-  // ---------- i18n ----------
+  // i18n
   // English lives in the HTML. Indonesian strings below are keyed by the
   // element's data-i18n / data-i18n-aria attribute. Values may contain the
   // same inline markup as the English HTML (static, authored here).
   var ID = {
-    'meta.title': 'Kinkit: kelola, pantau, dan ajari rumah tangga Anda, dalam satu tempat',
+    'meta.title': 'Kinkit: kelola seluruh rumah tangga, bukan hanya anggarannya',
     'skip': 'Langsung ke konten',
     'nav.features': 'Fitur',
-    'nav.how': 'Cara kerja',
-    'nav.screens': 'Semua layar',
+    'nav.how': 'Lihat cara kerjanya',
     'nav.privacy': 'Data Anda',
-    'nav.pricing': 'Harga',
     'nav.faq': 'Tanya jawab',
     'nav.docs': 'Dokumentasi',
     'nav.download': 'Unduh',
@@ -157,10 +153,9 @@
     'cta.start': 'Mulai gratis',
     'cta.how': 'Lihat cara kerjanya',
 
-    'hero.news': 'Level 1 sampai 50, 20+ lencana, dan bot Slack &amp; Matrix sudah hadir',
     'hero.title': 'Kelola seluruh rumah tangga, <span class="soft">bukan hanya anggarannya.</span>',
-    'hero.lead': 'Kinkit membantu keluarga mengelola kehidupan rumah bersama: uang dan anggaran, tugas dan pengingat, kalender bersama, menu makan dan belanja. Pantau semuanya di layar widget buatan sendiri, dan ajari anak lewat praktik langsung dengan uang saku, poin, dan target. Pakai di browser, di HP, di TV ruang keluarga, atau langsung dari Telegram, Discord, Slack, atau Matrix.',
-    'hero.note': 'Gratis untuk mulai. Kinkit tidak pernah meminta login bank Anda.',
+    'hero.lead': 'Uang, tugas rumah, pengingat, kalender keluarga, dan menu mingguan, dipakai bersama seisi rumah. Catat belanja cukup dengan mengirim pesan ke bot Telegram, Discord, Slack, atau Matrix, dan biarkan anak mengumpulkan poin karena ikut membantu.',
+    'hero.note': 'Gratis untuk mendaftar. Kinkit tidak pernah meminta login bank Anda.',
     'hero.visualAlt': 'Dasbor Kinkit di laptop, menampilkan pengeluaran bulan ini dibanding anggaran, pemasukan, tabungan, dan pengeluaran per kategori, dengan maskot Kiki yang melambai.',
 
     'trust.label': 'Kenapa keluarga bisa memercayai Kinkit',
@@ -170,99 +165,71 @@
     'trust.4': 'Foto struk hanya untuk keluarga Anda',
 
     'features.title': 'Keuangan, rumah, dan keluarga dalam satu aplikasi',
-    'features.lead': 'Dari "25k makan siang" pertama sampai rekap akhir tahun. Empat bagian, satu rumah tangga.',
+    'features.lead': 'Dari "25k makan siang" pertama sampai rekap akhir tahun. Tiga bagian, satu rumah tangga.',
+
     'g.money': 'Keuangan',
     'g.moneySub': 'Tahu ke mana uang pergi, dan rencanakan ke mana seharusnya.',
+
     'f.quick.t': 'Catat pengeluaran dalam hitungan detik',
-    'f.quick.d': 'Tambah dari halaman mana saja. Ketik <kbd>25k</kbd>, <kbd>2rb</kbd>, atau <kbd>1.5jt</kbd>. Kinkit mengingat kategori untuk tiap deskripsi dan menampilkan entri terakhir sebagai pilihan sekali ketuk.',
+    'f.quick.d': 'Ketik <kbd>25k</kbd>, <kbd>2rb</kbd>, atau <kbd>1.5jt</kbd> dari halaman mana saja. Kinkit mengingat kategori untuk tiap deskripsi.',
     'f.budget.t': 'Anggaran yang menunjukkan kenyataan',
-    'f.budget.d': 'Rencanakan pemasukan dan pengeluaran per kategori, dikelompokkan jadi Kebutuhan, Keinginan, dan Tabungan. Tiap sel menunjukkan yang benar-benar terpakai: hijau, kuning mulai 80%, merah jika lewat.',
+    'f.budget.d': 'Rencanakan per kategori sebagai Kebutuhan, Keinginan, dan Tabungan. Tiap sel jadi kuning di 80% dan merah saat terlampaui.',
     'f.alerts.t': 'Peringatan anggaran lewat chat',
-    'f.alerts.d': 'Dapatkan pesan di Telegram, Discord, Slack, atau Matrix saat sebuah kategori mencapai 80% anggaran bulanannya, dan sekali lagi jika terlampaui.',
+    'f.alerts.d': 'Pesan di Telegram, Discord, Slack, atau Matrix saat sebuah kategori mencapai 80%, dan sekali lagi jika terlampaui.',
     'f.income.t': 'Pemasukan: rencana vs diterima',
-    'f.income.d': 'Catat uang yang benar-benar masuk dan bandingkan dengan rencana bulanan, tahunan, dan antartahun.',
-    'f.recurring.t': 'Pembayaran rutin otomatis',
-    'f.recurring.d': 'Masukkan sewa, langganan, atau cicilan sekali saja (bulanan, mingguan, atau tahunan), lalu Kinkit menambahkannya untuk Anda. Jeda dan lanjutkan kapan saja.',
+    'f.income.d': 'Bandingkan uang yang masuk dengan rencana, per bulan, per tahun, dan antartahun.',
+    'f.recurring.t': 'Pembayaran rutin',
+    'f.recurring.d': 'Masukkan sewa, langganan, atau cicilan sekali saja. Kinkit menambahkannya sesuai jadwal, dan Anda bisa menjeda yang mana saja.',
     'f.goals.t': 'Target tabungan dan kekayaan bersih',
-    'f.goals.d': 'Tiap target punya cincin progres dan menunjukkan berapa yang perlu ditabung per bulan agar tercapai tepat waktu. Pantau saldo akun dan progres menuju target kekayaan bersih.',
-    'f.receipts.t': 'Struk yang terbaca sendiri',
-    'f.receipts.d': 'Foto struk dan simpan bersama transaksinya. "Baca jumlah dari struk" menemukan totalnya langsung di perangkat Anda, jadi fotonya tidak dikirim ke mana pun untuk dibaca.',
+    'f.goals.d': 'Tiap target menunjukkan berapa yang perlu ditabung per bulan agar tercapai tepat waktu. Pantau saldo menuju target kekayaan bersih.',
+    'f.receipts.t': 'Struk, dibaca di HP Anda',
+    'f.receipts.d': 'Simpan foto bersama transaksinya. Totalnya dibaca di perangkat Anda, jadi fotonya tidak pernah dikirim untuk dipindai.',
     'f.csv.t': 'Impor CSV bank',
-    'f.csv.d': 'Impor dari BCA, Mandiri, atau CSV umum. Pratinjau dan ubah kategori baris dulu. Mengimpor file yang sama dua kali tidak membuat duplikat, dan setiap impor bisa dibatalkan.',
+    'f.csv.d': 'BCA, Mandiri, atau CSV umum. Pratinjau dulu; mengimpor file yang sama dua kali tidak membuat duplikat, dan setiap impor bisa dibatalkan.',
     'f.dash.t': 'Dasbor sesuai selera',
-    'f.dash.d': 'Tampilan Minggu, Bulan, Tahun, dan Antartahun, plus tab Kustom tempat Anda memilih grafik dan menyeret untuk mengurutkannya. Sembunyikan transaksi besar sekali jalan, lalu ekspor ke PDF.',
+    'f.dash.d': 'Minggu, Bulan, Tahun, dan Antartahun, plus tab Kustom untuk memilih dan mengurutkan grafik. Ekspor ke PDF.',
     'f.fx.t': 'Tampilan multi-mata uang',
-    'f.fx.d': 'Lihat jumlah dalam IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD, atau INR, dikonversi dengan kurs harian. Data tersimpan tetap dalam rupiah.',
+    'f.fx.d': 'Tampilkan jumlah dalam IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD, atau INR dengan kurs harian. Data tersimpan tetap dalam rupiah.',
 
     'g.home': 'Rumah &amp; keluarga',
     'g.homeSub': 'Rencanakan, bagikan, dan jalankan rumah tangga bersama, dengan akses yang pas untuk tiap orang.',
-    'f.household.t': 'Satu keluarga, semua bisa masuk',
-    'f.household.d': 'Tambahkan anggota keluarga dengan email dan kata sandi masing-masing. Semua orang mengelola keuangan keluarga yang sama.',
+
+    'f.household.t': 'Semua orang bisa masuk',
+    'f.household.d': 'Tiap anggota keluarga punya email dan kata sandi sendiri, di rumah tangga yang sama.',
     'f.roles.t': 'Peran yang pas untuk keluarga nyata',
-    'f.roles.d': 'Admin Keluarga dan Orang tua mengelola semuanya. Anak mencatat pengeluaran dan hanya bisa mengubah entrinya sendiri. Pengamat hanya bisa melihat, cocok untuk kakek-nenek atau akuntan.',
+    'f.roles.d': 'Admin dan orang tua mengelola semuanya. Anak hanya mengubah entrinya sendiri. Pengamat, seperti kakek-nenek atau akuntan, bisa melihat tanpa mengubah.',
     'f.allowance.t': 'Uang saku anak',
-    'f.allowance.d': 'Beri tiap anak uang saku bulanan dan biarkan mereka melihat berapa yang sudah terpakai bulan ini.',
-    'f.undo.t': 'Urungkan, bukan "Yakin?"',
-    'f.undo.d': 'Terhapus tanpa sengaja? Setiap penghapusan menampilkan tombol Urungkan selama beberapa detik, jadi tidak ada yang terjebak menjawab dialog konfirmasi.',
+    'f.allowance.d': 'Beri tiap anak uang saku bulanan dan biarkan mereka melihat sisanya.',
+    'f.undo.t': 'Urungkan untuk penghapusan sehari-hari',
+    'f.undo.d': 'Hapus transaksi, tugas, atau pengingat dan tombol Urungkan muncul beberapa detik. Hanya penghapusan besar, seperti seluruh daftar atau satu impor, yang bertanya dulu.',
     'f.today.t': 'Hari ini',
-    'f.today.d': 'Satu tampilan harian untuk semua yang jatuh tempo di rumah: pengingat, kegiatan, tugas, daftar, usulan menu, dan kondisi anggaran.',
-    'f.chores.t': 'Tugas rumah, pengingat &amp; daftar belanja',
-    'f.chores.d': 'Tugas rumah dengan poin, persetujuan orang tua, dan bukti foto yang dihitung ke uang saku anak. Pengingat rumah tangga untuk cucian, bersih-bersih, tandon air, tagihan, obat, dan ulang tahun, berulang setiap hari, tiap 2 minggu, atau tiap 3 bulan, yang mengingatkan orang yang tepat lewat chat Telegram, Discord, Slack, atau Matrix Anda. Daftar belanja bersama: ketik "telur, 2 susu, roti x3", lalu jadikan belanjaan satu catatan pengeluaran.',
+    'f.today.d': 'Satu tampilan harian untuk yang jatuh tempo: pengingat, kegiatan, tugas, daftar, usulan menu, dan anggaran.',
+    'f.chores.t': 'Tugas rumah dan daftar belanja',
+    'f.chores.d': 'Tugas rumah memberi poin, dengan persetujuan orang tua dan bukti foto. Ketik "telur, 2 susu, roti x3" di daftar bersama, lalu jadikan belanjaan satu catatan pengeluaran.',
 
     'g.fun': 'Seru &amp; memotivasi',
     'g.funSub': 'Ajari anak lewat praktik: tugas rumah, uang saku, target, poin, dan lencana.',
+
     'f.cal.t': 'Kalender keluarga',
-    'f.cal.d': 'Rencanakan les renang, latihan sepak bola, libur sekolah, atau liburan akhir pekan di kalender yang bekerja seperti Google Calendar: tampilan bulan, minggu, hari, dan agenda, kegiatan yang berulang, dan jadwal tiap orang. Pengingat muncul di atasnya, dan halaman Pengingat juga punya tampilan kalender.',
+    'f.cal.d': 'Les renang, latihan sepak bola, libur sekolah. Tampilan bulan, minggu, hari, dan agenda, kegiatan berulang, dan jadwal tiap orang.',
     'f.meals.t': 'Menu makan yang bisa diusulkan siapa saja',
-    'f.meals.d': 'Menu mingguan yang mengikuti bahan wajib pakai dan promo toko. Siapa saja, termasuk anak, bisa mengusulkan hidangan; orang tua dan admin keluarga menyetujuinya untuk suatu hari atau menolaknya.',
-    'f.widgets.t': 'Layar widget yang Anda atur sendiri',
-    'f.widgets.d': 'Pilih apa yang ingin dilihat (jam, agenda, pengingat, tugas, daftar, menu, anggaran, target, poin keluarga, catatan) dan seret ke tempatnya. Tampilkan layar penuh di HP, monitor, TV ruang keluarga, atau layar mobil, dengan templat siap pakai untuk masing-masing. Beri kode warna pada layar Anda dengan memberi setiap widget warnanya sendiri.',
+    'f.meals.d': 'Menu mingguan yang disusun dari bahan wajib pakai dan promo toko. Anak bisa mengusulkan hidangan; orang tua menyetujuinya untuk suatu hari.',
+    'f.widgets.t': 'Layar widget yang Anda atur',
+    'f.widgets.d': 'Seret jam, agenda, tugas, menu, anggaran, dan lainnya ke tempatnya, lalu tampilkan layar penuh di HP, TV, atau layar mobil.',
     'f.points.t': 'Level 1 sampai 50',
-    'f.points.d': 'Dapatkan 10 poin per hari untuk mencatat, plus bonus streak, lalu naiki 50 level dari Getting Started lewat Budget Buddy, Money Master, dan Finance Wizard sampai Legend.',
+    'f.points.d': '10 poin per hari untuk mencatat, plus bonus streak, dari Getting Started lewat Budget Buddy dan Money Master sampai Legend.',
     'f.badges.t': '20+ lencana perunggu, perak, dan emas',
-    'f.badges.d': 'Buka Financial Geek, Number Cruncher, Goal Crusher, Streak 30, Chore champion, Chef\'s Choice, dan banyak lagi, masing-masing dengan perayaan konfeti.',
+    'f.badges.d': 'Raih Financial Geek, Goal Crusher, Streak 30, Chore champion, Chef\'s Choice, dan lainnya, masing-masing dengan perayaan kecil.',
     'f.challenges.t': 'Tantangan keluarga mingguan',
     'f.challenges.d': 'Catat setiap hari, akhir pekan tanpa belanja, jaga Keinginan di bawah jatah seminggu. Tiap tantangan menambah poin bonus ke total keluarga.',
     'f.leader.t': 'Papan peringkat keluarga',
-    'f.leader.d': 'Lihat siapa yang paling banyak mengumpulkan poin bulan ini. Persaingan seru yang bikin semua mau mencatat.',
+    'f.leader.d': 'Lihat siapa yang paling banyak mengumpulkan poin bulan ini.',
     'f.themes.t': 'Tema untuk segala usia',
-    'f.themes.d': 'Terang dan Gelap (desain yang sama, putih diganti hitam), tema Ceria untuk anak, dan tema Senior berkontras tinggi dengan teks lebih besar.',
+    'f.themes.d': 'Terang dan Gelap, tema Ceria untuk anak, dan tema Senior berkontras tinggi dengan teks lebih besar.',
     'f.themes.link': 'Lihat temanya',
 
-    'g.every': 'Di mana saja',
-    'g.everySub': 'Web, HP, TV, dan aplikasi chat yang sudah Anda pakai.',
-    'g.everyLink': 'Lihat di semua layar',
-    'f.web.t': 'Aplikasi web yang bisa dipasang',
-    'f.web.d': 'Berjalan di browser modern apa pun. Pasang di Android, iPhone, atau desktop untuk mendapat ikon sendiri dan jendela layar penuh.',
-    'f.offline.t': 'Jalan saat offline',
-    'f.offline.d': 'Tidak ada sinyal di pasar? Pengeluaran yang dicatat saat offline tersimpan di perangkat dan disinkronkan begitu Anda online lagi, dan tidak ada yang hilang diam-diam.',
-    'f.tv.t': 'Tautan tampilan TV &amp; mobil',
-    'f.tv.d': 'Buka tautan berbagi di browser TV, tablet dinding, atau head unit mobil untuk menampilkan angka bulan ini, atau salah satu papan widget Anda, dengan huruf besar. Tanpa login, menyegarkan setiap menit, dan bisa dicabut seketika.',
-    'f.bots.t': 'Bot Telegram, Discord, Slack &amp; Matrix',
-    'f.bots.d': 'Kirim "50k makan siang" dan langsung tercatat, dengan kategori dipilih dari kata kunci Anda; kata baru muncul dengan tombol kategori dan bot mengingat pilihan Anda. Ketik <kbd>/recent</kbd> atau <kbd>/today</kbd>, buat pengingat dengan <kbd>/remind</kbd>, tambah daftar belanja dengan <kbd>/buy</kbd>, cek tugas dengan <kbd>/chores</kbd>, dan lihat rencana menu mingguan dengan <kbd>/menu</kbd>. Hubungkan bot Anda sendiri di Pengaturan.',
-    'f.native.t': 'Aplikasi Android untuk HP',
-    'f.native.d': 'Aplikasi native untuk seluruh keluarga: Hari ini, pengingat, kalender, tugas, daftar, menu makan, widget, pengeluaran, dan anggaran. Aplikasi iPhone segera hadir.',
-    'f.native.link': 'Unduh APK-nya',
-    'f.smarttv.t': 'Penampil smart TV',
-    'f.smarttv.d': 'Layar keluarga khusus tampilan untuk Android TV / Google TV / Fire TV dan LG webOS, menampilkan ringkasan bulan atau papan widget Anda, dengan paket Samsung Tizen untuk mode pengembang.',
-    'f.smarttv.link': 'Dapatkan aplikasi TV',
-
-    'how.title': 'Siap dipakai dalam tiga langkah',
-    'how.lead': 'Tanpa spreadsheet dan tanpa kata sandi bank. Cukup keluarga Anda, mencatat sambil jalan.',
-    'how.s1.t': 'Buat rumah tangga Anda',
-    'how.s1.d': 'Daftar dan Anda menjadi Admin Keluarga. Kinkit menyiapkan kategori dan sumber pemasukan awal yang masuk akal.',
-    'how.s1.l1': 'Undang pasangan, anak, atau kakek-nenek',
-    'how.s1.l2': 'Beri tiap orang peran dan uang saku',
-    'how.s2.t': 'Catat sambil jalan',
-    'how.s2.d': 'Pakai apa pun yang paling dekat. Semua entri masuk ke tempat yang sama.',
-    'how.s2.l1': 'Tambah cepat di aplikasi, bahkan saat offline',
-    'how.s2.l2': 'Pesan chat ke bot Telegram, Discord, Slack, atau Matrix Anda',
-    'how.s2.l3': 'Foto struk, CSV bank, atau aturan pembayaran rutin',
-    'how.s3.t': 'Lihat hasilnya, dan tetap di jalur',
-    'how.s3.d': 'Anggaran, target, dan dasbor bercerita, dan permainannya menjaga semua tetap semangat.',
-    'how.s3.l1': 'Anggaran vs realisasi, dengan peringatan di 80%',
-    'how.s3.l2': 'Target dengan jumlah tabungan bulanan yang dibutuhkan',
-    'how.s3.l3': 'Poin, lencana, dan tantangan mingguan',
+    'how.title': 'Satu makan siang, dari awal sampai akhir',
+    'how.lead': 'Inilah yang terjadi saat seseorang di keluarga membeli makan siang seharga Rp25.000. Tanpa membuka aplikasi, tanpa spreadsheet.',
 
     'screens.title': 'Di HP, laptop, dan TV ruang keluarga',
     'screens.lead': 'Keluarga yang sama dan angka yang sama, menyesuaikan di mana pun keluarga Anda berada.',
@@ -275,6 +242,7 @@
     'screens.web.d': 'Pengalaman lengkap: anggaran, impor, dasbor, pengaturan keluarga, dan ekspor PDF.',
     'screens.tv.t': 'TV &amp; mobil',
     'screens.tv.d': 'Buka tautan TV di browser TV atau head unit mobil mana pun, atau pasang aplikasi TV di Android TV / Google TV / Fire TV atau LG webOS.',
+
     'status.now': 'Tersedia sekarang',
     'status.android': 'Aplikasi Android: tersedia sekarang',
     'status.native': 'Aplikasi iPhone: segera hadir',
@@ -301,31 +269,11 @@
     'privacy.3.t': 'Struk tetap privat',
     'privacy.3.d': 'Foto struk hanya bisa dilihat keluarga Anda, dan jumlahnya dibaca di perangkat Anda sendiri.',
     'privacy.4.t': 'Anda yang mengatur berbagi',
-    'privacy.4.d': 'Tautan tampilan TV hanya menampilkan ringkasan bulan ini, dan bisa Anda cabut dengan sekali klik.',
+    'privacy.4.d': 'Tautan TV hanya menampilkan ringkasan bulan ini atau papan widget yang Anda pilih, dan sekali klik mencabutnya.',
     'privacy.formats': 'Format ekspor',
     'privacy.f1': 'Setiap pengeluaran, untuk rentang tanggal apa pun',
     'privacy.f2': 'Semua pemasukan yang Anda catat',
     'privacy.f3': 'Cadangan lengkap semuanya',
-
-    'price.title': 'Paket sederhana untuk setiap keluarga',
-    'price.lead': 'Mulai gratis. Tingkatkan saat keluarga butuh lebih.',
-    'price.perMonth': '/ bulan',
-    'price.popular': 'Terbaik untuk keluarga',
-    'price.free.t': 'Gratis',
-    'price.free.d': 'Untuk mulai mengelola keuangan keluarga.',
-    'price.free.1': 'Pengeluaran, pemasukan, anggaran &amp; target',
-    'price.free.2': 'Dasbor &amp; ekspor PDF',
-    'price.free.3': 'Ekspor CSV &amp; JSON',
-    'price.free.4': 'Aplikasi web terpasang, mode offline',
-    'price.family.t': 'Keluarga',
-    'price.family.d': 'Untuk seisi rumah: anak, kakek-nenek, dan semua layar.',
-    'price.family.1': 'Semua di paket Gratis',
-    'price.family.2': 'Anggota keluarga, peran &amp; uang saku',
-    'price.family.3': 'Level, lencana &amp; tantangan mingguan',
-    'price.family.4': 'Bot chat (Telegram, Discord, Slack, Matrix) &amp; peringatan anggaran',
-    'price.family.5': 'Struk, impor CSV bank, tautan TV',
-    'price.family.cta': 'Mulai dengan Keluarga',
-    'price.note': 'Paket dan harga masih pratinjau dan bisa berubah sebelum peluncuran.',
 
     'faq.title': 'Pertanyaan yang sering diajukan keluarga',
     'faq.q1': 'Apakah saya harus menghubungkan rekening bank?',
@@ -337,26 +285,74 @@
     'faq.q5': 'Apakah bisa dipakai tanpa internet?',
     'faq.a5': 'Aplikasi yang terpasang tetap terbuka saat offline dan menampilkan data dari kunjungan terakhir. Pengeluaran yang dicatat saat offline disimpan di perangkat dan disinkronkan otomatis saat tersambung lagi. Jika server menolak sebuah entri, entri itu ditampilkan sehingga tidak ada yang hilang diam-diam.',
     'faq.q6': 'Bagaimana cara kerja bot chat?',
-    'faq.a6': 'Kinkit bekerja dengan Telegram, Discord, Slack, dan Matrix. Buat bot Anda sendiri (misalnya lewat BotFather di Telegram) lalu tempel token dan chat id-nya di Pengaturan › Bot; Matrix juga butuh alamat homeserver Anda. Setelah itu kirim pesan seperti "50k makan siang" untuk mencatat pengeluaran, atau <code>/recent</code> (<code>!recent</code> di Discord) untuk melihat entri terakhir. Bot yang sama juga mengirim peringatan anggaran.',
+    'faq.a6': 'Kinkit bekerja dengan Telegram, Discord, Slack, dan Matrix. Buat bot Anda sendiri (misalnya lewat BotFather di Telegram) lalu tempel token dan chat id-nya di Pengaturan › Bot; Matrix juga butuh alamat homeserver Anda. Setelah itu kirim pesan seperti "50k makan siang" untuk mencatat pengeluaran, atau <code>/recent</code> (<code>!recent</code> di Discord) untuk melihat entri terakhir. <code>/remind</code> membuat pengingat, <code>/buy</code> menambah daftar belanja, <code>/chores</code> menampilkan tugas, dan <code>/menu</code> rencana menu minggu ini. Bot yang sama juga mengirim peringatan anggaran.',
     'faq.q7': 'Mata uang apa saja yang didukung?',
     'faq.a7': 'Jumlah disimpan dalam rupiah (IDR). Anda bisa menampilkannya dalam IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD, atau INR, dikonversi dengan kurs harian.',
     'faq.q8': 'Apakah ada aplikasi HP atau TV?',
     'faq.a8': 'Ada. Tersedia aplikasi Android untuk HP, dan aplikasi TV khusus tampilan untuk Android TV / Google TV / Fire TV dan LG webOS, plus proyek Samsung Tizen untuk TV dalam mode developer. Di iPhone, iPad, dan komputer, pasang aplikasi webnya dari browser; aplikasi iPhone native segera hadir. Browser TV atau mobil mana pun juga bisa membuka tautan tampilan TV.',
 
-    'final.title': 'Satukan keuangan keluarga Anda di rumah',
-    'final.lead': 'Siapkan rumah tangga Anda dalam beberapa menit. Undang semua orang, catat pengeluaran pertama, dan raih lencana pertama hari ini.',
+    'final.title': 'Beri seisi rumah satu tempat untuk melihat',
+    'final.lead': 'Buat rumah tangga, undang semua orang, dan kirim "25k makan siang" pertama Anda. Lencana untuk catatan pertama ikut datang.',
 
     'footer.top': 'Kinkit, kembali ke atas',
-    'footer.about': 'Satu rumah untuk keuangan keluarga Anda. Dibuat untuk keluarga di Indonesia dan sekitarnya.',
-    'footer.product': 'Produk',
-    'footer.themes': 'Tema',
-    'footer.data': 'Data Anda',
-    'footer.export': 'Ekspor &amp; cadangan',
-    'footer.account': 'Akun',
-    'footer.back': 'Kembali ke atas'
+    'footer.about': 'Kelola seluruh rumah tangga, bukan hanya anggarannya. Dibuat untuk keluarga di Indonesia dan sekitarnya.',
+
+    'f.reminders.t': 'Pengingat yang sampai ke orang yang tepat',
+    'f.reminders.d': 'Cucian, tandon air, tagihan, obat, ulang tahun. Berulang tiap hari, tiap 2 minggu, atau tiap 3 bulan, dengan colekan di chat keluarga.',
+
+    'more.money': '6 fitur keuangan lainnya',
+    'more.home': '6 lagi untuk rumah dan keluarga',
+
+    'how.b1.where': 'di Telegram',
+    'how.b1.t': 'Kirim ke bot keluarga',
+    'how.b1.d': 'Bot memilih kategori dari kata kunci Anda sendiri. Kata baru muncul dengan tombol kategori, dan bot mengingat pilihannya.',
+    'how.b2.where': 'di anggaran',
+    'how.b2.t': 'Anggaran diperbarui untuk semua',
+    'how.b2.d': 'Web dan HP langsung menampilkan angka baru, dan TV ruang keluarga menyusul dalam satu menit.',
+    'how.b3.where': 'di chat keluarga',
+    'how.b3.t': 'Melewati 80% mengirim peringatan',
+    'how.b3.d': 'Dalam beberapa menit: sekali di 80%, dan sekali lagi jika terlampaui. Tidak perlu membuka aplikasi untuk tahu.',
+    'how.b4.where': 'di papan peringkat',
+    'how.b4.t': 'Mencatat memberi poin',
+    'how.b4.d': '10 poin untuk mencatat hari ini, plus bonus streak. Anak menaiki level yang sama dengan orang tuanya.',
+    'how.note': 'Penyiapan cukup satu kali daftar: Anda menjadi Admin Keluarga, mengundang yang lain, dan memberi tiap orang peran. Lebih suka mengetik? Entri yang sama hanya butuh beberapa detik di aplikasi, bahkan saat offline.',
+
+    'privacy.more': 'Cara Kinkit menangani data Anda',
+
+    'footer.nav': 'Footer',
+    'footer.privacy': 'Privasi &amp; data',
+
+    'pp.meta': 'Privasi dan data: Kinkit',
+    'pp.title': 'Privasi dan data Anda',
+    'pp.updated': 'Terakhir diperbarui 20 November 2026',
+    'pp.lead': 'Halaman ini menjelaskan apa yang benar-benar dilakukan aplikasi Kinkit dengan data keluarga Anda saat ini. Ini penjelasan sederhana, bukan kontrak hukum.',
+    'pp.store.h': 'Apa yang disimpan Kinkit',
+    'pp.store.1': 'Akun Anda: nama, email, dan kata sandi. Kata sandi hanya disimpan sebagai hash satu arah, tidak pernah sebagai teks.',
+    'pp.store.2': 'Apa yang dimasukkan keluarga Anda: pengeluaran, pemasukan, anggaran, target, aset, tugas rumah, pengingat, daftar, kegiatan kalender, dan rencana menu.',
+    'pp.store.3': 'Foto struk yang Anda lampirkan ke transaksi.',
+    'pp.store.4': 'Detail bot chat yang Anda tempel di Pengaturan › Bot (token, chat id, homeserver Matrix), agar Kinkit bisa mengirim pengingat dan peringatan.',
+    'pp.not.h': 'Apa yang tidak dikumpulkan Kinkit',
+    'pp.not.1': 'Login bank. Kinkit tidak pernah memintanya; impor memakai file CSV yang sudah bisa Anda unduh dari bank.',
+    'pp.not.2': 'Data iklan atau pelacakan. Aplikasi dan situs ini tidak memuat skrip analitik, iklan, atau pelacak.',
+    'pp.where.h': 'Di mana data disimpan dan siapa yang bisa melihatnya',
+    'pp.where.1': 'Semuanya disimpan di server yang menjalankan aplikasi Kinkit Anda: database untuk entri dan folder privat untuk foto struk. Anggota keluarga melihatnya sesuai peran: anak hanya mengubah entrinya sendiri, dan pengamat hanya bisa melihat. Pengelola server dapat mengatur akun.',
+    'pp.where.2': 'Tautan tampilan TV hanya menampilkan ringkasan bulan ini atau papan widget yang Anda pilih, tidak butuh login, dan langsung berhenti bekerja begitu Anda mencabutnya.',
+    'pp.third.h': 'Layanan yang dihubungi Kinkit',
+    'pp.third.1': 'Pembacaan struk berjalan di perangkat Anda. Saat Anda mengetuk "Baca jumlah", pembacanya (tesseract.js) diunduh dari CDN jsDelivr; fotonya sendiri tidak dikirim ke mana pun untuk dibaca.',
+    'pp.third.2': 'Kurs berasal dari open.er-api.com. Kinkit hanya meminta kurs hari itu; tidak ada data Anda yang dikirim.',
+    'pp.third.3': 'Jika Anda menghubungkan bot chat, pesan yang dikirim dan diterima melewati Telegram, Discord, Slack, atau server Matrix Anda, dengan ketentuan privasi masing-masing.',
+    'pp.cookies.h': 'Cookie dan penyimpanan lokal',
+    'pp.cookies.1': 'Aplikasi memasang satu cookie sesi agar Anda tetap masuk. Aplikasi yang terpasang menyimpan salinan data terbaru dan pengeluaran yang dicatat saat offline di perangkat sampai tersinkron. Situs ini mengingat pilihan bahasa Anda di browser.',
+    'pp.out.h': 'Mengambil data Anda',
+    'pp.out.1': 'Di Pengaturan › Data &amp; perangkat Anda bisa mengunduh pengeluaran dan pemasukan sebagai CSV, atau cadangan lengkap sebagai JSON, kapan saja.',
+    'pp.delete.h': 'Menghapus data Anda',
+    'pp.delete.1': 'Anda bisa menghapus entri, daftar, struk, dan tautan TV sendiri. Belum ada tombol untuk menghapus seluruh akun sendiri; pengelola server bisa menghapusnya atas permintaan.',
+    'pp.contact': 'Alamat kontak untuk pertanyaan privasi dan permintaan penghapusan akan ditambahkan di sini sebelum peluncuran publik.',
+    'pp.back': 'Kembali ke Kinkit'
   };
 
   var LANG_KEY = 'kinkit_landing_lang';
+  var titleKey = root.getAttribute('data-i18n-title') || 'meta.title'; // each page names its own title key
   var EN = {}; // captured from the HTML on first switch
   var current = 'en';
 
@@ -377,7 +373,7 @@
       var k = el.getAttribute('data-i18n-aria');
       if (!(k in EN)) EN[k] = el.getAttribute('aria-label');
     });
-    EN['meta.title'] = document.title;
+    EN[titleKey] = document.title;
     EN.__done = true;
   }
 
@@ -393,7 +389,7 @@
       var k = el.getAttribute('data-i18n-aria');
       if (dict[k] != null) el.setAttribute('aria-label', dict[k].replace(/&amp;/g, '&'));
     });
-    document.title = (dict['meta.title'] || EN['meta.title']);
+    document.title = (dict[titleKey] || EN[titleKey]);
     root.setAttribute('lang', current);
     document.querySelectorAll('.lang-toggle [data-lang]').forEach(function (b) {
       b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === current));

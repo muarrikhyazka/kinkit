@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// ---------- fx rates (12h file cache, no new deps) ----------
+// fx rates (12h file cache, no new deps)
 
 const fxCacheTTL = 12 * time.Hour
 const fxAPIURL = "https://open.er-api.com/v6/latest/IDR"

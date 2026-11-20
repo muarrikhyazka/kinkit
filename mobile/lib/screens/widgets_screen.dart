@@ -314,7 +314,7 @@ class _WidgetsScreenState extends ConsumerState<WidgetsScreen> {
       ]);
 }
 
-// ============================================================ full screen
+// full screen
 
 /// Always-on display of one board: immersive, refreshes every minute.
 class WidgetsFullScreen extends ConsumerStatefulWidget {
@@ -374,7 +374,7 @@ class _WidgetsFullScreenState extends ConsumerState<WidgetsFullScreen> {
   }
 }
 
-// ============================================================ board renderer
+// board renderer
 
 /// 12-column flow grid (same layout rules as the web WidgetBoard.jsx).
 class WidgetBoardView extends ConsumerWidget {

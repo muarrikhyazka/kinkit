@@ -5,14 +5,14 @@
   --tier-gold: #e0a100;
 }
 
-/* ---- level hexagon emblem ---- */
+/* level hexagon emblem */
 .level-badge { flex-shrink: 0; display: block; }
 .level-badge .lb-hex { fill: var(--primary); stroke: var(--tier-bronze); }
 .level-badge.tier-silver .lb-hex { stroke: var(--tier-silver); }
 .level-badge.tier-gold .lb-hex { stroke: var(--tier-gold); }
 .level-badge .lb-num { fill: #fff; font-family: inherit; font-variant-numeric: tabular-nums; }
 
-/* ---- sidebar chip ---- */
+/* sidebar chip */
 .gami-level { display: flex; align-items: center; gap: var(--s-2); margin-bottom: var(--s-2); }
 .gami-level-text { min-width: 0; flex: 1; display: flex; flex-direction: column; line-height: 1.25; }
 .gami-level-text strong { font-size: var(--fs-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -27,7 +27,7 @@
 .sheet .gami-badge .level-badge .lb-num { fill: #fff; }
 .sheet .gami-next, .sheet .gami-level-text .gami-level-no { color: var(--muted); }
 
-/* ---- Family page: level card ---- */
+/* Family page: level card */
 .level-card { display: flex; align-items: center; gap: var(--s-4); flex-wrap: wrap; }
 .level-card .level-badge { filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--primary) 35%, transparent)); }
 .level-card-main { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: var(--s-2); }
@@ -39,7 +39,7 @@
 .level-xp-labels { display: flex; justify-content: space-between; gap: var(--s-2); font-size: var(--fs-sm); color: var(--muted); font-variant-numeric: tabular-nums; flex-wrap: wrap; }
 .level-xp-labels strong { color: var(--text); }
 
-/* ---- Family page: badges ---- */
+/* Family page: badges */
 .badge-group + .badge-group { margin-top: var(--s-5); }
 .badge-group-title { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 var(--s-3); font-size: var(--fs-md); }
 .badge-group-title .muted { font-size: var(--fs-sm); font-weight: 400; }
@@ -55,7 +55,7 @@
 .badge-groups .badge-tile.earned .badge-tile-icon { background: color-mix(in srgb, var(--tier) 16%, var(--card)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tier) 18%, transparent); }
 .badge-groups .badge-tile:not(.earned) .badge-tile-icon { border-color: var(--border-strong); color: var(--muted); opacity: .6; background: var(--surface-2); }
 .badge-groups .badge-tile:not(.earned) strong { color: var(--muted); }
-.badge-tier { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--tier); }
+.badge-tier { font-size: var(--fs-xs); font-weight: 700; color: var(--tier); }
 .badge-groups .badge-tile:not(.earned) .badge-tier { color: var(--muted); opacity: .8; }
 .badge-desc { font-size: var(--fs-xs); color: var(--muted); }
 .badge-progress { width: 100%; margin-top: auto; padding-top: var(--s-2); display: flex; flex-direction: column; gap: 3px; }
@@ -64,5 +64,5 @@
 .badge-progress-num { font-size: var(--fs-xs); font-variant-numeric: tabular-nums; color: var(--muted); }
 .badge-earned-on { margin-top: auto; padding-top: var(--s-2); font-size: var(--fs-xs); font-weight: 600; color: var(--success); }
 
-/* ---- celebration ---- */
+/* celebration */
 .celebration-icon .level-badge { filter: none; }

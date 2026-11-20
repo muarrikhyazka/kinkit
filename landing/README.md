@@ -5,6 +5,7 @@ The static marketing site for Kinkit. It is plain HTML, CSS and JS, with no buil
 ```
 landing/
 ├── index.html          # all sections; English copy lives here
+├── privacy.html        # plain description of what the app does with data (facts from the code)
 ├── styles.css          # layout, light/dark via prefers-color-scheme, reduced motion
 ├── main.js             # app links (APP_URL), menu, scroll reveal, FAQ, EN/ID toggle + Indonesian strings
 └── assets/
@@ -15,7 +16,7 @@ landing/
 
 ## Design
 
-The page follows the web app's design system (`react/DESIGN_AUDIT.md`): spacing 4/8/12/16/24/32
+Direction lives in the repo-root `DESIGN.md` (identity, dials, motif). The page follows the web app's design system (`react/DESIGN_AUDIT.md`): spacing 4/8/12/16/24/32
 (plus 48/64/96 for section rhythm), radii 6/10/14, two shadows, type 12/14/16/20/24/32 with a 48px
 hero display size, purple only for primary actions and key accents, no gradients or glows. The top bar
 is purple with the white logo tile and white wordmark, like the app's chrome. Links are never
@@ -25,7 +26,7 @@ underlined; navigation in copy uses a `.link-chev` text button with the `#i-chev
 to "Fun & motivation" (`mascot-celebrate.svg`) and relaxing in the final call to action
 (`mascot-relax.svg`). The SVG bodies are copied verbatim from `brand/`; their shared gradients and
 filters (`kk-*` ids) live once in the inline sprite. The motion CSS at the end of `styles.css` mirrors
-`react/src/mascot.css` and only runs under `prefers-reduced-motion: no-preference`; `main.js` starts
+`react/src/mascot.css` and only runs under `prefers-reduced-motion: no-preference`, and every loop ends within 5 seconds; `main.js` starts
 the celebrate/relax motion when they scroll into view. If the art in `brand/` changes, re-copy it.
 
 Bump the `?v=` query on `styles.css`, `assets/mockups.css` and `main.js` in `index.html` whenever
@@ -45,7 +46,7 @@ Language: English is the default, matching the app UI. Use the EN/ID toggle, or 
 
 ## Configure
 
-All "Start free", "Sign in" and "Docs" links get their URL from a single constant at the top of `main.js`:
+All "Start free", "Sign in" and "Docs" links (on both pages) get their URL from a single constant at the top of `main.js`:
 
 ```js
 var APP_URL = '';                                   // '' = same origin; or 'https://app.kinkit.app'
@@ -56,7 +57,9 @@ var APP_PATHS = { signup: '/login', login: '/login', docs: '/docs' };
 
 Also update the `canonical`, `og:url` and `og:image` URLs in `index.html` (currently `https://kinkit.app/`). Some social networks ignore SVG `og:image`. If previews are blank, export `assets/og-image.svg` to a PNG.
 
-**Pricing is a placeholder.** The tier names, prices and feature split are marked with an HTML comment in the `#pricing` section. The app does not gate any feature by plan today. When you change the English copy, also edit the `price.*` keys in `main.js`.
+**There is no pricing section.** The app gates no feature by plan, so the page only says "Free to sign up". Add a pricing section back only once real plans exist in the code.
+
+**Privacy page:** `privacy.html` must stay a description of what the code does. It still needs a real contact address for privacy questions and deletion requests (see the `TODO(owner)` comment); until then it says so openly.
 
 ## Deploy
 
@@ -107,7 +110,7 @@ The page should only claim what the code does. When a feature changes, find its 
 |---|---|
 | Quick add from any page; amount shorthand `25k`, `2rb`, `1.5jt`; smart category memory; recent chips | `react/src/QuickAddSpending.jsx`, `react/src/SpendingForm.jsx`, `react/src/MoneyInput.jsx`; described in `react/src/pages/Guide.jsx` ("Add Spending") |
 | Budgets per category grouped Needs / Wants / Savings; budget vs actual tint (green, amber ≥80%, red over) | `react/src/pages/Budgeting.jsx`, `backend-go/budgeting.go` |
-| Budget alerts at 80% and >100% via Telegram/Discord/Slack/Matrix | `backend-go/alerts.go`, toggle card in `react/src/pages/Budgeting.jsx` |
+| Budget alerts at 80% and >100% via Telegram/Discord/Slack/Matrix, sent by a check every few minutes; the "See it work" bubble quotes `alertText` verbatim | `backend-go/alerts.go`, `backend-go/money.go` (worker), toggle card in `react/src/pages/Budgeting.jsx` |
 | Income received vs planned (month / year / across years) | `react/src/pages/Income.jsx`, `backend-go/income.go`, `react/src/pages/Dashboard.jsx` |
 | Recurring payments (monthly / weekly / yearly), auto-added, pause/resume | `react/src/pages/Recurring.jsx`, `backend-go/recurring.go` |
 | Savings goals with progress ring and per-month amount; assets and net-worth target | `react/src/pages/Goals.jsx`, `backend-go/goals.go`, `react/src/pages/Assets.jsx`, `backend-go/assets.go` |
@@ -119,7 +122,7 @@ The page should only claim what the code does. When a feature changes, find its 
 | Household, members sign in with their own email | `react/src/pages/Family.jsx`, `backend-go/family.go`, `backend-go/auth.go` |
 | Roles: Family Admin, Parent, Kid (own entries only), Viewer (read-only) | `backend-go/family.go`, role gating in `react/src/routes.jsx` |
 | Kid monthly allowance with spent-this-month meter | `react/src/pages/Family.jsx` (`allowance_monthly`), `backend-go/family.go` |
-| Undo instead of confirmation on delete | `react/src/Toast.jsx`; described in `Guide.jsx` ("Deleting and undo") |
+| Undo for everyday deletes; big removals (a whole list, an import, a widget board, a TV link, a receipt, a repeating activity) still ask first | `react/src/Toast.jsx`; `window.confirm` in `Lists.jsx`, `ImportExport.jsx`, `Widgets.jsx`, `TVTokens.jsx`, `Receipts.jsx`, `Calendar.jsx` |
 | Starter categories / income sources on signup | `seedDefaults` in `backend-go/auth.go` |
 | Today page (what's due for the household) | `react/src/pages/Today.jsx`, `backend-go/today.go` (`GET /api/today`) |
 | Chores with points, approval, photo proof, allowance earnings | `react/src/pages/Chores.jsx`, `backend-go/chores*.go`, allowance in `backend-go/family.go` |
@@ -129,6 +132,7 @@ The page should only claim what the code does. When a feature changes, find its 
 | Household reminders (cleaning/laundry/kitchen/groceries/home maintenance/vehicle/self-care plus bill/medicine/school/birthday), every N weeks/months, household templates, chat nudges | `react/src/pages/Reminders.jsx` (`REMINDER_TEMPLATES`), `backend-go/reminders*.go` (`reminderCategoryIDs`, `repeat_interval`) |
 | Shared shopping lists, bulk add, "finish trip" → spending | `react/src/pages/Lists.jsx`, `backend-go/lists*.go` |
 | Bot commands `/today` `/remind` `/buy` `/chores` `/menu` | `bots/telegram_bot.py`, `bots/discord_bot.py`, `bots/slack_bot.py`, `bots/matrix_bot.py`, `bots/kinkit_common.py`, `backend-go/*_bot.go`, `backend-go/meal_plan.go` |
+| "See it work" bot reply ("Logged: makan siang - Rp25.000 (Eating out)") | `log_spending` / `format_rp` in `bots/kinkit_common.py` |
 | Bot category buttons for new words, learned keywords | `bots/kinkit_common.py` (`log_spending`, `spc:` callbacks), `backend-go/bot_extras.go` (`/api/bot/keywords/learn`) |
 | Points (10/day + streak bonus) and Levels 1 to 50 with titles from Getting Started to Legend (Budget Buddy, Money Master, Finance Wizard on the way) | `backend-go/gamification.go` (`maxLevel`, `levelThreshold`, `levelTitles`, `levelTitle`), `react/src/GamificationBadge.jsx` |
 | 20+ badges in bronze / silver / gold (Financial Geek, Number Cruncher, Goal Crusher, Streak 30, Chore champion, Chef's Choice, ...) | `badgeRules` / `badgeCatalog` in `backend-go/achievements.go` (count them before changing "20+") |
@@ -140,6 +144,7 @@ The page should only claim what the code does. When a feature changes, find its 
 | Works offline: queue, sync, rejected entries listed | `react/src/OfflineContext.jsx` |
 | TV / car display links: no login, refresh every minute, revocable | `react/src/pages/TVView.jsx` (`REFRESH_MS = 60_000`), `react/src/TVTokens.jsx`, `backend-go/tvshare.go` |
 | Telegram, Discord, Slack & Matrix bots: "50k makan siang", keyword categories, `/recent` (`!recent` on Discord), bring your own bot (Matrix also needs a homeserver URL); budget alerts and reminders go to all four | `bots/telegram_bot.py`, `bots/discord_bot.py`, `bots/slack_bot.py`, `bots/matrix_bot.py`, `backend-go/bot.go`, `backend-go/integrations.go`, `backend-go/chat_slack_matrix.go`, `react/src/pages/Integrations.jsx` |
+| Privacy page facts: hashed passwords, no analytics, receipts on the server, tesseract.js from jsDelivr, rates from open.er-api.com, one session cookie, no self-serve account delete | `backend-go/auth.go`, `backend-go/receipts.go`, `react/src/receiptOcr.js`, `backend-go/fx.go`, `backend-go/admin.go` |
 | Export spending CSV (date range), income CSV, full JSON backup | `backend-go/importexport.go` (`/export/all.json` etc.), `react/src/pages/ImportExport.jsx` |
 | Docs link (nav + footer) opens the in-app documentation at `<app-url>/docs` (relative `/docs` when `kinkit-app-url` is empty) | `react/src/docs`, route wired in `react/src/routes.jsx`; link built by `APP_PATHS.docs` in `main.js` |
 | Role-based access (kids edit only their own entries, viewers read-only) shown under "Your data" | `backend-go/family.go`, role gating in `react/src/routes.jsx` |

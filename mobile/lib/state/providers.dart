@@ -22,7 +22,7 @@ final cookieJarProvider = Provider<CookieJar>((ref) => CookieJar());
 const _kBaseUrl = 'kinkit.baseUrl';
 const _kThemeMode = 'kinkit.themeMode';
 
-// ------------------------------------------------------------ server URL
+// server URL
 
 class BaseUrlNotifier extends Notifier<String> {
   @override
@@ -40,7 +40,7 @@ class BaseUrlNotifier extends Notifier<String> {
 
 final baseUrlProvider = NotifierProvider<BaseUrlNotifier, String>(BaseUrlNotifier.new);
 
-// ------------------------------------------------------------ theme
+// theme
 
 class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override
@@ -57,7 +57,7 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
 
 final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
 
-// ------------------------------------------------------------ API client
+// API client
 
 final apiProvider = Provider<KinkitApi>((ref) {
   final api = KinkitApi(baseUrl: ref.watch(baseUrlProvider), cookieJar: ref.watch(cookieJarProvider));
@@ -66,7 +66,7 @@ final apiProvider = Provider<KinkitApi>((ref) {
   return api;
 });
 
-// ------------------------------------------------------------ auth
+// auth
 
 /// The signed-in member, or null when logged out.
 class AuthNotifier extends AsyncNotifier<Me?> {
@@ -120,7 +120,7 @@ final meProvider = Provider<Me?>((ref) {
   return auth.hasError ? null : auth.valueOrNull;
 });
 
-// ------------------------------------------------------------ money formatting
+// money formatting
 
 final fxRatesProvider = FutureProvider<FxRates>((ref) async {
   try {
@@ -137,7 +137,7 @@ final moneyProvider = Provider<MoneyFormatter>((ref) {
   return MoneyFormatter(currency: currency, rates: rates.rates);
 });
 
-// ------------------------------------------------------------ selected month
+// selected month
 
 /// Month shown by Dashboard / Spending / Income / Budget.
 final selectedMonthProvider = StateProvider<YearMonth>((ref) => YearMonth.now());

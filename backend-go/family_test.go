@@ -15,7 +15,7 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-// ---------- pure ----------
+// pure
 
 func TestDecideRole(t *testing.T) {
 	cases := []struct {
@@ -135,7 +135,7 @@ func TestChallengeOutcome(t *testing.T) {
 	}
 }
 
-// ---------- integration ----------
+// integration
 
 // addMember creates a member via the API as the (owner/parent) client.
 func addMember(t *testing.T, c *testClient, role string, allowance any) (email string, id int64) {

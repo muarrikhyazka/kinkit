@@ -157,7 +157,7 @@ class _ViewerScreenState extends State<ViewerScreen> {
     });
   }
 
-  // ---------- carousel ----------
+  // carousel
 
   List<Widget> _pages(TvData d, Money money) {
     // A link tied to a widget board shows just that board (web Widgets page).
@@ -196,7 +196,7 @@ class _ViewerScreenState extends State<ViewerScreen> {
     _restartRotation();
   }
 
-  // ---------- keys ----------
+  // keys
 
   Future<void> _openSettings() async {
     if (_settingsOpen) return;
@@ -266,7 +266,7 @@ class _ViewerScreenState extends State<ViewerScreen> {
     return KeyEventResult.handled;
   }
 
-  // ---------- build ----------
+  // build
 
   @override
   Widget build(BuildContext context) {

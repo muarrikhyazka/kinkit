@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// ---------- trend ----------
+// trend
 
 func (app *App) handleTrend(w http.ResponseWriter, r *http.Request) {
 	aid, ok := app.requireAccount(w, r)
@@ -424,7 +424,7 @@ func (app *App) handleWeeklyReport(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, out)
 }
 
-// ---------- report / summary ----------
+// report / summary
 
 func (app *App) handleReport(w http.ResponseWriter, r *http.Request) {
 	aid, ok := app.requireAccount(w, r)

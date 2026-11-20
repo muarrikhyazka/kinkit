@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-// ---------- CSV import: pure parsing (no DB) ----------
+// CSV import: pure parsing (no DB)
 //
 // Pipeline: decode CSV (delimiter auto-detected) -> find the header row ->
 // resolve column mapping (user choice > preset header names) -> parse each
@@ -279,7 +279,7 @@ func resolveMapping(headers []string, p importPreset, user map[string]int) impor
 	return m
 }
 
-// ---------- amounts ----------
+// amounts
 
 var amountJunk = regexp.MustCompile(`(?i)(rp\.?|idr|usd|eur|sgd|myr|[$€£¥₹]|\s)`)
 
@@ -371,7 +371,7 @@ func guessDecimal(s string) string {
 	return "."
 }
 
-// ---------- dates ----------
+// dates
 
 var monthAliases = strings.NewReplacer(
 	// Indonesian month abbreviations/names -> English
@@ -445,7 +445,7 @@ func titleMonths(s string) string {
 	})
 }
 
-// ---------- rows ----------
+// rows
 
 // importClientID is the dedupe key: same date|description|amount|row in a
 // re-uploaded file maps to the same spending row (UNIQUE(account_id, client_id)).

@@ -12,12 +12,14 @@ export const DArrowR = p => <svg {...b} {...p}><path d="M5 12h14M13 6l6 6-6 6" /
 export const DChevR = p => <svg {...b} {...p}><path d="M9 6l6 6-6 6" /></svg>
 export const DZoom = p => <svg {...b} {...p}><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5M11 8v6M8 11h6" /></svg>
 export const DBook = p => <svg {...b} {...p}><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5z" /><path d="M19 19v2H6" /></svg>
-export const DRocket = p => <svg {...b} {...p}><path d="M5 19c0-3 1-4 3-5l-2-2c1-4 5-8 13-9 0 8-5 12-9 13l-2-2c-1 2-2 3-3 5z" /><circle cx="15" cy="9" r="1.5" /></svg>
+// Key: signing in and setting up the household.
+export const DKey = p => <svg {...b} {...p}><circle cx="8" cy="15" r="4" /><path d="M11 12l9-9M17 6l3 3M15 8l2 2" /></svg>
 export const DWallet = p => <svg {...b} {...p}><path d="M3 7a2 2 0 012-2h13v4" /><rect x="3" y="7" width="18" height="13" rx="2" /><circle cx="16.5" cy="13.5" r="1.2" /></svg>
 export const DHome = p => <svg {...b} {...p}><path d="M3 11l9-8 9 8" /><path d="M5 10v10h14V10" /></svg>
 export const DScreen = p => <svg {...b} {...p}><rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" /></svg>
 export const DChat = p => <svg {...b} {...p}><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z" /></svg>
-export const DStar = p => <svg {...b} {...p}><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.2 6.5 20.2l1-6.2L3 9.6l6.2-.9L12 3z" /></svg>
+// Steps: climbing levels with points.
+export const DSteps = p => <svg {...b} {...p}><path d="M3 20h5v-5h5v-5h5V5h3" /></svg>
 export const DGear = p => <svg {...b} {...p}><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" /></svg>
 export const DHelp = p => <svg {...b} {...p}><circle cx="12" cy="12" r="9" /><path d="M9.5 9.5a2.5 2.5 0 114 2c-.9.6-1.5 1.1-1.5 2.2M12 17h.01" /></svg>
 export const DClose = p => <svg {...b} {...p}><path d="M6 6l12 12M18 6L6 18" /></svg>

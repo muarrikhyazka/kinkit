@@ -69,7 +69,7 @@ export default function Celebration({ items, onClose }) {
   )
 }
 
-// ---------- "what's new since last seen" (per member, per browser) ----------
+// "what's new since last seen" (per member, per browser)
 
 const seenKey = memberId => `kinkit:gami-seen:${memberId}`
 

@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// ---------- spending ----------
+// spending
 
 type spendingRow struct {
 	ID             int64   `json:"id"`

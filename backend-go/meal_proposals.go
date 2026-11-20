@@ -264,7 +264,7 @@ func (app *App) handleDeleteMealProposal(w http.ResponseWriter, r *http.Request)
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-// ---------- meal plan overlay + Today ----------
+// meal plan overlay + Today
 
 type mealPick struct {
 	ID         int64  `json:"id"`

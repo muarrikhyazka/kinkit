@@ -20,7 +20,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// ---------- static data (ported from Python CURRENCIES / DEFAULT_* dicts) ----------
+// static data (ported from Python CURRENCIES / DEFAULT_* dicts)
 
 type currencyInfo struct {
 	Symbol string `json:"symbol"`
@@ -79,7 +79,7 @@ func seedDefaults(ctx context.Context, app *App, accountID int64) error {
 	return nil
 }
 
-// ---------- rate limiting ----------
+// rate limiting
 // ponytail: in-memory sliding window, single-process only (same limitation
 // as the Python original) - swap for a shared store (Redis) if we ever run
 // >1 instance.
@@ -233,7 +233,7 @@ func rateLimitMiddleware(prefix string) func(http.Handler) http.Handler {
 	}
 }
 
-// ---------- auth routes ----------
+// auth routes
 
 func RegisterAuthRoutes(r chi.Router, app *App) {
 	r.With(rateLimitMiddleware("signup")).Post("/signup", app.handleSignup)
@@ -570,7 +570,7 @@ func (app *App) handlePasswordResetConfirm(w http.ResponseWriter, r *http.Reques
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-// ---------- small helpers ----------
+// small helpers
 
 var errInvalidToken = &tokenError{"invalid token"}
 

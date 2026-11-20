@@ -91,7 +91,7 @@ func init() {
 	})
 }
 
-// ---------- model ----------
+// model
 
 type reminderRow struct {
 	ID                   int64      `json:"id"`
@@ -204,7 +204,7 @@ func kidFilter(m memberInfo, argN int) (string, []any) {
 	return "", nil
 }
 
-// ---------- CRUD ----------
+// CRUD
 
 func (app *App) handleListReminders(w http.ResponseWriter, r *http.Request) {
 	m, ok := requireMember(w, r)
@@ -605,7 +605,7 @@ func (app *App) handleDeleteReminder(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-// ---------- occurrences ----------
+// occurrences
 
 type occurrenceRow struct {
 	ID           int64      `json:"id"`

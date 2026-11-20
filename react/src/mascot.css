@@ -9,33 +9,34 @@
 .mk .mk-coin { transform-origin: 222px 92px; }
 .mk .mk-shine { transform-origin: 246px 71px; }
 
+/* Every loop ends within 5 seconds and Kiki comes to rest, so no animation needs a pause control. */
 @media (prefers-reduced-motion: no-preference) {
   /* idle breathe: lift + gentle squash/stretch, shadow shrinks as it rises */
-  .mk--animate .mk-bob { animation: mk-bob 3.4s ease-in-out infinite; }
-  .mk--animate .mk-shadow { animation: mk-shadow 3.4s ease-in-out infinite; }
+  .mk--animate .mk-bob { animation: mk-bob 3.4s ease-in-out 1; }
+  .mk--animate .mk-shadow { animation: mk-shadow 3.4s ease-in-out 1; }
 
   /* blink (open-eyed poses only) */
   .mk--animate.mk--idle .mk-eyes,
-  .mk--animate.mk--think .mk-eyes { animation: mk-blink 5.2s infinite; }
-  .mk--animate.mk--think .mk-eyes { animation-delay: 1.7s; }
+  .mk--animate.mk--think .mk-eyes { animation: mk-blink 4.4s 1; }
+  .mk--animate.mk--think .mk-eyes { animation-delay: .4s; }
 
   /* wave once on mount, and again on hover */
   .mk--wave-once .mk-wave { animation: mk-wave 1.4s ease-in-out .35s 1 both; }
   .mk--animate:hover .mk-wave { animation: mk-wave-h 1.2s ease-in-out 1; }
 
-  /* celebrate: three hops, then settle into the idle breathe */
-  .mk--animate.mk--celebrate .mk-bob { animation: mk-hop .75s cubic-bezier(.3, 0, .4, 1) 3, mk-bob 3.4s ease-in-out 2.25s infinite; }
-  .mk--animate.mk--celebrate .mk-shadow { animation: mk-hop-shadow .75s cubic-bezier(.3, 0, .4, 1) 3, mk-shadow 3.4s ease-in-out 2.25s infinite; }
-  .mk--animate.mk--celebrate .mk-coin { animation: mk-coin 2.6s ease-in-out infinite; }
-  .mk--animate.mk--celebrate .mk-shine { animation: mk-shine 2.6s ease-in-out infinite; }
+  /* celebrate: three hops, then rest */
+  .mk--animate.mk--celebrate .mk-bob { animation: mk-hop .75s cubic-bezier(.3, 0, .4, 1) 3; }
+  .mk--animate.mk--celebrate .mk-shadow { animation: mk-hop-shadow .75s cubic-bezier(.3, 0, .4, 1) 3; }
+  .mk--animate.mk--celebrate .mk-coin { animation: mk-coin 2.6s ease-in-out 1; }
+  .mk--animate.mk--celebrate .mk-shine { animation: mk-shine 2.6s ease-in-out 1; }
 
   /* relax: slower breathing, drifting z */
   .mk--animate.mk--relax .mk-bob { animation-duration: 4.6s; }
   .mk--animate.mk--relax .mk-shadow { animation-duration: 4.6s; }
-  .mk--animate.mk--relax .mk-zzz { animation: mk-zzz 4.6s ease-in-out infinite; }
+  .mk--animate.mk--relax .mk-zzz { animation: mk-zzz 4.6s ease-in-out 1; }
 
   /* think: thought dots pulse in sequence */
-  .mk--animate.mk--think .mk-dots circle { animation: mk-dot 2.4s ease-in-out infinite; }
+  .mk--animate.mk--think .mk-dots circle { animation: mk-dot 2.4s ease-in-out 1; }
   .mk--animate.mk--think .mk-dots circle:nth-child(2) { animation-delay: .25s; }
   .mk--animate.mk--think .mk-dots circle:nth-child(3) { animation-delay: .5s; }
 }
@@ -91,7 +92,7 @@
   40% { opacity: 1; }
 }
 
-/* ---- placements ---- */
+/* placements */
 .login-mascot { display: flex; justify-content: center; margin: -.25rem 0 -.5rem; }
 .today-hello { display: flex; align-items: center; gap: .75rem; min-width: 0; }
 .today-hello .mk { margin: -6px 0 -10px -4px; }

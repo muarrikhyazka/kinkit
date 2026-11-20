@@ -142,7 +142,7 @@ class _CardBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final big = card.bigAmount != null ? money.format(card.bigAmount!) : card.big;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(card.title.toUpperCase(), style: TextStyle(fontSize: 14, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: tone.muted)),
+      Text(card.title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: tone.muted)),
       if (big.isNotEmpty)
         FittedBox(
           fit: BoxFit.scaleDown,

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// ---------- assets ----------
+// assets
 
 type assetRow struct {
 	ID          int64   `json:"id"`

@@ -79,7 +79,7 @@ func botListReminders(w http.ResponseWriter, r *http.Request, app *App, aid int6
 		if o.Overdue {
 			mark = "!"
 		}
-		line := "\n" + mark + " " + when + " — " + o.Title + " [" + label + "]"
+		line := "\n" + mark + " " + when + ": " + o.Title + " [" + label + "]"
 		if o.AssigneeName != "" {
 			line += " (" + o.AssigneeName + ")"
 		}
@@ -259,7 +259,7 @@ func botOccurrenceDone(w http.ResponseWriter, r *http.Request, app *App, aid int
 	}
 	msg := "Done: " + o.Title
 	if n := app.memberDisplayName(ctx, m); n != "" {
-		msg += " — by " + n
+		msg += ", by " + n
 	}
 	if already {
 		msg = "Already done: " + o.Title

@@ -54,7 +54,7 @@ class KinkitApi {
     _dio.interceptors.add(CookieManager(cookieJar));
   }
 
-  // ------------------------------------------------------------ plumbing
+  // plumbing
 
   Future<dynamic> _send(String method, String path, {Object? body, Map<String, dynamic>? query}) async {
     Response<dynamic> res;
@@ -107,7 +107,7 @@ class KinkitApi {
   Future<dynamic> _patch(String path, Object body) => _send('PATCH', path, body: body);
   Future<dynamic> _delete(String path) => _send('DELETE', path);
 
-  // ------------------------------------------------------------ auth
+  // auth
 
   Future<bool> ping() async {
     final d = await _get('/ping');
@@ -135,7 +135,7 @@ class KinkitApi {
 
   Future<SetupData> setup() async => SetupData.fromJson(asJson(await _get('/setup')));
 
-  // ------------------------------------------------------------ reports
+  // reports
 
   Future<MonthReport> report(int year, int month) async =>
       MonthReport.fromJson(asJson(await _get('/report/$year/$month')));
@@ -143,7 +143,7 @@ class KinkitApi {
   Future<MonthCompare> monthCompare(int year, int month) async =>
       MonthCompare.fromJson(asJson(await _get('/report/month-compare/$year/$month')));
 
-  // ------------------------------------------------------------ spending
+  // spending
 
   Future<SpendingPage> spending({
     int? year,
@@ -184,7 +184,7 @@ class KinkitApi {
 
   Future<void> deleteSpending(int id) => _delete('/spending/$id');
 
-  // ------------------------------------------------------------ income
+  // income
 
   Future<IncomeList> income(int year, int month) async =>
       IncomeList.fromJson(asJson(await _get('/income', {'year': year, 'month': month})));
@@ -208,7 +208,7 @@ class KinkitApi {
 
   Future<void> deleteIncome(int id) => _delete('/income/$id');
 
-  // ------------------------------------------------------------ budgeting
+  // budgeting
 
   Future<Budgeting> budgeting(int year) async => Budgeting.fromJson(asJson(await _get('/budgeting/$year')));
 
@@ -221,7 +221,7 @@ class KinkitApi {
   Future<void> setBudgetExpense({required int year, required int month, required int categoryId, required int amount}) =>
       _post('/budgeting/expense', {'year': year, 'month': month, 'category_id': categoryId, 'amount': amount});
 
-  // ------------------------------------------------------------ goals
+  // goals
 
   Future<List<Goal>> goals() async => asList(await _get('/goals'), Goal.fromJson);
 
@@ -242,13 +242,13 @@ class KinkitApi {
 
   Future<void> deleteGoal(int id) => _delete('/goals/$id');
 
-  // ------------------------------------------------------------ family / gamification
+  // family / gamification
 
   Future<FamilyData> family() async => FamilyData.fromJson(asJson(await _get('/family')));
 
   Future<Gamification> gamification() async => Gamification.fromJson(asJson(await _get('/gamification')));
 
-  // ------------------------------------------------------------ household (Today / chores / lists / reminders)
+  // household (Today / chores / lists / reminders)
 
   /// GET /api/today - greeting + household sections (reminders, chores,
   /// lists, budget...). Returns null when the server doesn't have it (404).
@@ -346,7 +346,7 @@ class KinkitApi {
     return asInt(asJson(d)['spending_id']);
   }
 
-  // ------------------------------------------------------------ meal plan (backend-go/meal_plan.go)
+  // meal plan (backend-go/meal_plan.go)
 
   /// GET /api/meal-plan: next week's menu, or this week's with [thisWeek].
   Future<MealPlan> mealPlan({bool thisWeek = false}) async =>
@@ -359,7 +359,7 @@ class KinkitApi {
 
   Future<void> deleteMealIngredient(int id) => _delete('/meal-plan/ingredients/$id');
 
-  // ------------------------------------------------------------ calendar (activities + reminders overlay)
+  // calendar (activities + reminders overlay)
 
   /// Dates are YYYY-MM-DD; [include] is "activities", "reminders" or null (both).
   Future<CalendarData> calendar(String from, String to, {String? include}) async =>
@@ -372,7 +372,7 @@ class KinkitApi {
   /// With [on] (YYYY-MM-DD) only that occurrence of a repeating activity is removed.
   Future<void> deleteActivity(int id, {String? on}) => _send('DELETE', '/activities/$id', query: on != null ? {'on': on} : null);
 
-  // ------------------------------------------------------------ meal requests
+  // meal requests
 
   Future<List<MealProposal>> mealProposals() async => asList(asJson(await _get('/meal-plan/proposals'))['items'], MealProposal.fromJson);
 
@@ -385,7 +385,7 @@ class KinkitApi {
 
   Future<void> deleteMealProposal(int id) => _delete('/meal-plan/proposals/$id');
 
-  // ------------------------------------------------------------ widget boards
+  // widget boards
 
   Future<WidgetCatalog> widgetCatalog() async => WidgetCatalog.fromJson(asJson(await _get('/widgets/catalog')));
 

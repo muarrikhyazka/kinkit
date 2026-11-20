@@ -1,4 +1,4 @@
-import { DRocket, DWallet, DHome, DScreen, DChat, DStar, DGear, DHelp } from './DocsIcons.jsx'
+import { DKey, DWallet, DHome, DScreen, DChat, DSteps, DGear, DHelp } from './DocsIcons.jsx'
 
 /**
  * Docs registry. Each page is a module in ./pages exporting
@@ -11,12 +11,12 @@ const bySlug = {}
 for (const m of Object.values(modules)) bySlug[m.slug] = m
 
 export const SECTIONS = [
-  { id: 'getting-started', title: 'Getting started', Icon: DRocket, slugs: ['introduction', 'login', 'navigation', 'roles', 'install'] },
+  { id: 'getting-started', title: 'Getting started', Icon: DKey, slugs: ['introduction', 'login', 'navigation', 'roles', 'install'] },
   { id: 'money', title: 'Money', Icon: DWallet, slugs: ['add-spending', 'dashboard', 'spending', 'income', 'recurring', 'budget', 'goals', 'assets'] },
   { id: 'family-home', title: 'Family & home', Icon: DHome, slugs: ['today', 'calendar', 'reminders', 'family', 'chores', 'lists', 'meals', 'meal-requests'] },
   { id: 'screens-devices', title: 'Screens & devices', Icon: DScreen, slugs: ['widgets', 'tv-links'] },
   { id: 'chat-bots', title: 'Chat bots', Icon: DChat, slugs: ['bots-overview', 'bots-telegram', 'bots-discord', 'bots-slack', 'bots-matrix', 'bot-commands'] },
-  { id: 'points-badges', title: 'Points, levels & badges', Icon: DStar, slugs: ['points', 'levels', 'badges'] },
+  { id: 'points-badges', title: 'Points, levels & badges', Icon: DSteps, slugs: ['points', 'levels', 'badges'] },
   { id: 'settings-data', title: 'Settings & data', Icon: DGear, slugs: ['settings-categories', 'settings-display', 'import-export'] },
   { id: 'faq', title: 'FAQ', Icon: DHelp, slugs: ['faq'] },
 ].map(s => ({ ...s, pages: s.slugs.map(slug => {

@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// ---------- budgeting ----------
+// budgeting
 
 func (app *App) handleGetBudgeting(w http.ResponseWriter, r *http.Request) {
 	aid, ok := app.requireAccount(w, r)

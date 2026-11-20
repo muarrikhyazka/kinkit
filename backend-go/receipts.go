@@ -15,7 +15,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// ---------- receipt photos ----------
+// receipt photos
 //
 // One optional photo per spending row, stored on disk (not in Postgres):
 //   $DATA_DIR/receipts/<account_id>/<random>.<ext>

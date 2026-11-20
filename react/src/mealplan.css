@@ -11,8 +11,7 @@
 .meal-day-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .35rem; }
 .meal-dish { margin: .15rem 0; line-height: 1.35; }
 .meal-label {
-  display: inline-block; min-width: 2.6rem; font-size: var(--fs-xs); text-transform: uppercase;
-  letter-spacing: .03em; color: var(--muted);
+  display: inline-block; min-width: 2.6rem; font-size: var(--fs-xs); color: var(--muted);
 }
 .meal-fried { margin-left: .4rem; font-size: var(--fs-xs); }
 .meal-promo { font-size: var(--fs-sm); margin-top: .3rem; }
@@ -35,7 +34,7 @@
 .kw-word { overflow-wrap: anywhere; }
 
 /* meal requests (MealRequests.jsx) */
-.meal-req-h { margin: var(--s-4) 0 var(--s-2); font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.meal-req-h { margin: var(--s-4) 0 var(--s-2); font-size: var(--fs-sm); color: var(--muted); }
 .meal-req-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s-2); }
 .meal-req { display: flex; gap: var(--s-3); align-items: center; flex-wrap: wrap; border: 1px solid var(--border); border-radius: var(--r-md); padding: var(--s-2) var(--s-3); background: var(--card); }
 .meal-req-main { flex: 1 1 14rem; min-width: 0; display: flex; flex-direction: column; }

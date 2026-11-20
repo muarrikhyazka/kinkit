@@ -16,7 +16,7 @@ import '../calendar.css'
 import '../reminders.css'
 import { ChevronLink } from '../ChevronLink.jsx'
 
-// ---------- helpers (shared with Today.jsx) ----------
+// helpers (shared with Today.jsx)
 
 // Household categories first. Ids match the backend (reminderCategoryIDs).
 export const REMINDER_CATEGORIES = [

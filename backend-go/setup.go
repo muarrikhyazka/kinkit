@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// ---------- row types (mirror sqlite dict(r) shapes) ----------
+// row types (mirror sqlite dict(r) shapes)
 
 type accountRow struct {
 	ID        int64  `json:"id"`
@@ -29,7 +29,7 @@ type incomeSourceRow struct {
 	Name      string `json:"name"`
 }
 
-// ---------- setup / master lists ----------
+// setup / master lists
 
 func (app *App) handleGetSetup(w http.ResponseWriter, r *http.Request) {
 	aid, ok := app.requireAccount(w, r)
@@ -92,7 +92,7 @@ func (app *App) handleGetSetup(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"accounts": accounts, "categories": categories, "income_sources": incomeSources})
 }
 
-// ---------- categories CRUD ----------
+// categories CRUD
 
 func (app *App) handleAddCategory(w http.ResponseWriter, r *http.Request) {
 	aid, ok := app.requireAccount(w, r)
@@ -203,7 +203,7 @@ func (app *App) handleDeleteCategory(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-// ---------- accounts CRUD (bank + asset accounts) ----------
+// accounts CRUD (bank + asset accounts)
 
 func (app *App) handleAddAccount(w http.ResponseWriter, r *http.Request) {
 	aid, ok := app.requireAccount(w, r)
@@ -294,7 +294,7 @@ func (app *App) handleDeleteAccount(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-// ---------- income sources CRUD ----------
+// income sources CRUD
 
 func (app *App) handleAddIncomeSource(w http.ResponseWriter, r *http.Request) {
 	aid, ok := app.requireAccount(w, r)

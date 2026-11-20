@@ -128,7 +128,7 @@ func (app *App) handleToday(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// ---------- providers ----------
+// providers
 
 func localDayFromDate(day time.Time, loc *time.Location) (time.Time, time.Time) {
 	start := time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, loc)

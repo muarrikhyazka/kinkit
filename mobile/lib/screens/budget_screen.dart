@@ -246,7 +246,7 @@ class _PlanRow extends StatelessWidget {
             Row(
               children: [
                 Expanded(child: Text(name, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.text))),
-                Text(planned > 0 ? money.format(planned) : '—',
+                Text(planned > 0 ? money.format(planned) : 'Not set',
                     style: TextStyle(fontWeight: FontWeight.w600, color: p.text)),
                 if (onTap != null) Icon(Icons.edit_outlined, size: 16, color: p.muted),
               ],

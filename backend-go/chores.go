@@ -68,7 +68,7 @@ func RegisterChoreRoutes(r chi.Router, app *App) {
 	r.Post("/bot/chores/{id}/done", botAuth(app, botChoreDone))
 }
 
-// ---------- chore definitions ----------
+// chore definitions
 
 type choreRow struct {
 	ID                int64     `json:"id"`
@@ -579,7 +579,7 @@ func (app *App) handleDeleteChore(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "archived": history})
 }
 
-// ---------- instance generation ----------
+// instance generation
 
 // ensureChoreInstances creates every due occurrence up to `today` (the
 // household-local date) for the household's active chores, then marks
@@ -725,7 +725,7 @@ func (app *App) startChoreWorker(ctx context.Context) {
 	}()
 }
 
-// ---------- instances ----------
+// instances
 
 type choreInstanceView struct {
 	ID               int64      `json:"id"` // 0 for projected (future, not generated yet)
@@ -1021,7 +1021,7 @@ func (app *App) handleChoresToday(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// ---------- actions (complete / approve / reject / undo) ----------
+// actions (complete / approve / reject / undo)
 
 type choreErr struct {
 	status int
@@ -1382,7 +1382,7 @@ func (app *App) handleChorePhoto(w http.ResponseWriter, r *http.Request) {
 	serveImageFile(w, r, abs)
 }
 
-// ---------- Today provider ----------
+// Today provider
 
 func choresTodayProvider(ctx context.Context, app *App, aid int64, member memberInfo, day time.Time) (*TodaySection, error) {
 	if err := app.ensureChoreInstances(ctx, aid, day); err != nil {
@@ -1464,7 +1464,7 @@ func choresTodayProvider(ctx context.Context, app *App, aid int64, member member
 	return sec, nil
 }
 
-// ---------- bot endpoints ----------
+// bot endpoints
 
 // GET /api/bot/chores/today -> {items:[{id,title,assignee_name,done,points}]}
 // If X-Bot-User links to a kid, only their chores.

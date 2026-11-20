@@ -18,7 +18,7 @@ class ChoresScreen extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(appBar: kAppBar(context, 'Chores'), body: const ChoresTab());
 }
 
-// ============================================================ chores
+// chores
 
 class ChoresTab extends ConsumerWidget {
   const ChoresTab({super.key});

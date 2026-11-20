@@ -26,7 +26,7 @@ func serviceAuth(app *App, h func(http.ResponseWriter, *http.Request, *App)) htt
 	}
 }
 
-// ---------- Service-token authenticated internal (bot multiplexers) ----------
+// Service-token authenticated internal (bot multiplexers)
 
 // internalListIntegrations mirrors Python's /api/internal/integrations
 // response shape exactly: a bare JSON array of
