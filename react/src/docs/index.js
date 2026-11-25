@@ -17,7 +17,7 @@ export const SECTIONS = [
   { id: 'screens-devices', title: 'Screens & devices', Icon: DScreen, slugs: ['widgets', 'tv-links'] },
   { id: 'chat-bots', title: 'Chat bots', Icon: DChat, slugs: ['bots-overview', 'bots-telegram', 'bots-discord', 'bots-slack', 'bots-matrix', 'bot-commands'] },
   { id: 'points-badges', title: 'Points, levels & badges', Icon: DSteps, slugs: ['points', 'levels', 'badges'] },
-  { id: 'settings-data', title: 'Settings & data', Icon: DGear, slugs: ['settings-categories', 'settings-display', 'import-export'] },
+  { id: 'settings-data', title: 'Settings & data', Icon: DGear, slugs: ['settings-categories', 'settings-members', 'settings-display', 'import-export'] },
   { id: 'faq', title: 'FAQ', Icon: DHelp, slugs: ['faq'] },
 ].map(s => ({ ...s, pages: s.slugs.map(slug => {
   if (!bySlug[slug] && import.meta.env.DEV) console.warn('docs: missing page module for', slug)

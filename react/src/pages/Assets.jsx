@@ -147,7 +147,7 @@ export default function Assets() {
 
       <form className="card inline-form" onSubmit={handleAdd}>
         <input placeholder="Description" aria-label="Asset description" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} required />
-        <MoneyInput placeholder="Value (e.g. 10jt)" aria-label="Asset value" value={form.value} onChange={v => setForm(f => ({ ...f, value: v }))} required />
+        <MoneyInput placeholder="Value (e.g. 10m)" aria-label="Asset value" value={form.value} onChange={v => setForm(f => ({ ...f, value: v }))} required />
         <select aria-label="Account" value={form.account_id} onChange={e => setForm(f => ({ ...f, account_id: e.target.value }))}>
           <option value="">Account...</option>
           {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}

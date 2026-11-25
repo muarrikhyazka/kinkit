@@ -150,7 +150,7 @@ kbd, code {
   background: var(--chrome); color: #fff;
   transition: box-shadow .2s ease;
 }
-.site-header.scrolled { box-shadow: 0 1px 0 rgba(0,0,0,.08), 0 4px 16px rgba(16, 24, 40, .12); }
+.site-header.scrolled { box-shadow: 0 1px 0 var(--border); }
 .site-header :focus-visible { outline-color: #fff; }
 .nav { display: flex; align-items: center; gap: var(--s-4); min-height: 64px; }
 .brand { display: inline-flex; align-items: center; min-height: 44px; gap: var(--s-3); font-weight: 700; font-size: var(--fs-lg); color: #fff; letter-spacing: -.01em; }
@@ -160,15 +160,7 @@ kbd, code {
 .nav-links a { display: block; white-space: nowrap; padding: var(--s-2) var(--s-2); border-radius: var(--r-md); color: rgba(255,255,255,.88); font-weight: 500; font-size: var(--fs-sm); }
 .nav-links a:hover { color: #fff; background: var(--chrome-hover); }
 .nav-actions { display: flex; align-items: center; gap: var(--s-2); }
-.lang-toggle { display: inline-flex; padding: 2px; border-radius: var(--r-md); background: rgba(255,255,255,.12); }
-.lang-toggle button {
-  font: inherit; font-size: var(--fs-xs); font-weight: 600; border: 0; background: transparent; color: rgba(255,255,255,.88);
-  min-width: 36px; min-height: 32px; border-radius: 8px; cursor: pointer;
-}
-.lang-toggle button[aria-pressed="true"] { background: #fff; color: #4338ca; }
 @media (pointer: coarse) {
-  .lang-toggle button { min-width: 44px; min-height: 40px; }
-  .lang-toggle { padding: 2px; }
   .btn-sm { min-height: 44px; }
 }
 .btn-onchrome { background: #fff; color: #4338ca; }
@@ -218,6 +210,7 @@ kbd, code {
 .hero-ctas { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-5); margin-top: var(--s-6); }
 .hero-note { margin-top: var(--s-4); color: var(--muted); font-size: var(--fs-sm); }
 
+.hero-figure { min-width: 0; }
 .hero-visual { position: relative; padding-bottom: 6%; }
 .hero-visual .device-laptop { margin-left: auto; width: 90%; }
 .hero-kiki { position: absolute; left: -2%; bottom: -4%; width: 30%; max-width: 170px; }
@@ -515,6 +508,6 @@ kbd, code {
 }
 
 @media print {
-  .site-header, .menu-btn, .lang-toggle { display: none; }
+  .site-header, .menu-btn { display: none; }
   .js .reveal { opacity: 1; transform: none; }
 }

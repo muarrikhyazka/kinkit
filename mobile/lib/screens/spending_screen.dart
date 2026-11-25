@@ -100,7 +100,7 @@ class _SpendingScreenState extends ConsumerState<SpendingScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: FilledButton.icon(
-                          style: FilledButton.styleFrom(backgroundColor: p.danger, foregroundColor: p.onPrimary),
+                          style: FilledButton.styleFrom(backgroundColor: p.dangerFill, foregroundColor: p.onPrimary),
                           icon: const Icon(Icons.delete_outline),
                           label: const Text('Delete'),
                           onPressed: () {
@@ -257,7 +257,7 @@ class _SpendingScreenState extends ConsumerState<SpendingScreen> {
         backgroundColor: categoryColor(r.categoryName).withValues(alpha: 0.15),
         child: Text(
           (r.categoryName ?? '?').isEmpty ? '?' : (r.categoryName ?? '?').substring(0, 1).toUpperCase(),
-          style: TextStyle(color: categoryColor(r.categoryName), fontWeight: FontWeight.w700),
+          style: TextStyle(color: p.text, fontWeight: FontWeight.w700),
         ),
       ),
       title: Text(r.description.isEmpty ? (r.categoryName ?? 'Spending') : r.description, overflow: TextOverflow.ellipsis),
@@ -277,10 +277,10 @@ class _SpendingScreenState extends ConsumerState<SpendingScreen> {
       key: ValueKey('sp-${r.id}'),
       direction: DismissDirection.endToStart,
       background: Container(
-        color: p.danger,
+        color: p.dangerFill,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: const Icon(Icons.delete_outline, color: Colors.white),
+        child: Icon(Icons.delete_outline, color: p.onPrimary),
       ),
       confirmDismiss: (_) => _delete(r),
       child: tile,

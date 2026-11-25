@@ -7,8 +7,8 @@ Every /api/bot call carries X-Bot-User "discord:<user id>".
 
 Commands are plain messages with a "!" (or "/") prefix: !today, !remind,
 !reminders, !chores, !buy, !list, !done-shopping, !link, !recent, !fix,
-!fixdate, !date, !menu, !ingredients, !schedule, !feedback, !help (and the
-Indonesian aliases in kinkit_common.ALIASES). Anything else that looks like
+!fixdate, !date, !menu, !ingredients, !schedule, !feedback, !help (the
+Indonesian aliases in kinkit_common.ALIASES still work but are not advertised). Anything else that looks like
 "50k lunch" is logged as spending; unknown words get category buttons.
 Buttons: reminder messages are posted by the backend with message
 components (custom_id "rem:<id>:..."); !chores replies carry
@@ -88,7 +88,7 @@ class TenantClient(discord.Client):
         try:
             replies = await kc.log_spending(self.bot_token, user, content, "discord")
         except kc.BackendError as e:
-            await message.channel.send(f"Failed to save - {e.message}")
+            await message.channel.send(f"Failed to save: {e.message}")
             return
         except (URLError, OSError):
             return

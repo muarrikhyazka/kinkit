@@ -519,7 +519,7 @@ class _CardBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(card.title.toUpperCase(), style: TextStyle(fontSize: 11 * scale, letterSpacing: 1, fontWeight: FontWeight.w700, color: p.muted)),
+        Text(card.title, style: TextStyle(fontSize: 12 * scale, fontWeight: FontWeight.w600, color: p.muted)),
         if (big.isNotEmpty)
           FittedBox(
             fit: BoxFit.scaleDown,

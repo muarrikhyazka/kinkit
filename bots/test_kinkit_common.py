@@ -128,7 +128,7 @@ class Flows(unittest.TestCase):
     def test_known_and_unknown_lines(self):
         replies = self.run_async(kc.log_spending("tok", "telegram:1", "makan 20rb\npecel lele 25rb", "telegram"))
         self.assertEqual(len(replies), 2)
-        self.assertTrue(replies[0][0].startswith("Logged: makan - Rp20.000 (Food)"))
+        self.assertTrue(replies[0][0].startswith("Logged: makan, Rp20.000 (Food)"))
         prompt, buttons = replies[1]
         self.assertIn("pecel lele", prompt)
         token = buttons[0][0][1].split(":")[1]

@@ -181,6 +181,53 @@ func TestExports(t *testing.T) {
 		t.Fatalf("income csv %d", code)
 	}
 
+	const xlsxType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	flatten := func(parts map[string][]byte) string {
+		var sb strings.Builder
+		for _, b := range parts {
+			sb.Write(b)
+		}
+		return sb.String()
+	}
+	code, ctype, xbody := c.get("/api/export/spending.xlsx?from=2026-03-01&to=2026-03-31")
+	if code != 200 || !strings.HasPrefix(ctype, xlsxType) {
+		t.Fatalf("spending.xlsx: %d %s", code, ctype)
+	}
+	xs := parseXLSXSheet(t, unzipXLSX(t, xbody), "xl/worksheets/sheet1.xml")
+	xtext := flatten(unzipXLSX(t, xbody))
+	if len(xs.Rows) != 2 || !strings.Contains(xtext, "Lunch") || strings.Contains(xtext, "calc") {
+		t.Fatalf("spending.xlsx date filter: %d rows", len(xs.Rows))
+	}
+	if cell := xs.Rows[1].Cells[5]; cell.Type != "n" || cell.Value != "2000" {
+		t.Fatalf("amount should be numeric: %+v", cell)
+	}
+	if cell := xs.Rows[1].Cells[6]; cell.Type != "b" || cell.Value != "0" {
+		t.Fatalf("checked should be boolean: %+v", cell)
+	}
+	_, _, xall := c.get("/api/export/spending.xlsx")
+	if !strings.Contains(flatten(unzipXLSX(t, xall)), "=cmd") {
+		t.Fatal("full spending.xlsx lost the =cmd text")
+	}
+	if code, _, body := c.get("/api/export/spending.xlsx?from=bad"); code != 400 || !strings.Contains(string(body), "from must be YYYY-MM-DD") {
+		t.Fatalf("bad date xlsx: %d %s", code, body)
+	}
+	if code, ctype, ibody := c.get("/api/export/income.xlsx"); code != 200 || !strings.HasPrefix(ctype, xlsxType) {
+		t.Fatalf("income.xlsx: %d %s", code, ctype)
+	} else if _, ok := unzipXLSX(t, ibody)["xl/worksheets/sheet1.xml"]; !ok {
+		t.Fatal("income.xlsx has no sheet")
+	}
+	code, ctype, abody := c.get("/api/export/all.xlsx")
+	if code != 200 || !strings.HasPrefix(ctype, xlsxType) {
+		t.Fatalf("all.xlsx: %d %s", code, ctype)
+	}
+	aparts := unzipXLSX(t, abody)
+	if wb := string(aparts["xl/workbook.xml"]); !strings.Contains(wb, `name="Account"`) || !strings.Contains(wb, `name="spending"`) || strings.Contains(wb, `name="integrations"`) {
+		t.Fatalf("all.xlsx sheets: %s", wb)
+	}
+	if strings.Contains(flatten(aparts), "secret-") {
+		t.Fatal("all.xlsx leaked secrets")
+	}
+
 	code, _, raw := c.get("/api/export/all.json")
 	if code != 200 {
 		t.Fatalf("all.json %d", code)
@@ -201,8 +248,10 @@ func TestExports(t *testing.T) {
 	}
 
 	anon := newClient(t, srv)
-	if code, _, _ := anon.get("/api/export/all.json"); code != 401 {
-		t.Fatalf("anon export: %d", code)
+	for _, path := range []string{"all.json", "all.xlsx", "spending.xlsx", "income.xlsx"} {
+		if code, _, _ := anon.get("/api/export/" + path); code != 401 {
+			t.Fatalf("anon export %s: %d", path, code)
+		}
 	}
 }
 

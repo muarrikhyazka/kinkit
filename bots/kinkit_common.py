@@ -55,55 +55,54 @@ MIN_BARE_LEADING = 100
 HELP_TEXT = (
     "Kinkit bot\n"
     "\n"
-    "Spending - just type it, one per line:\n"
-    "   makan siang 50rb  /  50k lunch  /  bensin rp20.000\n"
+    "Spending (just type it, one per line):\n"
+    "   lunch 50k  /  50k lunch  /  fuel 20000\n"
     "   Unknown words get category buttons; the bot remembers your pick.\n"
-    "/recent [n] - last expenses (/last)\n"
-    "/fix <words> <category> - change a category (/koreksi)\n"
-    "/fixdate <words> YYYY-MM-DD - change a date (/koreksitgl)\n"
-    "/date YYYY-MM-DD - log the next expenses on another day; /date reset (/tanggal)\n"
+    "/recent [n]: last expenses (/last)\n"
+    "/fix <words> <category>: change a category\n"
+    "/fixdate <words> YYYY-MM-DD: change a date\n"
+    "/date YYYY-MM-DD: log the next expenses on another day; /date reset\n"
     "\n"
     "Home:\n"
-    "/today - today's reminders, chores, shopping and budget (/hariini)\n"
-    "/remind <when> <what> [@name] - e.g. (/ingatkan)\n"
+    "/today: today's reminders, chores, shopping and budget\n"
+    "/remind <when> <what> [@name], for example:\n"
     "   /remind every tue and fri 19:00 take out the trash @budi\n"
     "   /remind every 2 weeks on fri 10:00 change bed sheets\n"
     "   /remind tomorrow 8am take medicine\n"
-    "   Indonesian works too: /remind tiap 2 minggu jumat jam 9 cuci sajadah\n"
-    "/reminders - upcoming reminders (/pengingat)\n"
-    "/chores - today's chores\n"
-    "/buy milk, eggs, bread - add to the shopping list\n"
-    "/list [name] - show a list\n"
-    "/done_shopping 250k - finish the shopping trip (total spent)\n"
+    "/reminders: upcoming reminders\n"
+    "/chores: today's chores\n"
+    "/buy milk, eggs, bread: add to the shopping list\n"
+    "/list [name]: show a list\n"
+    "/done_shopping 250k: finish the shopping trip (total spent)\n"
     "\n"
     "Meals:\n"
-    "/menu [this] - weekly meal plan (next week, or this week)\n"
-    "/ingredients - must-use ingredients (/bahan)\n"
-    "/addingredient <name> (/tambahbahan)  /removeingredient <name> (/hapusbahan)\n"
-    "/schedule - when the meal plan is posted; /schedule meal fri 06:00 (/jadwal, /reminder)\n"
+    "/menu [this]: weekly meal plan (next week, or this week)\n"
+    "/ingredients: must-use ingredients\n"
+    "/addingredient <name>  /removeingredient <name>\n"
+    "/schedule: when the meal plan is posted; /schedule meal fri 06:00\n"
     "\n"
-    "/link CODE - link your chat account (code from Kinkit > Reminders)\n"
-    "/feedback <idea> - request a feature (/fitur)\n"
-    "/about - about this bot\n"
+    "/link CODE: link your chat account (code from Kinkit > Reminders)\n"
+    "/feedback <idea>: request a feature\n"
+    "/about: about this bot\n"
 )
 
 SPENDING_HELP = (
     "Log spending\n"
     "Type: <description> <amount>, one per line\n"
-    "   makan siang 50rb\n"
-    "   bensin rp20.000\n"
+    "   lunch 50k\n"
+    "   fuel 20000\n"
     "   50k lunch\n"
-    "Units: k / rb / ribu = thousand, jt / juta = million.\n"
+    "Unit: k = thousand (50k is 50000). Without a unit the number is taken as is.\n"
     "Known words are categorised automatically; otherwise pick a category from the buttons "
     "and the bot learns the words for next time.\n"
     "Wrong category? /fix <words> <category>. Wrong day? /fixdate <words> YYYY-MM-DD."
 )
 
 ABOUT_TEXT = (
-    "Kinkit bot - family money and home.\n"
+    "Kinkit bot: family money and home.\n"
     "Log spending, reminders, chores, shopping lists and the weekly meal plan from this chat; "
     "everything lands in your household's Kinkit, where you can see and edit it on the web and the phone app.\n"
-    "/help - all commands"
+    "/help: all commands"
 )
 
 REMIND_USAGE = (
@@ -112,10 +111,9 @@ REMIND_USAGE = (
     "  /remind every 2 weeks on fri 10:00 change bed sheets\n"
     "  /remind every tue and fri 19:00 take out the trash\n"
     "  /remind every sat 9am clean the bathroom @budi\n"
-    "  /remind every 3 months on the 1st change motorbike oil\n"
+    "  /remind every 3 months on the 1st change car oil\n"
     "  /remind every 6 months service the AC\n"
-    "Repeat every N weeks/months: \"every 2 weeks\", \"every other week\", \"every 3 months\" "
-    "(also \"tiap 2 minggu\", \"setiap 3 bulan\")."
+    "Repeat every N weeks/months: \"every 2 weeks\", \"every other week\", \"every 3 months\"."
 )
 
 # rumahbot command names (Indonesian) and English synonyms -> canonical command.
@@ -346,12 +344,12 @@ async def log_spending(bot_token, user, text, source):
     for amount, desc, category in parsed:
         if category is None and cfg.get("category_list"):
             token = new_pending(bot_token, user, desc, amount, date, source)
-            replies.append((f"\"{desc}\" {format_rp(amount)} - which category?", category_buttons(token, categories, source)))
+            replies.append((f"\"{desc}\" {format_rp(amount)}. Which category?", category_buttons(token, categories, source)))
             continue
         res = await abot_api(bot_token, "POST", "/api/bot/spending", {
             "tx_date": date, "description": desc, "category": category, "amount": amount, "source": source,
         }, user=user)
-        logged.append(f"{desc} - {format_rp(amount)} ({res.get('category') or category or 'Other'})")
+        logged.append(f"{desc}, {format_rp(amount)} ({res.get('category') or category or 'Other'})")
     if logged:
         head = f"Logged{on}: " if len(logged) == 1 else f"Logged {len(logged)} expenses{on}:\n- "
         replies.insert(0, (head + "\n- ".join(logged), []))
@@ -364,7 +362,7 @@ async def recent_spending(bot_token, user, n=5):
         return "No entries yet."
     lines = [f"Last {len(rows)} expenses"]
     for i, r in enumerate(rows, 1):
-        lines.append(f"{i}. {r['tx_date']} - {r['description']} - {format_rp(r['amount'])} ({r.get('category_name') or 'Other'})")
+        lines.append(f"{i}. {r['tx_date']}: {r['description']}, {format_rp(r['amount'])} ({r.get('category_name') or 'Other'})")
     return "\n".join(lines)
 
 
@@ -395,7 +393,7 @@ def split_date_suffix(args):
 
 
 def _row_line(i, r):
-    return f"{i}. {r['description']} - {r.get('category_name') or 'Other'} | {format_rp(r['amount'])} | {r['tx_date']}"
+    return f"{i}. {r['description']}, {r.get('category_name') or 'Other'} | {format_rp(r['amount'])} | {r['tx_date']}"
 
 
 async def _find_rows(bot_token, user, query):
@@ -477,15 +475,15 @@ MEAL_JOBS = ("meal", "meal_plan", "menu")
 REMINDER_JOBS = {
     "spend": "the daily \"log today's spending\" nudge",
     "bahan_remind": "the Thursday \"must-use ingredients for next week?\" question",
-    "sarung": "Cuci sarung", "pompa_ban": "Pompa ban", "ganti_oli": "Ganti oli",
-    "sprei": "Ganti sprei & handuk", "cuci_toren": "Cuci toren air", "rawat_diri": "Rawat diri Sabtu",
+    "sarung": "the curtain wash reminder", "pompa_ban": "the tyre pressure reminder", "ganti_oli": "the oil change reminder",
+    "sprei": "the bed sheets and towels reminder", "cuci_toren": "the water tank cleaning reminder", "rawat_diri": "the Saturday self-care reminder",
 }
 SCHEDULE_USAGE = (
     "Usage: /schedule meal <days> <HH:MM> [start YYYY-MM-DD]\n"
     "  /schedule meal fri 06:00\n"
-    "  /schedule meal sabtu,minggu 07:30 2026-12-01\n"
+    "  /schedule meal sat,sun 07:30 2026-12-01\n"
     "  /schedule meal off  (or on)\n"
-    "Days: sun..sat or minggu..sabtu, comma-separated, or \"daily\" / \"setiap\"."
+    "Days: sun..sat, comma-separated, or \"daily\"."
 )
 
 
@@ -512,7 +510,7 @@ def parse_schedule_args(args):
         return None, "Grocery promos are now fetched automatically right before the meal plan is posted."
     if job in REMINDER_JOBS:
         return None, (f"{REMINDER_JOBS[job]} is a Kinkit reminder now. Change it on the Reminders page of the Kinkit web app, "
-                      "or add one here, e.g. /remind every day 20:00 catat pengeluaran.")
+                      "or add one here, e.g. /remind every day 20:00 log spending.")
     if job not in MEAL_JOBS:
         return None, f"Unknown job \"{job}\". The only bot job is \"meal\" (weekly meal plan).\n\n{SCHEDULE_USAGE}"
     rest = parts[1:]
@@ -522,7 +520,7 @@ def parse_schedule_args(args):
         return None, SCHEDULE_USAGE
     days = parse_days(rest[0])
     if days is None:
-        return None, "Unknown day name. Use sun..sat, minggu..sabtu, or \"daily\"."
+        return None, "Unknown day name. Use sun..sat or \"daily\"."
     m = re.fullmatch(r"(\d{1,2})[:.](\d{2})", rest[1])
     if not m or int(m.group(1)) > 23 or int(m.group(2)) > 59:
         return None, "Time must be HH:MM, e.g. 06:00."
@@ -608,7 +606,7 @@ async def run_command(bot_token, user, cmd, args):
             return res.get("message", "OK"), []
         if cmd == "link":
             if not args:
-                return "Usage: /link CODE - create the code in Kinkit > Reminders > Link my chat account.", []
+                return "Usage: /link CODE. Create the code in Kinkit > Reminders > Link my chat account.", []
             res = await abot_api(bot_token, "POST", "/api/bot/link", {"code": args.split()[0]}, user=user)
             return res.get("message", "OK"), []
         if cmd == "chores":
@@ -677,7 +675,7 @@ CALLBACK_PREFIXES = ("rem:", "chore:", "spc:", "spx:", "fixcat:", "fixdate:")
 async def _pick_category(bot_token, user, token, cat_id):
     p = PENDING.get(token)
     if p is None or p["bot_token"] != bot_token:
-        return False, "This prompt expired - send the expense again."
+        return False, "This prompt expired. Send the expense again."
     res = await abot_api(bot_token, "POST", "/api/bot/spending", {
         "tx_date": p["date"], "description": p["desc"], "category_id": int(cat_id),
         "amount": p["amount"], "source": p["source"],
@@ -691,7 +689,7 @@ async def _pick_category(bot_token, user, token, cat_id):
         learned = lr.get("learned") or []
     except (BackendError, URLError, OSError):
         pass  # the expense is saved; learning is a bonus
-    msg = f"Logged: {p['desc']} - {format_rp(p['amount'])} ({category}) on {p['date']}"
+    msg = f"Logged: {p['desc']}, {format_rp(p['amount'])} ({category}) on {p['date']}"
     if learned:
         msg += f"\nRemembered: {', '.join(learned)} -> {category}"
     return True, msg

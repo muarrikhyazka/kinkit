@@ -89,6 +89,7 @@
 /* colour picker (ColorPicker.jsx) */
 .cp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 .cp-btn.icon-btn { width: 26px; height: 26px; min-width: 26px; padding: 0; }
+@media (pointer: coarse) { .cp-btn.icon-btn { width: 44px; height: 44px; min-width: 44px; } }
 .cp-swatch { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,.28); display: inline-block; box-sizing: border-box; flex: none; }
 .cp-swatch.none { background: linear-gradient(135deg, var(--card) 46%, var(--danger) 46%, var(--danger) 54%, var(--card) 54%); }
 .cp-swatch.big { width: 28px; height: 28px; }

@@ -33,7 +33,7 @@
 
 .login-hero-top { max-width: 30rem; }
 .login-hero-brand { display: flex; align-items: center; gap: var(--s-3); font-weight: 700; font-size: var(--fs-lg); letter-spacing: -.01em; margin-bottom: var(--s-5); }
-.login-hero-logo { width: 36px; height: 36px; border-radius: 10px; box-shadow: 0 0 0 1px rgba(255,255,255,.35), 0 2px 8px rgba(20,16,80,.3); }
+.login-hero-logo { width: 36px; height: 36px; border-radius: 10px; box-shadow: 0 0 0 1px rgba(255,255,255,.35); }
 .login-hero-title {
   margin: 0;
   font-size: clamp(1.9rem, 3.2vw, 3rem);

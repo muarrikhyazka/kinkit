@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-/// Colours from react/src/index.css (.tv-* rules and the dark theme tokens).
+/// Navy surfaces mirror the web TV view (TVView.jsx). Text and focus use the
+/// shared dark primary #818CF8; a focused or filled control is #4F46E5 with
+/// white text, as on web and phone.
 class TvColors {
   static const bg = Color(0xFF0B0E1A);
   static const card = Color(0xFF151A2E);
@@ -9,6 +11,9 @@ class TvColors {
   static const text = Color(0xFFF1F3F8);
   static const muted = Color(0xFF9CA3AF);
   static const primary = Color(0xFF818CF8);
+
+  /// Fill behind white text (focused control): 6.3:1, where white on [primary] is 2.98:1.
+  static const primaryFill = Color(0xFF4F46E5);
   static const accent = Color(0xFFC4B5FD);
   static const positive = Color(0xFF4ADE80);
   static const negative = Color(0xFFF87171);

@@ -53,7 +53,7 @@ export default function TVTokens() {
     if (await copyText(tvUrl(t.token))) {
       setCopied(t.id)
       setTimeout(() => setCopied(c => (c === t.id ? null : c)), 2000)
-    } else toast.error('Could not copy - select the link and copy it manually.')
+    } else toast.error('Could not copy. Select the link and copy it manually.')
   }
 
   async function setBoard(t, value) {

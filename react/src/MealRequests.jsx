@@ -43,7 +43,7 @@ export default function MealRequests({ days = [], manager, onChanged }) {
       </p>
       <form className="meal-add" onSubmit={submit}>
         <label className="sr-only" htmlFor="meal-req-dish">Dish</label>
-        <input id="meal-req-dish" value={dish} onChange={e => setDish(e.target.value)} placeholder="What would you like to eat? e.g. Nasi goreng" maxLength={100} />
+        <input id="meal-req-dish" value={dish} onChange={e => setDish(e.target.value)} placeholder="What would you like to eat? e.g. Fried rice" maxLength={100} />
         <label className="sr-only" htmlFor="meal-req-note">Note</label>
         <input id="meal-req-note" value={note} onChange={e => setNote(e.target.value)} placeholder="Note (optional)" maxLength={300} />
         <label className="sr-only" htmlFor="meal-req-day">Day</label>

@@ -109,7 +109,7 @@ export default function Lists() {
       await loadLists()
       await loadActive()
     } catch (e) {
-      setError(isRetryableError(e) ? 'Offline - showing the last loaded list. Ticks are saved when you reconnect.' : e.message)
+      setError(isRetryableError(e) ? 'Offline. Showing the last loaded list. Ticks are saved when you reconnect.' : e.message)
     }
   }, [loadLists, loadActive])
 
@@ -226,7 +226,7 @@ export default function Lists() {
           {!readOnly && <AddBox listId={data.list.id} onAdd={add} />}
 
           {toBuy.length === 0 && inCart.length === 0 && (
-            <div className="card muted list-empty">Nothing on this list yet. Add items above - try “eggs, 2 milk, bread x3”.</div>
+            <div className="card muted list-empty">Nothing on this list yet. Add items above, for example “eggs, 2 milk, bread x3”.</div>
           )}
 
           {groups.map(([cat, items]) => (
@@ -322,7 +322,7 @@ function AddBox({ listId, onAdd }) {
       setText('')
       if (d.added.length > 1) toast.success(`Added ${d.added.length} items`)
     } catch (e) {
-      toast.error(isRetryableError(e) ? 'You are offline - adding items needs a connection.' : e.message)
+      toast.error(isRetryableError(e) ? 'You are offline. Adding items needs a connection.' : e.message)
     } finally {
       setBusy(false)
       inputRef.current?.focus()
@@ -480,7 +480,7 @@ function FinishModal({ list, items, categories, onClose, onDone }) {
       })
       onDone(res)
     } catch (err) {
-      toast.error(isRetryableError(err) ? 'Could not reach the server - try again when you are back online (it will not be logged twice).' : err.message)
+      toast.error(isRetryableError(err) ? 'Could not reach the server. Try again when you are back online (it will not be logged twice).' : err.message)
     } finally { setBusy(false) }
   }
 
@@ -586,7 +586,7 @@ function Staples({ list, lists, manager, onChanged }) {
       {open && (
         <>
           {staples === null && <p className="muted">Loading…</p>}
-          {staples && mine.length === 0 && <p className="muted">No staples for {list.name} yet{manager ? ' - e.g. “Rice, 5kg, every 14 days”.' : '.'}</p>}
+          {staples && mine.length === 0 && <p className="muted">No staples for {list.name} yet{manager ? '. Example: “Rice, 5kg, every 14 days”.' : '.'}</p>}
           <ul className="staple-rows">
             {mine.map(s => (
               <li key={s.id} className={s.active ? '' : 'paused'}>

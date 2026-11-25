@@ -92,7 +92,7 @@ function WidgetContent({ widget, card, tz, editing, onText }) {
       <textarea className="wb-note-edit" value={widget.text || ''} onChange={e => onText(e.target.value)} maxLength={400} placeholder="Type a note, e.g. Wi-Fi password" aria-label="Note text" />
     ) : <p className="wb-note">{widget.text || <span className="muted">Empty note</span>}</p>
   }
-  if (!card) return <p className="muted">No data</p>
+  if (!card) return <p className="muted">This widget has nothing to show yet.</p>
   const money = n => formatRupiah(n)
   return (
     <div className="wb-card">

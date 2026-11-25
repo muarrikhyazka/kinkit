@@ -11,7 +11,7 @@ const isDark = () => document.documentElement.getAttribute('data-theme') === 'da
 /** Chart.js pie chart - hoverable slices, percentage labels, no collisions. */
 export default function PieChart({ data }) {
   const total = data.reduce((s, d) => s + d.total, 0)
-  if (total <= 0) return <div className="muted">No data yet.</div>
+  if (total <= 0) return <div className="muted">No spending in this period yet.</div>
 
   const textColor = isDark() ? '#e5e7eb' : '#1e2330'
 

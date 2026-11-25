@@ -189,10 +189,10 @@ class _ListDetailScreenState extends ConsumerState<ListDetailScreen> {
                       key: ValueKey('li-${i.id}'),
                       direction: DismissDirection.endToStart,
                       background: Container(
-                        color: p.danger,
+                        color: p.dangerFill,
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: const Icon(Icons.delete_outline, color: Colors.white),
+                        child: Icon(Icons.delete_outline, color: p.onPrimary),
                       ),
                       // Remove after the server confirms; return false so the
                       // tile isn't dismissed while old data is still shown.

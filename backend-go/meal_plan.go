@@ -34,33 +34,183 @@ import (
 
 const mealJob = "meal_plan"
 
+// A dish group is one protein family. Group and dish Keys are matching
+// vocabulary for typed must-use ingredients and for store promo names, which
+// are often Indonesian. They are never shown in the UI; only Name and Protein
+// are.
+type mealDish struct {
+	Name  string
+	Fried bool
+	Keys  []string
+}
+
 type mealDishGroup struct {
 	Protein string
-	Dishes  []string
+	Keys    []string
+	Dishes  []mealDish
+}
+
+type mealSide struct {
+	Name string
+	Keys []string
 }
 
 var mealProteins = []mealDishGroup{
-	{"Ayam", []string{"Ayam goreng lengkuas", "Ayam bakar kecap", "Ayam rica-rica", "Opor ayam", "Ayam woku"}},
-	{"Ikan", []string{"Ikan kembung goreng", "Ikan nila bakar", "Pepes ikan", "Pindang tongkol", "Ikan kuah kuning"}},
-	{"Tempe/Tahu", []string{"Tempe goreng tepung", "Tempe orek", "Tahu isi", "Semur tahu", "Tahu telur"}},
-	{"Telur", []string{"Telur balado", "Telur dadar", "Semur telur", "Telur kecap", "Telur bumbu rujak"}},
-	{"Udang/Cumi", []string{"Udang goreng tepung", "Udang saus tiram", "Cumi hitam", "Udang sambal pete"}},
-	{"Daging", []string{"Daging sapi rendang", "Daging sapi semur", "Sapi lada hitam", "Empal daging"}},
+	{"Chicken", []string{"chicken", "ayam"}, []mealDish{
+		{Name: "Lemon roast chicken"},
+		{Name: "Grilled chicken with herbs"},
+		{Name: "Chicken pot pie"},
+		{Name: "Crispy fried chicken", Fried: true},
+		{Name: "Chicken curry"},
+	}},
+	{"Fish", []string{"fish", "salmon", "tuna", "cod", "mackerel", "ikan", "tongkol", "lele", "kembung", "nila"}, []mealDish{
+		{Name: "Baked salmon with lemon"},
+		{Name: "Fish and chips", Fried: true},
+		{Name: "Tuna pasta bake"},
+		{Name: "Grilled mackerel"},
+		{Name: "Fish pie"},
+	}},
+	{"Tofu & tempeh", []string{"tofu", "tempeh", "tahu", "tempe"}, []mealDish{
+		{Name: "Tofu stir-fry"},
+		{Name: "Crispy fried tofu", Fried: true},
+		{Name: "Tempeh burgers"},
+		{Name: "Baked tofu with soy glaze"},
+		{Name: "Tofu and vegetable curry"},
+	}},
+	{"Eggs", []string{"egg", "eggs", "telur"}, []mealDish{
+		{Name: "Spanish omelette"},
+		{Name: "Shakshuka"},
+		{Name: "Vegetable frittata"},
+		{Name: "Egg fried rice", Fried: true},
+		{Name: "Cheese and onion quiche", Keys: []string{"cheese", "onion"}},
+	}},
+	{"Prawns & squid", []string{"prawn", "prawns", "shrimp", "squid", "calamari", "udang", "cumi"}, []mealDish{
+		{Name: "Garlic butter prawns", Keys: []string{"garlic"}},
+		{Name: "Fried calamari", Fried: true},
+		{Name: "Prawn linguine"},
+		{Name: "Shrimp tacos"},
+	}},
+	{"Beef", []string{"beef", "mince", "steak", "daging", "sapi"}, []mealDish{
+		{Name: "Beef stew"},
+		{Name: "Spaghetti bolognese"},
+		{Name: "Cottage pie"},
+		{Name: "Beef burgers"},
+		{Name: "Roast beef"},
+	}},
 }
 
-var mealVeggies = []string{
-	"Tumis kangkung", "Tumis bayam", "Sayur asem",
-	"Sayur lodeh", "Cah kangkung", "Sop sayur",
-	"Capcay", "Tumis buncis", "Tumis tauge",
-	"Urap sayur", "Pecel", "Gado-gado",
-	"Tumis sawi", "Tumis brokoli", "Tumis kacang panjang",
-	"Lalapan", "Sayur bening bayam", "Oseng tempe",
+var mealVeggies = []mealSide{
+	{"Steamed broccoli", []string{"broccoli", "brokoli"}},
+	{"Garlic green beans", []string{"green beans", "beans", "buncis"}},
+	{"Spinach salad", []string{"spinach", "bayam"}},
+	{"Creamed spinach", []string{"spinach", "bayam"}},
+	{"Honey glazed carrots", []string{"carrot", "carrots", "wortel"}},
+	{"Coleslaw", []string{"cabbage", "kol"}},
+	{"Garden salad", []string{"lettuce", "salad", "daun"}},
+	{"Sauteed greens", []string{"greens", "kale", "kangkung", "sawi"}},
+	{"Stir-fried bok choy", []string{"bok choy", "pak choi", "sawi"}},
+	{"Bean sprout salad", []string{"bean sprouts", "sprouts", "tauge"}},
+	{"Buttered peas", []string{"peas", "kacang"}},
+	{"Roasted vegetables", []string{"vegetables", "sayur"}},
+	{"Corn on the cob", []string{"corn", "jagung"}},
+	{"Mashed potatoes", []string{"potato", "potatoes", "kentang"}},
+	{"Roasted cauliflower", []string{"cauliflower"}},
+	{"Grilled asparagus", []string{"asparagus"}},
+	{"Minestrone soup", []string{"beans", "vegetables", "sayur"}},
+	{"Ratatouille", []string{"eggplant", "zucchini", "tomato", "terong", "tomat"}},
+}
+
+// mealEntry is one catalog dish with its group, flattened for lookups.
+// keys is the group keys plus the dish keys.
+type mealEntry struct {
+	name      string
+	fried     bool
+	groupKeys []string
+	dish      mealDish
+	keys      []string
 }
 
 var (
-	promoProteinWords = []string{"ayam", "daging", "ikan", "telur", "udang", "tahu", "tempe", "lele", "tongkol", "cumi"}
-	promoVeggieWords  = []string{"bayam", "kangkung", "sawi", "brokoli", "buncis", "tauge", "wortel", "kol", "kacang", "daun"}
+	mealEntries     = buildMealEntries()
+	mealEntryNames  = mealNames(mealEntries)
+	mealSideNames   = sideNames(mealVeggies)
+	mealFriedByName = func() map[string]bool {
+		m := map[string]bool{}
+		for _, e := range mealEntries {
+			m[e.name] = e.fried
+		}
+		return m
+	}()
+	mealKeysByName = func() map[string][]string {
+		m := map[string][]string{}
+		for _, e := range mealEntries {
+			m[e.name] = e.keys
+		}
+		for _, s := range mealVeggies {
+			m[s.Name] = s.Keys
+		}
+		return m
+	}()
+
+	// Unions of the catalog keys, used to sort a promo into protein or side.
+	promoProteinWords = proteinKeyUnion()
+	promoVeggieWords  = sideKeyUnion()
 )
+
+func buildMealEntries() []mealEntry {
+	var out []mealEntry
+	for _, g := range mealProteins {
+		for _, d := range g.Dishes {
+			keys := append(append([]string(nil), g.Keys...), d.Keys...)
+			out = append(out, mealEntry{name: d.Name, fried: d.Fried, groupKeys: g.Keys, dish: d, keys: keys})
+		}
+	}
+	return out
+}
+
+func mealNames(es []mealEntry) []string {
+	out := make([]string, len(es))
+	for i, e := range es {
+		out[i] = e.name
+	}
+	return out
+}
+
+func sideNames(ss []mealSide) []string {
+	out := make([]string, len(ss))
+	for i, s := range ss {
+		out[i] = s.Name
+	}
+	return out
+}
+
+func uniqueKeys(lists ...[]string) []string {
+	var out []string
+	for _, l := range lists {
+		for _, k := range l {
+			if !slices.Contains(out, k) {
+				out = append(out, k)
+			}
+		}
+	}
+	return out
+}
+
+func proteinKeyUnion() []string {
+	var lists [][]string
+	for _, e := range buildMealEntries() {
+		lists = append(lists, e.keys)
+	}
+	return uniqueKeys(lists...)
+}
+
+func sideKeyUnion() []string {
+	var lists [][]string
+	for _, s := range mealVeggies {
+		lists = append(lists, s.Keys)
+	}
+	return uniqueKeys(lists...)
+}
 
 var mealDayNames = []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
 
@@ -91,20 +241,78 @@ type mealPlan struct {
 	Missing     []string    `json:"missing"`     // must-use ingredients no dish in the catalog uses
 }
 
-func isFried(dish string) bool { return strings.Contains(strings.ToLower(dish), "goreng") }
+// isFried reads the catalog flag, and falls back to the word "fried" for a
+// name that is not in the catalog.
+func isFried(dish string) bool {
+	if f, ok := mealFriedByName[dish]; ok {
+		return f
+	}
+	return strings.Contains(strings.ToLower(dish), "fried")
+}
 
-// significantWords: lower-case words longer than two letters.
-func significantWords(s string) []string {
-	var out []string
-	for _, w := range strings.FieldsFunc(strings.ToLower(s), func(r rune) bool {
-		return !(r >= 'a' && r <= 'z')
-	}) {
-		if len(w) > 2 {
-			out = append(out, w)
+// wordsOf: lower-case ASCII letter runs.
+func wordsOf(s string) []string {
+	return strings.FieldsFunc(strings.ToLower(s), func(r rune) bool { return !(r >= 'a' && r <= 'z') })
+}
+
+// textHasKey: do the words contain key (one or more words) as a run, the last
+// word allowed to be a plural ("prawns", "tomatoes")? Whole words only, so
+// "eggplant" does not count as "egg".
+func textHasKey(words []string, key string) bool {
+	kw := wordsOf(key)
+	if len(kw) == 0 {
+		return false
+	}
+	for i := 0; i+len(kw) <= len(words); i++ {
+		ok := true
+		for j, k := range kw {
+			w := words[i+j]
+			if j == len(kw)-1 {
+				ok = w == k || w == k+"s" || w == k+"es"
+			} else {
+				ok = w == k
+			}
+			if !ok {
+				break
+			}
+		}
+		if ok {
+			return true
 		}
 	}
-	return out
+	return false
 }
+
+func textHasAnyKey(text string, keys []string) bool {
+	words := wordsOf(text)
+	for _, k := range keys {
+		if textHasKey(words, k) {
+			return true
+		}
+	}
+	return false
+}
+
+// keysUse: does a dish or side with this name and keys use the ingredient?
+// True when the name contains it (3+ letters), or when it equals or contains a
+// key as a whole word.
+func keysUse(name string, keys []string, ing string) bool {
+	ing = strings.ToLower(strings.TrimSpace(ing))
+	if ing == "" {
+		return false
+	}
+	if len(ing) >= 3 && strings.Contains(strings.ToLower(name), ing) {
+		return true
+	}
+	return textHasAnyKey(ing, keys)
+}
+
+// dishUses: does the dish (in a group with groupKeys) use the ingredient?
+func dishUses(groupKeys []string, d mealDish, ing string) bool {
+	return keysUse(d.Name, append(append([]string(nil), groupKeys...), d.Keys...), ing)
+}
+
+func sideUses(s mealSide, ing string) bool { return keysUse(s.Name, s.Keys, ing) }
 
 func containsAnyWord(text string, words []string) bool {
 	text = strings.ToLower(text)
@@ -138,16 +346,13 @@ func generateMealPlan(weekStart time.Time, ingredients []string, promos []mealPr
 	ings := append([]string(nil), ingredients...)
 	sort.Strings(ings)
 
-	var allDishes []string
-	for _, g := range mealProteins {
-		allDishes = append(allDishes, g.Dishes...)
-	}
+	allDishes := mealEntryNames
 	var proteinPromos, veggiePromos []mealPromo
 	for _, p := range promos {
 		switch {
-		case containsAnyWord(p.Name, promoProteinWords):
+		case textHasAnyKey(p.Name, promoProteinWords):
 			proteinPromos = append(proteinPromos, p)
-		case containsAnyWord(p.Name, promoVeggieWords):
+		case textHasAnyKey(p.Name, promoVeggieWords):
 			veggiePromos = append(veggiePromos, p)
 		}
 	}
@@ -156,10 +361,10 @@ func generateMealPlan(weekStart time.Time, ingredients []string, promos []mealPr
 	var proteins, veggies, missing []string
 	forced := map[string]bool{}
 	for _, ing := range ings {
-		pick := func(pool, taken []string) string {
+		pick := func(pool []string, uses func(name string) bool, taken []string) string {
 			var c []string
 			for _, d := range pool {
-				if strings.Contains(strings.ToLower(d), ing) && !slices.Contains(taken, d) {
+				if uses(d) && !slices.Contains(taken, d) {
 					c = append(c, d)
 				}
 			}
@@ -169,14 +374,30 @@ func generateMealPlan(weekStart time.Time, ingredients []string, promos []mealPr
 			return c[rng.Intn(len(c))]
 		}
 		if len(proteins) < 7 {
-			if d := pick(allDishes, proteins); d != "" {
+			usesDish := func(name string) bool {
+				for _, e := range mealEntries {
+					if e.name == name {
+						return dishUses(e.groupKeys, e.dish, ing)
+					}
+				}
+				return false
+			}
+			if d := pick(allDishes, usesDish, proteins); d != "" {
 				proteins = append(proteins, d)
 				forced[d] = true
 				continue
 			}
 		}
 		if len(veggies) < 7 {
-			if d := pick(mealVeggies, veggies); d != "" {
+			usesSide := func(name string) bool {
+				for _, sd := range mealVeggies {
+					if sd.Name == name {
+						return sideUses(sd, ing)
+					}
+				}
+				return false
+			}
+			if d := pick(mealSideNames, usesSide, veggies); d != "" {
 				veggies = append(veggies, d)
 				continue
 			}
@@ -184,16 +405,13 @@ func generateMealPlan(weekStart time.Time, ingredients []string, promos []mealPr
 		missing = append(missing, ing)
 	}
 
-	// 2. fill proteins, preferring dishes that use something on promo
-	var promoWords []string
-	for _, p := range proteinPromos {
-		promoWords = append(promoWords, significantWords(p.Name)...)
-	}
+	// 2. fill proteins, preferring dishes whose group or dish keys appear in a
+	// protein promo name
 	for len(proteins) < 7 {
 		var cand []string
-		if len(promoWords) > 0 {
+		if len(proteinPromos) > 0 {
 			for _, d := range allDishes {
-				if !slices.Contains(proteins, d) && containsAnyWord(d, promoWords) {
+				if !slices.Contains(proteins, d) && promoUsesDish(proteinPromos, d) {
 					cand = append(cand, d)
 				}
 			}
@@ -209,7 +427,7 @@ func generateMealPlan(weekStart time.Time, ingredients []string, promos []mealPr
 	}
 	for len(veggies) < 7 {
 		var cand []string
-		for _, v := range mealVeggies {
+		for _, v := range mealSideNames {
 			if !slices.Contains(veggies, v) {
 				cand = append(cand, v)
 			}
@@ -260,10 +478,8 @@ func generateMealPlan(weekStart time.Time, ingredients []string, promos []mealPr
 	for i := 0; i < 7; i++ {
 		d := mealDay{Day: mealDayNames[i], Date: weekStart.AddDate(0, 0, i).Format("2006-01-02"),
 			Protein: proteins[i], Veggie: veggies[i], Fried: isFried(proteins[i])}
-		dishText := strings.ToLower(proteins[i] + " " + veggies[i])
 		for _, p := range matchable {
-			words := significantWords(p.Name)
-			if len(words) > 0 && containsAnyWordIn(dishText, words) {
+			if promoUsesDish([]mealPromo{p}, proteins[i]) || promoUsesDish([]mealPromo{p}, veggies[i]) {
 				pc := p
 				d.Promo = &pc
 				if !seen[p.Name] {
@@ -278,10 +494,12 @@ func generateMealPlan(weekStart time.Time, ingredients []string, promos []mealPr
 	return plan
 }
 
-// containsAnyWordIn: does text contain any of words as a substring.
-func containsAnyWordIn(text string, words []string) bool {
-	for _, w := range words {
-		if strings.Contains(text, w) {
+// promoUsesDish: does any promo name contain a key of the dish or side (by
+// catalog name)?
+func promoUsesDish(promos []mealPromo, dish string) bool {
+	keys := mealKeysByName[dish]
+	for _, p := range promos {
+		if textHasAnyKey(p.Name, keys) {
 			return true
 		}
 	}
@@ -810,7 +1028,7 @@ func botMealPlan(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 
 func ingredientsText(names []string) string {
 	if len(names) == 0 {
-		return "No must-use ingredients yet.\nAdd one: /addingredient chicken (or /tambahbahan ayam)"
+		return "No must-use ingredients yet.\nAdd one: /addingredient chicken"
 	}
 	var b strings.Builder
 	b.WriteString("Must-use ingredients for the meal plan:\n")

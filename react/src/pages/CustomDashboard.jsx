@@ -18,7 +18,7 @@ const byKind = (assets, kind) => assets.filter(a => (a.kind || 'liquid') === kin
 // add an entry here - no other wiring needed.
 const SOURCES = {
   year_trend: {
-    label: 'This Year - Income vs Expense (by month)',
+    label: 'This Year: Income vs Expense (by month)',
     charts: ['bar', 'line'],
     fetch: ({ year, valueMax }) => api.trend(year, 12, 12, valueMax),
     shape: (d) => ({
@@ -30,7 +30,7 @@ const SOURCES = {
     }),
   },
   category_breakdown: {
-    label: 'This Year - Spending by Category',
+    label: 'This Year: Spending by Category',
     charts: ['pie', 'bar'],
     fetch: ({ year, valueMax }) => api.reportYear(year, valueMax),
     shape: (d) => ({ rows: d }),
@@ -52,7 +52,7 @@ const SOURCES = {
     }),
   },
   month_categories: {
-    label: 'This Month - Spending by Category',
+    label: 'This Month: Spending by Category',
     charts: ['pie', 'bar'],
     fetch: ({ year, month, valueMax }) => api.report(year, month, valueMax),
     shape: (d) => ({
@@ -66,7 +66,7 @@ const SOURCES = {
     },
   },
   month_budget_vs_actual: {
-    label: 'This Month - Budget vs Actual by Category',
+    label: 'This Month: Budget vs Actual by Category',
     charts: ['bar'],
     fetch: ({ year, month, valueMax }) => api.report(year, month, valueMax),
     shape: (d) => {
@@ -81,7 +81,7 @@ const SOURCES = {
     },
   },
   six_month_trend: {
-    label: 'Last 6 Months - Income vs Expense',
+    label: 'Last 6 Months: Income vs Expense',
     charts: ['line', 'bar'],
     fetch: ({ year, month, valueMax }) => api.trend(year, month, 6, valueMax),
     shape: (d) => ({
@@ -93,7 +93,7 @@ const SOURCES = {
     }),
   },
   assets_totals: {
-    label: 'Assets - Liquid vs Non-liquid',
+    label: 'Assets: Liquid vs Non-liquid',
     charts: ['pie', 'bar'],
     fetch: () => api.assets(),
     shape: (d) => ({
@@ -113,7 +113,7 @@ const SOURCES = {
     },
   },
   weekly_this_month: {
-    label: 'This Month - Spending by Week',
+    label: 'This Month: Spending by Week',
     charts: ['bar'],
     fetch: ({ year, month, valueMax }) => api.weeklyReport(year, month, valueMax),
     shape: (d) => ({

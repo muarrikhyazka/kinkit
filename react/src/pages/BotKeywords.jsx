@@ -9,7 +9,7 @@ import '../mealplan.css'
 
 /**
  * Settings › Chat keywords: words the chat bot uses to pick a category when
- * someone types "bakso 15rb". The bot learns them when a category button is
+ * someone types "lunch 15k". The bot learns them when a category button is
  * pressed for an unknown expense; here they can be added, re-mapped or removed.
  * Backed by backend-go/bot_extras.go (category_keywords table).
  */
@@ -55,13 +55,13 @@ export default function BotKeywords() {
       <PageHeader title="Chat keywords" subtitle={items ? `${items.length} keywords` : undefined} />
       <section className="card">
         <p className="muted meal-note">
-          When someone types an expense in the family chat, e.g. <kbd>bakso 15rb</kbd>, the bot looks for one of these words to
+          When someone types an expense in the family chat, e.g. <kbd>lunch 15k</kbd>, the bot looks for one of these words to
           pick the category. Unknown expenses get category buttons, and the words of the description are learned from the
           button that is pressed.
         </p>
         <form className="meal-add" onSubmit={add}>
           <label className="sr-only" htmlFor="kw-word">Keyword</label>
-          <input id="kw-word" value={kw} onChange={e => setKw(e.target.value)} placeholder="Keyword, e.g. bensin" maxLength={60} />
+          <input id="kw-word" value={kw} onChange={e => setKw(e.target.value)} placeholder="Keyword, e.g. fuel" maxLength={60} />
           <label className="sr-only" htmlFor="kw-cat">Category</label>
           <select id="kw-cat" value={cat} onChange={e => setCat(e.target.value)}>
             <option value="">Category</option>

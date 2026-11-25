@@ -155,8 +155,8 @@ void showSnack(BuildContext context, String message, {bool error = false}) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(
-      content: Text(message),
-      backgroundColor: error ? p.danger : null,
+      content: Text(message, style: error ? TextStyle(color: p.onPrimary) : null),
+      backgroundColor: error ? p.dangerFill : null,
       behavior: SnackBarBehavior.floating,
     ));
 }
@@ -170,7 +170,7 @@ Future<bool> confirmDialog(BuildContext context, {required String title, String?
       actions: [
         TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
         FilledButton(
-          style: FilledButton.styleFrom(backgroundColor: ctx.palette.danger, foregroundColor: ctx.palette.onPrimary),
+          style: FilledButton.styleFrom(backgroundColor: ctx.palette.dangerFill, foregroundColor: ctx.palette.onPrimary),
           onPressed: () => Navigator.pop(ctx, true),
           child: Text(confirm),
         ),

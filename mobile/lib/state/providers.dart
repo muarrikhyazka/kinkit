@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/api_client.dart';
 import '../api/models.dart';
+import '../capture/capture_providers.dart';
 import '../config.dart';
 import '../util/dates.dart';
 import '../util/money.dart';
@@ -95,7 +96,23 @@ class AuthNotifier extends AsyncNotifier<Me?> {
     } catch (_) {
       // Logging out locally is what matters; cookies are already cleared.
     }
+    await _wipeCapturedNotifications();
     state = const AsyncData(null);
+  }
+
+  /// Capture is per person: the next account on this phone must not inherit
+  /// the previous one's queued notification text, or capture left switched on.
+  /// A no-op off Android; a native failure here must not block logging out.
+  Future<void> _wipeCapturedNotifications() async {
+    final channel = ref.read(captureChannelProvider);
+    try {
+      await channel.setEnabled(false);
+    } catch (_) {}
+    try {
+      await channel.clear();
+    } catch (_) {}
+    ref.invalidate(pendingCapturesProvider);
+    ref.invalidate(captureStatusProvider);
   }
 
   Future<void> _reload(KinkitApi api) async {

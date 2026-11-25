@@ -59,7 +59,7 @@ export default function MealPlan() {
     <div className="meal-page">
       <PageHeader
         title="Meals"
-        subtitle={p ? `${fmtDate(p.week_start, { day: 'numeric', month: 'short' })} - ${fmtDate(p.week_end, { day: 'numeric', month: 'short', year: 'numeric' })}` : undefined}
+        subtitle={p ? `${fmtDate(p.week_start, { day: 'numeric', month: 'short' })} to ${fmtDate(p.week_end, { day: 'numeric', month: 'short', year: 'numeric' })}` : undefined}
         actions={
           <div className="meal-week-toggle" role="group" aria-label="Which week">
             <button className={week === 'this' ? '' : 'secondary'} onClick={() => setWeek('this')} aria-pressed={week === 'this'}>This week</button>
@@ -124,7 +124,7 @@ export default function MealPlan() {
         {manager && (
           <form className="meal-add" onSubmit={addIngredient}>
             <label className="sr-only" htmlFor="meal-ing-input">Ingredient</label>
-            <input id="meal-ing-input" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. chicken, tempe, spinach" maxLength={60} />
+            <input id="meal-ing-input" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. chicken, tofu, spinach" maxLength={60} />
             <button type="submit" disabled={busy || !name.trim()}>Add</button>
           </form>
         )}

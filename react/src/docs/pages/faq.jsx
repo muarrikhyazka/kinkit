@@ -9,10 +9,10 @@ export function Content() {
   return (
     <>
       <Faq q="I signed up but I do not see my family's data.">
-        <p>Signing up creates a <em>new</em> household. To join an existing family, ask the family admin or a parent to add you on the <strong>Family</strong> page and log in with the email and temporary password they set. See <a href="/docs/login">Log in and sign up</a>.</p>
+        <p>Signing up creates a <em>new</em> household. To join an existing family, ask the family admin or a parent to add you under <strong>Settings › Members</strong> and log in with the email and temporary password they set. See <a href="/docs/login">Log in and sign up</a>.</p>
       </Faq>
       <Faq q="Where did Home, and the Help page, go?">
-        <p>Chores, Lists and Meals are separate pages in the <strong>Family</strong> group now, next to Family and Widgets. Old links such as <code>/home/chores</code>, <code>/help</code> and <code>/guide</code> still work. The Help page is this documentation site.</p>
+        <p>Chores, Lists and Meals are separate pages in the <strong>Family</strong> group now, next to Leaderboard and Widgets. Old links such as <code>/home/chores</code>, <code>/help</code> and <code>/guide</code> still work. The Help page is this documentation site.</p>
       </Faq>
       <Faq q="I deleted something by accident.">
         <p>A notification with an <strong>Undo</strong> button appears at the bottom for about 5 seconds. For a bank import use <strong>Undo this import</strong>. For chores, undo also takes back the points.</p>

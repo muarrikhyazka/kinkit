@@ -100,7 +100,7 @@ export function IncomeForm({ initialDate, onSaved, autoFocus, stacked }) {
         {incomeSources.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
       </select>
       <input placeholder="Description (optional)" aria-label="Description" value={form.description} onChange={e => set('description', e.target.value)} />
-      <MoneyInput placeholder="Amount (e.g. 10jt)" aria-label="Amount" value={form.amount} onChange={v => set('amount', v)} required />
+      <MoneyInput placeholder="Amount (e.g. 10m)" aria-label="Amount" value={form.amount} onChange={v => set('amount', v)} required />
       <button type="submit" disabled={saving}>{saving ? 'Saving...' : 'Add income'}</button>
     </form>
   )
@@ -132,7 +132,7 @@ export default function Income() {
     })
   }
 
-  const header = <PageHeader title="Income" subtitle={`Money actually received - ${MONTH_NAMES[month - 1]} ${year}`} period="month" />
+  const header = <PageHeader title="Income" subtitle={`Money actually received, ${MONTH_NAMES[month - 1]} ${year}`} period="month" />
 
   if (!data) {
     return <div>{header}{res.error ? <div className="error-box">{res.error}</div> : <><SkeletonStats count={3} /><SkeletonCard lines={4} /></>}</div>

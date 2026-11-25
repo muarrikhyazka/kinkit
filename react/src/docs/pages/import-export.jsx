@@ -4,7 +4,7 @@ import { IconDownload } from '../../Receipts.jsx'
 export const slug = 'import-export'
 export const title = 'Import and export data'
 export const section = 'settings-data'
-export const summary = 'Download your data, import a bank CSV with a preview and undo an import.'
+export const summary = 'Download your data as CSV, Excel or JSON, import a bank CSV with a preview and undo an import.'
 
 export function Content() {
   return (
@@ -13,7 +13,8 @@ export function Content() {
       <p>Open <strong>Settings › Data &amp; devices</strong> in the sidebar (or the <strong>More</strong> sheet on your phone).</p>
 
       <H2>Export</H2>
-      <p><IconDownload width={14} height={14} aria-hidden="true" /> Download your spending as CSV (optionally for a date range), your income as CSV, or a <strong>full backup</strong> of everything as JSON. Your data is always yours to take.</p>
+      <p><IconDownload width={14} height={14} aria-hidden="true" /> Download your spending as CSV or Excel (optionally for a date range), your income as CSV or Excel, or a <strong>full backup</strong> of everything as JSON or as an Excel workbook with one sheet per table. Your data is always yours to take.</p>
+      <p>CSV and Excel files open in any spreadsheet app. In the Excel files, text that starts with <code>=</code> stays plain text and never runs as a formula.</p>
 
       <H2>Import a bank CSV</H2>
       <Steps>

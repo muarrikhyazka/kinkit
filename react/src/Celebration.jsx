@@ -94,8 +94,8 @@ export function diffNewRewards(state) {
   const items = []
   if (lv > 0 && typeof prev.lv === 'number' && lv > prev.lv) {
     items.push({
-      iconKey: 'level_up', level: lv, title: `Level up: Level ${lv}${m.level ? ` - ${m.level}` : ''}`,
-      text: `${m.points} points${m.next_level ? ` - next: ${m.next_level} at ${m.next_level_at}` : ''}`,
+      iconKey: 'level_up', level: lv, title: `Level up: Level ${lv}${m.level ? ` (${m.level})` : ''}`,
+      text: `${m.points} points${m.next_level ? `. Next: ${m.next_level} at ${m.next_level_at}` : ''}`,
     })
   }
   const seen = new Set(prev.badges || [])

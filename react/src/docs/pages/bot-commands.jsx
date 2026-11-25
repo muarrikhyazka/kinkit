@@ -29,18 +29,17 @@ export function Content() {
         [<><code>/about</code>, <code>/help</code></>, 'About Kinkit and the command list'],
         [<code key="14">/link CODE</code>, 'Link your chat account'],
       ]} />
-      <p>Indonesian command names work too: <code>/bantuan</code>, <code>/hariini</code>, <code>/ingatkan</code>, <code>/pengingat</code>, <code>/last</code>, <code>/koreksi</code>, <code>/koreksitgl</code>, <code>/tanggal</code>, <code>/bahan</code>, <code>/tambahbahan</code>, <code>/hapusbahan</code>, <code>/jadwal</code>, <code>/fitur</code>, <code>/pengeluaran</code>.</p>
 
       <H2>Log spending from chat</H2>
       <ul>
-        <li>Type the expense with the amount first or last, one per line: <code>makan siang 50rb</code>, <code>bensin rp20.000</code>, <code>50k lunch</code>. <code>k</code>/<code>rb</code> mean thousand, <code>jt</code>/<code>juta</code> million.</li>
+        <li>Type the expense with the amount first or last, one per line: <code>lunch 50k</code>, <code>fuel 20000</code>, <code>50k lunch</code>. <code>k</code> means thousand, so <code>50k</code> is 50,000.</li>
         <li>If a word in the description is a known keyword the expense is saved right away. Otherwise the bot shows category choices (and a <strong>Not an expense</strong> option); after you pick one it remembers the words, so next time it is automatic. Edit keywords in <strong>Settings › Chat keywords</strong>.</li>
       </ul>
 
       <H3>Fix a mistake</H3>
       <ul>
-        <li>Wrong category? <code>/fix bakso Food</code> (or <code>/fix 2 Food</code> for the second most recent) shows the matching expenses as choices.</li>
-        <li>Wrong day? <code>/fixdate bakso 2026-10-20</code>.</li>
+        <li>Wrong category? <code>/fix lunch Food</code> (or <code>/fix 2 Food</code> for the second most recent) shows the matching expenses as choices.</li>
+        <li>Wrong day? <code>/fixdate lunch 2026-10-20</code>.</li>
         <li>Catching up on old receipts? <code>/date 2026-10-20</code> logs the next expenses on that day until <code>/date reset</code>.</li>
       </ul>
     </>

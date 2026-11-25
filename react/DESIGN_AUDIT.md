@@ -36,19 +36,20 @@ Not touched because other people own them: `Login.jsx`, `Today.jsx`, `Celebratio
   - Semantic: `--success`, `--danger`, `--danger-light`, `--warning` (darkened to #b45309 so it works as text).
 - **Chrome:**
   - `--chrome-*` drives the sidebar and the mobile top bar.
-  - Light: flat #4F46E5, with a white wordmark and #E0E7FF for secondary text. The active nav item is a white pill with purple text.
-  - Dark: flat #312E81, with a translucent white active state.
-  - Senior: flat #312E81, white text, and an active item outlined in white.
+  - Light and playful: a white sidebar and top bar (#fff) with a hairline border, dark text (#1B1F2B) and a purple accent. The active item is a #EEF2FF tint, bold #4338CA text and a 3px #4F46E5 bar on its left.
+  - Dark: #151517 with #2A2A2F lines, #F4F4F5 text, a #1F1D3D active tint with #C7D2FE text and a #818CF8 bar.
+  - Senior: white with a 2px black border, black text, a #DBE4FF active tint and a #312E81 bar.
+  - The phone app bar, landing top bar, TV brand bar and login hero stay flat indigo.
 - **Numbers:** `td` and every money element use `font-variant-numeric: tabular-nums`. Add `.num` to a th/td to right-align it.
-- **Focus:** inputs get a 3px `--focus-ring`. Buttons and links get a 2px outline on `:focus-visible`, in white inside the purple chrome.
+- **Focus:** inputs get a 3px `--focus-ring`. Buttons and links get a 2px outline on `:focus-visible`, in the purple chrome accent (`--chrome-accent`).
 
 ## What changed
 
 **Chrome**
-- **Sidebar and mobile top bar (`.sidebar`, `.mobile-topbar`):** purple, solid white "Kinkit", and nav items in white text with 40px rows.
-- **Nav states:** hover is `rgba(255,255,255,.12)`. Active is a white pill with purple text.
-- **Logo tile:** has a hairline and a soft shadow so a white tile reads cleanly on purple.
-- **Add CTA:** now a white button with purple text instead of the green gradient. The FAB is solid primary.
+- **Sidebar and mobile top bar (`.sidebar`, `.mobile-topbar`):** white (near-black in dark), dark "Kinkit" wordmark, nav items in dark text.
+- **Nav states:** hover is `--chrome-hover`. Active is a tint, bold text and a 3px purple bar on the left that stays in the collapsed rail.
+- **Logo tile:** keeps its own hairline; no extra shadow needed on white.
+- **Add CTA:** a `--primary-fill` button with white text instead of the green gradient. The FAB is solid primary.
 - **Gamification badge:** a translucent white card with a white progress bar and a trailing chevron, because it links to Family.
 
 **Links (point 2 of the request)**

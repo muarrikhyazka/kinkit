@@ -10,7 +10,7 @@
     <icon src="icon.png"/>
     <content src="index.html"/>
     <feature name="http://tizen.org/feature/screen.size.all"/>
-    <!-- Network access to your Kinkit server (any origin, since it is self-hosted). -->
+    <!-- Network access so the app can reach the Kinkit server address entered at pairing (any origin). -->
     <access origin="*" subdomains="true"/>
     <tizen:privilege name="http://tizen.org/privilege/internet"/>
     <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>

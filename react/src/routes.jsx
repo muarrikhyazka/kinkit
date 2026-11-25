@@ -9,7 +9,9 @@ import AdminStats from './pages/AdminStats.jsx'
 import Recurring from './pages/Recurring.jsx'
 import Income from './pages/Income.jsx'
 import Goals from './pages/Goals.jsx'
-import Family, { IconFamily } from './pages/Family.jsx'
+import Family from './pages/Family.jsx'
+import Members from './pages/Members.jsx'
+import Account from './pages/Account.jsx'
 import ImportExport from './pages/ImportExport.jsx'
 import DisplaySettings from './pages/DisplaySettings.jsx'
 import Today from './pages/Today.jsx'
@@ -20,8 +22,9 @@ import MealPlan from './pages/MealPlan.jsx'
 import BotKeywords from './pages/BotKeywords.jsx'
 import Calendar from './pages/Calendar.jsx'
 import Widgets from './pages/Widgets.jsx'
+import GameWorld from './game/GameWorld.jsx'
 import { IconGoal } from './moneyIcons.jsx'
-import { IconDashboard, IconBudget, IconSpending, IconSetup, IconShield, IconToday, IconChores, IconList, IconMeals, IconBell, IconCalendar, IconWidgets } from './icons.jsx'
+import { IconDashboard, IconBudget, IconSpending, IconSetup, IconShield, IconToday, IconChores, IconList, IconMeals, IconBell, IconCalendar, IconWidgets, IconLeaderboard, IconMap } from './icons.jsx'
 
 /**
  * SINGLE SOURCE OF TRUTH for in-app pages. App.jsx builds the <Route>s from
@@ -38,12 +41,15 @@ import { IconDashboard, IconBudget, IconSpending, IconSetup, IconShield, IconTod
  *   area:      'tenant' (household pages; super admin is redirected away)
  *              | 'admin' (platform admin pages)
  *   roles:     household roles allowed to see it (default: all). The backend
- *              enforces permissions anyway - this only hides useless menus.
+ *              enforces permissions anyway. This only hides useless menus.
+ *              Settings tabs: Members and Your account are open to every role
+ *              (non-managers see Members read-only); the rest are owner/parent.
  *   mobile:    'tab' -> bottom tab bar (keep to ~4) | 'more' -> "More" sheet
  *   placement: 'bottom' -> pinned to the sidebar bottom (settings-like)
  *   group:     sidebar group heading shown above the first item of a run
  *              of items with the same group (e.g. 'Money')
- *   nav:       false to register the route without any nav entry
+ *   nav:       false to register the route without any nav entry (the game-mode
+ *              town map at /world uses this; it also has no building of its own)
  */
 const ALL = ['owner', 'parent', 'kid', 'viewer']
 const MANAGERS = ['owner', 'parent']
@@ -70,7 +76,7 @@ export const APP_ROUTES = [
       { path: 'assets', label: 'Assets', Component: Assets },
     ],
   },
-  { path: 'family', label: 'Family', Icon: IconFamily, Component: Family, area: 'tenant', mobile: 'more', group: 'Family' },
+  { path: 'family', label: 'Leaderboard', Icon: IconLeaderboard, Component: Family, area: 'tenant', mobile: 'more', group: 'Family' },
   { path: 'chores', label: 'Chores', Icon: IconChores, Component: Chores, area: 'tenant', mobile: 'tab', group: 'Family' },
   { path: 'lists', label: 'Lists', Icon: IconList, Component: Lists, area: 'tenant', mobile: 'more', group: 'Family' },
   { path: 'meals', label: 'Meals', Icon: IconMeals, Component: MealPlan, area: 'tenant', mobile: 'more', group: 'Family' },
@@ -79,12 +85,17 @@ export const APP_ROUTES = [
     path: 'settings', label: 'Settings', Icon: IconSetup, area: 'tenant', mobile: 'more', placement: 'bottom',
     tabs: [
       { path: 'general', label: 'Categories & accounts', Component: Setup, roles: MANAGERS },
+      { path: 'members', label: 'Members', Component: Members },
+      { path: 'account', label: 'Your account', Component: Account },
       { path: 'bots', label: 'Bots', Component: Integrations, roles: MANAGERS },
       { path: 'chat-keywords', label: 'Chat keywords', Component: BotKeywords, roles: MANAGERS },
       { path: 'data', label: 'Data & devices', Component: ImportExport, roles: MANAGERS },
       { path: 'display', label: 'Display', Component: DisplaySettings },
     ],
   },
+
+  // Game mode's town map. Reached from the HUD, the sidebar's "Game mode" button and Settings > Display.
+  { path: 'world', label: 'Town map', Icon: IconMap, Component: GameWorld, area: 'tenant', nav: false },
 
   // Super admin manages the platform, not personal finances.
   { path: 'admin', label: 'Accounts', Icon: IconShield, Component: Admin, area: 'admin', mobile: 'tab' },

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from './api'
 import Celebration, { diffNewRewards } from './Celebration.jsx'
-import { IconFlame, IconStar, IconChevronRight, LevelBadge } from './icons.jsx'
+import { IconFlame, IconSteps, IconChevronRight, LevelBadge } from './icons.jsx'
 import { levelInfo } from './gamification.js'
 import './gamification.css'
 
@@ -40,7 +40,7 @@ export default function GamificationBadge({ collapsed, refreshKey }) {
     return (
       <>
         <Link to="/family" className="gami-badge-collapsed" title={tip} aria-label={tip}>
-          {number ? <LevelBadge level={number} size={28} aria-hidden="true" /> : <IconStar width={14} height={14} className="gami-ico" />}
+          {number ? <LevelBadge level={number} size={28} aria-hidden="true" /> : <IconSteps width={14} height={14} className="gami-ico" aria-hidden="true" />}
           <span><IconFlame width={12} height={12} className="gami-ico" />{streak}</span>
         </Link>
         {celebration}
@@ -50,7 +50,7 @@ export default function GamificationBadge({ collapsed, refreshKey }) {
 
   return (
     <>
-      <Link to="/family" className="gami-badge" title={`${tip} - see achievements`}>
+      <Link to="/family" className="gami-badge" title={`${tip}. Open the Leaderboard.`}>
         <div className="gami-level">
           {number > 0 && <LevelBadge level={number} size={34} aria-hidden="true" />}
           <div className="gami-level-text">
@@ -60,7 +60,7 @@ export default function GamificationBadge({ collapsed, refreshKey }) {
           <IconChevronRight className="chev" width={14} height={14} aria-hidden="true" />
         </div>
         <div className="gami-row">
-          <span className="gami-points"><IconStar width={13} height={13} className="gami-ico" /> {points} pts</span>
+          <span className="gami-points"><IconSteps width={13} height={13} className="gami-ico" aria-hidden="true" /> {points} pts</span>
           <span className="gami-streak"><IconFlame width={13} height={13} className="gami-ico" /> {streak}d</span>
         </div>
         {hasNext && (

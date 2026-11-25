@@ -81,7 +81,7 @@ export function PeriodControl({ mode = 'month' }) {
         onClick={() => { setPickYear(year); setOpen(o => !o) }}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label={`${fullLabel} - choose ${unit}`}
+        aria-label={`${fullLabel}, choose ${unit}`}
       >
         {label}
       </button>
@@ -93,7 +93,7 @@ export function PeriodControl({ mode = 'month' }) {
             <button className="period-step" onClick={() => setPickYear(y => y - (mode === 'year' ? 12 : 1))} aria-label={mode === 'year' ? 'Earlier years' : 'Previous year'}>
               <IconChevronLeft width={14} height={14} />
             </button>
-            <span>{mode === 'year' ? `${yearBlock[0]} - ${yearBlock[11]}` : pickYear}</span>
+            <span>{mode === 'year' ? `${yearBlock[0]} to ${yearBlock[11]}` : pickYear}</span>
             <button className="period-step" onClick={() => setPickYear(y => y + (mode === 'year' ? 12 : 1))} aria-label={mode === 'year' ? 'Later years' : 'Next year'}>
               <IconChevronRight width={14} height={14} />
             </button>
@@ -119,7 +119,7 @@ export function PeriodControl({ mode = 'month' }) {
   )
 }
 
-const VALUE_TIP = 'Hide large transactions: only include transactions up to 10 juta / 100 juta'
+const VALUE_TIP = 'Hide large transactions: only include transactions up to 10 million / 100 million'
 
 /** "Hide large transactions" filter (value_max). */
 export function ValueFilter() {
@@ -128,9 +128,9 @@ export function ValueFilter() {
     <label className={`value-filter ${valueMax !== 'all' ? 'active' : ''}`} title={VALUE_TIP}>
       <span>Hide large</span>
       <select value={valueMax} onChange={e => setValueMax(e.target.value)} aria-label={VALUE_TIP}>
-        <option value="all">Off - show all</option>
-        <option value="10jt">Only up to 10 juta</option>
-        <option value="100jt">Only up to 100 juta</option>
+        <option value="all">Off: show all</option>
+        <option value="10jt">Only up to 10 million</option>
+        <option value="100jt">Only up to 100 million</option>
       </select>
     </label>
   )

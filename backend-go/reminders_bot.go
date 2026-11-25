@@ -157,7 +157,7 @@ func botCreateReminder(w http.ResponseWriter, r *http.Request, app *App, aid int
 		Text string `json:"text"`
 	}
 	if err := decodeJSON(r, &d); err != nil || strings.TrimSpace(d.Text) == "" {
-		reply(false, "Usage: /remind tomorrow 8am take medicine · /remind every tue and fri 19:00 take out the trash @budi · /remind every 2 weeks on fri 10:00 change bed sheets · /remind every 3 months on the 1st change motorbike oil")
+		reply(false, "Usage: /remind tomorrow 8am take medicine · /remind every tue and fri 19:00 take out the trash @budi · /remind every 2 weeks on fri 10:00 change bed sheets · /remind every 3 months on the 1st change car oil")
 		return
 	}
 	loc := householdLocation(ctx, app, aid)
@@ -226,7 +226,7 @@ func guessReminderCategory(title string) string {
 		return "bill"
 	case has("school", "homework", "pr ", "exam", "class", "sekolah"):
 		return "school"
-	case has("laundry", "bed sheet", "bedsheet", "sheets", "towel", "sarung", "prayer mat", "sajadah", "ironing", "cuci baju", "seprai", "sprei", "handuk", "setrika"):
+	case has("laundry", "curtain", "bed sheet", "bedsheet", "sheets", "towel", "sarung", "prayer mat", "sajadah", "ironing", "cuci baju", "seprai", "sprei", "handuk", "setrika"):
 		return "laundry"
 	case has("grocer", "supermarket", "market run", "belanja", "pasar"):
 		return "groceries"

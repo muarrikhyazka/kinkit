@@ -87,7 +87,7 @@ export default function Login() {
       }
       navigate('/')
     } catch (err) {
-      setError(err.message || (mode === 'signup' ? 'Sign up failed' : 'Login failed'))
+      setError(err.message || (mode === 'signup' ? 'Could not sign up' : 'Could not log in'))
     } finally {
       setBusy(false)
     }
@@ -139,7 +139,7 @@ export default function Login() {
         <p className="muted login-hint">
           {mode === 'login'
             ? 'Family members log in here too, with the email and temporary password the family admin or a parent set up for them.'
-            : 'Signing up creates a new household with you as its family admin. Joining an existing family? Ask the family admin to add you on the Family page instead.'}
+            : 'Signing up creates a new household with you as its family admin. Joining an existing family? Ask the family admin to add you under Settings › Members instead.'}
         </p>
       </form>
       </div>

@@ -373,7 +373,7 @@ class _ViewerScreenState extends State<ViewerScreen> {
         const Spacer(),
         if (_offline) ...[
           StatusBadge(
-            label: _updatedAt == null ? 'OFFLINE' : 'OFFLINE - ${DateFormat('HH:mm').format(_updatedAt!)}',
+            label: _updatedAt == null ? 'OFFLINE' : 'OFFLINE since ${DateFormat('HH:mm').format(_updatedAt!)}',
             color: TvColors.warning,
             icon: Icons.cloud_off,
           ),

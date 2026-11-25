@@ -4,8 +4,8 @@ import '../theme.dart';
 import '../util/money.dart';
 
 /// Amount input in IDR (amounts are stored in IDR, like the web's
-/// MoneyInput). Accepts "25000", "25.000" and shorthand "25k", "2rb",
-/// "1.5jt"; shows the resolved value underneath.
+/// MoneyInput). Accepts "25000", "25.000" and shorthand "25k" and
+/// "1.5m"; shows the resolved value underneath.
 class AmountField extends StatefulWidget {
   final TextEditingController controller;
   final String label;
@@ -53,7 +53,7 @@ class _AmountFieldState extends State<AmountField> {
       decoration: InputDecoration(
         labelText: widget.label,
         prefixText: 'Rp ',
-        helperText: text.isEmpty ? 'Tip: 25k, 2rb, 1.5jt' : (v != null ? '= ${MoneyFormatter.idr(v)}' : null),
+        helperText: text.isEmpty ? 'Tip: 25k or 1.5m' : (v != null ? '= ${MoneyFormatter.idr(v)}' : null),
         helperStyle: TextStyle(color: context.palette.muted),
       ),
       validator: (s) {

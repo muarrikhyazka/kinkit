@@ -190,7 +190,7 @@ class _PairingScreenState extends State<PairingScreen> {
         const SizedBox(height: 10),
         const Text(
           'In the Kinkit web app open Settings > Data & devices > TV / car display links, '
-          'create a link, then enter the server and token here - or paste the whole link into either field.',
+          'create a link, then enter the server and token here, or paste the whole link into either field.',
           style: TextStyle(fontSize: 13, color: TvColors.muted, height: 1.35),
         ),
         const SizedBox(height: 14),

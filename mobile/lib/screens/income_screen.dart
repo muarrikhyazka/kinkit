@@ -126,10 +126,10 @@ class _IncomeScreenState extends ConsumerState<IncomeScreen> {
       key: ValueKey('inc-${e.id}'),
       direction: DismissDirection.endToStart,
       background: Container(
-        color: p.danger,
+        color: p.dangerFill,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: const Icon(Icons.delete_outline, color: Colors.white),
+        child: Icon(Icons.delete_outline, color: p.onPrimary),
       ),
       confirmDismiss: (_) => _delete(e),
       child: tile,

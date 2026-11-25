@@ -92,12 +92,12 @@ def ensure_schema(schema_file):
     count_line = [l.strip() for l in out.splitlines() if l.strip().isdigit()]
     n = int(count_line[0]) if count_line else 0
     if n == 0:
-        print("Postgres has no tables yet — loading schema.sql ...")
+        print("Postgres has no tables yet - loading schema.sql ...")
         with open(schema_file) as f:
             schema_sql = f.read()
         run_psql(schema_sql)
     else:
-        print(f"Postgres already has {n} tables — skipping schema load.")
+        print(f"Postgres already has {n} tables: skipping schema load.")
 
 
 def migrate(schema_file):

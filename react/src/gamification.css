@@ -1,4 +1,4 @@
-/* Levels + badges (Family page, sidebar chip, celebration). Tier colours: bronze / silver / gold. */
+/* Levels and badges: Leaderboard page, sidebar chip, celebration. Tier colours: bronze, silver, gold. */
 :root {
   --tier-bronze: #b4753c;
   --tier-silver: #8a94a6;
@@ -7,29 +7,21 @@
 
 /* level hexagon emblem */
 .level-badge { flex-shrink: 0; display: block; }
-.level-badge .lb-hex { fill: var(--primary); stroke: var(--tier-bronze); }
+.level-badge .lb-hex { fill: var(--primary-fill); stroke: var(--tier-bronze); }
 .level-badge.tier-silver .lb-hex { stroke: var(--tier-silver); }
 .level-badge.tier-gold .lb-hex { stroke: var(--tier-gold); }
-.level-badge .lb-num { fill: #fff; font-family: inherit; font-variant-numeric: tabular-nums; }
+.level-badge .lb-num { fill: var(--on-primary); font-family: inherit; font-variant-numeric: tabular-nums; }
 
 /* sidebar chip */
 .gami-level { display: flex; align-items: center; gap: var(--s-2); margin-bottom: var(--s-2); }
 .gami-level-text { min-width: 0; flex: 1; display: flex; flex-direction: column; line-height: 1.25; }
 .gami-level-text strong { font-size: var(--fs-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gami-level-text .gami-level-no { font-size: var(--fs-xs); color: var(--chrome-soft); font-weight: 600; }
-.gami-badge .level-badge .lb-hex { fill: #fff; }
-.gami-badge .level-badge .lb-num { fill: #4338ca; }
 .gami-next { margin-top: var(--s-1); color: var(--chrome-soft); font-variant-numeric: tabular-nums; }
 .gami-badge-collapsed { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.gami-badge-collapsed .level-badge .lb-hex { fill: #fff; }
-.gami-badge-collapsed .level-badge .lb-num { fill: #4338ca; }
-.sheet .gami-badge .level-badge .lb-hex { fill: var(--primary); }
-.sheet .gami-badge .level-badge .lb-num { fill: #fff; }
-.sheet .gami-next, .sheet .gami-level-text .gami-level-no { color: var(--muted); }
 
-/* Family page: level card */
+/* Leaderboard page: level card */
 .level-card { display: flex; align-items: center; gap: var(--s-4); flex-wrap: wrap; }
-.level-card .level-badge { filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--primary) 35%, transparent)); }
 .level-card-main { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: var(--s-2); }
 .level-card-head { display: flex; align-items: baseline; gap: var(--s-2); flex-wrap: wrap; }
 .level-card-head h2 { margin: 0; }
@@ -39,7 +31,7 @@
 .level-xp-labels { display: flex; justify-content: space-between; gap: var(--s-2); font-size: var(--fs-sm); color: var(--muted); font-variant-numeric: tabular-nums; flex-wrap: wrap; }
 .level-xp-labels strong { color: var(--text); }
 
-/* Family page: badges */
+/* Leaderboard page: badges */
 .badge-group + .badge-group { margin-top: var(--s-5); }
 .badge-group-title { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 var(--s-3); font-size: var(--fs-md); }
 .badge-group-title .muted { font-size: var(--fs-sm); font-weight: 400; }

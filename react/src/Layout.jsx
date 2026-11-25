@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth, canLogSpending, canManage } from './AuthContext.jsx'
 import { useOffline } from './OfflineContext.jsx'
 import { useTheme, THEMES } from './ThemeContext.jsx'
@@ -9,18 +9,32 @@ import QuickAddSpending from './QuickAddSpending.jsx'
 import GamificationBadge from './GamificationBadge.jsx'
 import Modal from './Modal.jsx'
 import OnboardingChecklist from './OnboardingChecklist.jsx'
-import { IconLogout, IconCollapse, IconExpand, IconMenu, IconSun, IconMoon, IconPlus, IconMore, IconClose, IconGuide, IconChevronRight, IconChevronDown, KinkitLogo } from './icons.jsx'
+import { IconLogout, IconCollapse, IconExpand, IconMenu, IconSun, IconMoon, IconPlus, IconMore, IconClose, IconGuide, IconChevronRight, IconChevronDown, IconMap, KinkitLogo } from './icons.jsx'
+import { useNavMode, readNavMode } from './game/navMode.js'
+import './game/game-shell.css'
 
 const COLLAPSE_KEY = 'kinkit_sidebar_collapsed'
 const HIDDEN_KEY = 'kinkit_sidebar_hidden'
 const GROUPS_KEY = 'kinkit_sidebar_groups_closed'
+const WORLD_SEEN_KEY = 'kinkit_world_seen'
+let worldSeen = false // fallback when sessionStorage is blocked
+
+// True once per browser session: game mode opens on the town map the first time.
+function takeFirstWorldVisit() {
+  let seen = worldSeen
+  try { seen = seen || sessionStorage.getItem(WORLD_SEEN_KEY) === '1' } catch { /* ignore */ }
+  if (seen) return false
+  worldSeen = true
+  try { sessionStorage.setItem(WORLD_SEEN_KEY, '1') } catch { /* ignore */ }
+  return true
+}
 
 function ConnStatus({ serverOnline, queueSize, compact }) {
   const text = serverOnline ? 'Online' : `Offline${queueSize ? ` (${queueSize})` : ''}`
   return (
     <div
       className={`conn-status ${serverOnline ? 'online' : 'offline'}`}
-      title={serverOnline ? 'Connected to server' : `Offline${queueSize ? ` - ${queueSize} transaction(s) pending sync` : ''}`}
+      title={serverOnline ? 'Connected to server' : `Offline${queueSize ? `: ${queueSize} transaction(s) waiting to sync` : ''}`}
       role="status"
     >
       <span className="conn-dot" aria-hidden="true" />
@@ -38,7 +52,7 @@ function FailedSyncBanner({ items, onDismiss }) {
       <ul>
         {items.map(f => (
           <li key={f.client_id}>
-            <span>{f.tx_date} · {f.description} · {f.category} · {formatRupiah(f.amount)} - <em>{f.error}</em></span>
+            <span>{f.tx_date} · {f.description} · {f.category} · {formatRupiah(f.amount)}: <em>{f.error}</em></span>
             <button className="icon-btn" onClick={() => onDismiss(f.client_id)} aria-label={`Dismiss failed entry ${f.description}`}>
               <IconClose width={12} height={12} />
             </button>
@@ -55,6 +69,8 @@ export default function Layout() {
   const { serverOnline, queueSize, failedItems, dismissFailed } = useOffline()
   const { theme, setTheme, toggle: toggleTheme } = useTheme()
   const location = useLocation()
+  const navigate = useNavigate()
+  const [navMode, setNavMode] = useNavMode()
   const [collapsed, setCollapsed] = useState(() => { try { return localStorage.getItem(COLLAPSE_KEY) === '1' } catch { return false } })
   // sidebar fully hidden (desktop only); takes priority over the icons-only collapse
   const [hidden, setHidden] = useState(() => { try { return localStorage.getItem(HIDDEN_KEY) === '1' } catch { return false } })
@@ -65,6 +81,8 @@ export default function Layout() {
   const [gamiRefresh, setGamiRefresh] = useState(0)
 
   const isAdmin = !!user?.is_admin
+  const game = navMode === 'game' && !isAdmin // super admins have no town map
+  const onWorld = location.pathname === '/world'
   const familyName = (user?.household_name || '').trim()
   const canAdd = !isAdmin && canLogSpending(user)
   const canAddIncome = !isAdmin && canManage(user)
@@ -99,6 +117,7 @@ export default function Layout() {
       const t = e.target
       if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return
       if (!window.matchMedia('(min-width: 641px)').matches) return
+      if (readNavMode() === 'game') return // no sidebar to hide in game mode
       e.preventDefault()
       setHidden(h => !h)
     }
@@ -107,12 +126,42 @@ export default function Layout() {
   }, [])
   useEffect(() => { try { localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0') } catch { /* ignore */ } }, [collapsed])
 
+  // Game mode opens on the map once per session when you land on Today.
+  useEffect(() => {
+    if (game && location.pathname === '/' && takeFirstWorldVisit()) navigate('/world', { replace: true })
+  }, [game, location.pathname, navigate])
+  // Escape walks back to the map, unless it is closing something else.
+  useEffect(() => {
+    if (!game || onWorld) return undefined
+    const onKey = e => {
+      if (e.key !== 'Escape' || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return
+      const t = e.target
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.closest?.('form'))) return // keep half-filled forms
+      if (document.querySelector('[role="dialog"], .wb-fullscreen') || document.fullscreenElement) return
+      if (document.activeElement?.getAttribute?.('aria-expanded') === 'true') return
+      navigate('/world')
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [game, onWorld, navigate])
+
+  const enterGameMode = () => {
+    takeFirstWorldVisit()
+    setNavMode('game')
+    navigate('/world')
+  }
+  const leaveGameMode = () => {
+    setNavMode('sidebar')
+    if (onWorld) navigate('/')
+  }
+
   const darkMode = theme === 'dark'
 
   return (
-    <div className={`app-shell ${hidden ? 'sidebar-hidden' : collapsed ? 'sidebar-collapsed' : ''}`}>
+    <div className={`app-shell ${game ? 'nav-game' : hidden ? 'sidebar-hidden' : collapsed ? 'sidebar-collapsed' : ''}`}>
       <a href="#main" className="skip-link">Skip to content</a>
 
+      {!game && (
       <aside id="sidebar" className={`sidebar ${collapsed ? 'collapsed' : ''}`} aria-hidden={hidden || undefined} inert={hidden ? '' : undefined}>
         <div className="sidebar-top">
           {!collapsed && (
@@ -134,9 +183,9 @@ export default function Layout() {
         <ul>
           {canAdd && (
             <li>
-              <button className="nav-cta" onClick={() => setQuickAddOpen(true)} title={canAddIncome ? 'Add spending or income' : 'Add Spending'} aria-label={collapsed ? 'Add' : undefined}>
+              <button className="nav-cta" onClick={() => setQuickAddOpen(true)} title={canAddIncome ? 'Add spending or income' : 'Add spending'} aria-label={collapsed ? 'Add' : undefined}>
                 <IconPlus />
-                {!collapsed && <span>{canAddIncome ? 'Add' : 'Add Spending'}</span>}
+                {!collapsed && <span>{canAddIncome ? 'Add' : 'Add spending'}</span>}
               </button>
             </li>
           )}
@@ -166,12 +215,18 @@ export default function Layout() {
               <IconGuide />
             </a>
           )}
+          {!isAdmin && (
+            <button className="icon-btn game-btn" onClick={enterGameMode} title="Game mode: walk a town map" aria-label="Game mode">
+              <IconMap />
+            </button>
+          )}
           {!collapsed && <span className="sidebar-user">{user?.display_name}</span>}
-          <button className="icon-btn logout-btn" onClick={logout} title="Logout" aria-label="Logout"><IconLogout /></button>
+          <button className="icon-btn logout-btn" onClick={logout} title="Log out" aria-label="Log out"><IconLogout /></button>
         </div>
       </aside>
+      )}
 
-      {/* ---- mobile (<640px): slim top bar + bottom tabs + FAB ---- */}
+      {/* mobile (<640px): slim top bar, bottom tabs, FAB */}
       <header className="mobile-topbar">
         <div className="brand-row">
           <KinkitLogo className="brand-logo" aria-hidden="true" />
@@ -186,19 +241,43 @@ export default function Layout() {
         )}
       </header>
 
+      {!game && (
       <button type="button" className="sidebar-hide-toggle" onClick={() => setHidden(h => !h)}
         title={hidden ? 'Show sidebar (Ctrl+B)' : 'Hide sidebar (Ctrl+B)'} aria-label={hidden ? 'Show sidebar' : 'Hide sidebar'}
         aria-expanded={!hidden} aria-controls="sidebar" aria-keyshortcuts="Control+B Meta+B">
         <IconMenu width={18} height={18} aria-hidden="true" />
       </button>
+      )}
 
       <main className="content" id="main" tabIndex={-1}>
         <div className="content-strip" aria-hidden="true" />
+        {game && (
+          <nav className="game-hud" aria-label="Game mode">
+            <div className="game-hud-group">
+              {!onWorld && <Link to="/world" className="hud-btn solid"><IconMap width={18} height={18} aria-hidden="true" /> Map</Link>}
+              {canAdd && (
+                <button type="button" className={`hud-btn${onWorld ? ' solid' : ''}`} onClick={() => setQuickAddOpen(true)}>
+                  <IconPlus width={18} height={18} aria-hidden="true" /> <span className="hud-label">{canAddIncome ? 'Add' : 'Add spending'}</span>
+                </button>
+              )}
+              <GamificationBadge collapsed refreshKey={gamiRefresh} />
+            </div>
+            <div className="game-hud-group">
+              <ConnStatus serverOnline={serverOnline} queueSize={queueSize} />
+              <button type="button" className="hud-btn icon-only" onClick={toggleTheme} title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'} aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}>
+                {darkMode ? <IconSun width={18} height={18} aria-hidden="true" /> : <IconMoon width={18} height={18} aria-hidden="true" />}
+              </button>
+              <button type="button" className="hud-btn hud-fold" onClick={leaveGameMode} aria-label="Use sidebar" title="Use sidebar"><IconMenu width={18} height={18} aria-hidden="true" /> <span className="hud-label">Use sidebar</span></button>
+              <button type="button" className="hud-btn icon-only" onClick={logout} title="Log out" aria-label="Log out"><IconLogout width={18} height={18} aria-hidden="true" /></button>
+            </div>
+          </nav>
+        )}
         <FailedSyncBanner items={failedItems} onDismiss={dismissFailed} />
         {canAddIncome && location.pathname === '/' && <OnboardingChecklist />}
         <Outlet />
       </main>
 
+      {!game && (
       <nav className="mobile-tabbar" aria-label="Main">
         {mobileTabs.map(r => (
           <NavLink key={r.path} to={routeTo(r)} end={routeEnd(r)} className="mobile-tab">
@@ -211,14 +290,15 @@ export default function Layout() {
           <span>More</span>
         </button>
       </nav>
+      )}
 
-      {canAdd && (
+      {canAdd && !game && (
         <button className="fab" onClick={() => setQuickAddOpen(true)} aria-label={canAddIncome ? 'Add spending or income' : 'Add spending'}>
           <IconPlus width={26} height={26} />
         </button>
       )}
 
-      {moreOpen && (
+      {moreOpen && !game && (
         <Modal title="More" onClose={() => setMoreOpen(false)} className="sheet">
           {!isAdmin && <GamificationBadge refreshKey={gamiRefresh} />}
           <ul className="sheet-links">
@@ -243,7 +323,7 @@ export default function Layout() {
           </label>
           <div className="sheet-row">
             <span className="muted">Signed in as {user?.display_name || user?.username}</span>
-            <button className="secondary" onClick={logout}><IconLogout width={16} height={16} aria-hidden="true" /> Logout</button>
+            <button className="secondary" onClick={logout}><IconLogout width={16} height={16} aria-hidden="true" /> Log out</button>
           </div>
         </Modal>
       )}

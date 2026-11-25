@@ -32,7 +32,7 @@ function useUndoableDelete({ toast, hide, unhide, onDelete, onChanged, canForce 
         toast.show({
           type: 'error',
           duration: 10000,
-          message: `"${label}" is in use - existing records keep it as text if you force delete.`,
+          message: `"${label}" is in use. Existing records keep it as text if you force delete.`,
           action: {
             label: 'Force delete',
             onClick: async () => {
@@ -81,7 +81,7 @@ function AccountSettings() {
     <div className="card">
       <h2>Account Settings</h2>
       <p className="muted">
-        Display currency - amounts are stored in IDR and converted to the selected currency for display
+        Display currency: amounts are stored in IDR and converted to the selected currency for display
         using daily exchange rates, so shown values are approximate. Your stored data never changes.
       </p>
       {/* --- family name (family admin only); shown in the sidebar, top bar and page title --- */}
@@ -89,7 +89,7 @@ function AccountSettings() {
         <label style={{ display: 'flex', flexDirection: 'column', gap: '.3rem', flex: '1 1 240px' }}>
           <span>Family name</span>
           <input value={household} onChange={e => setHousehold(e.target.value)} disabled={!isOwner} maxLength={80}
-            placeholder="e.g. Budi's Family" title={isOwner ? undefined : 'Only the family admin can change the family name'} />
+            placeholder="e.g. The Carters" title={isOwner ? undefined : 'Only the family admin can change the family name'} />
         </label>
         {isOwner && <button type="submit" style={{ alignSelf: 'flex-end' }}>Save</button>}
       </form>
@@ -160,7 +160,7 @@ function EditableList({ title, items, onAdd, onUpdate, onDelete, onChanged, extr
             )}
           </div>
         ))}
-        {visible.length === 0 && <div className="muted">No data yet.</div>}
+        {visible.length === 0 && <div className="muted">None yet. Add one above.</div>}
       </div>
     </div>
   )
@@ -243,7 +243,7 @@ export default function Setup() {
 
       <div className="card">
         <h2>Spending Categories</h2>
-        <p className="muted">Add/remove your own categories - colors stay consistent across all pages.</p>
+        <p className="muted">Add or remove your own categories. Colors stay consistent across all pages.</p>
         <form className="inline-form" onSubmit={handleAddCategory}>
           <input placeholder="Category name" aria-label="Category name" value={catName} onChange={e => setCatName(e.target.value)} />
           <select aria-label="Group" value={catMain} onChange={e => setCatMain(e.target.value)}>

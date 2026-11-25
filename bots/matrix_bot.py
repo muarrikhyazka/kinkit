@@ -186,7 +186,7 @@ class MatrixTenant:
         try:
             replies = await kc.log_spending(self.bot_token, who, body, "matrix")
         except kc.BackendError as e:
-            await self.reply(f"Failed to save - {e.message}")
+            await self.reply(f"Failed to save: {e.message}")
             return
         except (URLError, OSError):
             return

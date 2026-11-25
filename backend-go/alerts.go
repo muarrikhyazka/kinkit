@@ -131,9 +131,9 @@ func alertText(category string, threshold int, spent, budget int64, monthLabel, 
 	}
 	s, b := formatAlertAmount(spent, currency, rates), formatAlertAmount(budget, currency, rates)
 	if threshold >= 100 {
-		return fmt.Sprintf("Kinkit budget alert: %s is OVER budget for %s - spent %s of %s (%d%%).", category, monthLabel, s, b, pct)
+		return fmt.Sprintf("Kinkit budget alert: %s is OVER budget for %s. Spent %s of %s (%d%%).", category, monthLabel, s, b, pct)
 	}
-	return fmt.Sprintf("Kinkit budget alert: %s has used %d%% of its %s budget - spent %s of %s.", category, pct, monthLabel, s, b)
+	return fmt.Sprintf("Kinkit budget alert: %s has used %d%% of its %s budget. Spent %s of %s.", category, pct, monthLabel, s, b)
 }
 
 type alertChannel struct{ platform, token, chatID string }

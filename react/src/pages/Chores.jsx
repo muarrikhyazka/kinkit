@@ -9,7 +9,7 @@ import StatCard from '../StatCard.jsx'
 import MoneyInput from '../MoneyInput.jsx'
 import Celebration, { diffNewRewards } from '../Celebration.jsx'
 import { SkeletonCard, SkeletonStats } from '../Skeleton.jsx'
-import { IconBroom, IconCamera, IconCheck, IconChevronLeft, IconChevronRight, IconClose, IconEdit, IconPlus, IconSparkle } from '../icons.jsx'
+import { IconBroom, IconCamera, IconCheck, IconChevronLeft, IconChevronRight, IconClose, IconEdit, IconPlus } from '../icons.jsx'
 
 // helpers
 
@@ -62,7 +62,7 @@ function useChoreActions(reload) {
 
   const afterChange = useCallback(() => {
     reload()
-    notifySpendingChanged() // refreshes the sidebar points badge + Family page
+    notifySpendingChanged() // refreshes the sidebar points badge and the Leaderboard
     api.gamification().then(g => {
       const fresh = diffNewRewards(g)
       if (fresh.length) setCelebrate(c => [...c, ...fresh])
@@ -130,11 +130,11 @@ function KidView({ data, actions, memberId }) {
     <>
       <div className="cards-row">
         <StatCard label="Points this week" value={String(week.points)} tone="positive" sub={`${week.done} chore${week.done === 1 ? '' : 's'} done this week`} />
-        <StatCard label="Today" value={`${done.length} / ${items.length}`} sub={todo.length ? `${todo.length} to go` : items.length ? 'All done - amazing!' : 'Nothing today'} />
+        <StatCard label="Today" value={`${done.length} / ${items.length}`} sub={todo.length ? `${todo.length} to go` : items.length ? 'All done, amazing!' : 'Nothing today'} />
         {week.earned_month > 0 && <StatCard label="Earned this month" value={formatRupiah(week.earned_month)} tone="savings" sub="from chores, on top of your allowance" />}
       </div>
       {items.length === 0 && (
-        <div className="card empty-hint"><p className="chore-big-emoji" aria-hidden="true"><IconSparkle width={44} height={44} /></p><p>No chores for you today.</p></div>
+        <div className="card empty-hint"><p className="chore-big-emoji" aria-hidden="true"><IconBroom width={44} height={44} /></p><p>No chores for you today. Enjoy the free time.</p></div>
       )}
       <ul className="chore-kid-grid">
         {todo.map(i => (
@@ -228,7 +228,7 @@ function ApprovalQueue({ waiting, actions }) {
       </ul>
       {rejecting && <RejectModal item={rejecting} onClose={() => setRejecting(null)} onReject={note => actions.reject(rejecting, note)} />}
       {photo && (
-        <Modal title={`${photo.title} - ${photo.member_name || ''}`} onClose={() => setPhoto(null)} className="chore-photo-modal">
+        <Modal title={photo.member_name ? `${photo.title} (${photo.member_name})` : photo.title} onClose={() => setPhoto(null)} className="chore-photo-modal">
           <img className="chore-photo-full" src={choresApi.photoUrl(photo.id)} alt={`Photo for ${photo.title}`} />
           <div className="family-form-actions">
             <button className="secondary" onClick={() => { setRejecting(photo); setPhoto(null) }}>Send back</button>
@@ -305,7 +305,7 @@ function WeekGrid({ today, nonce }) {
         <h2>Week view</h2>
         <div className="period-control">
           <button className="period-step" onClick={() => setStart(s => addDays(s, -7))} aria-label="Previous week"><IconChevronLeft width={16} height={16} /></button>
-          <button className="period-label" onClick={() => setStart(weekStartOf(today))} title="Back to this week">{dayLabel(start)} - {dayLabel(end)}</button>
+          <button className="period-label" onClick={() => setStart(weekStartOf(today))} title="Back to this week">{dayLabel(start)} to {dayLabel(end)}</button>
           <button className="period-step" onClick={() => setStart(s => addDays(s, 7))} aria-label="Next week"><IconChevronRight width={16} height={16} /></button>
         </div>
       </div>
@@ -325,7 +325,7 @@ function WeekGrid({ today, nonce }) {
                       <td key={day} className={day === today ? 'today' : ''}>
                         {cell.map((i, k) => (
                           <span key={i.id || `p${i.chore_id}-${k}`} className={`chore-cell ${i.projected ? 'chore-projected' : `chore-${i.status}`}`}
-                            title={`${i.title} - ${i.projected ? 'upcoming' : STATUS_LABEL[i.status]}`}>
+                            title={`${i.title}: ${i.projected ? 'upcoming' : STATUS_LABEL[i.status]}`}>
                             <span aria-hidden="true">•</span><span className="sr-only">{i.title}: {i.projected ? 'upcoming' : STATUS_LABEL[i.status]}</span>
                           </span>
                         ))}
@@ -518,7 +518,7 @@ function ManageChores({ today, nonce, onChanged }) {
       {!d ? <SkeletonCard lines={3} /> : chores.length === 0 ? (
         <div className="empty-hint">
           <p className="chore-big-emoji" aria-hidden="true"><IconBroom width={44} height={44} /></p>
-          <p>No chores yet. Add one - like "Make your bed" every day, or "Take out the trash" taking turns.</p>
+          <p>No chores yet. Add one, like "Make your bed" every day or "Take out the trash" taking turns.</p>
         </div>
       ) : (
         <ul className="chore-list">

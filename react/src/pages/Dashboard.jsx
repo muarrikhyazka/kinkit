@@ -85,12 +85,22 @@ export default function Dashboard() {
   )
 }
 
-function TabState({ error, stats = 4 }) {
-  if (error) return <div className="error-box">{error}</div>
+// Names what failed and offers the retry; `what` completes "Could not load ...".
+function LoadError({ error, reload, what }) {
+  return (
+    <div className="error-box" role="alert">
+      <p>Could not load {what}: {error}</p>
+      <button className="secondary" onClick={reload}>Try again</button>
+    </div>
+  )
+}
+
+function TabState({ error, reload, what, stats = 4 }) {
+  if (error) return <LoadError error={error} reload={reload} what={what} />
   return <><SkeletonStats count={stats} /><SkeletonCard chart lines={1} /></>
 }
 
-function CategoryBars({ rows, valueKey, emptyText = 'No data yet.' }) {
+function CategoryBars({ rows, valueKey, emptyText = 'Nothing spent in this period yet. Add an expense with Add.' }) {
   const max = Math.max(1, ...rows.map(r => r[valueKey]))
   if (rows.length === 0) return <div className="muted">{emptyText}</div>
   return rows.map(c => {
@@ -121,11 +131,11 @@ function PatternChart({ title, desc, labels, data, label = 'Average' }) {
 // Tab: Across Years
 function YearsTab() {
   const { valueMax } = useYearMonth()
-  const { data, error } = useApi(
+  const { data, error, reload } = useApi(
     () => Promise.all([api.years(valueMax), api.yearsByCategory(valueMax), api.yearsMonthly(valueMax)]),
     [valueMax],
   )
-  if (!data) return <TabState error={error} />
+  if (!data) return <TabState error={error} reload={reload} what="the all-years comparison" />
   const [years, byCategory, monthly] = data
 
   const income = years.reduce((s, y) => s + y.income, 0)
@@ -134,7 +144,7 @@ function YearsTab() {
 
   return (
     <div>
-      {error && <div className="error-box">{error}</div>}
+      {error && <LoadError error={error} reload={reload} what="the latest figures" />}
       <div className="cards-row">
         <StatCard label="All-time Income" value={formatRupiah(income)} tone="income" />
         <StatCard label="All-time Expense" value={formatRupiah(expense)} tone="expense" />
@@ -144,7 +154,7 @@ function YearsTab() {
 
       <div className="card">
         <h2>Year-over-Year Comparison</h2>
-        {years.length === 0 && <div className="muted">No data yet.</div>}
+        {years.length === 0 && <div className="muted">Year-over-year needs at least one year with spending or income.</div>}
         {years.length > 0 && (
           <BarChart
             labels={years.map(y => String(y.year))}
@@ -175,7 +185,7 @@ function YearsTab() {
 
       {monthly.years.length > 0 && (
         <div className="card">
-          <h2>Monthly Spending - Across Years</h2>
+          <h2>Monthly spending across years</h2>
           <LineChart
             labels={MONTHS}
             datasets={monthly.years.map((y, i) => ({ label: String(y), data: (monthly.by_year[y] || []), color: seriesColor(i) }))}
@@ -184,8 +194,8 @@ function YearsTab() {
       )}
 
       <div className="card">
-        <h2>Spending by Category - Across Years</h2>
-        {byCategory.rows.length === 0 && <div className="muted">No data yet.</div>}
+        <h2>Spending by category across years</h2>
+        {byCategory.rows.length === 0 && <div className="muted">No spending recorded yet, so there is nothing to compare across years.</div>}
         {byCategory.rows.length > 0 && (
           <div className="table-scroll">
             <table>
@@ -208,7 +218,7 @@ function YearsTab() {
         )}
       </div>
 
-      <Collapsible title="More insights - spending patterns across all years" storageKey="kinkit_dash_years_insights">
+      <Collapsible title="More insights: spending patterns across all years" storageKey="kinkit_dash_years_insights">
         <YearsInsights valueMax={valueMax} monthly={monthly} />
       </Collapsible>
     </div>
@@ -217,7 +227,7 @@ function YearsTab() {
 
 // Only mounted when "More insights" is open, so these requests are lazy.
 function YearsInsights({ valueMax, monthly }) {
-  const { data, error } = useApi(
+  const { data, error, reload } = useApi(
     () => Promise.all([api.yearsDayOfMonthAvg(valueMax), api.yearsDatemonthAvg(valueMax)]),
     [valueMax],
   )
@@ -226,7 +236,7 @@ function YearsInsights({ valueMax, monthly }) {
     const vals = monthly.years.map(y => monthly.by_year[y]?.[i] || 0).filter(v => v > 0)
     return vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0
   })
-  if (error) return <div className="error-box">{error}</div>
+  if (error) return <LoadError error={error} reload={reload} what="the extra insights" />
   if (!data) return <SkeletonCard chart lines={0} />
   const [dayOfMonthAvg, datemonthAvg] = data
 
@@ -242,7 +252,7 @@ function YearsInsights({ valueMax, monthly }) {
       />
       {datemonthAvg.length > 0 && (
         <div className="card">
-          <h2>Average Expense per Date (Jan 1 - Dec 31, Pattern Across All Years)</h2>
+          <h2>Average expense per date (Jan 1 to Dec 31, pattern across all years)</h2>
           <div style={{ overflowX: 'auto' }}>
             <div style={{ minWidth: `${datemonthAvg.length * 24}px` }}>
               <LineChart
@@ -260,11 +270,11 @@ function YearsInsights({ valueMax, monthly }) {
 // Tab: Year (12-month view of selected year)
 function YearTab() {
   const { year, valueMax } = useYearMonth()
-  const { data, error } = useApi(
+  const { data, error, reload } = useApi(
     () => Promise.all([api.trend(year, 12, 12, valueMax), api.reportYear(year, valueMax)]),
     [year, valueMax],
   )
-  if (!data) return <TabState error={error} />
+  if (!data) return <TabState error={error} reload={reload} what="this year's trends" />
   const [trend, catBreakdown] = data
 
   const totalIncome = trend.reduce((s, t) => s + t.income, 0)
@@ -274,7 +284,7 @@ function YearTab() {
 
   return (
     <div>
-      {error && <div className="error-box">{error}</div>}
+      {error && <LoadError error={error} reload={reload} what="the latest figures" />}
       <div className="cards-row">
         <StatCard label={`Income Received ${year}`} value={formatRupiah(totalIncomeActual)} tone="income" sub={`Planned: ${formatRupiah(totalIncome)}`} />
         <StatCard label={`Total Expense ${year}`} value={formatRupiah(totalExpense)} tone="expense" />
@@ -283,22 +293,22 @@ function YearTab() {
       </div>
 
       <div className="card">
-        <h2>12 Months - {year}</h2>
+        <h2>12 months of {year}</h2>
         {trend.length > 0 && <IncomeExpenseChart trend={trend} />}
       </div>
 
       <div className="grid-2">
         <div className="card">
-          <h2>Breakdown by Category - {year}</h2>
+          <h2>Breakdown by category, {year}</h2>
           <CategoryBars rows={catBreakdown} valueKey="total" />
         </div>
         <div className="card">
-          <h2>Category Breakdown - {year}</h2>
+          <h2>Category breakdown, {year}</h2>
           <PieChart data={catBreakdown} />
         </div>
       </div>
 
-      <Collapsible title={`More insights - spending patterns in ${year}`} storageKey="kinkit_dash_year_insights">
+      <Collapsible title={`More insights: spending patterns in ${year}`} storageKey="kinkit_dash_year_insights">
         <YearPatterns year={year} valueMax={valueMax} />
       </Collapsible>
     </div>
@@ -306,18 +316,18 @@ function YearTab() {
 }
 
 function YearPatterns({ year, valueMax }) {
-  const { data: p, error } = useApi(() => api.patternsYear(year, valueMax), [year, valueMax])
-  if (error) return <div className="error-box">{error}</div>
+  const { data: p, error, reload } = useApi(() => api.patternsYear(year, valueMax), [year, valueMax])
+  if (error) return <LoadError error={error} reload={reload} what="the spending patterns" />
   if (!p) return <SkeletonCard chart lines={0} />
   return (
     <>
-      <PatternChart title={`Pattern by Date of Month - ${year}`} desc="Average expense for each date (1-31), averaged across the whole year"
+      <PatternChart title={`Pattern by date of month, ${year}`} desc="Average expense for each date (1-31), averaged across the whole year"
         labels={p.by_date.map(d => String(d.day))} data={p.by_date.map(d => d.avg)} />
-      <PatternChart title={`Pattern by Week of Year - ${year}`} desc={`Total expense per ISO week across ${year}`} label="Total"
+      <PatternChart title={`Pattern by week of year, ${year}`} desc={`Total expense per ISO week across ${year}`} label="Total"
         labels={p.by_week.map(w => `W${w.week}`)} data={p.by_week.map(w => w.avg)} />
-      <PatternChart title={`Pattern by Week in Month - ${year}`} desc="Average expense for week 1-5 within a month, averaged across the whole year"
+      <PatternChart title={`Pattern by week in month, ${year}`} desc="Average expense for week 1-5 within a month, averaged across the whole year"
         labels={p.by_week_in_month.map(w => `Week ${w.week}`)} data={p.by_week_in_month.map(w => w.avg)} />
-      <PatternChart title={`Pattern by Day of Week - ${year}`} desc="Average expense per weekday, averaged across the whole year"
+      <PatternChart title={`Pattern by day of week, ${year}`} desc="Average expense per weekday, averaged across the whole year"
         labels={WEEKDAY_NAMES} data={p.by_weekday.map(w => w.avg)} />
     </>
   )
@@ -402,7 +412,7 @@ function PctText({ pct, label }) {
 
 function MonthTab() {
   const { year, month, valueMax } = useYearMonth()
-  const { data, error } = useApi(
+  const { data, error, reload } = useApi(
     () => Promise.all([
       api.report(year, month, valueMax),
       api.trend(year, month, 6, valueMax),
@@ -411,7 +421,7 @@ function MonthTab() {
     ]),
     [year, month, valueMax],
   )
-  if (!data) return <TabState error={error} />
+  if (!data) return <TabState error={error} reload={reload} what="this month's report" />
   const [report, trend, recentRes, compare] = data
   const recent = recentRes.rows
 
@@ -428,7 +438,7 @@ function MonthTab() {
 
   return (
     <div>
-      {error && <div className="error-box">{error}</div>}
+      {error && <LoadError error={error} reload={reload} what="the latest figures" />}
 
       <div className="cards-row">
         <StatCard
@@ -523,8 +533,8 @@ function MonthTab() {
 // Tab: Week (weekly breakdown within selected month)
 function WeekTab() {
   const { year, month, valueMax } = useYearMonth()
-  const { data: weeks, error } = useApi(() => api.weeklyReport(year, month, valueMax), [year, month, valueMax])
-  if (!weeks) return <TabState error={error} stats={3} />
+  const { data: weeks, error, reload } = useApi(() => api.weeklyReport(year, month, valueMax), [year, month, valueMax])
+  if (!weeks) return <TabState error={error} reload={reload} what="the weekly breakdown" stats={3} />
 
   const total = weeks.reduce((s, w) => s + w.total, 0)
   const maxTotal = Math.max(1, ...weeks.map(w => w.total))
@@ -536,7 +546,7 @@ function WeekTab() {
 
   return (
     <div>
-      {error && <div className="error-box">{error}</div>}
+      {error && <LoadError error={error} reload={reload} what="the latest figures" />}
       <div className="cards-row">
         <StatCard label={`Total ${MONTHS[month - 1]}`} value={formatRupiah(total)} tone="expense" />
         <StatCard label="Average / Week" value={formatRupiah(weeks.length ? total / weeks.length : 0)} />
@@ -557,7 +567,7 @@ function WeekTab() {
 
       {allCats.length > 0 && (
         <div className="card">
-          <h2>By Category - Across Weeks</h2>
+          <h2>By category across weeks</h2>
           <BarChart
             labels={allCats}
             datasets={weeks.map((w, i) => ({

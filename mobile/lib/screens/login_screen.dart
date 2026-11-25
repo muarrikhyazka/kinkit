@@ -226,7 +226,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
+                                  strokeWidth: 2, color: context.palette.onPrimary))
                           : Text(_signup ? 'Create household' : 'Log in'),
                     ),
                     const SizedBox(height: 24),

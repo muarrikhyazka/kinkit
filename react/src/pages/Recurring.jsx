@@ -72,7 +72,7 @@ function RecurringModal({ initial, categories, onClose, onSaved }) {
     try {
       const res = initial ? await api.updateRecurring(initial.id, payload) : await api.addRecurring(payload)
       const n = res?.generated || 0
-      toast.success(`${initial ? 'Saved' : 'Added'} "${payload.description}"${n ? ` - ${n} transaction${n === 1 ? '' : 's'} created` : ''}`)
+      toast.success(`${initial ? 'Saved' : 'Added'} "${payload.description}"${n ? `. ${n} transaction${n === 1 ? '' : 's'} created` : ''}`)
       if (n) notifySpendingChanged()
       onSaved()
     } catch (err) {
@@ -89,7 +89,7 @@ function RecurringModal({ initial, categories, onClose, onSaved }) {
           <input data-autofocus value={form.description} onChange={e => set('description', e.target.value)} placeholder="Rent, Netflix, gym..." required />
         </label>
         <label>Amount
-          <MoneyInput value={form.amount} onChange={v => set('amount', v)} placeholder="e.g. 1.5jt" required />
+          <MoneyInput value={form.amount} onChange={v => set('amount', v)} placeholder="e.g. 1.5m" required />
         </label>
         <label>Category
           <select value={form.category_id} onChange={e => set('category_id', e.target.value)}>

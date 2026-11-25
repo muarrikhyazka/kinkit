@@ -20,8 +20,8 @@ enum MascotPose {
 
 /// Kiki, the Kinkit mascot, with the same gentle motion as the web
 /// (react/src/mascot.css):
-/// - idle "breathe": a 6/256 lift with squash and stretch, while the contact
-///   shadow shrinks and fades as Kiki rises (3.4 s);
+/// - idle "breathe": one 6/256 lift with squash and stretch, while the contact
+///   shadow shrinks and fades as Kiki rises (3.4 s), then Kiki rests;
 /// - [wave]: a small rotation wobble once on mount;
 ///
 /// The PNGs in assets/mascot are renders of brand/mascot*.svg without the
@@ -84,7 +84,7 @@ class _MascotState extends State<Mascot> with TickerProviderStateMixin {
 
   void _start({required bool firstRun}) {
     _started = true;
-    _bob.repeat();
+    _bob.forward(from: 0);
     if (firstRun && widget.wave) _wave.forward(from: 0);
   }
 

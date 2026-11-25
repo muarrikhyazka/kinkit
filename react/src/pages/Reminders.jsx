@@ -55,14 +55,14 @@ function nextDayOfMonth(day) {
  */
 export const REMINDER_TEMPLATES = [
   { key: 'sheets', title: 'Change bed sheets & towels', category: 'laundry', kind: 'weekly', interval: 2, weekdays: [5], time_of_day: '10:00' },
-  { key: 'prayer_mats', title: 'Wash prayer mats & sarung', category: 'laundry', kind: 'weekly', interval: 2, weekdays: [5], time_of_day: '09:00' },
+  { key: 'curtains', title: 'Wash the curtains', category: 'laundry', kind: 'weekly', interval: 2, weekdays: [5], time_of_day: '09:00' },
   { key: 'trash', title: 'Take out the trash', category: 'cleaning', kind: 'weekly', weekdays: [2, 5], time_of_day: '19:00' },
   { key: 'plants', title: 'Water the plants', category: 'home_maintenance', kind: 'daily', time_of_day: '07:00' },
   { key: 'bathroom', title: 'Clean the bathroom', category: 'cleaning', kind: 'weekly', weekdays: [6], time_of_day: '09:00' },
   { key: 'meals', title: "Plan next week's meals", category: 'cooking', kind: 'weekly', weekdays: [4], time_of_day: '20:30' },
   { key: 'groceries', title: 'Weekly grocery run', category: 'groceries', kind: 'weekly', weekdays: [6], time_of_day: '08:00' },
   { key: 'tyres', title: 'Check tyre pressure', category: 'vehicle', kind: 'weekly', interval: 2, weekdays: [5], time_of_day: '11:00' },
-  { key: 'oil', title: 'Change motorbike oil', category: 'vehicle', kind: 'monthly', interval: 3, day_of_month: 1, time_of_day: '09:00' },
+  { key: 'oil', title: 'Change the car oil', category: 'vehicle', kind: 'monthly', interval: 3, day_of_month: 1, time_of_day: '09:00' },
   { key: 'water_tank', title: 'Clean the water tank', category: 'home_maintenance', kind: 'monthly', interval: 3, time_of_day: '09:00' },
   { key: 'ac', title: 'Service the AC', category: 'home_maintenance', kind: 'monthly', interval: 6, time_of_day: '10:00' },
   { key: 'self_care', title: 'Self-care Saturday', category: 'self_care', kind: 'weekly', weekdays: [6], time_of_day: '08:00' },

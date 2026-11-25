@@ -8,82 +8,42 @@ import '../theme.dart';
 import '../widgets/async_view.dart';
 import '../widgets/gamification_badge.dart';
 
-/// Household members + achievements (web: pages/Family.jsx). Read-only;
-/// member management stays on the web.
+/// Leaderboard: level card, points this month, badges (web pages/Family.jsx).
+/// Read-only. The member list and password form live in Settings.
 class FamilyScreen extends ConsumerWidget {
   const FamilyScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final family = ref.watch(familyProvider);
     final gami = ref.watch(gamificationProvider);
-    final money = ref.watch(moneyProvider);
-    final canSeeMoney = ref.watch(meProvider)?.canReadMoney ?? false;
+    final household = ref.watch(meProvider)?.householdName.trim() ?? '';
     final p = context.palette;
 
     Future<void> refresh() async {
       ref.invalidate(gamificationProvider);
-      ref.invalidate(familyProvider);
-      await ref.read(familyProvider.future);
+      await ref.read(gamificationProvider.future);
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Family')),
+      appBar: AppBar(title: const Text('Leaderboard')),
       body: PullToRefresh(
         onRefresh: refresh,
-        child: AsyncView<FamilyData>(
-          value: family,
-          onRetry: () => ref.invalidate(familyProvider),
-          builder: (f) {
-            final g = gami.valueOrNull;
+        child: AsyncView<Gamification>(
+          value: gami,
+          onRetry: () => ref.invalidate(gamificationProvider),
+          builder: (g) {
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.only(bottom: 32),
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
-                  child: Text(f.householdName,
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: p.text)),
-                ),
-                const GamificationCard(),
-                SectionTitle('Members (${f.members.length})'),
-                Card(
-                  child: Column(
-                    children: [
-                      for (final m in f.members)
-                        ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: _roleColor(m.role).withValues(alpha: 0.18),
-                            child: Text(
-                              m.displayName.isEmpty ? '?' : m.displayName.substring(0, 1).toUpperCase(),
-                              style: TextStyle(color: _roleColor(m.role), fontWeight: FontWeight.w700),
-                            ),
-                          ),
-                          title: Row(
-                            children: [
-                              Flexible(child: Text(m.displayName, overflow: TextOverflow.ellipsis)),
-                              if (m.isMe) Text('  (you)', style: TextStyle(color: p.muted, fontSize: 12)),
-                            ],
-                          ),
-                          subtitle: Text([
-                            _roleLabel(m.role),
-                            if (canSeeMoney) 'spent ${money.format(m.spentThisMonth)}',
-                            if (m.allowanceMonthly != null && canSeeMoney)
-                              'allowance ${money.format(m.allowanceMonthly!)}',
-                          ].join(' · ')),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.star_rounded, size: 16, color: p.warning),
-                              const SizedBox(width: 3),
-                              Text('${m.pointsThisMonth}', style: TextStyle(color: p.text)),
-                            ],
-                          ),
-                        ),
-                    ],
+                if (household.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+                    child: Text(household,
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: p.text)),
                   ),
-                ),
-                if (g != null && g.leaderboard.isNotEmpty) ...[
+                const GamificationCard(),
+                if (g.leaderboard.isNotEmpty) ...[
                   const SectionTitle('Leaderboard this month'),
                   Card(
                     child: Column(
@@ -105,7 +65,7 @@ class FamilyScreen extends ConsumerWidget {
                     ),
                   ),
                 ],
-                if (g != null && g.badges.isNotEmpty) ...[
+                if (g.badges.isNotEmpty) ...[
                   SectionTitle('Badges (${g.badges.where((b) => b.earned).length}/${g.badges.length})'),
                   for (final (title, list) in groupBadges(g.badges)) ...[
                     Padding(
@@ -135,23 +95,6 @@ class FamilyScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  static String _roleLabel(String role) {
-    if (role == 'owner') return 'Family Admin';
-    return role.isEmpty ? role : role[0].toUpperCase() + role.substring(1);
-  }
-
-  static Color _roleColor(String role) {
-    switch (role) {
-      case 'owner':
-        return const Color(0xFF7C3AED);
-      case 'parent':
-        return const Color(0xFF2563EB);
-      case 'kid':
-        return const Color(0xFFD97706);
-    }
-    return const Color(0xFF6B7280);
   }
 }
 

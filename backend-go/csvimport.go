@@ -495,10 +495,10 @@ func parseImport(data []byte, opt importOptions) (*parseResult, error) {
 	}
 
 	if m.Date < 0 {
-		res.Errors = append(res.Errors, "no date column found - choose one in the column mapping")
+		res.Errors = append(res.Errors, "no date column found. Choose one in the column mapping")
 	}
 	if m.Amount < 0 && m.Debit < 0 {
-		res.Errors = append(res.Errors, "no amount or debit column found - choose one in the column mapping")
+		res.Errors = append(res.Errors, "no amount or debit column found. Choose one in the column mapping")
 	}
 	if len(res.Errors) > 0 && (m.Date < 0 || (m.Amount < 0 && m.Debit < 0)) {
 		return res, nil
@@ -590,7 +590,7 @@ func parseImport(data []byte, opt importOptions) (*parseResult, error) {
 		}
 		pr.Amount = amount
 		if !out {
-			pr.Status, pr.Reason = "skip", "money in (credit/income) - not imported as spending"
+			pr.Status, pr.Reason = "skip", "money in (credit/income), not imported as spending"
 		} else if amount <= 0 {
 			pr.Status, pr.Reason = "skip", "zero amount"
 		}

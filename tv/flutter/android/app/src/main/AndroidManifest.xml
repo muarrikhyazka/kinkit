@@ -13,7 +13,7 @@
         android:banner="@drawable/banner"
         android:usesCleartextTraffic="true"
         android:theme="@style/LaunchTheme">
-        <!-- usesCleartextTraffic: self-hosted Kinkit servers on a LAN are often plain http. -->
+        <!-- usesCleartextTraffic: allows plain-http connections, e.g. a development backend on a local network. Remove for https-only builds. -->
 
         <activity
             android:name=".MainActivity"

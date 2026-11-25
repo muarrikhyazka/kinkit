@@ -41,7 +41,7 @@ const TIER = { bronze: 'Bronze', silver: 'Silver', gold: 'Gold' }
 export function Content() {
   return (
     <>
-      <p>Badges reward good habits. There are <strong>20 badges</strong> in four categories: <strong>Money</strong>, <strong>Habits</strong>, <strong>Home</strong> and <strong>Levels</strong>. Each badge has a medal tier (bronze, silver or gold) that shows how big the achievement is. They appear on the <a href="/docs/family">Family</a> page under achievements.</p>
+      <p>Badges reward good habits. There are <strong>20 badges</strong> in four categories: <strong>Money</strong>, <strong>Habits</strong>, <strong>Home</strong> and <strong>Levels</strong>. Each badge has a medal tier (bronze, silver or gold) that shows how big the achievement is. They appear on the <a href="/docs/family">Leaderboard</a> page under achievements.</p>
       <div className="dx-tiers" style={{ marginBottom: 16 }}>
         <span className="dx-tier bronze">Bronze</span>
         <span className="dx-tier silver">Silver</span>

@@ -162,7 +162,7 @@ class _QuickAddSheetState extends ConsumerState<QuickAddSheet> {
               FilledButton(
                 onPressed: _saving ? null : _save,
                 child: _saving
-                    ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
+                    ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: context.palette.onPrimary))
                     : const Text('Save'),
               ),
             ],
@@ -181,7 +181,17 @@ class _QuickAddSheetState extends ConsumerState<QuickAddSheet> {
       items.add(DropdownMenuItem<String>(
         enabled: false,
         value: '__$main',
-        child: Text(main, style: TextStyle(fontWeight: FontWeight.w700, color: mainCategoryColor(main))),
+        // The group colour is a dot beside the name, never the text colour
+        // (amber and green fail 4.5:1 as text on white).
+        child: Row(children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(shape: BoxShape.circle, color: mainCategoryColor(main)),
+          ),
+          const SizedBox(width: 8),
+          Flexible(child: Text(main, style: TextStyle(fontWeight: FontWeight.w700, color: context.palette.text))),
+        ]),
       ));
       for (final c in cats) {
         items.add(DropdownMenuItem<String>(

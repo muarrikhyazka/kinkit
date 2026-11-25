@@ -8,7 +8,7 @@ export const summary = 'Family admin, Parent, Kid and Viewer: who can do what.'
 export function Content() {
   return (
     <>
-      <p>A Kinkit account is a <strong>household</strong>. Whoever signed up is its <strong>Family Admin</strong>. On the <strong>Family</strong> page the family admin or a parent adds members with their email and a temporary password (they can change it later). Each member logs in with their own email.</p>
+      <p>A Kinkit account is a <strong>household</strong>. Whoever signed up is its <strong>Family Admin</strong>. Under <strong>Settings › Members</strong> the family admin or a parent adds members with their email and a temporary password (they can change it later under <strong>Settings › Your account</strong>). Each member logs in with their own email.</p>
 
       <H2>The four roles</H2>
       <ul>
@@ -31,7 +31,9 @@ export function Content() {
         ['Meal requests: send', 'Yes', 'Yes', 'Yes', 'Yes'],
         ['Meal requests: approve / decline', 'Yes', 'Yes', 'No', 'No'],
         ['Widget boards: edit layout', 'Yes', 'Yes', 'No', 'No'],
-        ['Settings (bots, data, categories)', 'Yes', 'Yes', 'Display only', 'Display only'],
+        ['Add, edit and remove members, set allowances', 'Yes', 'Yes (not the family admin)', 'No', 'No'],
+        ['Settings: bots, data, categories', 'Yes', 'Yes', 'No', 'No'],
+        ['Settings: Members (view), Your account, Display', 'Yes', 'Yes', 'Yes', 'Yes'],
       ]} />
       <Callout type="note">
         <p>The app hides menus you cannot use, and the server enforces the same rules, so a hidden button is never the only protection.</p>

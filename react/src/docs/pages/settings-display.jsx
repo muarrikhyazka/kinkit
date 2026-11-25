@@ -19,6 +19,9 @@ export function Content() {
         ['Senior (high-contrast)', 'High contrast and larger text'],
       ]} />
 
+      <H2>Navigation</H2>
+      <p>The <strong>Navigation</strong> card chooses how you move between pages on this device: <strong>Sidebar</strong> lists every page, <strong>Game (town map)</strong> lets you walk Kiki around a small town where each building opens a page. See <a href="/docs/navigation#game-mode">Game mode</a>.</p>
+
       <H2>Household time zone</H2>
       <p>Everything is stored in UTC. The household time zone decides when &ldquo;today&rdquo; starts and when &ldquo;every day at 08:00&rdquo; fires, for the whole family. The family admin and parents can change it; they are asked once to switch from UTC to the time zone of their device.</p>
 

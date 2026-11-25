@@ -1,8 +1,8 @@
 /*
  * CSS-built device mockups of the Kinkit web app (no images).
  * They mirror the current web look (react/src/index.css, react/DESIGN_AUDIT.md):
- * purple chrome with a white "Kinkit" wordmark and white logo tile, calm white cards,
- * hairline borders, tabular numbers, colour only where it carries meaning.
+ * white sidebar with a purple accent on the current page (the phone app bar stays purple),
+ * calm white cards, hairline borders, tabular numbers, colour only where it carries meaning.
  * Sizes inside a .screen are in em, so one font-size scales a whole mockup.
  */
 
@@ -18,7 +18,7 @@
   --m-chrome-soft: #e0e7ff;
   --m-success: #15803d;
   --m-warning: #b45309;
-  --m-danger: #dc2626;
+  --m-danger: #c41c1c;
   --m-track: #eceef4;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color: var(--m-text);
@@ -35,7 +35,7 @@
   background: #1d2030;
   border-radius: 14px 14px 4px 4px;
   padding: 2% 2% 2.4%;
-  box-shadow: 0 12px 32px rgba(16, 24, 40, .16);
+  box-shadow: var(--shadow-2);
 }
 .device-laptop .bezel::before {
   content: ""; display: block; width: 5px; height: 5px; border-radius: 50%;
@@ -58,7 +58,7 @@
   background: #1d2030;
   border-radius: 32px;
   padding: 9px;
-  box-shadow: 0 12px 32px rgba(16, 24, 40, .16);
+  box-shadow: var(--shadow-2);
 }
 .device-phone .screen { aspect-ratio: 9 / 19; border-radius: 24px; }
 .device-phone .notch {
@@ -69,7 +69,7 @@
 .device-tv { width: 100%; max-width: 520px; }
 .device-tv .bezel {
   background: #0b0d14; padding: 1.5%; border-radius: 10px;
-  box-shadow: 0 12px 32px rgba(16, 24, 40, .16);
+  box-shadow: var(--shadow-2);
 }
 .device-tv .screen { aspect-ratio: 16 / 9; border-radius: 3px; }
 .device-tv .stand {
@@ -96,19 +96,20 @@
 /* desktop app shell */
 .m-app { display: flex; height: 100%; }
 .m-side {
-  width: 22%; background: var(--m-chrome); color: #fff;
+  width: 22%; background: var(--m-card); color: var(--m-text); border-right: 1px solid var(--m-border);
   padding: 3.6% 2.4%; display: flex; flex-direction: column; gap: .8em;
 }
-.m-brand { display: flex; align-items: center; gap: .6em; font-weight: 700; font-size: 1.1em; color: #fff; padding: 0 .3em .4em; }
-.m-brand small { display: block; font-size: .68em; font-weight: 500; color: var(--m-chrome-soft); }
+.m-brand { display: flex; align-items: center; gap: .6em; font-weight: 700; font-size: 1.1em; color: var(--m-text); padding: 0 .3em .4em; }
+.m-brand small { display: block; font-size: .68em; font-weight: 500; color: var(--m-muted); }
+.m-side .m-logo { box-shadow: 0 0 0 1px var(--m-border); }
 .m-add {
-  background: #fff; color: var(--m-primary); text-align: center; border-radius: .6em;
+  background: var(--m-primary); color: #fff; text-align: center; border-radius: .6em;
   padding: .55em; font-weight: 600; font-size: .9em;
 }
 .m-nav { display: flex; flex-direction: column; gap: .2em; }
-.m-nav span { display: block; padding: .5em .7em; border-radius: .6em; color: rgba(255,255,255,.86); font-size: .9em; }
-.m-nav span.on { background: #fff; color: #4338ca; font-weight: 600; }
-.m-group { font-size: .68em !important; color: var(--m-chrome-soft) !important; padding: .9em .9em .2em !important; }
+.m-nav span { display: block; padding: .5em .7em; border-radius: .6em; color: var(--m-text); font-size: .9em; }
+.m-nav span.on { background: var(--m-primary-light); color: #4338ca; font-weight: 600; box-shadow: inset 2px 0 0 var(--m-primary); }
+.m-group { font-size: .68em !important; color: var(--m-muted) !important; padding: .9em .9em .2em !important; }
 
 .m-main { flex: 1; padding: 3.2% 3.6%; display: flex; flex-direction: column; gap: .8em; min-width: 0; }
 .m-head { display: flex; align-items: center; justify-content: space-between; gap: .6em; }
@@ -225,6 +226,9 @@
     --m-muted: #a0a7b8; --m-primary: #818cf8; --m-track: #2a3049; --m-success: #22c55e; --m-danger: #f87171;
   }
 }
+
+/* Caption under the hero mockup: says the numbers are made up */
+.mock-note { margin: var(--s-3) 0 0; font-size: var(--fs-xs); color: var(--muted); text-align: center; }
 
 /* Narrow screens: shrink the device chrome */
 @media (max-width: 520px) {

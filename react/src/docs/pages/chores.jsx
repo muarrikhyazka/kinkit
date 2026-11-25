@@ -26,7 +26,7 @@ export function Content() {
 
       <H2>Points, undo and the week view</H2>
       <ul>
-        <li>Points land on the Family leaderboard and count toward levels, the <strong>Helping hand</strong> (10 chores) and <strong>Chore champion</strong> (50 chores) badges and the weekly <strong>Finish all your chores</strong> challenge. Money rewards are added on top of the kid&apos;s monthly allowance on the Family page.</li>
+        <li>Points land on the Leaderboard and count toward levels, the <strong>Helping hand</strong> (10 chores) and <strong>Chore champion</strong> (50 chores) badges and the weekly <strong>Finish all your chores</strong> challenge. Money rewards are added on top of the kid&apos;s monthly allowance, shown under <strong>Settings › Members</strong>.</li>
         <li>Made a mistake? Every action has <strong>Undo</strong>; undoing or sending back a chore also takes back its points and reward.</li>
         <li>The <strong>Week view</strong> shows everyone&apos;s chores per day (dashed means coming up). Chores that were not done stay overdue until the next one comes along, then count as missed.</li>
         <li>Linked chat accounts can list today&apos;s chores (<code>/chores</code>) and mark them done from the chat bot.</li>

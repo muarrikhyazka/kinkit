@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../capture/capture_channel.dart';
 import '../state/providers.dart';
 import '../theme.dart';
 import '../widgets/async_view.dart';
 import '../widgets/k_app_bar.dart';
 import 'calendar_page.dart';
+import 'captured_expenses_screen.dart';
 import 'chores_screen.dart';
 import 'family_screen.dart';
 import 'lists_screen.dart';
@@ -16,7 +18,7 @@ import 'widgets_screen.dart';
 String _roleLabel(String role) {
   switch (role) {
     case 'owner':
-      return 'Family Admin';
+      return 'Family admin';
     case 'parent':
       return 'Parent';
     case 'kid':
@@ -27,8 +29,9 @@ String _roleLabel(String role) {
   return role;
 }
 
-/// "More": profile, the Family group (Family, Chores, Lists, Meals, Widgets,
-/// Calendar), settings and logout (web sidebar "Family" group / "Settings").
+/// "More": profile, the Family group (Leaderboard, Chores, Lists, Meals,
+/// Widgets, Calendar), settings and logout (web sidebar "Family" group /
+/// "Settings"). On Android it also lists captured expenses waiting for review.
 class MoreScreen extends ConsumerWidget {
   const MoreScreen({super.key});
 
@@ -50,8 +53,7 @@ class MoreScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('FAMILY NAME',
-                      style: TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: p.muted)),
+                  Text('Family name', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.muted)),
                   const SizedBox(height: 2),
                   Text(me.householdName, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: p.text)),
                 ],
@@ -76,8 +78,8 @@ class MoreScreen extends ConsumerWidget {
               children: [
                 ListTile(
                   leading: const Icon(Icons.family_restroom_outlined),
-                  title: const Text('Family'),
-                  subtitle: const Text('Members, points and achievements'),
+                  title: const Text('Leaderboard'),
+                  subtitle: const Text('Points, levels and badges'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _open(context, const FamilyScreen()),
                 ),
@@ -120,9 +122,11 @@ class MoreScreen extends ConsumerWidget {
           Card(
             child: Column(
               children: [
+                if (captureSupportedPlatform) const CapturedExpensesTile(),
                 ListTile(
                   leading: const Icon(Icons.settings_outlined),
                   title: const Text('Settings'),
+                  subtitle: const Text('Members, your password, appearance, server'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _open(context, const SettingsScreen()),
                 ),

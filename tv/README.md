@@ -46,7 +46,7 @@ keyboard types straight into the active field. **System keyboard** opens the TV'
 keyboard (IME).
 
 When the server can't be reached, the last data stays on screen with an
-**OFFLINE - hh:mm** badge, and the app keeps retrying every minute.
+**OFFLINE since hh:mm** badge, and the app keeps retrying every minute.
 
 ### Look (both apps, kept in sync)
 
@@ -57,9 +57,14 @@ When the server can't be reached, the last data stays on screen with an
   ("Cannot reach Kinkit" with no cached data, "No spending yet", "No budget set", "No history yet").
   The PNGs (`flutter/assets/mascot/`, `web/mascot/`) are `brand/mascot.svg` and `brand/mascot-think.svg`
   rendered at 512px without the baked-in contact shadow. The apps draw that shadow themselves and
-  animate it with a gentle bob (squash/stretch plus a scaling shadow, as in `react/src/mascot.css`).
-  Motion stops under reduced-motion settings (`MediaQuery.disableAnimations` /
+  animate it with one gentle bob (squash/stretch plus a scaling shadow, as in `react/src/mascot.css`);
+  on the pairing screen Kiki waves once and breathes once, and is still within 5 seconds. A TV sits on
+  screen for hours, so nothing loops. Motion is off under reduced-motion settings (`MediaQuery.disableAnimations` /
   `prefers-reduced-motion`).
+- Palette: navy surfaces mirror the web TV view (`TVView.jsx`). Text and accents use the shared dark
+  primary #818CF8 (on navy, 5.2:1 or better). A focused or filled control is #4F46E5 with white text
+  (6.3:1) and a 5px white ring, as on web and phone. White on #818CF8 is only 2.98:1, so #818CF8 is
+  never a fill behind text. Pairing placeholders are #9CA3AF.
 - No text links anywhere: everything is a focusable button.
 
 ## 3. Flutter (Android TV / Google TV / Fire TV)
@@ -120,7 +125,7 @@ act as the remote. The backend allows cross-origin reads of the two TV endpoints
    ```
    (Or in Tizen Studio: File > Import > Tizen > Tizen Project from this folder, then Run As > Tizen Web Application.)
 - `config.xml` grants `internet` and `tv.inputdevice` (to register Play/Pause, CH+/-, RED, INFO keys),
-  `<access origin="*">` and a CSP with `connect-src *` so it can reach a self-hosted server.
+  `<access origin="*">` and a CSP with `connect-src *` so it can reach the Kinkit server address entered at pairing.
   Change the `tizen:application id` / `package` (10 characters) to your own.
 - BACK is key code **10009**. A short press on the dashboard exits via `tizen.application.getCurrentApplication().exit()`.
 
@@ -148,8 +153,8 @@ No cookies and no custom headers; the token goes in the query string. `401` mean
   "year": 2026,                    // int, current UTC year
   "month": 11,                     // int 1-12, current UTC month
   "currency": "IDR",               // account display currency (IDR, USD, EUR, GBP, SGD, MYR, JPY, AUD, INR)
-  "display_name": "John Smith",    // string or null - owner's name; header fallback when household_name is ""
-  "household_name": "The Smiths",  // string, family name (default "<Name>'s Family") - shown next to the logo
+  "display_name": "John Smith",    // string or null. Owner's name; header fallback when household_name is ""
+  "household_name": "The Smiths",  // string, family name (default "<Name>'s Family"). Shown next to the logo
   "board": null,                   // widget board this link shows, or null = the classic month summary:
                                    //   {"id": 3, "name": "Living-room TV", "layout": {"background"?: "#rrggbb", "widgets": [{"id","type","w","h","text"?,"color"?: "#rrggbb"}]}}
                                    //   w = columns of 12 (1-12), h = rows (1-4); types: clock, agenda, reminders, chores,

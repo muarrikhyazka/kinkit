@@ -95,7 +95,7 @@ export default function Spending() {
     <div>
       <PageHeader
         title="Spending"
-        subtitle={`${total} transactions - ${MONTHS[month - 1]} ${year}`}
+        subtitle={`${total} transactions, ${MONTHS[month - 1]} ${year}`}
         period="month"
         valueFilter
         actions={<ChevronLink to="/settings/data" title="Import a bank CSV or export your data">Import / export</ChevronLink>}

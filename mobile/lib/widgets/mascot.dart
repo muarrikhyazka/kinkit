@@ -24,10 +24,11 @@ enum MascotPose {
 
 /// Kiki, the Kinkit mascot, with the same gentle motion as the web
 /// (react/src/mascot.css):
-/// - idle "breathe": a 6/256 lift with squash and stretch, while the contact
-///   shadow shrinks and fades as Kiki rises (3.4 s; 4.6 s when relaxing);
+/// - idle "breathe": one 6/256 lift with squash and stretch, while the contact
+///   shadow shrinks and fades as Kiki rises (3.4 s; 4.6 s when relaxing), then
+///   Kiki rests (DESIGN.md: loops end within 5 s);
 /// - [wave]: a small rotation wobble once on mount;
-/// - celebrate: three hops, then it settles into the idle breathe.
+/// - celebrate: three hops (2.25 s), then Kiki rests.
 ///
 /// The PNGs in assets/mascot are renders of brand/mascot*.svg without the
 /// baked-in shadow, so the shadow can be drawn (and scaled) separately here.
@@ -91,11 +92,9 @@ class _MascotState extends State<Mascot> with TickerProviderStateMixin {
   void _start({required bool firstRun}) {
     _started = true;
     if (widget.pose == MascotPose.celebrate) {
-      _hop.forward(from: 0).whenComplete(() {
-        if (mounted && _motion) _bob.repeat();
-      });
+      _hop.forward(from: 0);
     } else {
-      _bob.repeat();
+      _bob.forward(from: 0);
     }
     if (firstRun && widget.wave) _wave.forward(from: 0);
   }
@@ -181,12 +180,14 @@ class _MascotState extends State<Mascot> with TickerProviderStateMixin {
       sy = k.$3;
       shadowScale = k.$4;
       shadowOpacity = k.$5;
-    } else if (_bob.isAnimating || _bob.value > 0) {
-      // mk-bob: ease-in-out lift, peak at 50%.
+    } else if (_bob.isAnimating) {
+      // mk-bob: ease-in-out lift, peak at 50%. The squash is faded in and out
+      // so Kiki starts and ends the single cycle at rest, not mid-squash.
       final phase = (1 - math.cos(2 * math.pi * _bob.value)) / 2;
+      final envelope = math.sin(math.pi * _bob.value);
       dy = -6 * phase;
-      sx = _lerp(1.02, 0.99, phase);
-      sy = _lerp(0.98, 1.015, phase);
+      sx = 1 + (_lerp(1.02, 0.99, phase) - 1) * envelope;
+      sy = 1 + (_lerp(0.98, 1.015, phase) - 1) * envelope;
       shadowScale = _lerp(1, 0.86, phase);
       shadowOpacity = _lerp(1, 0.7, phase);
     }

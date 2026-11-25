@@ -81,7 +81,9 @@ class KinkitApi {
     } else if (data is String && data.trim().isNotEmpty && data.length < 200) {
       msg = data.trim();
     }
-    if (status == 401 && path != '/login' && path != '/signup') {
+    // Login, signup and change-password answer 401 for a wrong password, not
+    // for an expired session, so they must not log the user out.
+    if (status == 401 && path != '/login' && path != '/signup' && path != '/me/password') {
       onUnauthorized?.call();
     }
     throw ApiException(msg, status: status);
@@ -123,6 +125,11 @@ class KinkitApi {
   Future<void> signup(String email, String password, String displayName) =>
       _post('/signup', {'email': email.trim(), 'password': password, 'display_name': displayName.trim()});
 
+  /// Replaces your own password. A wrong [current] password comes back as 401
+  /// but is not a session problem (see [_unwrap]).
+  Future<void> changePassword(String current, String next) =>
+      _post('/me/password', {'current_password': current, 'new_password': next});
+
   Future<void> logout() async {
     try {
       await _post('/logout');
@@ -162,19 +169,22 @@ class KinkitApi {
   }
 
   /// POST /api/spending. [category] is the category *name* (as the web sends).
+  /// [source] defaults to [AppConfig.spendingSource]; notification capture
+  /// sends [AppConfig.notificationSource].
   Future<int> addSpending({
     required String txDate,
     required String description,
     required String category,
     required int amount,
     String? clientId,
+    String? source,
   }) async {
     final d = await _post('/spending', {
       'tx_date': txDate,
       'description': description,
       'category': category,
       'amount': amount,
-      'source': AppConfig.spendingSource,
+      'source': source ?? AppConfig.spendingSource,
       if (clientId != null) 'client_id': clientId,
     });
     return asInt(asJson(d)['id']);

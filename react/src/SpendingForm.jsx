@@ -118,10 +118,10 @@ export default function SpendingForm({ onSaved, autoFocus = false }) {
       const { amount } = await readAmountFromImage(file, p => patchByKey({ ocr: `Reading... ${Math.round(p * 100)}%` }))
       if (amount) {
         patchByKey({ amount, ocr: '', error: '' })
-        toast.info(`Amount read from receipt: ${formatRupiah(amount)} - please double-check it.`)
+        toast.info(`Amount read from receipt: ${formatRupiah(amount)}. Please double-check it.`)
       } else {
         patchByKey({ ocr: '' })
-        toast.error("Couldn't find a total on this receipt - type the amount instead.")
+        toast.error("Couldn't find a total on this receipt. Type the amount instead.")
       }
     } catch (e) {
       patchByKey({ ocr: '' })
@@ -187,7 +187,7 @@ export default function SpendingForm({ onSaved, autoFocus = false }) {
         remaining.push({ ...r, error: err.message })
       }
     }
-    if (receiptsSkipped) toast.info('Receipt photos are not stored offline - attach them from the Spending list once you are back online.')
+    if (receiptsSkipped) toast.info('Receipt photos are not stored offline. Attach them from the Spending list once you are back online.')
     setRows(remaining.length ? remaining : [emptyRow()])
     setSaving(false)
 
@@ -195,8 +195,8 @@ export default function SpendingForm({ onSaved, autoFocus = false }) {
       toast.success(`${saved} transaction${saved > 1 ? 's' : ''} saved`)
       notifySpendingChanged()
     }
-    if (queued) toast.info(`${queued} transaction${queued > 1 ? 's' : ''} saved offline - will sync automatically.`)
-    if (remaining.length) setError(`${remaining.length} row${remaining.length > 1 ? 's' : ''} could not be saved - see below.`)
+    if (queued) toast.info(`${queued} transaction${queued > 1 ? 's' : ''} saved offline. They will sync automatically.`)
+    if (remaining.length) setError(`${remaining.length} row${remaining.length > 1 ? 's' : ''} could not be saved. See below.`)
     else focusField(0, 'description')
     if (saved + queued > 0) onSaved && onSaved({ saved, queued, failed: remaining.length })
   }
@@ -263,7 +263,7 @@ export default function SpendingForm({ onSaved, autoFocus = false }) {
       </div>
 
       <p className="form-hint muted">
-        Amount shorthand: <kbd>25k</kbd> <kbd>2rb</kbd> <kbd>1.5jt</kbd> · <kbd>Enter</kbd> next field / save · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> add row
+        Amount shorthand: <kbd>25k</kbd> <kbd>1.5m</kbd> · <kbd>Enter</kbd> next field / save · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> add row
       </p>
 
       <div className="quick-add-actions">

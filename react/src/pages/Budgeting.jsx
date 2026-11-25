@@ -203,7 +203,7 @@ export default function Budgeting() {
   }, [data])
 
   const error = budget.error || setupError
-  const header = <PageHeader title="Budgeting" subtitle={`Plan income and spending per month - ${year}`} period="year" />
+  const header = <PageHeader title="Budgeting" subtitle={`Plan income and spending per month for ${year}`} period="year" />
 
   if (!setup || !data || budget.loading) { // also on year change: never show last year's cells under the new year
     return (
@@ -218,7 +218,7 @@ export default function Budgeting() {
     <div>
       {header}
       {error && <div className="error-box">{error}</div>}
-      <p className="muted form-hint">Values save automatically when you leave a cell. Shorthand works here too (e.g. <kbd>5jt</kbd>).</p>
+      <p className="muted form-hint">Values save automatically when you leave a cell. Shorthand works here too (e.g. <kbd>5m</kbd>).</p>
       <p className="muted form-hint bva-legend">
         Under each cell: what actually happened.
         <span className="bva-swatch ok" /> under 80% <span className="bva-swatch warn" /> 80-100% <span className="bva-swatch over" /> over budget

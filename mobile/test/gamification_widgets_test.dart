@@ -5,6 +5,7 @@ import 'package:kinkit_mobile/api/models.dart';
 import 'package:kinkit_mobile/state/data_providers.dart';
 import 'package:kinkit_mobile/theme.dart';
 import 'package:kinkit_mobile/widgets/gamification_badge.dart';
+import 'package:kinkit_mobile/widgets/steps_icon.dart';
 
 Gamification _sample() => Gamification.fromJson({
       'points': 900,
@@ -32,10 +33,12 @@ void main() {
   testWidgets('GamificationCard shows the level hexagon, title and points to the next level', (tester) async {
     await tester.pumpWidget(_app(const GamificationCard()));
     await tester.pumpAndSettle();
-    expect(find.text('LEVEL 4'), findsOneWidget);
+    expect(find.text('Level 4'), findsOneWidget);
     expect(find.text('Penny Pincher'), findsOneWidget);
     expect(find.text('100 pts to Level 5 · Budget Boss'), findsOneWidget);
     expect(find.byType(LevelHex), findsOneWidget);
+    expect(find.byType(StepsIcon), findsOneWidget, reason: 'points use the steps glyph, not a star');
+    expect(find.byIcon(Icons.star_rounded), findsNothing);
   });
 
   testWidgets('GamificationBadge chip shows Lv N, points and streak', (tester) async {
@@ -44,5 +47,13 @@ void main() {
     expect(find.text('Lv 4'), findsOneWidget);
     expect(find.text('400'), findsOneWidget);
     expect(find.text('5'), findsOneWidget);
+    expect(find.byType(StepsIcon), findsOneWidget);
+  });
+
+  testWidgets('StepsIcon takes its size and the ambient icon colour', (tester) async {
+    await tester.pumpWidget(const MaterialApp(
+      home: IconTheme(data: IconThemeData(color: Color(0xFF123456)), child: Center(child: StepsIcon(size: 20))),
+    ));
+    expect(tester.getSize(find.byType(StepsIcon)), const Size(20, 20));
   });
 }

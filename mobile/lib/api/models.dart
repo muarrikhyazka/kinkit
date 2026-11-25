@@ -1084,14 +1084,14 @@ class ReminderTemplate {
 
 const reminderTemplates = [
   ReminderTemplate(title: 'Change bed sheets & towels', category: 'laundry', kind: 'weekly', interval: 2, weekdays: [5], timeOfDay: '10:00'),
-  ReminderTemplate(title: 'Wash prayer mats & sarung', category: 'laundry', kind: 'weekly', interval: 2, weekdays: [5], timeOfDay: '09:00'),
+  ReminderTemplate(title: 'Wash the curtains', category: 'laundry', kind: 'weekly', interval: 2, weekdays: [5], timeOfDay: '09:00'),
   ReminderTemplate(title: 'Take out the trash', category: 'cleaning', kind: 'weekly', weekdays: [2, 5], timeOfDay: '19:00'),
   ReminderTemplate(title: 'Water the plants', category: 'home_maintenance', kind: 'daily', timeOfDay: '07:00'),
   ReminderTemplate(title: 'Clean the bathroom', category: 'cleaning', kind: 'weekly', weekdays: [6], timeOfDay: '09:00'),
   ReminderTemplate(title: "Plan next week's meals", category: 'cooking', kind: 'weekly', weekdays: [4], timeOfDay: '20:30'),
   ReminderTemplate(title: 'Weekly grocery run', category: 'groceries', kind: 'weekly', weekdays: [6], timeOfDay: '08:00'),
   ReminderTemplate(title: 'Check tyre pressure', category: 'vehicle', kind: 'weekly', interval: 2, weekdays: [5], timeOfDay: '11:00'),
-  ReminderTemplate(title: 'Change motorbike oil', category: 'vehicle', kind: 'monthly', interval: 3, dayOfMonth: 1, timeOfDay: '09:00'),
+  ReminderTemplate(title: 'Change the car oil', category: 'vehicle', kind: 'monthly', interval: 3, dayOfMonth: 1, timeOfDay: '09:00'),
   ReminderTemplate(title: 'Clean the water tank', category: 'home_maintenance', kind: 'monthly', interval: 3, timeOfDay: '09:00'),
   ReminderTemplate(title: 'Service the AC', category: 'home_maintenance', kind: 'monthly', interval: 6, timeOfDay: '10:00'),
   ReminderTemplate(title: 'Self-care Saturday', category: 'self_care', kind: 'weekly', weekdays: [6], timeOfDay: '08:00'),

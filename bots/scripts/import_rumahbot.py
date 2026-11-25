@@ -15,8 +15,8 @@ What it imports
     default Friday 06:00 (household time); --no-meal-post leaves it off
   * rumahbot's two plain chat nudges become Kinkit reminders (they are sent
     by Kinkit's reminders worker, with Done/Snooze buttons):
-      - daily 20:00   "Catat pengeluaran hari ini ..." (spend)
-      - Thursday 20:30 "Bahan masakan minggu depan? ..." (bahan_remind)
+      - daily 20:00   "Log today's spending ..." (spend)
+      - Thursday 20:30 "Must-use ingredients for next week? ..." (bahan_remind)
     (/jadwal overrides in reminder_schedule.json are honoured;
     --no-reminders skips them)
 Not imported (nothing to carry over): grocery_deals.json / scrape cache
@@ -44,8 +44,13 @@ DEFAULTS = {  # rumahbot REMINDER_JOBS (days 0=Sun..6=Sat, household time)
     "bahan_remind": {"days": [4], "hour": 20, "minute": 30},
     "meal": {"days": [5], "hour": 6, "minute": 0},
 }
-SPEND_TITLE = "Catat pengeluaran hari ini (ketik di grup, contoh: makan siang 50rb)"
-BAHAN_TITLE = "Bahan masakan minggu depan? Tambah: /tambahbahan ayam, hapus: /hapusbahan ayam, lihat: /bahan"
+SPEND_TITLE = "Log today's spending (type it in the chat, e.g. lunch 50k)"
+BAHAN_TITLE = "Must-use ingredients for next week? Add: /addingredient chicken, remove: /removeingredient chicken, list: /ingredients"
+# Titles earlier imports used; an account that already has one is not given a duplicate.
+LEGACY_TITLES = {
+    SPEND_TITLE: "Catat pengeluaran hari ini (ketik di grup, contoh: makan siang 50rb)",
+    BAHAN_TITLE: "Bahan masakan minggu depan? Tambah: /tambahbahan ayam, hapus: /hapusbahan ayam, lihat: /bahan",
+}
 
 
 def q(s):
@@ -76,11 +81,12 @@ def reminder_sql(aid, title, spec, category):
         kind, weekdays = "daily", "'{}'::int[]"
     else:
         kind, weekdays = "weekly", "ARRAY[" + ",".join(str(d) for d in days) + "]::int[]"
+    titles = ", ".join(q(t) for t in (title, LEGACY_TITLES.get(title)) if t)
     start = q(spec["start_date"]) + "::date" if spec.get("start_date") else "CURRENT_DATE"
     return (
         "INSERT INTO reminders (account_id, title, kind, time_of_day, weekdays, start_date, category)\n"
         f"SELECT {aid}, {q(title)}, {q(kind)}, {q(tod)}, {weekdays}, {start}, {q(category)}\n"
-        f"WHERE NOT EXISTS (SELECT 1 FROM reminders WHERE account_id={aid} AND title={q(title)});"
+        f"WHERE NOT EXISTS (SELECT 1 FROM reminders WHERE account_id={aid} AND title IN ({titles}));"
     )
 
 

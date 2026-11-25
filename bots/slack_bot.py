@@ -180,7 +180,7 @@ class SlackTenant:
         try:
             replies = await kc.log_spending(self.bot_token, who, text, "slack")
         except kc.BackendError as e:
-            await self.post(channel, f"Failed to save - {e.message}")
+            await self.post(channel, f"Failed to save: {e.message}")
             return
         except (URLError, OSError):
             return

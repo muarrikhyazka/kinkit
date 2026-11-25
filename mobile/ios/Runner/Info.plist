@@ -46,8 +46,8 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<!--
-	  App Transport Security: kinkit is often self-hosted on a LAN over plain
-	  http. NSAllowsLocalNetworking permits http to local/.local hosts;
+	  App Transport Security: NSAllowsLocalNetworking permits http to
+	  local/.local hosts (e.g. a development backend on a local network);
 	  NSAllowsArbitraryLoads permits any http server. For an https-only
 	  production build, remove NSAllowsArbitraryLoads (App Store review asks
 	  for a justification when it is set).

@@ -164,7 +164,7 @@ PairingParseResult parsePairing(String serverInput, String tokenInput) {
     return const PairingParseResult.fail('Enter the TV token (or paste the full TV link).');
   }
   if (token.length > 200 || !_tokenChars.hasMatch(token)) {
-    return const PairingParseResult.fail('That token does not look right - check for typos.');
+    return const PairingParseResult.fail('That token does not look right. Check for typos.');
   }
   return PairingParseResult.ok(PairingConfig(server: server, token: token));
 }

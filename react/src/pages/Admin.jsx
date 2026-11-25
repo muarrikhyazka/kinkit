@@ -48,7 +48,7 @@ export default function Admin() {
 
   return (
     <div>
-      <PageHeader title="Super Admin" subtitle="All accounts on this instance. Visible only to admins." />
+      <PageHeader title="Super Admin" subtitle="All household accounts. Visible only to admins." />
       {res.error && <div className="error-box">{res.error}</div>}
 
       <div className="card" style={{ marginBottom: '1rem' }}>

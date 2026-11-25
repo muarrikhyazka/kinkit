@@ -7,6 +7,7 @@ import '../state/providers.dart';
 import '../theme.dart';
 import '../util/dates.dart';
 import '../widgets/async_view.dart';
+import '../widgets/widget_colors.dart' show readableOn;
 
 /// Calendar (web: /calendar, backend-go/activities.go): family activities with
 /// the reminders overlay, as a month grid + the selected day's list, or an
@@ -367,7 +368,7 @@ class _MonthGrid extends StatelessWidget {
                 width: 24,
                 height: 24,
                 alignment: Alignment.center,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: isToday ? p.primary : null),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: isToday ? p.primaryFill : null),
                 child: Text('${d.day}',
                     style: TextStyle(
                         fontSize: 12,
@@ -797,22 +798,27 @@ class _ActivitySheetState extends ConsumerState<ActivitySheet> {
           TextField(controller: _location, maxLength: 200, decoration: const InputDecoration(labelText: 'Location', counterText: '')),
           TextField(controller: _notes, maxLines: 2, maxLength: 2000, decoration: const InputDecoration(labelText: 'Notes', counterText: '')),
           const SizedBox(height: 8),
-          Wrap(spacing: 10, children: [
+          Wrap(spacing: 4, runSpacing: 4, children: [
             for (final e in _colors.entries)
               Semantics(
                 label: 'Color ${e.key}',
                 button: true,
                 selected: _color == e.key,
-                child: GestureDetector(
+                child: InkWell(
+                  key: ValueKey('activity-color-${e.key}'),
+                  customBorder: const CircleBorder(),
                   onTap: () => setState(() => _color = e.key),
                   child: Container(
-                    width: 30,
-                    height: 30,
+                    width: 44,
+                    height: 44,
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: e.value,
                       border: Border.all(color: _color == e.key ? p.text : Colors.transparent, width: 3),
                     ),
+                    // Selection is a ring plus a tick, so it never relies on colour alone.
+                    child: _color == e.key ? Icon(Icons.check, size: 22, color: readableOn(e.value)) : null,
                   ),
                 ),
               ),

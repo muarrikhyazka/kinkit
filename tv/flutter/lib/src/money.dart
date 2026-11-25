@@ -34,7 +34,7 @@ class Money {
 
   static NumberFormat _fmt(String locale, {bool compact = false}) {
     try {
-      return compact ? NumberFormat.compact(locale: locale) : NumberFormat.decimalPattern(locale);
+      return compact ? NumberFormat.compact(locale: 'en_US') : NumberFormat.decimalPattern(locale);
     } catch (_) {
       return compact ? NumberFormat.compact(locale: 'en_US') : NumberFormat.decimalPattern('en_US');
     }
@@ -51,7 +51,7 @@ class Money {
     return neg ? '-$s' : s;
   }
 
-  /// Short form for chart axes, e.g. "Rp12 jt" / "$1.2K".
+  /// Short form for chart axes, always English units, e.g. "Rp12M" / "$1.2K", whatever the currency locale.
   String compact(int idr) {
     final meta = _meta[effectiveCurrency]!;
     final v = effectiveCurrency == 'IDR' ? idr : _convert(idr);

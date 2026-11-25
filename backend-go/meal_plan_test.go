@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -46,15 +47,16 @@ func TestGenerateMealPlan(t *testing.T) {
 	if len(a.Days) != 7 || a.Days[0].Day != "Monday" || a.Days[6].Date != "2026-11-29" || a.WeekEnd != "2026-11-29" {
 		t.Fatalf("days: %+v", a)
 	}
-	var hasUdang, hasBayam bool
+	// Indonesian must-use words (stored by existing households) still match.
+	var hasPrawn, hasSpinach bool
 	fried := 0
 	seen := map[string]bool{}
 	for _, d := range a.Days {
-		if strings.Contains(strings.ToLower(d.Protein), "udang") {
-			hasUdang = true
+		if mealGroupOf(d.Protein) == "Prawns & squid" {
+			hasPrawn = true
 		}
-		if strings.Contains(strings.ToLower(d.Veggie), "bayam") || strings.Contains(strings.ToLower(d.Protein), "bayam") {
-			hasBayam = true
+		if strings.Contains(strings.ToLower(d.Veggie), "spinach") {
+			hasSpinach = true
 		}
 		if d.Fried {
 			fried++
@@ -64,7 +66,7 @@ func TestGenerateMealPlan(t *testing.T) {
 		}
 		seen[d.Protein], seen[d.Veggie] = true, true
 	}
-	if !hasUdang || !hasBayam {
+	if !hasPrawn || !hasSpinach {
 		t.Fatalf("must-use ingredients not honoured: %+v", a.Days)
 	}
 	if fried > 2 {
@@ -88,6 +90,176 @@ func TestGenerateMealPlan(t *testing.T) {
 	txt := mealPlanText(p)
 	if !strings.Contains(txt, "Weekly meal plan") || !strings.Contains(txt, "Ikan Kembung Segar") || !strings.Contains(txt, "Monday 23/11") {
 		t.Fatalf("text: %s", txt)
+	}
+}
+
+// mealGroupOf returns the protein group label of a catalog dish, or "".
+func mealGroupOf(dish string) string {
+	for _, g := range mealProteins {
+		for _, d := range g.Dishes {
+			if d.Name == dish {
+				return g.Protein
+			}
+		}
+	}
+	return ""
+}
+
+func TestMealPlanEnglishInputs(t *testing.T) {
+	start, _ := time.Parse("2006-01-02", "2026-11-23")
+	p := generateMealPlan(start, []string{"Prawn", "spinach", "eggplant"}, nil)
+	var prawn, spinach, ratatouille bool
+	for _, d := range p.Days {
+		if mealGroupOf(d.Protein) == "Prawns & squid" {
+			prawn = true
+		}
+		if strings.Contains(strings.ToLower(d.Veggie), "spinach") {
+			spinach = true
+		}
+		if d.Veggie == "Ratatouille" {
+			ratatouille = true
+		}
+	}
+	if !prawn || !spinach || !ratatouille || len(p.Missing) != 0 {
+		t.Fatalf("english must-use not honoured: %+v missing=%v", p.Days, p.Missing)
+	}
+	// "eggplant" is a side ingredient, not an egg dish
+	var eggs int
+	for _, d := range p.Days {
+		if mealGroupOf(d.Protein) == "Eggs" {
+			eggs++
+		}
+	}
+	if eggs > 2 {
+		t.Fatalf("eggplant pulled in egg dishes: %+v", p.Days)
+	}
+	// plural and Indonesian synonyms still resolve
+	for ing, want := range map[string]string{"shrimps": "Prawns & squid", "tahu": "Tofu & tempeh", "ikan kembung": "Fish", "telur": "Eggs", "ayam": "Chicken", "daging sapi": "Beef"} {
+		q := generateMealPlan(start, []string{ing}, nil)
+		got := false
+		for _, d := range q.Days {
+			if mealGroupOf(d.Protein) == want {
+				got = true
+			}
+		}
+		if !got || len(q.Missing) != 0 {
+			t.Errorf("%q should force a %s dish: %+v missing=%v", ing, want, q.Days, q.Missing)
+		}
+	}
+}
+
+func TestMealCatalogShape(t *testing.T) {
+	indonesian := []string{"ayam", "ikan", "tahu", "tempe", "telur", "udang", "cumi", "daging", "sapi", "tongkol", "lele", "kembung", "nila",
+		"goreng", "bakar", "tumis", "sayur", "bayam", "kangkung", "sawi", "buncis", "tauge", "brokoli", "wortel", "kol", "kacang", "jagung",
+		"kentang", "terong", "tomat", "daun", "sop", "asem", "lodeh", "urap", "pecel", "rendang", "semur", "balado", "pepes"}
+	ascii := func(s string) bool {
+		for _, r := range s {
+			if r > 126 {
+				return false
+			}
+		}
+		return true
+	}
+	check := func(label, name string) {
+		if name == "" || !ascii(name) {
+			t.Errorf("%s %q must be non-empty ASCII", label, name)
+		}
+		words := wordsOf(name)
+		for _, w := range indonesian {
+			if slices.Contains(words, w) {
+				t.Errorf("%s %q contains Indonesian word %q", label, name, w)
+			}
+		}
+	}
+	nonFried := 0
+	names := map[string]bool{}
+	for _, g := range mealProteins {
+		check("group", g.Protein)
+		if len(g.Keys) == 0 || len(g.Dishes) == 0 {
+			t.Errorf("group %s needs keys and dishes", g.Protein)
+		}
+		for _, d := range g.Dishes {
+			check("dish", d.Name)
+			if names[d.Name] {
+				t.Errorf("duplicate dish %q", d.Name)
+			}
+			names[d.Name] = true
+			if !d.Fried {
+				nonFried++
+			}
+			if d.Fried != isFried(d.Name) {
+				t.Errorf("isFried(%q) disagrees with the catalog", d.Name)
+			}
+		}
+	}
+	if nonFried < 7 {
+		t.Errorf("only %d non-fried protein dishes; a week needs at least 7", nonFried)
+	}
+	if len(mealVeggies) < 14 {
+		t.Errorf("only %d sides", len(mealVeggies))
+	}
+	for _, s := range mealVeggies {
+		check("side", s.Name)
+		if len(s.Keys) == 0 {
+			t.Errorf("side %q needs keys", s.Name)
+		}
+	}
+	for _, g := range []string{"Chicken", "Fish", "Tofu & tempeh", "Eggs", "Prawns & squid", "Beef"} {
+		found := false
+		for _, mg := range mealProteins {
+			found = found || mg.Protein == g
+		}
+		if !found {
+			t.Errorf("missing group %q", g)
+		}
+	}
+	if !isFried("Something fried in oil") || isFried("Chicken curry") {
+		t.Error("isFried fallback")
+	}
+	for _, w := range []string{"ayam", "daging", "ikan", "telur", "udang", "tahu", "tempe", "lele", "tongkol", "cumi"} {
+		if !slices.Contains(promoProteinWords, w) {
+			t.Errorf("promoProteinWords lost %q", w)
+		}
+	}
+	for _, w := range []string{"bayam", "kangkung", "sawi", "brokoli", "buncis", "tauge", "wortel", "kol", "kacang", "daun"} {
+		if !slices.Contains(promoVeggieWords, w) {
+			t.Errorf("promoVeggieWords lost %q", w)
+		}
+	}
+}
+
+func TestMealPromoMatchesEnglishDishes(t *testing.T) {
+	start, _ := time.Parse("2006-01-02", "2026-11-23")
+	for _, c := range []struct{ name, group string }{
+		{"Ikan Kembung Segar", "Fish"},
+		{"Udang Kupas 250g", "Prawns & squid"},
+		{"Fresh Salmon Fillet", "Fish"},
+		{"Ayam Fillet 500g", "Chicken"},
+	} {
+		p := generateMealPlan(start, nil, []mealPromo{{Store: "Superindo", Name: c.name, Price: "Rp25.000", Link: "x"}})
+		if len(p.Promos) == 0 || p.PromoCount != 1 {
+			t.Fatalf("%s: promo not matched: %+v", c.name, p)
+		}
+		var onDay bool
+		for _, d := range p.Days {
+			if d.Promo != nil && mealGroupOf(d.Protein) == c.group {
+				onDay = true
+			}
+		}
+		if !onDay {
+			t.Errorf("%s should attach to a %s dish: %+v", c.name, c.group, p.Days)
+		}
+	}
+	// a side promo attaches to a side that uses it
+	p := generateMealPlan(start, []string{"bayam"}, []mealPromo{{Store: "Superindo", Name: "Bayam Hijau", Price: "Rp5.000", Link: "x"}})
+	var side bool
+	for _, d := range p.Days {
+		if d.Promo != nil && strings.Contains(d.Veggie, "spinach") {
+			side = true
+		}
+	}
+	if !side {
+		t.Errorf("Bayam Hijau should attach to a spinach side: %+v", p.Days)
 	}
 }
 
@@ -378,7 +550,16 @@ func TestMealPlanEndpointsAndWorker(t *testing.T) {
 		Text string `json:"text"`
 	}
 	bot("GET", "/api/bot/meal-plan", "", nil, &botPlan)
-	if !strings.Contains(strings.ToLower(botPlan.Text), "udang") || botPlan.Text != plan.Text {
+	prawnDish := false
+	for _, g := range mealProteins {
+		if g.Protein != "Prawns & squid" {
+			continue
+		}
+		for _, d := range g.Dishes {
+			prawnDish = prawnDish || strings.Contains(botPlan.Text, d.Name)
+		}
+	}
+	if !prawnDish || botPlan.Text != plan.Text {
 		t.Fatalf("bot plan: %s", botPlan.Text)
 	}
 

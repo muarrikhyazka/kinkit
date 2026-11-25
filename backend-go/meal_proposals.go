@@ -160,7 +160,7 @@ func (app *App) handleCreateMealProposal(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	if pending >= maxPendingProposalsPerMember {
-		jsonError(w, http.StatusBadRequest, "you already have many requests waiting - let the parents decide first")
+		jsonError(w, http.StatusBadRequest, "you already have many requests waiting. Let the parents decide first")
 		return
 	}
 	var member *int64

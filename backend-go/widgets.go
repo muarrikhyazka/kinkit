@@ -262,7 +262,7 @@ func (app *App) handleCreateWidgetBoard(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	if n >= maxWidgetBoards {
-		jsonError(w, http.StatusBadRequest, "too many boards - delete one first")
+		jsonError(w, http.StatusBadRequest, "too many boards. Delete one first")
 		return
 	}
 	var creator *int64

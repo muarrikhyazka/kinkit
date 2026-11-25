@@ -14,6 +14,9 @@ class AppConfig {
   /// Value stored in Spending.source for rows created from this app.
   static const String spendingSource = 'mobile';
 
+  /// Spending.source for expenses saved from a reviewed payment notification.
+  static const String notificationSource = 'notification';
+
   /// Normalises what a user typed into a usable origin:
   /// trims, adds https:// when no scheme, strips trailing slashes and a
   /// trailing "/api" (the client appends /api itself).

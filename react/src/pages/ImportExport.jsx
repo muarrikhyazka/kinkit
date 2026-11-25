@@ -25,15 +25,18 @@ function ExportCard() {
   return (
     <div className="card">
       <h2 className="card-title-icon"><IconDownload width={18} height={18} aria-hidden="true" /> Export</h2>
-      <p className="muted">Your data is yours. Download it any time - CSV opens in any spreadsheet; the full backup has everything (categories, budgets, assets, spending, ...) as JSON.</p>
+      <p className="muted">Your data is yours. Download it any time. CSV and Excel open in any spreadsheet app. The full backup has everything (categories, budgets, assets, spending) as JSON or as an Excel workbook with one sheet per table.</p>
       <div className="inline-form">
         <label className="field-inline"><span className="muted">From</span><input type="date" value={from} onChange={e => setFrom(e.target.value)} aria-label="Export from date" /></label>
         <label className="field-inline"><span className="muted">To</span><input type="date" value={to} onChange={e => setTo(e.target.value)} aria-label="Export to date" /></label>
         <a className="button-link" href={dataApi.exportSpendingUrl(from, to)} download>Spending CSV</a>
+        <a className="button-link" href={dataApi.exportSpendingUrl(from, to, 'xlsx')} download>Spending Excel</a>
       </div>
       <div className="export-actions">
         <a className="button-link secondary" href={dataApi.exportIncomeUrl()} download>Income CSV</a>
+        <a className="button-link secondary" href={dataApi.exportIncomeUrl('xlsx')} download>Income Excel</a>
         <a className="button-link secondary" href={dataApi.exportAllUrl()} download>Full backup (JSON)</a>
+        <a className="button-link secondary" href={dataApi.exportAllUrl('xlsx')} download>Full backup (Excel)</a>
       </div>
     </div>
   )
@@ -132,7 +135,7 @@ function ImportWizard({ onImported }) {
     if (!result?.batch) return
     try {
       const r = await dataApi.undoImport(result.batch)
-      toast.success(`Import undone - ${r.deleted} transaction${r.deleted === 1 ? '' : 's'} removed`)
+      toast.success(`Import undone. ${r.deleted} transaction${r.deleted === 1 ? '' : 's'} removed`)
       setResult(null)
       notifySpendingChanged()
       onImported && onImported()
@@ -159,7 +162,7 @@ function ImportWizard({ onImported }) {
         <div className="import-result" role="status">
           <p><strong>{result.imported}</strong> transaction{result.imported === 1 ? '' : 's'} imported{result.total_amount ? ` (${formatRupiah(result.total_amount)})` : ''}.</p>
           <ul className="guide-list">
-            {!!result.summary?.duplicate && <li>{result.summary.duplicate} already imported before - skipped</li>}
+            {!!result.summary?.duplicate && <li>{result.summary.duplicate} already imported before, skipped</li>}
             {!!result.summary?.skip && <li>{result.summary.skip} skipped (income, blank or excluded rows)</li>}
             {!!result.summary?.error && <li>{result.summary.error} row{result.summary.error === 1 ? '' : 's'} could not be read</li>}
           </ul>
@@ -279,7 +282,7 @@ function ImportWizard({ onImported }) {
               </tbody>
             </table>
           </div>
-          {rows.length > PREVIEW_LIMIT && <p className="muted">Showing the first {PREVIEW_LIMIT} of {rows.length} rows - the rest are imported with their detected category.</p>}
+          {rows.length > PREVIEW_LIMIT && <p className="muted">Showing the first {PREVIEW_LIMIT} of {rows.length} rows. The rest are imported with their detected category.</p>}
 
           <div className="quick-add-actions">
             <button className="secondary" onClick={reset}>Cancel</button>

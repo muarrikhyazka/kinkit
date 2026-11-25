@@ -65,7 +65,7 @@ class _FakeAdapter implements HttpClientAdapter {
       ],
     },
     '/api/meal-plan/proposals': {
-      'items': [{'id': 1, 'dish': 'Soto ayam', 'member_name': 'Ayu', 'status': 'pending', 'can_decide': true}],
+      'items': [{'id': 1, 'dish': 'Chicken soup', 'member_name': 'Ayu', 'status': 'pending', 'can_decide': true}],
     },
     '/api/widgets/boards': {'boards': []},
     '/api/widgets/catalog': {'widgets': [], 'presets': [{'id': 'phone', 'name': 'Phone', 'widgets': []}]},
@@ -151,7 +151,7 @@ void main() {
     }
     expect(find.text('Holiday'), findsOneWidget);
 
-    // More > Family group: Family, Chores, Lists, Meals, Widgets, Calendar
+    // More > Family group: Leaderboard, Chores, Lists, Meals, Widgets, Calendar
     await tester.tap(find.text('More').last);
     await settle();
     expect(find.widgetWithText(ListTile, 'Meals'), findsOneWidget);
@@ -167,7 +167,7 @@ void main() {
       await settle();
     }
 
-    await openFromMore('Family');
+    await openFromMore('Leaderboard');
     expect(find.text('Santoso'), findsWidgets);
     await back();
     await openFromMore('Chores');
@@ -177,7 +177,7 @@ void main() {
     expect(find.text('Groceries'), findsOneWidget);
     await back();
     await openFromMore('Meals');
-    expect(find.text('Soto ayam'), findsOneWidget);
+    expect(find.text('Chicken soup'), findsOneWidget);
     await back();
     await openFromMore('Calendar');
     await tester.tap(find.text('Agenda'));
@@ -188,6 +188,25 @@ void main() {
     expect(find.text('Start from a template'), findsOneWidget);
     await back();
 
+    // Settings: members list and the password dialog
+    await tester.ensureVisible(find.widgetWithText(ListTile, 'Settings'));
+    await tester.tap(find.widgetWithText(ListTile, 'Settings'));
+    await settle();
+    await tester.scrollUntilVisible(find.text('Members (1)'), 300, scrollable: find.byType(Scrollable).first);
+    expect(find.text('Members (1)'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Change password'), 300, scrollable: find.byType(Scrollable).first);
+    expect(find.text('Signed in as Budi'), findsOneWidget);
+    await tester.tap(find.text('Change password'));
+    await settle();
+    expect(find.widgetWithText(TextField, 'Current password'), findsOneWidget);
+    expect(find.widgetWithText(TextField, 'New password'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Change password'));
+    await settle();
+    expect(find.text('Enter your current password.'), findsOneWidget);
+    await tester.tap(find.text('Cancel'));
+    await settle();
+    await back();
+
     // Quick add opens from Today
     await tester.tap(find.text('Today').last);
     await settle();
@@ -195,4 +214,53 @@ void main() {
     await settle();
     expect(find.text('Add spending'), findsOneWidget);
   });
+  testWidgets('Town map mode: the tab is "Town", the screen is "Town map"', (tester) async {
+    tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    SharedPreferences.setMockInitialValues({'kinkit.navMode': 'townMap'});
+    final prefs = await SharedPreferences.getInstance();
+    final api = KinkitApi(baseUrl: 'http://fake', cookieJar: CookieJar(), dio: Dio()..httpClientAdapter = _FakeAdapter());
+
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        sharedPrefsProvider.overrideWithValue(prefs),
+        apiProvider.overrideWithValue(api),
+      ],
+      child: const KinkitApp(),
+    ));
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 100)));
+    await tester.pumpAndSettle();
+
+    expect(find.descendant(of: find.byType(NavigationBar), matching: find.text('Town')), findsOneWidget);
+    expect(find.descendant(of: find.byType(NavigationBar), matching: find.text('Today')), findsNothing);
+    expect(find.text('Town map'), findsOneWidget);
+  });
+
+  test('a wrong current password (401) is not treated as a lost session', () async {
+    final api = KinkitApi(baseUrl: 'http://fake', cookieJar: CookieJar(), dio: Dio()..httpClientAdapter = _Status401Adapter());
+    var loggedOut = 0;
+    api.onUnauthorized = () => loggedOut++;
+
+    await expectLater(
+      api.changePassword('wrong', 'new-pass-456'),
+      throwsA(isA<ApiException>().having((e) => e.isUnauthorized, 'isUnauthorized', true)),
+    );
+    expect(loggedOut, 0);
+
+    // Any other endpoint answering 401 still means the session is gone.
+    await expectLater(api.me(), throwsA(isA<ApiException>()));
+    expect(loggedOut, 1);
+  });
+}
+
+class _Status401Adapter implements HttpClientAdapter {
+  @override
+  Future<ResponseBody> fetch(RequestOptions options, Stream<Uint8List>? requestStream, Future<void>? cancelFuture) async {
+    return ResponseBody.fromString(jsonEncode({'error': 'current password is wrong'}), 401, headers: {
+      Headers.contentTypeHeader: [Headers.jsonContentType],
+    });
+  }
+
+  @override
+  void close({bool force = false}) {}
 }

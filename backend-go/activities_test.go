@@ -194,12 +194,15 @@ func TestCalendarAPI(t *testing.T) {
 	var rem struct {
 		ID int64 `json:"id"`
 	}
-	owner.do("POST", "/api/reminders", map[string]any{"title": "Pay rent", "kind": "once", "once_at": "2026-11-20T02:00:00Z"}, &rem)
+	// Relative to now: a fixed once_at drops out of the calendar once it is in the past.
+	remindAt := time.Now().UTC().AddDate(0, 0, 3).Truncate(time.Hour)
+	calTo := remindAt.AddDate(0, 0, 7).Format("2006-01-02")
+	owner.do("POST", "/api/reminders", map[string]any{"title": "Pay rent", "kind": "once", "once_at": remindAt.Format(time.RFC3339)}, &rem)
 	var cal struct {
 		Activities []activityOccurrence `json:"activities"`
 		Reminders  []occurrenceRow      `json:"reminders"`
 	}
-	if code := owner.do("GET", "/api/calendar?from=2026-11-01&to=2026-11-30", nil, &cal); code != 200 {
+	if code := owner.do("GET", "/api/calendar?from=2026-11-01&to="+calTo, nil, &cal); code != 200 {
 		t.Fatalf("calendar: %d", code)
 	}
 	found := false
@@ -213,7 +216,7 @@ func TestCalendarAPI(t *testing.T) {
 		Activities []activityOccurrence `json:"activities"`
 		Reminders  []occurrenceRow      `json:"reminders"`
 	}
-	owner.do("GET", "/api/calendar?from=2026-11-01&to=2026-11-30&include=reminders", nil, &only)
+	owner.do("GET", "/api/calendar?from=2026-11-01&to="+calTo+"&include=reminders", nil, &only)
 	if len(only.Activities) != 0 || len(only.Reminders) == 0 {
 		t.Fatalf("include=reminders: %d/%d", len(only.Activities), len(only.Reminders))
 	}

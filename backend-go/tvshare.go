@@ -87,7 +87,7 @@ func (app *App) handleCreateTVToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if active >= maxTVTokens {
-		jsonError(w, http.StatusBadRequest, "too many active TV links - revoke one first")
+		jsonError(w, http.StatusBadRequest, "too many active TV links. Revoke one first")
 		return
 	}
 	if d.BoardID != nil {

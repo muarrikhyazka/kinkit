@@ -56,6 +56,7 @@ void main() {
       expect(parsePairing('https://a.example.com', '').error, contains('token'));
       expect(parsePairing('', 'tokenOnly').error, contains('server'));
       expect(parsePairing('https://a.example.com', 'bad token!').isOk, isFalse);
+      expect(parsePairing('https://a.example.com', 'bad token!').error, 'That token does not look right. Check for typos.');
     });
   });
 

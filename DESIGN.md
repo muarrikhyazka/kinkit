@@ -6,7 +6,7 @@ Dial: ENERGY 2 / RHYTHM 2 / MOTION 1
 
 ## Who it's for
 
-Indonesian households, used by the whole family at once: a parent logging lunch from the market, a kid checking their allowance, a grandparent reading the TV screen from the sofa. Phones come first. Money is written the local way ("25k", "1,2jt", "Rp25.000").
+Families who manage money and home together, used by the whole household at once: a parent logging lunch from the market, a kid checking their allowance, a grandparent reading the TV screen from the sofa. Phones come first. Amounts are shown in the user's own currency, and typed the short way ("25k", "Rp25.000").
 
 ## Personality
 
@@ -16,14 +16,17 @@ Warm, practical and calm, like a well-run home. It's on the family's side, not a
 
 - **Kiki, the house-shaped mascot**, is the motif. It appears at real moments (welcome, a badge, everything done) and never just as decoration. Its art lives in `brand/`; copy it from there and never redraw it.
 - **The house roof** from the logo is the one shape repeated across the brand: the logo tile, Kiki and the favicon.
-- **Real household content** is part of the look. Mock screens show "Sayur & buah 48rb", "Water the plants · Raka", never lorem ipsum or invented statistics.
+- **Real household content** is part of the look. Mock screens show "Vegetables & fruit 48k", "Water the plants · Leo", never lorem ipsum or invented statistics. The sample household everywhere (landing mockups, docs screenshots, demo data) is "The Carter family": Sarah (owner), Tom (parent), Leo and Mia (kids), Grandma Ruth (viewer). Amounts stay in IDR and round. Wherever the landing shows made-up numbers, one visible caption says so.
 
 ## Palette
 
 - Neutrals: `--bg`, `--card`/`--surface`, `--border`, `--text`, `--muted`.
-- One brand colour: indigo `--primary` #4F46E5. It's used for primary actions, the app chrome (sidebar, top bar) and one key accent per screen.
+- One brand colour: indigo `--primary` #4F46E5. It's used for primary actions, the chrome accent and one key accent per screen.
+- Chrome: the web sidebar, mobile top bar and game HUD are white (near-black #151517 in dark) with a purple accent. The active item is a tint, bold text and a 3px purple bar on its left, and the bar survives in the collapsed rail. The phone app bar, the landing top bar, the TV brand bar and the login hero stay flat indigo.
 - Semantic colours carry meaning only: green `--success` is income or on track, amber `--warning` is a budget past 80%, red `--danger` is over budget or destructive.
 - Light and dark both ship and both must pass WCAG AA. Playful (kids) and Senior (high contrast) themes ship too.
+- Dark tokens, shared by web and phone: surface #151517 on page #0B0B0D, text and focus primary #818CF8, hover #A5B4FC, success #4ADE80, danger #F87171, warning #FBBF24. Filled controls keep #4F46E5 (danger #DC2626, success #15803D) with white text, so a primary fill is never white on #818CF8 (2.98:1).
+- TV: the viewers use navy surfaces (#0B0E1A page, #151A2E cards) because they mirror `TVView.jsx`, not the web dark theme (the landing dark page is navy too). They share the dark primary #818CF8 for text and fills of bars. The focused control is #4F46E5 with white text and a white ring (6.29:1).
 
 ## Type
 
@@ -37,7 +40,7 @@ Warm, practical and calm, like a well-run home. It's on the family's side, not a
 
 - Spacing: 4/8/12/16/24/32 (48/64/96 between landing sections).
 - Radii: 6/10/14, plus pill for chips and progress bars only.
-- Shadows: two. `shadow-1` is for resting cards, and `shadow-2` is only for floating layers (modal, popover, toast).
+- Shadows: two. `shadow-1` is for resting cards, and `shadow-2` is only for floating layers (modal, popover, toast) and the landing's device mockups.
 - Lists and rows are preferred over card grids. Each landing section is laid out for its content (editorial feature groups, a timeline, device row, download list) rather than repeating one template.
 
 ## Motion
@@ -49,7 +52,7 @@ Warm, practical and calm, like a well-run home. It's on the family's side, not a
 
 ## Never
 
-- Decorative gradients, glows or radial orbs. The chrome and the login hero are flat indigo.
+- Decorative gradients, glows or radial orbs. The chrome accent and the login hero are flat.
 - Invented numbers, testimonials, logos or prices. Pricing appears only once real plans exist in code.
 - Em dashes in any text people read.
 - Generic CTAs ("Get started", "Learn more"). Name the action instead ("Start free", "Create your household").

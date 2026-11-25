@@ -94,7 +94,7 @@ class _PlanCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Weekly menu', style: t.textTheme.titleMedium),
-            Text('${_shortDate(plan.weekStart)} - ${_shortDate(plan.weekEnd)}', style: TextStyle(color: muted)),
+            Text('${_shortDate(plan.weekStart)} to ${_shortDate(plan.weekEnd)}', style: TextStyle(color: muted)),
             if (plan.promoCount > 0)
               Text('Dishes with ingredients on promo are preferred.', style: TextStyle(color: muted, fontSize: 12)),
             const SizedBox(height: 8),
@@ -213,7 +213,7 @@ class _IngredientsCardState extends ConsumerState<_IngredientsCard> {
                     child: TextField(
                       controller: _ctrl,
                       maxLength: 60,
-                      decoration: const InputDecoration(hintText: 'e.g. chicken, tempe', counterText: '', isDense: true),
+                      decoration: const InputDecoration(hintText: 'e.g. chicken, tofu', counterText: '', isDense: true),
                       textInputAction: TextInputAction.done,
                       onSubmitted: (_) => _add(),
                     ),
@@ -356,7 +356,7 @@ class _RequestsCardState extends ConsumerState<_RequestsCard> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('WAITING FOR A DECISION', style: TextStyle(fontSize: 11, letterSpacing: 1, fontWeight: FontWeight.w700, color: p.muted)),
+                    Text('Waiting for a decision', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.muted)),
                     if (pending.isEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('No requests waiting.')),
                     for (final r in pending)
                       ListTile(
@@ -384,7 +384,7 @@ class _RequestsCardState extends ConsumerState<_RequestsCard> {
                       ),
                     if (decided.isNotEmpty) ...[
                       const SizedBox(height: 6),
-                      Text('RECENTLY DECIDED', style: TextStyle(fontSize: 11, letterSpacing: 1, fontWeight: FontWeight.w700, color: p.muted)),
+                      Text('Recently decided', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.muted)),
                       for (final r in decided)
                         ListTile(
                           contentPadding: EdgeInsets.zero,

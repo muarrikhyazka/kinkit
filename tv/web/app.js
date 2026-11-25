@@ -121,7 +121,7 @@
     }
     if (!server) return { error: 'Enter the server address (or paste the full TV link).' };
     if (!token) return { error: 'Enter the TV token (or paste the full TV link).' };
-    if (token.length > 200 || !/^[A-Za-z0-9_\-.~]+$/.test(token)) return { error: 'That token does not look right - check for typos.' };
+    if (token.length > 200 || !/^[A-Za-z0-9_\-.~]+$/.test(token)) return { error: 'That token does not look right. Check for typos.' };
     return { server: server, token: token };
   }
   function safeDecode(s) { try { return decodeURIComponent(s); } catch (e) { return s; } }
@@ -436,7 +436,7 @@
       }
       if (err || status !== 200 || !json || typeof json !== 'object') {
         $('pair-error').textContent = (err ? 'Cannot reach the server' : 'Server error (HTTP ' + status + ')') +
-          '. Check the address, the network, and that the server allows this app (CORS - see README).';
+          '. Check the address, the network, and that the server allows this app (see CORS in the README).';
         return;
       }
       saveConfig(res);
@@ -550,7 +550,7 @@
   function renderViewer() {
     var d = state.data;
     $('badge-offline').hidden = !state.offline;
-    $('badge-offline').textContent = state.updatedAt ? 'OFFLINE - ' + hhmm(state.updatedAt) : 'OFFLINE';
+    $('badge-offline').textContent = state.updatedAt ? 'OFFLINE since ' + hhmm(state.updatedAt) : 'OFFLINE';
     $('badge-paused').hidden = !state.paused;
     $('v-updated').textContent = state.updatedAt ? 'Updated ' + hhmm(state.updatedAt) : '';
     var body = $('v-body');
@@ -800,7 +800,7 @@
     $('s-server').textContent = cfg ? cfg.server : '';
     $('s-token').textContent = cfg ? maskToken(cfg.token) : '';
     $('s-updated').textContent = state.updatedAt ? state.updatedAt.toString().replace(/ GMT.*$/, '') : 'never';
-    $('s-status').textContent = state.offline ? 'Offline - ' + state.offlineReason : 'Online';
+    $('s-status').textContent = state.offline ? 'Offline: ' + state.offlineReason : 'Online';
     show('settings');
     setFocus($('s-back'));
   }

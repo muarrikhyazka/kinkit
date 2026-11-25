@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../state/data_providers.dart';
 import '../theme.dart';
+import 'steps_icon.dart';
 
 /// Medal colours for badge tiers (same as the web's --tier-* tokens).
 const kTierBronze = Color(0xFFB4753C);
@@ -42,13 +43,13 @@ class LevelHex extends StatelessWidget {
         width: size,
         height: size,
         child: CustomPaint(
-          painter: _HexPainter(fill: fill ?? p.primary, rim: tierColor(levelTier(level))),
+          painter: _HexPainter(fill: fill ?? p.primaryFill, rim: tierColor(levelTier(level))),
           child: Center(
             child: ExcludeSemantics(
               child: Text(
                 '$level',
                 style: TextStyle(
-                  color: numberColor ?? Colors.white,
+                  color: numberColor ?? p.onPrimary,
                   fontWeight: FontWeight.w800,
                   fontSize: size * (digits > 1 ? 0.36 : 0.44),
                   height: 1,
@@ -95,7 +96,7 @@ class _HexPainter extends CustomPainter {
   bool shouldRepaint(_HexPainter old) => old.fill != fill || old.rim != rim;
 }
 
-/// Compact "Lv 3  [star] 120  [flame] 3" chip for the purple app bar (web:
+/// Compact "Lv 3  [steps] 120  [flame] 3" chip for the purple app bar (web:
 /// GamificationBadge.jsx): translucent white on the chrome, 40px tap target,
 /// with a thin progress bar toward the next level along the bottom.
 class GamificationBadge extends ConsumerWidget {
@@ -139,7 +140,7 @@ class GamificationBadge extends ConsumerWidget {
                         Text('Lv $lv', style: label.copyWith(color: p.chromeSoft)),
                         const SizedBox(width: 8),
                       ],
-                      const Icon(Icons.star_rounded, size: 16, color: amber),
+                      const StepsIcon(size: 16, color: amber),
                       const SizedBox(width: 3),
                       Text('${g.myPoints}', style: label),
                       const SizedBox(width: 8),
@@ -196,8 +197,8 @@ class GamificationCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (lv > 0)
-                        Text('LEVEL $lv',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.6, color: p.muted)),
+                        Text('Level $lv',
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: p.muted)),
                       Text(g.myLevel,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -205,7 +206,7 @@ class GamificationCard extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.star_rounded, size: 18, color: p.warning),
+                          StepsIcon(size: 18, color: p.warning),
                           const SizedBox(width: 3),
                           Text('${g.myPoints} pts',
                               style: TextStyle(fontWeight: FontWeight.w600, color: p.text, fontFeatures: kTabular)),

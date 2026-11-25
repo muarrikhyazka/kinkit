@@ -21,6 +21,18 @@ void main() {
     }
   });
 
+  testWidgets('idle, relax and celebrate loops end within 5 seconds (DESIGN.md Motion)', (tester) async {
+    for (final pose in MascotPose.values) {
+      await tester.pumpWidget(_host(Mascot(key: ValueKey(pose), pose: pose, size: 96, wave: true)));
+      expect(tester.binding.hasScheduledFrame, isTrue, reason: '$pose starts moving');
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pump();
+      expect(tester.binding.hasScheduledFrame, isFalse, reason: '$pose must be at rest after 5 s');
+      final transform = tester.widget<Transform>(find.descendant(of: find.byType(Mascot), matching: find.byType(Transform)));
+      expect(transform.transform, Matrix4.identity(), reason: '$pose rests upright and unsquashed');
+    }
+  });
+
   testWidgets('reduced motion keeps Kiki still', (tester) async {
     await tester.pumpWidget(_host(const Mascot(pose: MascotPose.celebrate, wave: true), reduced: true));
     await tester.pumpAndSettle();

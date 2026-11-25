@@ -81,6 +81,10 @@ void main() {
     test('converts with fx rates', () {
       expect(Money(currency: 'USD', rates: {'USD': 0.0001}).format(12500000), r'$1,250');
     });
+    test('compact axis labels use English units', () {
+      expect(Money(currency: 'IDR').compact(12000000), 'Rp12M');
+      expect(Money(currency: 'IDR').compact(1500), 'Rp1.5K');
+    });
     test('falls back to IDR without a rate', () {
       final m = Money(currency: 'USD');
       expect(m.effectiveCurrency, 'IDR');

@@ -86,6 +86,9 @@ export const IconChevronRight = (p) => (
 export const IconChevronDown = (p) => (
   <svg {...base} strokeWidth={2.2} {...p}><path d="M6 9l6 6 6-6" /></svg>
 )
+export const IconChevronUp = (p) => (
+  <svg {...base} strokeWidth={2.2} {...p}><path d="M6 15l6-6 6 6" /></svg>
+)
 export const IconAlert = (p) => (
   <svg {...base} strokeWidth={2.2} {...p}><circle cx="12" cy="12" r="9" /><path d="M12 7v6M12 16.5v.01" /></svg>
 )
@@ -120,6 +123,10 @@ export const IconMenu = (p) => (
 // --- end home ---
 export const IconStar = (p) => (
   <svg {...base} {...p}><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3z" /></svg>
+)
+// Points: a rising staircase, the same glyph as the landing page and docs.
+export const IconSteps = (p) => (
+  <svg {...base} {...p}><path d="M3 20h5v-5h5v-5h5V5h3" /></svg>
 )
 export const IconFlame = (p) => (
   <svg {...base} {...p}><path d="M12 21c-3.9 0-7-2.8-7-6.6 0-3.1 2-5.3 3.6-7 .4 1.8 1.4 3 2.6 3.6C11 7.6 12.4 5 14.5 3c.6 3 4.5 5.8 4.5 11.4 0 3.8-3.1 6.6-7 6.6z" /><path d="M12 21c-1.7 0-3-1.2-3-2.9 0-1.9 1.6-2.8 3-4.6 1.4 1.8 3 2.7 3 4.6 0 1.7-1.3 2.9-3 2.9z" /></svg>
@@ -317,4 +324,14 @@ export const KinkitLogo = ({ size = 32, ...p }) => (
     <path d="M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28" fill="none" stroke="#4F46E5" strokeWidth="5" strokeLinejoin="round" />
     <circle cx="32" cy="39" r="5.5" fill="#4F46E5" />
   </svg>
+)
+
+// --- game mode / leaderboard ---
+// podium: three steps, tallest in the middle
+export const IconLeaderboard = (p) => (
+  <svg {...base} {...p}><path d="M3 21h18" /><rect x="9" y="5" width="6" height="16" rx="1" /><path d="M3 21v-8h6M15 21v-5h6v5" /></svg>
+)
+// folded map
+export const IconMap = (p) => (
+  <svg {...base} {...p}><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z" /><path d="M9 4v14M15 6v14" /></svg>
 )

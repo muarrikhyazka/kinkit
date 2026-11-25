@@ -8,12 +8,12 @@ each incoming message through that tenant's X-Bot-Token to the backend.
 Every /api/bot call carries X-Bot-User "telegram:<user id>" so the backend
 knows which household member is talking (after /link).
 
-Features: spending logging ("50k lunch", "makan siang 50rb", one per line;
+Features: spending logging ("50k lunch", "lunch 50k", one per line;
 unknown words get a category picker that teaches the bot), /recent, /fix,
 /fixdate, /date, /today, /remind, /reminders, /chores, /buy, /list,
 /done_shopping, /menu, /ingredients, /addingredient, /removeingredient,
-/schedule, /feedback, /link, /about, /help (plus rumahbot's Indonesian
-names as aliases, see kinkit_common.ALIASES), and inline-keyboard buttons
+/schedule, /feedback, /link, /about, /help (rumahbot's Indonesian command
+names still work as aliases, see kinkit_common.ALIASES; they are not advertised), and inline-keyboard buttons
 (callback_query) on reminder / chore / picker messages.
 
 Household group chats: the integration's chat_id gates everything except
@@ -74,7 +74,7 @@ def make_handlers(bot_token, chat_id, bot_username=None):
         try:
             replies = await kc.log_spending(bot_token, actor(update), msg.text, "telegram")
         except kc.BackendError as e:
-            await msg.reply_text(f"Failed to save - {e.message}")
+            await msg.reply_text(f"Failed to save: {e.message}")
             return
         except (URLError, OSError):
             await msg.reply_text("Backend unreachable, try again later.")
@@ -110,8 +110,8 @@ BOT_COMMANDS = [
     ("list", "Show the shopping list"),
     ("done_shopping", "Finish the shopping trip"),
     ("recent", "Last expenses: /recent 10"),
-    ("fix", "Change a category: /fix bakso Food"),
-    ("fixdate", "Change a date: /fixdate bakso 2026-10-20"),
+    ("fix", "Change a category: /fix lunch Food"),
+    ("fixdate", "Change a date: /fixdate lunch 2026-10-20"),
     ("date", "Log the next expenses on another day: /date 2026-10-20"),
     ("menu", "Weekly meal plan"),
     ("ingredients", "Must-use ingredients for the meal plan"),

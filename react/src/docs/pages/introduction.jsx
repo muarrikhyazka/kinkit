@@ -33,8 +33,8 @@ export function Content() {
         <li><Link to="/docs/calendar"><strong>Calendar</strong></Link>: family activities in month, week, day and agenda views, with your reminders on top.</li>
         <li><Link to="/docs/reminders"><strong>Reminders</strong></Link>: routines, bills and birthdays, as a list or on a calendar.</li>
         <li><strong>Money</strong> group: <strong>Dashboard</strong>, <strong>Transactions</strong> (Spending, Income, Recurring), <strong>Budget</strong> and <strong>Savings</strong> (Goals, Assets).</li>
-        <li><strong>Family</strong> group: <strong>Family</strong>, <strong>Chores</strong>, <strong>Lists</strong>, <strong>Meals</strong> and <strong>Widgets</strong>, each its own page.</li>
-        <li><strong>Settings</strong> (bottom of the sidebar): <strong>Categories &amp; accounts</strong>, <strong>Bots</strong>, <strong>Chat keywords</strong>, <strong>Data &amp; devices</strong> and <strong>Display</strong>.</li>
+        <li><strong>Family</strong> group: <strong>Leaderboard</strong>, <strong>Chores</strong>, <strong>Lists</strong>, <strong>Meals</strong> and <strong>Widgets</strong>, each its own page.</li>
+        <li><strong>Settings</strong> (bottom of the sidebar): <strong>Categories &amp; accounts</strong>, <strong>Members</strong>, <strong>Your account</strong>, <strong>Bots</strong>, <strong>Chat keywords</strong>, <strong>Data &amp; devices</strong> and <strong>Display</strong>.</li>
       </ul>
       <Shot name="today" alt="The Today page: reminders, activities, chores, shopping lists, budget and meal requests." />
 

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Brand palette - the CSS tokens from react/src/index.css (:root and
+/// Brand palette, the CSS tokens from react/src/index.css (:root and
 /// [data-theme="dark"]).
+///
+/// [primary], [success], [danger] and [warning] are for text, icons, borders
+/// and focus. In dark mode they are lifted to stay at 4.5:1 or better on the
+/// card. Anything that sits behind [onPrimary] (white) uses [primaryFill] or
+/// [dangerFill] instead, which keep the same value in both themes.
 class KinkitPalette extends ThemeExtension<KinkitPalette> {
   final Color bg;
   final Color card;
@@ -10,9 +15,15 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
   final Color text;
   final Color muted;
   final Color primary;
+
+  /// Background for filled controls that carry [onPrimary] text (web --primary-fill).
+  final Color primaryFill;
   final Color primaryLight;
   final Color success;
   final Color danger;
+
+  /// Background for destructive controls that carry white text (web --danger-fill).
+  final Color dangerFill;
   final Color warning;
   final Color borderStrong;
   final Color surface2;
@@ -32,9 +43,11 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
     required this.text,
     required this.muted,
     required this.primary,
+    required this.primaryFill,
     required this.primaryLight,
     required this.success,
     required this.danger,
+    required this.dangerFill,
     required this.warning,
     required this.borderStrong,
     required this.surface2,
@@ -52,9 +65,11 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
     text: Color(0xFF1B1F2B),
     muted: Color(0xFF5D6475),
     primary: Color(0xFF4F46E5),
+    primaryFill: Color(0xFF4F46E5),
     primaryLight: Color(0xFFEEF2FF),
     success: Color(0xFF15803D),
-    danger: Color(0xFFDC2626),
+    danger: Color(0xFFC41C1C),
+    dangerFill: Color(0xFFDC2626),
     warning: Color(0xFFB45309),
     borderStrong: Color(0xFFCFD3DF),
     surface2: Color(0xFFF1F2F7),
@@ -63,20 +78,23 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
     chrome: Color(0xFF4F46E5),
   );
 
-  // Same design as light with white swapped for black: only surfaces, borders
-  // and text change; brand purple, status colors and the chrome stay the same
-  // (mirrors [data-theme="dark"] in react/src/index.css).
+  // Dark swaps surfaces and lifts the text colours (#818CF8 for text, links and
+  // focus; green, red and amber likewise). Filled controls keep #4F46E5 and
+  // #DC2626 with white text, and the chrome stays indigo (mirrors
+  // [data-theme="dark"] in react/src/index.css).
   static const dark = KinkitPalette(
     bg: Color(0xFF0B0B0D),
     card: Color(0xFF151517),
     border: Color(0xFF2A2A2F),
     text: Color(0xFFF4F4F5),
     muted: Color(0xFFA1A1AA),
-    primary: Color(0xFF4F46E5),
+    primary: Color(0xFF818CF8),
+    primaryFill: Color(0xFF4F46E5),
     primaryLight: Color(0xFF1F1D3D),
-    success: Color(0xFF15803D),
-    danger: Color(0xFFDC2626),
-    warning: Color(0xFFB45309),
+    success: Color(0xFF4ADE80),
+    danger: Color(0xFFF87171),
+    dangerFill: Color(0xFFDC2626),
+    warning: Color(0xFFFBBF24),
     borderStrong: Color(0xFF3B3B42),
     surface2: Color(0xFF1E1E22),
     onPrimary: Color(0xFFFFFFFF),
@@ -92,9 +110,11 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
     Color? text,
     Color? muted,
     Color? primary,
+    Color? primaryFill,
     Color? primaryLight,
     Color? success,
     Color? danger,
+    Color? dangerFill,
     Color? warning,
     Color? borderStrong,
     Color? surface2,
@@ -111,9 +131,11 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
         text: text ?? this.text,
         muted: muted ?? this.muted,
         primary: primary ?? this.primary,
+        primaryFill: primaryFill ?? this.primaryFill,
         primaryLight: primaryLight ?? this.primaryLight,
         success: success ?? this.success,
         danger: danger ?? this.danger,
+        dangerFill: dangerFill ?? this.dangerFill,
         warning: warning ?? this.warning,
         borderStrong: borderStrong ?? this.borderStrong,
         surface2: surface2 ?? this.surface2,
@@ -135,9 +157,11 @@ class KinkitPalette extends ThemeExtension<KinkitPalette> {
       text: l(text, other.text),
       muted: l(muted, other.muted),
       primary: l(primary, other.primary),
+      primaryFill: l(primaryFill, other.primaryFill),
       primaryLight: l(primaryLight, other.primaryLight),
       success: l(success, other.success),
       danger: l(danger, other.danger),
+      dangerFill: l(dangerFill, other.dangerFill),
       warning: l(warning, other.warning),
       borderStrong: l(borderStrong, other.borderStrong),
       surface2: l(surface2, other.surface2),
@@ -213,7 +237,9 @@ ThemeData buildTheme(Brightness brightness) {
   final p = brightness == Brightness.dark ? KinkitPalette.dark : KinkitPalette.light;
   final scheme = ColorScheme.fromSeed(seedColor: p.primary, brightness: brightness).copyWith(
     primary: p.primary,
-    onPrimary: p.onPrimary,
+    // Material controls (switch thumb, checkmark) paint onPrimary on the
+    // scheme primary, which is #818CF8 in dark: dark ink gives 5.36:1 there.
+    onPrimary: brightness == Brightness.dark ? const Color(0xFF1E1B4B) : p.onPrimary,
     primaryContainer: p.primaryLight,
     onPrimaryContainer: p.text,
     surface: p.card,
@@ -310,7 +336,7 @@ ThemeData buildTheme(Brightness brightness) {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: p.primary,
+        backgroundColor: p.primaryFill,
         foregroundColor: p.onPrimary,
         minimumSize: const Size(64, 44),
         shape: RoundedRectangleBorder(borderRadius: md),
@@ -343,7 +369,7 @@ ThemeData buildTheme(Brightness brightness) {
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: p.primary,
+      backgroundColor: p.primaryFill,
       foregroundColor: p.onPrimary,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

@@ -1089,7 +1089,7 @@ func (app *App) choreTransition(ctx context.Context, aid int64, actor memberInfo
 			return res, nil, &choreErr{http.StatusConflict, "already done"}
 		}
 		if reqPhoto && photo == nil && oldPhoto == nil && !manager {
-			return res, nil, &choreErr{http.StatusBadRequest, "this chore needs a photo - take one to finish it"}
+			return res, nil, &choreErr{http.StatusBadRequest, "this chore needs a photo. Take one to finish it"}
 		}
 		newStatus = choreSubmitted
 		if !reqApproval || manager {
@@ -1137,7 +1137,7 @@ func (app *App) choreTransition(ctx context.Context, aid int64, actor memberInfo
 				return res, nil, &choreErr{http.StatusForbidden, "that chore belongs to someone else"}
 			}
 			if status == choreApproved && reqApproval {
-				return res, nil, &choreErr{http.StatusForbidden, "a parent already approved this - ask them to undo it"}
+				return res, nil, &choreErr{http.StatusForbidden, "a parent already approved this. Ask them to undo it"}
 			}
 		}
 		if status == choreTodo || status == choreMissed {
@@ -1508,7 +1508,7 @@ func botChoreDone(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 	}
 	actor, ok := botActor(ctx, app, r, aid)
 	if !ok {
-		msg := "I don't know who you are yet - link your chat account in Kinkit first."
+		msg := "I don't know who you are yet. Link your chat account in Kinkit first."
 		writeJSON(w, http.StatusForbidden, map[string]any{"ok": false, "message": msg, "error": msg})
 		return
 	}
@@ -1528,7 +1528,7 @@ func botChoreDone(w http.ResponseWriter, r *http.Request, app *App, aid int64) {
 			case http.StatusConflict:
 				msg = "That chore is already done."
 			case http.StatusBadRequest:
-				msg = "This chore needs a photo - finish it in the Kinkit app."
+				msg = "This chore needs a photo. Finish it in the Kinkit app."
 			case http.StatusForbidden:
 				msg = "That chore belongs to someone else."
 			}

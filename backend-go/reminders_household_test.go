@@ -89,7 +89,7 @@ func TestParseIntervalReminders(t *testing.T) {
 		"every 2 weeks on fri 10:00 change bed sheets":       {"weekly", "change bed sheets", "Every 2 weeks on Fri at 10:00", 2},
 		"every other week on tue and fri at 7pm trash":       {"weekly", "trash", "Every 2 weeks on Tue and Fri at 19:00", 2},
 		"every 2 weeks check tyre pressure":                  {"weekly", "check tyre pressure", "Every 2 weeks on Wed at 09:00", 2},
-		"every 3 months on the 1st change motorbike oil":     {"monthly", "change motorbike oil", "Every 3 months on the 1st at 09:00", 3},
+		"every 3 months on the 1st change car oil":           {"monthly", "change car oil", "Every 3 months on the 1st at 09:00", 3},
 		"every 6 months 10am service the AC":                 {"monthly", "service the AC", "Every 6 months on the 18th at 10:00", 6},
 		"every 1 week on sat clean the bathroom":             {"weekly", "clean the bathroom", "Every Saturday at 09:00", 0},
 		"every week on thu 20:30 plan meals":                 {"weekly", "plan meals", "Every Thursday at 20:30", 0},
@@ -123,9 +123,9 @@ func TestParseIntervalReminders(t *testing.T) {
 
 func TestGuessHouseholdCategory(t *testing.T) {
 	cases := map[string]string{
-		"change bed sheets & towels": "laundry", "wash prayer mats": "laundry", "take out the trash": "cleaning",
+		"change bed sheets & towels": "laundry", "wash the curtains": "laundry", "take out the trash": "cleaning",
 		"clean the bathroom": "cleaning", "weekly grocery run": "groceries", "plan next week's meals": "cooking",
-		"check tyre pressure": "vehicle", "change motorbike oil": "vehicle", "clean the water tank": "home_maintenance",
+		"check tyre pressure": "vehicle", "change car oil": "vehicle", "clean the water tank": "home_maintenance",
 		"water the plants": "home_maintenance", "pay electricity bill": "bill", "kuras tandon": "home_maintenance",
 		"take medicine": "medicine", "something else": "other",
 	}

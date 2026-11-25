@@ -43,7 +43,7 @@ var defaultCategories = map[string][]string{
 	"Needs": {"Home Rent", "Utilities", "Food", "Supplies", "Transportation", "Healthcare",
 		"Energy", "Skincare & Beauty", "Services", "Others"},
 	"Wants": {"Clothes & Bags", "Application", "Charity", "Travel", "Gifts", "Learning",
-		"Jajan", "Internet & Pulsa", "Electricity", "Entertainment", "Business"},
+		"Snacks", "Internet & Phone Credit", "Electricity", "Entertainment", "Business"},
 	"Savings": {"Child", "Emergency Funds", "House", "Car"},
 }
 var defaultIncomeSources = []string{"Salary", "Freelance"}

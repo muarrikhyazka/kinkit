@@ -181,15 +181,18 @@ async function upload(path, formData, method = 'POST') {
   return data
 }
 export const dataApi = {
-  exportSpendingUrl: (from, to) => {
+  // format: 'csv' or 'xlsx'
+  exportSpendingUrl: (from, to, format = 'csv') => {
     const p = new URLSearchParams()
     if (from) p.set('from', from)
     if (to) p.set('to', to)
     const qs = p.toString()
-    return `${BASE}/export/spending.csv${qs ? `?${qs}` : ''}`
+    return `${BASE}/export/spending.${format}${qs ? `?${qs}` : ''}`
   },
-  exportIncomeUrl: () => `${BASE}/export/income.csv`,
-  exportAllUrl: () => `${BASE}/export/all.json`,
+  // format: 'csv' or 'xlsx'
+  exportIncomeUrl: (format = 'csv') => `${BASE}/export/income.${format}`,
+  // format: 'json' or 'xlsx'
+  exportAllUrl: (format = 'json') => `${BASE}/export/all.${format}`,
   importPresets: () => req('/import/presets'),
   // fields: { options, category_map, overrides } (objects, JSON-encoded here)
   importSpending: (file, fields = {}, dryRun = false) => {

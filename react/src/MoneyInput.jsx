@@ -86,7 +86,7 @@ export default function MoneyInput({ value, onChange, onBlur, className = '', ..
       />
       {r && (
         <span id={hintId} className={`money-hint ${r.parsed == null ? 'invalid' : ''}`}>
-          {r.parsed == null ? 'Try 25k, 2rb, 1.5jt' : `= ${formatThousands(r.parsed)}`}
+          {r.parsed == null ? 'Try 25k or 1.5m' : `= ${formatThousands(r.parsed)}`}
         </span>
       )}
     </span>

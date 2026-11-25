@@ -101,7 +101,7 @@ export function ReceiptLightbox({ row, onClose, onChanged }) {
   }
 
   return (
-    <Modal title={`Receipt - ${row.description}`} onClose={onClose} className="receipt-modal">
+    <Modal title={`Receipt: ${row.description}`} onClose={onClose} className="receipt-modal">
       <p className="muted">{row.tx_date} · {row.category_name || 'Other'} · {formatRupiah(row.amount)}</p>
       <div className="receipt-view">
         {failed ? (

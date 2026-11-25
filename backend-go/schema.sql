@@ -20,7 +20,7 @@
 -- Ported from the SQLite original.
 -- Every data row carries account_id (the owning user's id) so each signup
 -- gets fully isolated data. ponytail: "account" == single user for now,
--- no shared/family multi-user accounts yet — add a separate accounts/members
+-- no shared/family multi-user accounts yet: add a separate accounts/members
 -- table if that's ever needed.
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,

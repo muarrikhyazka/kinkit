@@ -71,7 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _info('Server', widget.config.server),
               _info('TV token', maskToken(widget.config.token)),
               _info('Last update', updated),
-              _info('Status', widget.offline ? 'Offline - ${widget.offlineReason ?? 'no connection'}' : 'Online'),
+              _info('Status', widget.offline ? 'Offline: ${widget.offlineReason ?? 'no connection'}' : 'Online'),
               if (widget.currency != null) _info('Currency', widget.currency!),
               const SizedBox(height: 22),
               Wrap(spacing: 14, runSpacing: 14, children: [

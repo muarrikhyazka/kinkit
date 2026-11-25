@@ -117,9 +117,14 @@ export default function Today() {
       </div>
 
       {d?.timezone_default && canManage(user) && <TimezoneBanner onSaved={res.reload} />}
-      {res.error && <div className="error-box">{res.error}</div>}
+      {res.error && (
+        <div className="error-box" role="alert">
+          <p>Could not load today's reminders and chores: {res.error}</p>
+          <button className="secondary" onClick={res.reload}>Try again</button>
+        </div>
+      )}
 
-      {!d ? <><SkeletonStats count={2} /><SkeletonCard lines={4} /></> : sections.length === 0 ? (
+      {!d && res.error ? null : !d ? <><SkeletonStats count={2} /><SkeletonCard lines={4} /></> : sections.length === 0 ? (
         <div className="card today-empty">
           <Mascot pose="relax" size={120} />
           <p><strong>All clear for today.</strong></p>

@@ -38,7 +38,7 @@ const PLATFORM_META = {
   telegram: {
     label: 'Telegram', Icon: IconTelegram,
     tokenLabel: 'Bot token from @BotFather',
-    chatLabel: 'Allowed chat/channel ID (optional - leave blank to allow any)', chatPlaceholder: 'e.g. -1001234567890',
+    chatLabel: 'Allowed chat/channel ID (optional, leave blank to allow any)', chatPlaceholder: 'e.g. -1001234567890',
     steps: [
       <>Open <strong>@BotFather</strong> in Telegram, send <code>/newbot</code> and copy the bot token it gives you.</>,
       <>Add the bot to your family group (or just message it), then paste the token here.</>,
@@ -48,7 +48,7 @@ const PLATFORM_META = {
   discord: {
     label: 'Discord', Icon: IconDiscord,
     tokenLabel: 'Bot token from the Discord Developer Portal',
-    chatLabel: 'Allowed chat/channel ID (optional - leave blank to allow any)', chatPlaceholder: 'e.g. 123456789012345678',
+    chatLabel: 'Allowed chat/channel ID (optional, leave blank to allow any)', chatPlaceholder: 'e.g. 123456789012345678',
     steps: [
       <>Create an application at <strong>discord.com/developers</strong>, add a Bot and copy its token.</>,
       <>Under Bot, enable the <strong>Message Content Intent</strong>, then invite the bot to your server with the <code>bot</code> scope.</>,
@@ -60,7 +60,7 @@ const PLATFORM_META = {
     tokenLabel: 'Bot User OAuth token (xoxb-...)', tokenPlaceholder: 'xoxb-...',
     extra: { label: 'App-Level token (xapp-..., scope connections:write)', placeholder: 'xapp-...', secret: true },
     chatLabel: 'Channel ID where reminders, alerts and digests are posted', chatPlaceholder: 'C0123456789', chatRequired: true,
-    note: 'In Slack, type commands with ! instead of / (for example !today) - Slack reserves / for its own slash commands. Buttons work as usual.',
+    note: 'In Slack, type commands with ! instead of / (for example !today). Slack reserves / for its own slash commands. Buttons work as usual.',
     steps: [
       <>Create an app at <strong>api.slack.com/apps</strong> (From scratch) for your workspace.</>,
       <>Open <strong>Socket Mode</strong> and enable it. Create an <strong>App-Level token</strong> with the <code>connections:write</code> scope (starts with <code>xapp-</code>).</>,
@@ -76,11 +76,11 @@ const PLATFORM_META = {
     tokenLabel: 'Bot access token', tokenPlaceholder: 'syt_...',
     extra: { label: 'Homeserver URL', placeholder: 'https://matrix.example.org', secret: false, required: true },
     chatLabel: 'Room ID', chatPlaceholder: '!abc123:example.org', chatRequired: true,
-    note: 'In Matrix, type commands with ! instead of / (for example !today). Matrix messages have no buttons: replies show a numbered list - answer with !1, !2 ... - and reminders are answered with !rem <id> done | snooze | tomorrow.',
+    note: 'In Matrix, type commands with ! instead of / (for example !today). Matrix messages have no buttons: replies show a numbered list. Answer with !1, !2 and so on. Reminders are answered with !rem <id> done | snooze | tomorrow.',
     steps: [
       <>Create a normal account for the bot on your homeserver (for example <code>@kinkit:example.org</code>).</>,
       <>Get its access token: in Element, log in as the bot, then <strong>Settings &gt; Help &amp; About &gt; Access Token</strong>. Treat it like a password.</>,
-      <>Create a room for the household (leave encryption <strong>off</strong> - the bot cannot read encrypted rooms) and invite the bot. It joins by itself.</>,
+      <>Create a room for the household (leave encryption <strong>off</strong>, because the bot cannot read encrypted rooms) and invite the bot. It joins by itself.</>,
       <>Copy the room ID from <strong>Room settings &gt; Advanced</strong> (it looks like <code>!abc123:example.org</code>), not the room alias.</>,
       <>Fill in the three fields here, using your homeserver's URL.</>,
     ],
@@ -131,7 +131,7 @@ function IntegrationCard({ integration, onUpdate, onDelete }) {
   }
 
   const tokenPlaceholder = integration.has_platform_token
-    ? `${integration.platform_token_masked || 'saved'} - type to replace`
+    ? `${integration.platform_token_masked || 'saved'} (type to replace)`
     : meta.tokenPlaceholder || 'paste bot token'
   const incomplete = meta.extra && (!integration.has_platform_token || !integration.has_extra || (meta.chatRequired && !integration.chat_id))
 
@@ -157,7 +157,7 @@ function IntegrationCard({ integration, onUpdate, onDelete }) {
       {meta.extra && (
         <label className="field-stack field-gap">
           <span>{meta.extra.label}</span>
-          <input value={extra} onChange={e => setExtra(e.target.value)} placeholder={meta.extra.secret && integration.has_extra ? 'saved - type to replace' : meta.extra.placeholder}
+          <input value={extra} onChange={e => setExtra(e.target.value)} placeholder={meta.extra.secret && integration.has_extra ? 'saved (type to replace)' : meta.extra.placeholder}
             type={meta.extra.secret ? 'password' : 'text'} autoComplete="off" />
           {meta.extra.secret && (
             <span className="muted">{integration.has_extra ? 'An app-level token is saved. Leave blank to keep it.' : 'No app-level token saved yet.'}</span>
@@ -181,7 +181,7 @@ function IntegrationCard({ integration, onUpdate, onDelete }) {
       <SetupSteps meta={meta} />
 
       <h3 style={{ marginTop: '1rem' }}>Kinkit-issued secret</h3>
-      <p className="muted">Give this to your bot process (sent as the <code>X-Bot-Token</code> header) - it authenticates the bot's calls to your account, no separate login needed.</p>
+      <p className="muted">Give this to your bot process (sent as the <code>X-Bot-Token</code> header). It authenticates the bot's calls to your account, so no separate login is needed.</p>
       <CopyBlock text={integration.bot_token} />
     </div>
   )
@@ -248,14 +248,14 @@ export default function Integrations() {
   function handleDelete(integration) {
     hide(integration.id)
     toast.undoable({
-      message: `Removed ${PLATFORM_META[integration.platform]?.label || integration.platform} - the bot stops working until reconnected`,
+      message: `Removed ${PLATFORM_META[integration.platform]?.label || integration.platform}. The bot stops working until reconnected`,
       commit: () => api.deleteIntegration(integration.id),
       onUndo: () => unhide(integration.id),
       onCommitted: res.reload,
     })
   }
 
-  const header = <PageHeader title="Integrations" subtitle="Connect a chat platform's bot to log spending, get reminders, and manage your household - no server access needed, all configured here." />
+  const header = <PageHeader title="Integrations" subtitle="Connect a chat platform's bot to log spending, get reminders, and manage your household. No server access is needed, and everything is configured here." />
 
   if (!res.data) {
     return <div>{header}{res.error ? <div className="error-box">{res.error}</div> : <><SkeletonCard lines={4} /><SkeletonCard lines={3} /></>}</div>
@@ -290,14 +290,14 @@ export default function Integrations() {
         <h2 className="card-title-icon">
           <IconLink width={18} height={18} /> How it works
         </h2>
-        <p>Each platform you connect above gets its own secret token (<code>X-Bot-Token</code> header) tied only to your account. One shared bot process can serve every Kinkit user at once - it just looks up the right account from the token each message carries.</p>
+        <p>Each platform you connect above gets its own secret token (<code>X-Bot-Token</code> header) tied only to your account. One shared bot process can serve every Kinkit user at once. It looks up the right account from the token each message carries.</p>
         <table className="simple-table" style={{ marginTop: '.8rem' }}>
           <thead><tr><th>Action</th><th>Method & path</th><th>Body / params</th></tr></thead>
           <tbody>
             <tr><td>Bot config (reminders/keywords/categories)</td><td><code>GET /api/bot/config</code></td><td>-</td></tr>
             <tr><td>Add spending</td><td><code>POST /api/bot/spending</code></td><td><code>{'{ "tx_date", "description", "category", "amount" }'}</code></td></tr>
             <tr><td>Recent entries</td><td><code>GET /api/bot/spending/recent?n=5</code></td><td>-</td></tr>
-            <tr><td>Search entries</td><td><code>GET /api/bot/spending/search?q=makan</code></td><td>-</td></tr>
+            <tr><td>Search entries</td><td><code>GET /api/bot/spending/search?q=lunch</code></td><td>-</td></tr>
             <tr><td>Update category</td><td><code>PATCH /api/bot/spending/&lt;id&gt;/category</code></td><td><code>{'{ "category" }'}</code></td></tr>
             <tr><td>Update date</td><td><code>PATCH /api/bot/spending/&lt;id&gt;/date</code></td><td><code>{'{ "tx_date" }'}</code></td></tr>
           </tbody>

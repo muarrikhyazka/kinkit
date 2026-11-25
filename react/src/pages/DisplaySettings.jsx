@@ -4,6 +4,7 @@ import PageHeader from '../PageHeader.jsx'
 import { remindersApi } from '../api'
 import { useApi } from '../useApi'
 import { useToast } from '../Toast.jsx'
+import { useNavMode } from '../game/navMode.js'
 
 const ZONES = (() => {
   try { return Intl.supportedValuesOf('timeZone') } catch { return ['UTC', 'Asia/Jakarta', 'Asia/Singapore', 'Europe/London', 'America/New_York'] }
@@ -71,18 +72,24 @@ function HouseholdTimeCard() {
 }
 
 const THEME_HINTS = {
-  light: 'Clean and bright - the default.',
+  light: 'Clean and bright, the default.',
   dark: 'Easier on the eyes at night.',
-  playful: 'Bigger, rounder and more colourful - great for kids.',
+  playful: 'Bigger, rounder and more colourful, great for kids.',
   senior: 'Large text and high contrast for easier reading.',
 }
+
+const NAV_OPTIONS = [
+  { id: 'sidebar', label: 'Sidebar', hint: 'Every page in a list.' },
+  { id: 'game', label: 'Game (town map)', hint: 'Walk Kiki around a small town; each building opens a page.' },
+]
 
 /** Settings > Display: per-device preferences (stored in this browser). */
 export default function DisplaySettings() {
   const { theme, setTheme } = useTheme()
+  const [navMode, setNavMode] = useNavMode()
   return (
     <div>
-      <PageHeader title="Display" subtitle="Theme for this device, plus household time zone and morning digest. The household currency is under Categories & accounts." />
+      <PageHeader title="Display" subtitle="Theme and navigation for this device, plus household time zone and morning digest. The household currency is under Categories & accounts." />
       <div className="card">
         <h2>Theme</h2>
         <div className="theme-options" role="radiogroup" aria-label="Theme">
@@ -91,6 +98,18 @@ export default function DisplaySettings() {
               <input type="radio" name="theme" value={t.id} checked={theme === t.id} onChange={() => setTheme(t.id)} />
               <span className="theme-option-label">{t.label}</span>
               <span className="muted">{THEME_HINTS[t.id]}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      <div className="card">
+        <h2>Navigation</h2>
+        <div className="theme-options" role="radiogroup" aria-label="Navigation">
+          {NAV_OPTIONS.map(o => (
+            <label key={o.id} className={`theme-option ${navMode === o.id ? 'active' : ''}`}>
+              <input type="radio" name="nav-mode" value={o.id} checked={navMode === o.id} onChange={() => setNavMode(o.id)} />
+              <span className="theme-option-label">{o.label}</span>
+              <span className="muted">{o.hint}</span>
             </label>
           ))}
         </div>

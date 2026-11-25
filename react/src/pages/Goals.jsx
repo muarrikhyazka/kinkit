@@ -72,7 +72,7 @@ function GoalModal({ initial, categories, assets, onClose, onSaved }) {
         <label className="span-2">Name
           <input data-autofocus value={form.name} onChange={e => set('name', e.target.value)} placeholder="Emergency fund, holiday, new laptop..." required />
         </label>
-        <label>Target amount<MoneyInput value={form.target_amount} onChange={v => set('target_amount', v)} placeholder="e.g. 20jt" required /></label>
+        <label>Target amount<MoneyInput value={form.target_amount} onChange={v => set('target_amount', v)} placeholder="e.g. 20m" required /></label>
         <label>Target date <span className="muted">(optional)</span><input type="date" value={form.target_date} onChange={e => set('target_date', e.target.value)} /></label>
         <label>Already saved<MoneyInput value={form.saved_amount} onChange={v => set('saved_amount', v)} /></label>
         <label>Count spending in category

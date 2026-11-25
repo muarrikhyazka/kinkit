@@ -49,7 +49,11 @@ class ChoresTab extends ConsumerWidget {
         ]);
       } else if (canAct && !c.done && !c.submitted && (mine || (me?.canManage ?? false))) {
         trailing = c.requiresPhoto
-            ? Tooltip(message: 'Needs a photo - finish it on the web', child: Icon(Icons.photo_camera_outlined, color: p.muted))
+            ? Tooltip(
+                message: 'Needs a photo. Finish it on the web.',
+                triggerMode: TooltipTriggerMode.tap,
+                child: SizedBox(width: 48, height: 48, child: Icon(Icons.photo_camera_outlined, color: p.muted)),
+              )
             : FilledButton.tonal(
                 onPressed: () => runHomeAction(context, ref, () => api.choreAction(c.id, 'complete'), 'Nice work!'),
                 child: const Text('Done'),

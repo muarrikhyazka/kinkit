@@ -1,0 +1,64 @@
+/* App shell in game mode: no sidebar, no phone tab bar. A HUD bar in the chrome colours
+   carries the few actions that used to live in the sidebar. */
+
+.app-shell.nav-game { flex-direction: column; }
+.nav-game .content:has(.gw-page) { overflow: visible; } /* an overflow-x:auto parent would stop the map's sticky pad from sticking to the screen */
+.nav-game .content { width: 100%; margin: 0 auto; padding: var(--s-5) var(--s-5) calc(var(--s-5) + env(safe-area-inset-bottom)); }
+@media (max-width: 640px) {
+  .nav-game .content { padding: var(--s-3) var(--s-4) calc(var(--s-5) + env(safe-area-inset-bottom)); }
+}
+
+.game-hud {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-2) var(--s-4);
+  margin-bottom: var(--s-4); padding: var(--s-2) var(--s-3);
+  background: var(--chrome-bg); color: var(--chrome-text);
+  border: 1px solid var(--chrome-border); border-radius: var(--r-lg);
+}
+.game-hud-group { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
+
+/* every HUD control is at least 44px tall and wide */
+.hud-btn { min-height: 44px; min-width: 44px; }
+/* index.css sets 40px on coarse-pointer buttons with specificity 0,4,1; this outranks it */
+.app-shell.nav-game .game-hud .hud-btn.hud-btn,
+.app-shell.nav-game .game-hud .gami-badge-collapsed.gami-badge-collapsed { min-height: 44px; min-width: 44px; }
+.hud-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2);
+  padding: 0 var(--s-3);
+  border: 1px solid var(--chrome-line); border-radius: var(--r-md);
+  background: transparent; color: var(--chrome-text);
+  font: inherit; font-size: var(--fs-sm); font-weight: 600; line-height: 1.25; text-decoration: none; white-space: nowrap;
+  cursor: pointer; transition: background-color .15s, color .15s;
+}
+.hud-btn svg { flex-shrink: 0; }
+.hud-btn:hover:not(:disabled) { filter: none; background: var(--chrome-hover); color: var(--chrome-text); }
+.hud-btn:active:not(:disabled) { background: var(--chrome-line); transform: translateY(1px); }
+.hud-btn:disabled { opacity: .5; cursor: not-allowed; }
+.hud-btn:focus-visible, .game-hud .gami-badge-collapsed:focus-visible { outline: 2px solid var(--chrome-accent); outline-offset: 2px; }
+/* the one solid action on the bar: Map (and Add) are filled like the sidebar's Add */
+.hud-btn.solid { background: var(--primary-fill); border-color: var(--primary-fill); color: var(--on-primary); }
+.hud-btn.solid:hover:not(:disabled), .hud-btn.solid:active:not(:disabled) { background: var(--primary-fill-hover); border-color: var(--primary-fill-hover); color: var(--on-primary); }
+.hud-btn.icon-only { width: 44px; }
+@media (max-width: 640px) {
+  .hud-fold .hud-label { display: none; }
+  .hud-btn.hud-fold { width: 44px; padding: 0 !important; }
+}
+
+.game-hud .gami-badge-collapsed {
+  flex-direction: row; gap: var(--s-2); margin: 0; min-height: 44px; padding: 0 var(--s-2);
+  color: var(--chrome-text); border-radius: var(--r-md); text-decoration: none;
+}
+.game-hud .gami-badge-collapsed:hover { background: var(--chrome-hover); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-btn { transition: none; }
+  .hud-btn:active:not(:disabled) { transform: none; }
+}
+
+/* HUD connection status: the phone top bar already shows it */
+.game-hud .conn-status { margin: 0; width: auto; padding: 0 var(--s-2); }
+@media (max-width: 640px) { .game-hud .conn-status { display: none; } }
+.hud-btn.icon-only { padding: 0 !important; } /* beats the Senior theme's button padding rule */
+
+/* sidebar footer button that switches into game mode */
+.game-btn { color: var(--chrome-icon); background: transparent; }
+.game-btn:hover:not(:disabled) { background: var(--chrome-hover); color: var(--chrome-text); }

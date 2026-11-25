@@ -1,0 +1,88 @@
+/* Town map (game mode). Flat shapes in the app's own tokens: the house roof
+   from the logo is the one repeated motif, indigo carries roofs and doors.
+   --primary is already the lifted #818cf8 in dark, so roofs and doors read at
+   3:1 or more against the map floor in light, dark, playful and senior. Trees
+   are scenery and carry no meaning, so they stay quiet.
+   No gradients, glows or green grass (green means "on track"). */
+
+.gw-page { --gw-roof: var(--primary); --gw-door: var(--primary-hover); max-width: 1160px; margin: 0 auto; }
+.gw-head { margin-bottom: var(--s-3); }
+.gw-head h1 { margin-bottom: var(--s-1); }
+.gw-hint { margin: 0; }
+/* always rendered, so the map does not jump when the line fills in */
+.gw-status { margin: var(--s-1) 0 0; min-height: 1.5em; font-size: var(--fs-sm); font-weight: 600; color: var(--text); }
+
+.gw-stage { width: 100%; }
+.gw-viewport {
+  position: relative; overflow: hidden; margin: 0 auto;
+  background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: var(--r-lg);
+}
+.gw-world { position: relative; background: var(--surface-2); }
+
+.gw-road { position: absolute; background: var(--bg); box-shadow: inset 0 0 0 1px var(--border); }
+.gw-tree { position: absolute; --gw-leaf: color-mix(in srgb, var(--muted) 38%, var(--surface-2)); }
+.gw-tree::before, .gw-tree::after { content: ''; position: absolute; }
+/* round crown on a short trunk */
+.gw-tree::before { left: 18%; right: 18%; top: 8%; bottom: 30%; border-radius: 50%; background: var(--gw-leaf); }
+.gw-tree::after { left: 45%; right: 45%; top: 66%; bottom: 8%; background: color-mix(in srgb, var(--muted) 60%, var(--surface-2)); border-radius: 1px; }
+/* every second tree is a pine, every third a small bush, so the border does not read as a dot grid */
+.gw-tree:nth-child(2n)::before { left: 22%; right: 22%; top: 4%; bottom: 26%; border-radius: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.gw-tree:nth-child(3n)::before { left: 26%; right: 26%; top: 36%; bottom: 22%; }
+.gw-tree:nth-child(3n)::after { display: none; }
+.gw-tree:nth-child(5n)::before { left: 10%; right: 10%; top: 14%; bottom: 26%; }
+.gw-pond { position: absolute; border-radius: var(--r-lg); border: 1px solid var(--border-strong); background: color-mix(in srgb, var(--primary) 18%, var(--card)); }
+/* a role that cannot open a page sees a fenced empty plot, so the town never reshuffles */
+.gw-plot { position: absolute; border: 2px dashed var(--border-strong); border-radius: var(--r-sm); }
+
+.gw-building {
+  position: absolute; display: block; z-index: 2;
+  color: var(--text); text-decoration: none; cursor: pointer;
+}
+.gw-roof { position: absolute; left: 0; right: 0; top: 0; background: var(--gw-roof); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.gw-wall { position: absolute; left: 0; right: 0; bottom: 0; background: var(--card); border: 2px solid var(--muted); border-radius: 0 0 var(--r-sm) var(--r-sm); transition: border-color .15s; }
+.gw-chip {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  max-width: none; white-space: nowrap;
+  padding: 1px var(--s-2); border: 1px solid var(--border-strong); border-radius: var(--r-sm);
+  background: var(--card); color: var(--text);
+  font-size: var(--fs-xs); font-weight: 600; line-height: 1.3;
+  transition: background-color .15s, border-color .15s;
+}
+.gw-icon { position: absolute; left: 50%; color: var(--muted); }
+.gw-door { position: absolute; bottom: 0; background: var(--gw-door); border-radius: var(--r-sm) var(--r-sm) 0 0; }
+
+.gw-building:hover .gw-wall, .gw-building:focus-visible .gw-wall { border-color: var(--primary); }
+.gw-building:hover .gw-chip, .gw-building:focus-visible .gw-chip { background: var(--primary-light); border-color: var(--primary); }
+.gw-building:active { transform: translateY(1px); }
+.gw-building:focus-visible { z-index: 4; outline: 3px solid var(--text); outline-offset: 3px; box-shadow: var(--focus-ring); border-radius: var(--r-sm); }
+
+.gw-player { position: absolute; left: 0; top: 0; z-index: 5; pointer-events: none; }
+.gw-animated .gw-world, .gw-animated .gw-player { transition: transform 120ms linear; }
+.gw-kiki { position: absolute; pointer-events: none; }
+.gw-kiki svg { display: block; }
+
+/* touch pad: 48px targets with a gap so a thumb picks one. GameWorld sizes the map so the pad
+   fits on screen; sticky is the fallback on screens too short for that. */
+.gw-pad {
+  display: grid; grid-template-columns: repeat(3, 48px); grid-template-rows: repeat(3, 48px); gap: var(--s-2);
+  justify-content: center; margin: var(--s-4) auto 0;
+  position: sticky; bottom: calc(var(--s-3) + env(safe-area-inset-bottom)); z-index: 6;
+}
+.gw-pad-btn {
+  width: 48px; height: 48px; min-width: 48px;
+  padding: 0 !important; /* beats the Senior theme's button padding rule */
+  background: var(--card); color: var(--text); border: 2px solid var(--text);
+  touch-action: none; user-select: none; -webkit-user-select: none;
+}
+.gw-pad-btn:hover:not(:disabled) { filter: none; background: var(--primary-light); }
+.gw-pad-btn:active:not(:disabled) { filter: none; background: var(--primary-light); transform: translateY(1px); }
+.gw-pad-btn:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; box-shadow: var(--focus-ring); }
+.gw-pad-up { grid-column: 2; grid-row: 1; }
+.gw-pad-left { grid-column: 1; grid-row: 2; }
+.gw-pad-right { grid-column: 3; grid-row: 2; }
+.gw-pad-down { grid-column: 2; grid-row: 3; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gw-animated .gw-world, .gw-animated .gw-player, .gw-wall, .gw-chip { transition: none; }
+  .gw-building:active, .gw-pad-btn:active:not(:disabled) { transform: none; }
+}

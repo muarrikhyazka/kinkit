@@ -381,7 +381,7 @@ void main() {
     expect(sheets.description, 'Every 2 weeks on Fri at 10:00');
     final trash = reminderTemplates.firstWhere((t) => t.title == 'Take out the trash');
     expect(trash.description, 'Every Tue and Fri at 19:00');
-    final oil = reminderTemplates.firstWhere((t) => t.title == 'Change motorbike oil');
+    final oil = reminderTemplates.firstWhere((t) => t.title == 'Change the car oil');
     expect(oil.description, 'Every 3 months on day 1 at 09:00');
   });
 

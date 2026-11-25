@@ -3,9 +3,9 @@
 Single source of truth for the logo. Every surface (web, phone app, TV apps, landing page) must use
 these files or exact renders of them. Change the logo here first, then re-export everywhere.
 
-- `kinkit-logo.svg` – app icon: WHITE rounded tile (16/64 corner radius, hairline #E0E7FF border so it
+- `kinkit-logo.svg`: app icon: WHITE rounded tile (16/64 corner radius, hairline #E0E7FF border so it
   stays visible on white) with a PURPLE (#4F46E5) house outline and purple dot.
-- `kinkit-mark.svg` – the purple house mark alone (e.g. Android adaptive-icon foreground on a white
+- `kinkit-mark.svg`: the purple house mark alone (e.g. Android adaptive-icon foreground on a white
   background).
 - Where the logo sits on purple (top bar, sidebar, TV banner) it is the white tile with the purple mark.
 - Colours: purple #4F46E5 (primary), white #FFFFFF, hairline #E0E7FF.

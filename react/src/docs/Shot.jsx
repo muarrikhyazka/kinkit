@@ -11,7 +11,7 @@ export default function Shot({ name, alt, phone = false }) {
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [open])
-  const src = `/guide/${name}.jpg?v=2`
+  const src = `/guide/${name}.jpg?v=3`
   return (
     <figure className={`dx-shot ${phone ? 'phone' : ''}`}>
       <button type="button" className="dx-shot-btn" onClick={() => setOpen(true)} aria-label={`Enlarge screenshot: ${alt}`}>

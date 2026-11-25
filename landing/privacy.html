@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-i18n-title="pp.meta">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,14 +10,14 @@
   <meta name="color-scheme" content="light dark">
   <meta name="kinkit-app-url" content="">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=3">
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=11">
   <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <symbol id="logo" viewBox="0 0 64 64"><rect x="0.75" y="0.75" width="62.5" height="62.5" rx="15.25" fill="#FFFFFF" stroke="#E0E7FF" stroke-width="1.5"/><path d="M14 31 32 16l18 15" fill="none" stroke="#4F46E5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 28v18a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3V28" fill="none" stroke="#4F46E5" stroke-width="5" stroke-linejoin="round"/><circle cx="32" cy="39" r="5.5" fill="#4F46E5"/></symbol>
   </svg>
-  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header" id="top">
     <nav class="container nav" aria-label="Main">
@@ -26,58 +26,57 @@
         Kinkit
       </a>
       <div class="nav-actions">
-        <div class="lang-toggle" role="group" aria-label="Language / Bahasa">
-          <button type="button" data-lang="en" aria-pressed="true" lang="en" title="English">EN</button>
-          <button type="button" data-lang="id" aria-pressed="false" lang="id" title="Bahasa Indonesia">ID</button>
-        </div>
-        <a class="btn btn-onchrome btn-sm" href="/login" data-app-link="login" data-i18n="nav.signin">Sign in</a>
+        <a class="btn btn-onchrome btn-sm" href="/login" data-app-link="login">Sign in</a>
       </div>
     </nav>
   </header>
 
   <main id="main" class="section">
     <article class="container prose">
-      <h1 data-i18n="pp.title">Privacy and your data</h1>
-      <p class="prose-meta" data-i18n="pp.updated">Last updated 20 November 2026</p>
-      <p class="prose-lead" data-i18n="pp.lead">This page describes what the Kinkit app actually does with your household's data today. It is a plain description, not a legal contract.</p>
+      <h1>Privacy and your data</h1>
+      <p class="prose-meta">Last updated 24 November 2026</p>
+      <p class="prose-lead">This page describes what the Kinkit app actually does with your household's data today. It is a plain description, not a legal contract.</p>
 
-      <h2 data-i18n="pp.store.h">What Kinkit stores</h2>
+      <h2>What Kinkit stores</h2>
       <ul>
-        <li data-i18n="pp.store.1">Your account: name, email and password. Passwords are stored only as a one-way hash, never as text.</li>
-        <li data-i18n="pp.store.2">What your household enters: spending, income, budgets, goals, assets, chores, reminders, lists, calendar activities and meal plans.</li>
-        <li data-i18n="pp.store.3">Receipt photos you attach to a transaction.</li>
-        <li data-i18n="pp.store.4">Chat bot details you paste under Settings › Bots (token, chat id, Matrix homeserver), so Kinkit can send your reminders and alerts.</li>
+        <li>Your account: name, email and password. Passwords are stored only as a one-way hash, never as text.</li>
+        <li>What your household enters: spending, income, budgets, goals, assets, chores, reminders, lists, calendar activities and meal plans.</li>
+        <li>Receipt photos you attach to a transaction.</li>
+        <li>Chat bot details you paste under Settings › Bots (token, chat id, Matrix homeserver), so Kinkit can send your reminders and alerts.</li>
       </ul>
 
-      <h2 data-i18n="pp.not.h">What Kinkit does not collect</h2>
+      <h2>What Kinkit does not collect</h2>
       <ul>
-        <li data-i18n="pp.not.1">Bank logins. Kinkit never asks for them; imports use the CSV file your bank already lets you download.</li>
-        <li data-i18n="pp.not.2">Advertising or tracking data. The app and this site load no analytics, ad or tracking scripts.</li>
+        <li>Bank logins. Kinkit never asks for them; imports use the CSV file your bank already lets you download.</li>
+        <li>Advertising or tracking data. The app and this site load no analytics, ad or tracking scripts.</li>
       </ul>
 
-      <h2 data-i18n="pp.where.h">Where it lives and who can see it</h2>
-      <p data-i18n="pp.where.1">Everything is kept on the server that runs your Kinkit app: a database for your entries and a private folder for receipt photos. Members of your household see it according to their role: kids change only their own entries, and viewers can look but not edit. The people who operate the server can manage accounts.</p>
-      <p data-i18n="pp.where.2">A TV display link shows only this month's summary or the widget board you chose, needs no login, and stops working as soon as you revoke it.</p>
+      <h2>Where it lives and who can see it</h2>
+      <p>Everything is kept on the Kinkit server: a database for your entries and a private folder for receipt photos. Members of your household see it according to their role: kids change only their own entries, and viewers can look but not edit. Kinkit administrators can manage accounts.</p>
+      <p>A TV display link shows only this month's summary or the widget board you chose, needs no login, and stops working as soon as you revoke it.</p>
 
-      <h2 data-i18n="pp.third.h">Services Kinkit talks to</h2>
+      <h2>Android expense capture</h2>
+      <p>Expense capture is off by default and exists only in the Android phone app. If you switch it on and give Android's notification access, the app reads notifications on your phone to spot payments. Notification text stays on the phone. Only an expense you review and save is sent to Kinkit.</p>
+
+      <h2>Services Kinkit talks to</h2>
       <ul>
-        <li data-i18n="pp.third.1">Receipt reading runs on your device. When you tap "Read amount", the reader (tesseract.js) is downloaded from the jsDelivr CDN; the photo itself is not sent anywhere to be read.</li>
-        <li data-i18n="pp.third.2">Exchange rates come from open.er-api.com. Kinkit only asks for the day's rates; none of your data is sent.</li>
-        <li data-i18n="pp.third.3">If you connect a chat bot, the messages you send and receive pass through Telegram, Discord, Slack or your Matrix server, under their own privacy terms.</li>
+        <li>Receipt reading runs on your device. When you tap "Read amount", the reader (tesseract.js) is downloaded from the jsDelivr CDN; the photo itself is not sent anywhere to be read.</li>
+        <li>Exchange rates come from open.er-api.com. Kinkit only asks for the day's rates; none of your data is sent.</li>
+        <li>If you connect a chat bot, the messages you send and receive pass through Telegram, Discord, Slack or your Matrix server, under their own privacy terms.</li>
       </ul>
 
-      <h2 data-i18n="pp.cookies.h">Cookies and local storage</h2>
-      <p data-i18n="pp.cookies.1">The app sets one session cookie to keep you signed in. The installed app keeps a copy of your recent data and any spending added offline on your device until it syncs. This site remembers your language choice in your browser.</p>
+      <h2>Cookies and local storage</h2>
+      <p>The app sets one session cookie to keep you signed in. The installed app keeps a copy of your recent data and any spending added offline on your device until it syncs.</p>
 
-      <h2 data-i18n="pp.out.h">Taking your data out</h2>
-      <p data-i18n="pp.out.1">Under Settings › Data &amp; devices you can download spending and income as CSV, or a full backup of everything as JSON, at any time.</p>
+      <h2>Taking your data out</h2>
+      <p>Under Settings › Data &amp; devices you can download spending and income as CSV or Excel, or a full backup of everything as JSON or Excel, at any time.</p>
 
-      <h2 data-i18n="pp.delete.h">Deleting your data</h2>
-      <p data-i18n="pp.delete.1">You can delete individual entries, lists, receipts and TV links yourself. There is no self-serve button yet for deleting a whole account; the server operator can remove one on request.</p>
+      <h2>Deleting your data</h2>
+      <p>You can delete individual entries, lists, receipts and TV links yourself. The family admin or a parent can remove a member under Settings › Members. There is no self-serve button yet for deleting a whole household; an administrator removes one on request.</p>
       <!-- TODO(owner): add the real contact address for privacy questions and account deletion requests before public launch. -->
-      <p class="prose-note" data-i18n="pp.contact">A contact address for privacy questions and deletion requests will be added here before public launch.</p>
+      <p class="prose-note">A contact address for privacy questions and deletion requests will be added here before public launch.</p>
 
-      <p><a class="link-chev" href="index.html"><span data-i18n="pp.back">Back to Kinkit</span></a></p>
+      <p><a class="link-chev" href="index.html"><span>Back to Kinkit</span></a></p>
     </article>
   </main>
 
@@ -89,6 +88,6 @@
     </div>
   </footer>
 
-  <script src="main.js?v=8" defer></script>
+  <script src="main.js?v=9" defer></script>
 </body>
 </html>

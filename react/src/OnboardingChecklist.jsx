@@ -19,7 +19,7 @@ function Step({ step: s }) {
         <span>
           <span className="onboarding-title">{s.title}</span>
           {s.optional && <span className="muted"> (optional)</span>}
-          <span className="sr-only">{s.done ? ' - done' : ' - to do'}</span>
+          <span className="sr-only">{s.done ? ', done' : ', to do'}</span>
         </span>
         <span className="muted">{s.hint}</span>
       </span>

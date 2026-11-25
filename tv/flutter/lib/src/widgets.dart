@@ -37,7 +37,7 @@ class _TvButtonState extends State<TvButton> {
   @override
   Widget build(BuildContext context) {
     final bg = _focused
-        ? TvColors.primary
+        ? TvColors.primaryFill
         : (widget.primary ? const Color(0xFF3730A3) : TvColors.cardHi);
     return FocusableActionDetector(
       autofocus: widget.autofocus,
@@ -64,9 +64,6 @@ class _TvButtonState extends State<TvButton> {
               color: bg,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: _focused ? TvColors.focus : TvColors.border, width: _focused ? 2.5 : 1),
-              boxShadow: _focused
-                  ? const [BoxShadow(color: Color(0x88818CF8), blurRadius: 12, spreadRadius: 1)]
-                  : const [],
             ),
             child: DefaultTextStyle.merge(
               style: TextStyle(
