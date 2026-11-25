@@ -32,6 +32,9 @@ services:
         condition: service_healthy
     volumes:
       - ./data:/app/data
+    networks:
+      - default
+      - apps-net
 
   telegram-bot:
     build: ./bots
@@ -83,3 +86,8 @@ services:
 
 volumes:
   pgdata:
+
+networks:
+  apps-net:
+    external: true
+    name: apps_apps-net
